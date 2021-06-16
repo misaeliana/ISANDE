@@ -5,42 +5,77 @@
     <meta name="description" content="Dashboard">
     <meta name="keyword" content="Moderna, Dashboard">
     <link rel="stylesheet" type="text/css" href="../public/css/menu.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
 <body>
-<!-- to be made into a partial -->
-<div class="navbar"> 
-    <div><img src="../public/images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
-    <div>
+    <div id="navbar"> 
+        <img src="../public/images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65">
         <a href= "login.html">
             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
-            <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+                <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
             </svg>
         </a>
     </div>
-</div>
 
-<!-- to be made into a partial 
-<div class="sidebar">
-    <a href="dashboard.html">Home</a>
-    <a href="dashboard.html">Invoices</a>
-    <a href="dashboard.html">Return</a>
-    <a href="dashboard.html">Inventory</a>
-    <a href="dashboard.html">Customers</a>
-</div>
--->
+    <div class="content">
+        <div class="greeting">
+            <img src="../public/images/eliana.jpg" class="img-circle" alt="Profile Picture" width="100" height="100">
+            <h1> Welcome, "Name"!</h1>
+        </div>
 
-<div class="dashboard">
-    <div class="greeting">
+        <div class="options-format">
+            <!-- SALES DASHBOARD  
+            <div class="options">
+                    <div class="column"><button type="button">View Invoices</button></div>
+                    <div class="column"><button type="button">New Invoice</button></div>
+                    <div class="column"><button type="button">Return</button></div>
+            </div>
+            <div class="options">
+                    <div class="column"><button type="button">View Inventory</button></div>
+                    <div class="column"><button type="button">View Customers</button></div>
+            </div> -->
 
-    </div>
-    <div class="options">
+            <!-- INVENTORY DASHBOARD 
+            <div class="options">
+                <div class="column"><button type="button">View Inventory</button></div>
+                <div class="column"><button type="button">Report Losses</button></div>
+                <div class="column"><button type="button">View Invoices</button></div>
+            </div>
+            <div class="options">
+                <div class="column"><button type="button">New Purchase Order</button></div>
+                <div class="column"><button type="button">View Purchase Orders</button></div>
+                <div class="column"><button type="button">View Losses</button></div>
+            </div>
+            <div class="options">
+                <div class="column"><button type="button">View Supplier</button></div>
+            </div> -->
+            
 
-    </div>
+            <!-- DELIVERY DASHBOARD 
+            <div class="options">
+                <div class="column"><button type="button">View Deliveries</button></div>
+                <div class="column"><button type="button">View Customers</button></div>
+            </div> -->
 
-</div>
-  
-
+            <!-- MANAGER DASHBOARD -->
+            <div class="options">
+                <div class="column"><button type="button">Sales Report</button></div>
+                <div class="column"><button type="button">View Inventory</button></div>
+                <div class="column"><button type="button">View Losses</button></div>
+            </div>
+            <div class="options">
+                <div class="column"><button type="button">View Invoices</button></div>
+                <div class="column"><button type="button">Return</button></div>
+                <div class="column"><button type="button">View Purchase Orders</button></div>
+            </div>
+            <div class="options">
+                <div class="column"><button type="button">View Suppliers</button></div>
+                <div class="column"><button type="button">View Customers</button></div>
+            </div>
+        </div>
+    </div> 
 </body>
 </html>

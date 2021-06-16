@@ -1,12 +1,15 @@
-.navbar {
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+#navbar {
     position: fixed;
     top: 0;
     height: 80px;
     width: 100%;
-    padding: 15px;
+    padding: 15px 15px 0px 15px;
     background-color: #2F5D62;
 }
 
+/* SIDEBAR */
 .sidebar {
     margin: 0;
     padding: 0;
@@ -15,7 +18,7 @@
     position: fixed;
     height: 100%;
     overflow: auto;
-  }
+}
 
 .sidebar a {
     display: block;
@@ -27,4 +30,63 @@
 .sidebar a:hover {
     background-color: #555;
     color: white;
+}
+
+/* DASHBOARD */
+.profile {
+    text-align: center;
+}
+
+.content {
+    margin-top: 95px;
+
+}
+
+.options-format {
+    margin-top: 300px;
+}
+
+.greeting {
+    text-align: center;
+    font-family: 'Lato', sans-serif;
+    top: 95px;
+    position: fixed;
+    width: 100%;
+    background-color: white;
+    overflow: auto;
+}
+
+.options button {
+    height: 150px;
+    width: 250px;
+    background-color: #F8F5F1;
+    text-align:left;
+    font-size: 20px;
+    color: #2F5D62;
+    font-family: 'Lato', sans-serif;
+    margin-bottom: 10px;
+    border-color: black;
+    border-radius: 15px;
+    border-width: 4px;
+    display: inline-flex; 
+    align-items: flex-start; 
+    padding: 10px 0px 0px 10px;
+
+}
+
+.options button:hover {
+    background-color: #0F84D9;
+    color: white;
+}
+
+.options {
+    display: table;
+    border-spacing: 10px; 
+    margin: auto;
+    padding: 0px 200px 0px 200px;
+}
+
+.column {
+    display: table-cell;
+
 }
