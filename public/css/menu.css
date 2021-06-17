@@ -3,10 +3,12 @@
 #navbar {
     position: fixed;
     top: 0;
-    height: 80px;
+    height: 90px;
     width: 100%;
-    padding: 15px 15px 0px 15px;
+    padding: 0px 10px;
     background-color: #2F5D62;
+    display: flex;
+    align-items: center;
 }
 
 /* SIDEBAR */
@@ -49,7 +51,7 @@
 .greeting {
     text-align: center;
     font-family: 'Lato', sans-serif;
-    top: 95px;
+    top: 100px;
     position: fixed;
     width: 100%;
     background-color: white;
