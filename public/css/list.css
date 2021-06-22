@@ -1,4 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+.content {
+    font-family: 'Lato', sans-serif;
+}
+
 #dropdown {
     background-color: #0F84D9;
     width: 150px;
+}
+
+.search {
+    width: 50%; 
+    float: left;
+}
+
+#search-field {
+    height: 34px;
+    width: 400px;
+}
+
+#search-button {
+    height: 34px;
+
+}
+
+#table-style {
+    padding-top: 10px;
 }
