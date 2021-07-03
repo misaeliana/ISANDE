@@ -9,6 +9,10 @@
     width: 150px;
 }
 
+.content h1 {
+    color: #2F5D62;
+}
+
 .search {
     width: 50%; 
     float: left;

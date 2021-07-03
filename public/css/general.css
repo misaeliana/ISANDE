@@ -12,6 +12,19 @@
     align-items: center;
 }
 
+.navbar-logo {
+    width: 50%; 
+    float: left;
+}
+
+.navbar-logout {
+    width: 50%; 
+    float: left; 
+    display: flex; 
+    justify-content: flex-end; 
+    padding-right: 10px;
+}
+
 /* SIDEBAR */
 .sidebar {
     margin: 0;
@@ -40,4 +53,12 @@
     margin-top: 90px;
     margin-left: 200px;
     padding: 10px 50px 0px 50px;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.display-flex {
+    display: flex;
 }

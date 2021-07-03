@@ -5,7 +5,7 @@
         <meta name="description" content="Customer List">
         <meta name="keyword" content="Moderna, Customer List">
         <link rel="stylesheet" type="text/css" href="../public/css/general.css">
-        <link rel="stylesheet" type="text/css" href="../public/css/list.css">
+        <link rel="stylesheet" type="text/css" href="../public/css/information.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -33,45 +33,37 @@
         </div>
 
         <div class="content">
-            <h1> Customers </h1>
+            <h1> "Customer Name" </h1> <!-- ADD FIXED -->
+            <hr>
             <div style= "margin-top: 20px;">
-                <div> <!-- ADD FIXED -->
-                    <div class="search">
-                        <form> <!-- indicate action -->
-                        <input type="text" placeholder="Search" name="search" id="search-field">
-                        <button type="submit" id="search-button"><i class="fa fa-search" ></i></button>
-                        </form>
+                <div>
+                    <div class="label-container">
+                        <div class="override-label"> Contact Number </div> 
+                        <div class="label-content"> 09237092591 </div>
                     </div>
-                    <div style="height: 50px"></div>
+                    <div class="label-container">
+                        <div class="override-label"> Address </div> 
+                        <div class="label-content"> 35 Bangkal St, Makati City </div>
+                    </div>
                 </div>
-                
-                <table class="table">
-                    <thead style="background-color: #2F5D62; color: white">
-                        <tr>
-                            <th>Name</th>
-                            <th>Address</th>
-                            <th>Contact Number</th>
-                        </tr>
-                    </thead>
-                    <tbody> 
-                        <!-- make rows clickable -->
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>john@example.com</td>
-                        </tr>
-                        <tr>
-                            <td>Mary</td>
-                            <td>Moe</td>
-                            <td>mary@example.com</td>
-                        </tr>
-                        <tr>
-                            <td>July</td>
-                            <td>Dooley</td>
-                            <td>july@example.com</td>
-                        </tr>
-                    </tbody>
-                </table>
+
+                <div style="height: 10px"></div>
+                   
+                <div class="btn-edit-details"><button id="btn-edit-details">Edit Details</button></div>
+
+                <div style="height: 50px"></div>
+
+                <div class="label-big-container"> 
+                    <div class="label-wide">
+                        <div class="navbar-logo">Notes</div>
+                        <div class="notes-pencil">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="label-wide-content"></div>
+                </div> 
             </div>
         </div>
     </body>

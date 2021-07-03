@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> View Invoice </title>
+        <meta name="description" content="View Invoice">
+        <meta name="keyword" content="Moderna, View Invoice">
+        <link rel="stylesheet" type="text/css" href="../public/css/general.css">
+        <link rel="stylesheet" type="text/css" href="../public/css/information.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        
+    </head>
+    <body>
+
+        <!-- PARTIALS -->
+        <div id="navbar"> 
+            <div class="navbar-logo"> <img src="../public/images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
+            <div class="navbar-logout"> <a href= "login.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+                    <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                </svg>
+            </a>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <a href="#">Home</a>
+            <a href="#">Deliveries</a>
+            <a href="#">Customers</a>
+        </div>
+
+        <div class="content">
+            <div> <!-- ADD FIXED -->
+                <div style="display: flex;">
+                    <div style="width: 50%"><h1> Invoice #"Number" </h1></div>
+                    <div class="btn-status">
+                        <div><button id="btn-status">Status</button></div>
+                    </div>
+                </div>
+            </div> 
+            <hr>
+
+            <div class="display-flex">
+                <h3 class ="bold h3-left">Customer Details</h3>
+                <h3 class="h3-right">MM/DD/YYYY</h3>
+            </div>
+
+                <div>
+                    <div class="label-container">
+                        <div class="override-label"> Name </div> 
+                        <div class="label-content">  </div>
+                    </div>
+                    <div class="label-container">
+                        <div class="override-label"> Address </div> 
+                        <div class="label-content">  </div>
+                    </div>
+                    <div class="label-container">
+                        <div class="override-label"> Contact Number </div> 
+                        <div class="label-content">  </div>
+                    </div>
+                </div>
+
+                <div class="label-big-container"> 
+                    <div class="label-wide">
+                        <div class="navbar-logo">Notes</div>
+                        
+                    </div>
+                    <div class="label-wide-content"></div>
+                </div> 
+            
+                <div style="height: 20px"></div>
+
+                    <h3 class ="bold">Order Details</h3>
+                    <table class="table">
+                        <thead style="background-color: #2F5D62; color: white">
+                            <tr>
+                                <th>Item Code</th>
+                                <th>Item Description</th>
+                                <th>Qty</th>
+                                <th>Unit</th>
+                                <th>Unit Price</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody> 
+                            <tr>
+                                <td>John</td>
+                                <td>Doe</td>
+                                <td>john@example.com</td>
+                                <td>John</td>
+                                <td>Doe</td>
+                                <td>john@example.com</td>
+                            </tr>
+                            <tr>
+                                <td>Mary</td>
+                                <td>Moe</td>
+                                <td>mary@example.com</td>
+                                <td>John</td>
+                                <td>Doe</td>
+                                <td>john@example.com</td>
+                            </tr>
+                            <tr>
+                                <td>July</td>
+                                <td>Dooley</td>
+                                <td>july@example.com</td>
+                                <td>John</td>
+                                <td>Doe</td>
+                                <td>john@example.com</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="summary-container">
+                        <div class="summary-text">Subtotal</div>
+                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
+                    </div>
+                    <div class="summary-container">
+                        <div class="summary-text">VAT</div>
+                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
+                    </div>
+                    <div class="summary-container">    
+                        <div class="summary-text">Less: Discount</div>
+                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
+                    </div>
+                    <div class="summary-container">
+                        <div class="summary-text">Total Due</div>
+                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
+                    </div>
+
+                    <div style="height: 10px"></div>
+
+                    <div class="btn-export-invoice"><button id="btn-export-invoice">Export</button></div>
+
+                    <div style="height: 20px"></div>
+        </div>
+    </body>
+</html>
