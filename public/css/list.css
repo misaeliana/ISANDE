@@ -25,9 +25,114 @@
 
 #search-button {
     height: 34px;
-
 }
 
 #table-style {
     padding-top: 10px;
 }
+
+.btn-new-invoice {
+    display: flex; 
+    justify-content: flex-end;
+    /*visibility: hidden;*/
+}
+
+#btn-new-invoice {
+    background-color: #0F84D9;
+    width: 150px;
+    border-radius: 5px;
+    color: white;
+    border:  #0F84D9;
+    height: 30px;
+}
+
+.btn-new-supplier {
+    display: flex; 
+    justify-content: flex-end;
+    /*visibility: hidden;*/
+}
+
+#btn-new-supplier {
+    background-color: #0F84D9;
+    width: 150px;
+    border-radius: 5px;
+    color: white;
+    border:  #0F84D9;
+    height: 30px;
+}
+
+.fixed-div {
+    top: 90px; 
+    position: sticky; 
+    background-color: white; 
+    width: inherit; 
+    padding-top: 10px
+}
+
+.div-button-end {
+    width: 50%; 
+    float: left; 
+    display: flex; 
+    justify-content: flex-end;
+}
+
+.table-head {
+    background-color: #2F5D62; 
+    color: white; 
+    top: 234px; 
+    position: sticky; 
+    width: inherit;
+}
+
+.div-dropdown {
+    width: 25%; 
+    float: left; 
+    display: flex; 
+    justify-content: flex-end;
+}
+
+.dropdown-list {
+    background-color: #0F84D9;
+    width: 150px;
+    border-radius: 5px;
+    color: white;
+    border:  #0F84D9;
+    height: 30px;
+    text-align-last: center;
+}
+
+.btn-new-PO {
+    display: flex; 
+    justify-content: flex-end;
+    /*visibility: hidden;*/
+}
+
+#btn-new-PO {
+    background-color: #0F84D9;
+    width: 150px;
+    border-radius: 5px;
+    color: white;
+    border:  #0F84D9;
+    height: 30px;
+}
+
+.btn-new-loss {
+    display: flex; 
+    justify-content: flex-end;
+    /*visibility: hidden;*/
+}
+
+.div-width-45 {
+    width: 45%; 
+    float: left; 
+    display: flex; 
+    justify-content: flex-start;
+}
+
+.div-width-15 {
+    width: 15%; 
+    float: left; 
+    display: flex; 
+    justify-content: flex-end;
+}
+

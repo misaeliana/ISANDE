@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title> Customers </title>
-        <meta name="description" content="Customer List">
-        <meta name="keyword" content="Moderna, Customer List">
+        <title> Purchase Orders </title>
+        <meta name="description" content="Purchase Order List">
+        <meta name="keyword" content="Moderna, Purchase Order List">
         <link rel="stylesheet" type="text/css" href="../public/css/general.css">
         <link rel="stylesheet" type="text/css" href="../public/css/list.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -32,26 +32,39 @@
             <a href="#">Customers</a>
         </div>
 
-        <div class="content">
-             <div class="fixed-div">
-                <h1 class="bold" style="padding-bottom: 15px;"> Customers </h1>
+        <div class="content">        
+            <div class="fixed-div">
+                <h1 class="bold" style="padding-bottom: 15px;"> Purchase Orders </h1>
                 <div> 
                     <div class="search">
                         <form> <!-- indicate action -->
-                            <input type="text" placeholder="Search" name="search" id="search-field">
-                            <button type="submit" id="search-button"><i class="fa fa-search" ></i></button>
+                        <input type="text" placeholder="Search" name="search" id="search-field">
+                        <button type="submit" id="search-button"><i class="fa fa-search" ></i></button>
                         </form>
+                    </div>
+                    <div class="div-dropdown">
+                        <select class= "dropdown-list" id="dropdown-PO">
+                            <option value="all" selected>All</option>
+                            <option value="volvo">Option 1</option>
+                            <option value="saab">Option 2</option>
+                            <option value="saab">Option 3</option>
+                        </select>
+                    </div>
+                    <div class="div-dropdown">
+                        <div class="btn-new-PO"><button id="btn-new-PO">+ New PO</button></div>
                     </div>
                     <div style="height: 50px"></div>
                 </div>
             </div>
-                
+            <!-- try making this overflow scroll -->
                 <table class="table">
                     <thead class="table-head">
                         <tr>
-                            <th>Name</th>
-                            <th>Address</th>
-                            <th>Contact Number</th>
+                            <th>PO</th>
+                            <th>Date Made</th>
+                            <th>Supplier</th>
+                            <th>Amount</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody> 
@@ -60,19 +73,6 @@
                             <td>John</td>
                             <td>Doe</td>
                             <td>john@example.com</td>
-                        </tr>
-                        <tr>
-                            <td>Mary</td>
-                            <td>Moe</td>
-                            <td>mary@example.com</td>
-                        </tr>
-                        <tr>
-                            <td>July</td>
-                            <td>Dooley</td>
-                            <td>july@example.com</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
                             <td>Doe</td>
                             <td>john@example.com</td>
                         </tr>
@@ -80,14 +80,20 @@
                             <td>Mary</td>
                             <td>Moe</td>
                             <td>mary@example.com</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
                         </tr>
                         <tr>
                             <td>July</td>
                             <td>Dooley</td>
                             <td>july@example.com</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
                         </tr>
                         <tr>
                             <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
                             <td>Doe</td>
                             <td>john@example.com</td>
                         </tr>
@@ -95,14 +101,20 @@
                             <td>Mary</td>
                             <td>Moe</td>
                             <td>mary@example.com</td>
+                            <td>John</td>
+                            <td>john@example.com</td>
                         </tr>
                         <tr>
                             <td>July</td>
                             <td>Dooley</td>
                             <td>july@example.com</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
                         </tr>
                         <tr>
                             <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
                             <td>Doe</td>
                             <td>john@example.com</td>
                         </tr>
@@ -110,14 +122,20 @@
                             <td>Mary</td>
                             <td>Moe</td>
                             <td>mary@example.com</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
                         </tr>
                         <tr>
                             <td>July</td>
                             <td>Dooley</td>
                             <td>july@example.com</td>
+                            <td>John</td>
+                            <td>john@example.com</td>
                         </tr>
                         <tr>
                             <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
                             <td>Doe</td>
                             <td>john@example.com</td>
                         </tr>
@@ -125,14 +143,20 @@
                             <td>Mary</td>
                             <td>Moe</td>
                             <td>mary@example.com</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
                         </tr>
                         <tr>
                             <td>July</td>
                             <td>Dooley</td>
                             <td>july@example.com</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
                         </tr>
                         <tr>
                             <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
                             <td>Doe</td>
                             <td>john@example.com</td>
                         </tr>
@@ -140,14 +164,20 @@
                             <td>Mary</td>
                             <td>Moe</td>
                             <td>mary@example.com</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
                         </tr>
                         <tr>
                             <td>July</td>
                             <td>Dooley</td>
                             <td>july@example.com</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
                         </tr>
                         <tr>
                             <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
                             <td>Doe</td>
                             <td>john@example.com</td>
                         </tr>
@@ -155,11 +185,15 @@
                             <td>Mary</td>
                             <td>Moe</td>
                             <td>mary@example.com</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
                         </tr>
                         <tr>
                             <td>July</td>
                             <td>Dooley</td>
                             <td>july@example.com</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
                         </tr>
                     </tbody>
                 </table>

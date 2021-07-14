@@ -33,31 +33,29 @@
         </div>
 
         <div class="content">
-            <h1> Deliveries </h1>
-            <div style= "margin-top: 20px;">
-                <div> <!-- ADD FIXED -->
+         <div class="fixed-div">
+                <h1 class="bold" style="padding-bottom: 15px;"> Deliveries </h1>
+                <div> 
                     <div class="search">
                         <form> <!-- indicate action -->
-                        <input type="text" placeholder="Search" name="search" id="search-field">
-                        <button type="submit" id="search-button"><i class="fa fa-search" ></i></button>
+                            <input type="text" placeholder="Search" name="search" id="search-field">
+                            <button type="submit" id="search-button"><i class="fa fa-search" ></i></button>
                         </form>
                     </div>
-                    <div style= "width: 50%; float: left; display: flex; justify-content: flex-end">
-                        <div class="dropdown" >
-                            <button id="dropdown" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Status
-                            <span class="caret"></span></button>
-                            <ul class="dropdown-menu">
-                            <li><a href="#">HTML</a></li>
-                            <li><a href="#">CSS</a></li>
-                            <li><a href="#">JavaScript</a>
-                            </ul>
-                        </div>
+                    <div class="div-dropdown" style="width: 50%;">
+                        <select class= "dropdown-list" id="dropdown-PO">
+                            <option value="all" selected>All</option>
+                            <option value="volvo">Option 1</option>
+                            <option value="saab">Option 2</option>
+                            <option value="saab">Option 3</option>
+                        </select>
                     </div>
                     <div style="height: 50px"></div>
                 </div>
+            </div>       
                 
                 <table class="table">
-                    <thead style="background-color: #2F5D62; color: white">
+                    <thead class="table-head">
                         <tr>
                             <th>Date</th>
                             <th>Invoice</th>
@@ -69,6 +67,126 @@
                     </thead>
                     <tbody> 
                         <!-- make rows clickable -->
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
+                        </tr>
+                        <tr>
+                            <td>Mary</td>
+                            <td>Moe</td>
+                            <td>mary@example.com</td>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
+                        </tr>
+                        <tr>
+                            <td>July</td>
+                            <td>Dooley</td>
+                            <td>july@example.com</td>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
+                        </tr>
+                        <tr>
+                            <td>Mary</td>
+                            <td>Moe</td>
+                            <td>mary@example.com</td>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
+                        </tr>
+                        <tr>
+                            <td>July</td>
+                            <td>Dooley</td>
+                            <td>july@example.com</td>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
+                        </tr>
+                        <tr>
+                            <td>Mary</td>
+                            <td>Moe</td>
+                            <td>mary@example.com</td>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
+                        </tr>
+                        <tr>
+                            <td>July</td>
+                            <td>Dooley</td>
+                            <td>july@example.com</td>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
+                        </tr>
+                        <tr>
+                            <td>Mary</td>
+                            <td>Moe</td>
+                            <td>mary@example.com</td>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
+                        </tr>
+                        <tr>
+                            <td>July</td>
+                            <td>Dooley</td>
+                            <td>july@example.com</td>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
+                        </tr>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
+                        </tr>
+                        <tr>
+                            <td>Mary</td>
+                            <td>Moe</td>
+                            <td>mary@example.com</td>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
+                        </tr>
+                        <tr>
+                            <td>July</td>
+                            <td>Dooley</td>
+                            <td>july@example.com</td>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
+                        </tr>
                         <tr>
                             <td>John</td>
                             <td>Doe</td>
