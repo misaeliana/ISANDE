@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title> Purchase Orders </title>
-        <meta name="description" content="Purchase Order List">
-        <meta name="keyword" content="Moderna, Purchase Order List">
+        <title> Report Losses </title>
+        <meta name="description" content="Report Losses">
+        <meta name="keyword" content="Moderna, Report Losses">
         <link rel="stylesheet" type="text/css" href="../public/css/general.css">
         <link rel="stylesheet" type="text/css" href="../public/css/list.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -34,38 +34,36 @@
 
         <div class="content">        
             <div class="fixed-div">
-                <h1 class="bold" style="padding-bottom: 15px;"> Purchase Orders </h1>
+                <h1 class="bold" style="padding-bottom: 15px;"> Report Losses </h1>
                 <div> 
-                    <div class="search" style="width: 40%">
-                        <form> <!-- indicate action -->
-                        <input type="text" placeholder="Search" name="search" id="search-field">
-                        <button type="submit" id="search-button"><i class="fa fa-search" ></i></button>
-                        </form>
-                    </div>
-                    <div class="div-dropdown" style="    display: flex; 
-                    justify-content: flex-start; width: 35%">
-                        <select class= "dropdown-list" id="dropdown-PO">
-                            <option value="all" selected>All</option>
-                            <option value="volvo">Option 1</option>
-                            <option value="saab">Option 2</option>
-                            <option value="saab">Option 3</option>
-                        </select>
-                    </div>
-                    <div class="div-dropdown" style=>
-                        <div class="btn-new-PO"><button id="btn-new-PO">+ New PO</button></div>
+                    <div class="search" style="width: 60%">
+                        <input style="margin-top: 5px; margin-bottom: 15px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control margin-bottom-10" id="itemCode" name="itemCode" placeholder="Item Code">
+                        <input style="margin-top: 5px; margin-bottom: 15px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control margin-bottom-10" id="qty" name="qty" placeholder="Qty">
+                        <div style="margin-top: 5px; margin-bottom: 15px; width: 150px; float: left; margin-right: 10px" type="text" class="div-dropdown margin-bottom-10" style="width: 50%;">
+                            <select class= "dropdown-losses" id="dropdown-losses">
+                                <option value="all" selected>Damaged</option>
+                                <option value="volvo">Option 1</option>
+                                <option value="saab">Option 2</option>
+                                <option value="saab">Option 3</option>
+                            </select>
+                        </div>
+                        <input style="margin-top: 5px; margin-bottom: 5px; float: left; height: 34px; width: 34px; background-color: #0F84D9; border: #0F84D9; border-radius: 7px; color: white;" type="button" id="addItem" name="addItem" value="+">
                     </div>
                     <div style="height: 50px"></div>
+                    <div>
+                        <p style="color: red">Warning Text here</p>
+                    </div>
                 </div>
             </div>
-            <!-- try making this overflow scroll -->
+
                 <table class="table">
                     <thead class="table-head">
                         <tr>
-                            <th>PO</th>
-                            <th>Date Made</th>
-                            <th>Supplier</th>
-                            <th>Amount</th>
-                            <th>Status</th>
+                            <th>Item Code</th>
+                            <th>Item Description</th>
+                            <th>Qty</th>
+                            <th>Reason</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody> 
@@ -74,130 +72,98 @@
                             <td>John</td>
                             <td>Doe</td>
                             <td>john@example.com</td>
-                            <td>Doe</td>
-                            <td>john@example.com</td>
-                        </tr>
-                        <tr>
-                            <td>Mary</td>
-                            <td>Moe</td>
-                            <td>mary@example.com</td>
-                            <td>Doe</td>
-                            <td>john@example.com</td>
-                        </tr>
-                        <tr>
-                            <td>July</td>
-                            <td>Dooley</td>
-                            <td>july@example.com</td>
-                            <td>Doe</td>
-                            <td>john@example.com</td>
-                        </tr>
-                        <tr>
                             <td>John</td>
                             <td>Doe</td>
-                            <td>john@example.com</td>
-                            <td>Doe</td>
-                            <td>john@example.com</td>
                         </tr>
                         <tr>
                             <td>Mary</td>
                             <td>Moe</td>
                             <td>mary@example.com</td>
                             <td>John</td>
-                            <td>john@example.com</td>
+                            <td>Doe</td>
                         </tr>
                         <tr>
                             <td>July</td>
                             <td>Dooley</td>
                             <td>july@example.com</td>
+                            <td>John</td>
                             <td>Doe</td>
-                            <td>john@example.com</td>
                         </tr>
                         <tr>
                             <td>John</td>
                             <td>Doe</td>
                             <td>john@example.com</td>
+                            <td>John</td>
                             <td>Doe</td>
-                            <td>john@example.com</td>
                         </tr>
                         <tr>
                             <td>Mary</td>
                             <td>Moe</td>
                             <td>mary@example.com</td>
+                            <td>John</td>
                             <td>Doe</td>
-                            <td>john@example.com</td>
                         </tr>
                         <tr>
                             <td>July</td>
                             <td>Dooley</td>
                             <td>july@example.com</td>
                             <td>John</td>
-                            <td>john@example.com</td>
+                            <td>Doe</td>
                         </tr>
                         <tr>
                             <td>John</td>
                             <td>Doe</td>
                             <td>john@example.com</td>
+                            <td>John</td>
                             <td>Doe</td>
-                            <td>john@example.com</td>
                         </tr>
                         <tr>
                             <td>Mary</td>
                             <td>Moe</td>
                             <td>mary@example.com</td>
+                            <td>John</td>
                             <td>Doe</td>
-                            <td>john@example.com</td>
                         </tr>
                         <tr>
                             <td>July</td>
                             <td>Dooley</td>
                             <td>july@example.com</td>
+                            <td>John</td>
                             <td>Doe</td>
-                            <td>john@example.com</td>
                         </tr>
                         <tr>
                             <td>John</td>
                             <td>Doe</td>
                             <td>john@example.com</td>
+                            <td>John</td>
                             <td>Doe</td>
-                            <td>john@example.com</td>
                         </tr>
                         <tr>
                             <td>Mary</td>
                             <td>Moe</td>
                             <td>mary@example.com</td>
+                            <td>John</td>
                             <td>Doe</td>
-                            <td>john@example.com</td>
                         </tr>
                         <tr>
                             <td>July</td>
                             <td>Dooley</td>
                             <td>july@example.com</td>
+                            <td>John</td>
                             <td>Doe</td>
-                            <td>john@example.com</td>
                         </tr>
                         <tr>
                             <td>John</td>
                             <td>Doe</td>
                             <td>john@example.com</td>
+                            <td>John</td>
                             <td>Doe</td>
-                            <td>john@example.com</td>
-                        </tr>
-                        <tr>
-                            <td>Mary</td>
-                            <td>Moe</td>
-                            <td>mary@example.com</td>
-                            <td>Doe</td>
-                            <td>john@example.com</td>
-                        </tr>
-                        <tr>
-                            <td>July</td>
-                            <td>Dooley</td>
-                            <td>july@example.com</td>
-                            <td>Doe</td>
-                            <td>john@example.com</td>
                         </tr>
                     </tbody>
                 </table>
+
+                <div style="display: flex; justify-content: flex-end"><button class="btn-light-blue" id="btn-save-loss">Save</button></div>
+
             </div>
         </div>
     </body>

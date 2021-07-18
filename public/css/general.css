@@ -72,6 +72,11 @@
     height: 30px;
 }
 
-.flex-end {
-    
+.btn-dark-blue {
+    background-color: #42415B;
+    width: 150px;
+    border-radius: 5px;
+    color: white;
+    border:  #42415B;
+    height: 30px;
 }

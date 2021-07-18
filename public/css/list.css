@@ -101,6 +101,15 @@
     text-align-last: center;
 }
 
+.dropdown-losses {
+    background-color: white;
+    width: 150px;
+    border-radius: 5px;
+    color: black;
+    height: 34px;
+    text-align-last: center;
+}
+
 .btn-new-PO {
     display: flex; 
     justify-content: flex-end;
@@ -121,6 +130,7 @@
     justify-content: flex-end;
     /*visibility: hidden;*/
 }
+
 
 .div-width-45 {
     width: 45%; 

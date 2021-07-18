@@ -77,19 +77,16 @@
     height: 30px;
 }
 
-.btn-export-invoice {
+.btn-save-invoice {
     display: flex; 
     justify-content: flex-end;
     /*visibility: hidden;*/
 }
 
-#btn-export-invoice {
-    background-color: #0F84D9;
-    width: 150px;
-    border-radius: 5px;
-    color: white;
-    border:  #0F84D9;
-    height: 30px;
+.btn-export-invoice {
+    display: flex; 
+    justify-content: flex-end;
+    /*visibility: hidden;*/
 }
 
 .label-big-container {
@@ -152,4 +149,33 @@
 
 .margin-bottom-10 {
     margin-bottom: 10px;
+}
+
+.delete-button {
+    background-color: white; 
+    border: 0px
+}
+.delete-button img:hover {
+    background-color: rgb(247, 121, 121);
+    color: white;
+}
+
+.header-colored-bg {
+    width: 100%; 
+    background-color: #2F5D62; 
+    display: flex; 
+    align-items: center;
+}
+
+.header-text {
+    color: white; 
+    margin: 5px
+}
+
+.text-style {
+    margin-top: 5px; 
+    margin-bottom: 0px; 
+    width: 150px; 
+    float: left; 
+    margin-right: 10px;
 }
