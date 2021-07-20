@@ -89,6 +89,18 @@
     /*visibility: hidden;*/
 }
 
+.btn-export-view-PO {
+    display: flex; 
+    justify-content: flex-end;
+    /*visibility: hidden;*/
+}
+
+.btn-edit-view-PO {
+    display: flex; 
+    justify-content: flex-end;
+    /*visibility: hidden;*/
+}
+
 .label-big-container {
     height: 200px; 
     width: 100%;
@@ -157,6 +169,16 @@
 }
 .delete-button img:hover {
     background-color: rgb(247, 121, 121);
+    color: white;
+}
+
+.edit-button {
+    background-color: white; 
+    border: 0px
+}
+
+.edit-button img:hover {
+    background-color: rgb(153, 228, 153);
     color: white;
 }
 
