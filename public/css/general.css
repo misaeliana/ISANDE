@@ -80,3 +80,12 @@
     border:  #42415B;
     height: 30px;
 }
+
+.btn-red {
+    background-color: #fa3b22;
+    width: 150px;
+    border-radius: 5px;
+    color: white;
+    border:  #fa3b22;
+    height: 30px;
+}

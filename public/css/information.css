@@ -101,6 +101,12 @@
     /*visibility: hidden;*/
 }
 
+.btn-cancel-view-PO {
+    display: flex; 
+    justify-content: flex-end;
+    /*visibility: hidden;*/
+}
+
 .label-big-container {
     height: 200px; 
     width: 100%;
