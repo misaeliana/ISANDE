@@ -207,3 +207,22 @@
     float: left; 
     margin-right: 10px;
 }
+
+.div-number {
+    background-color: #bee4ff; 
+    width: 200px; 
+    height: 40px; 
+    display: flex; 
+    justify-content: center; 
+    align-items:center;
+}
+
+.div-number-label {
+    background-color: #0F84D9; 
+    color: white;  
+    width: 200px; 
+    height: 30px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+}

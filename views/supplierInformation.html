@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title> Customer Information </title>
-        <meta name="description" content="Customer Information">
-        <meta name="keyword" content="Moderna, Customer Information">
+        <title> Supplier Information </title>
+        <meta name="description" content="Supplier Information">
+        <meta name="keyword" content="Moderna, Customer List">
         <link rel="stylesheet" type="text/css" href="../public/css/general.css">
         <link rel="stylesheet" type="text/css" href="../public/css/information.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -33,25 +33,36 @@
         </div>
 
         <div class="content">
-            <h1 class="bold"> "Customer Name" </h1> 
+            <h1 class="bold"> "Supplier Name" </h1> 
             <hr>
             <div style= "margin-top: 20px;">
                 <div>
                     <div class="label-container">
-                        <div class="override-label"> Contact Number </div> 
-                        <div class="label-content"> 09237092591 </div>
+                        <div class="override-label"> Contact Person </div> 
+                        <div class="label-content">  </div>
                     </div>
                     <div class="label-container">
-                        <div class="override-label"> Address </div> 
-                        <div class="label-content"> 35 Bangkal St, Makati City </div>
+                        <div class="override-label"> Contact Number </div> 
+                        <div class="label-content">  </div>
                     </div>
+                    <div class="label-container">
+                        <div class="override-label"> Email Address </div> 
+                        <div class="label-content">  </div>
+                    </div>
+
+                    <div class="label-big-container" style="height: 150px"> 
+                        <div class="label-wide">
+                            <div class="navbar-logo">Address</div>
+                        </div>
+                        <div class="label-wide-content" style="height: 100px"></div>
+                    </div> 
                 </div>
 
                 <div style="height: 10px"></div>
                    
                 <div class="btn-edit-details"><button id="btn-edit-details">Edit Details</button></div>
 
-                <div style="height: 50px"></div>
+                <div style="height: 20px"></div>
 
                 <div class="label-big-container"> 
                     <div class="label-wide">
@@ -64,6 +75,39 @@
                     </div>
                     <div class="label-wide-content"></div>
                 </div> 
+
+            <hr>
+
+            <div style="margin-top: 30px;">
+                <div class="display-flex" style="width: 50%; float: left;">
+                    <h3 class ="bold h3-left">Items</h3>
+                </div>
+                <div style="display: flex; float: left; width: 50%; justify-content: flex-end"><button class="btn-light-blue" id="btn-supplier-new-item">+ New Item</button></div>
+            </div>
+
+            <table class="table" style="margin-top: 80px;">
+                <thead class="table-head">
+                    <tr>
+                        <th>Item Code</th>
+                        <th>Item Description</th>
+                        <th>Unit</th>
+                        <th>EOQ</th>
+                        <th>Reorder Level</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                    <tbody> 
+                        <!-- make rows clickable -->
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td><button class="edit-button"><img src="../public/images/pencil.png" height="15px" width="12x" alt="Delete" id= "supplier-info-edit-item-row-btn"></button></td>
+                        </tr>
+                </tbody> 
+            </table>          
             </div>
         </div>
     </body>

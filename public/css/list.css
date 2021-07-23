@@ -76,21 +76,6 @@
     justify-content: flex-end;
 }
 
-.table-head {
-    background-color: #2F5D62; 
-    color: white; 
-    top: 234px; 
-    position: sticky; 
-    width: inherit;
-}
-
-.div-dropdown {
-    width: 25%; 
-    float: left; 
-    display: flex; 
-    justify-content: flex-end;
-}
-
 .dropdown-list {
     background-color: #0F84D9;
     width: 150px;
