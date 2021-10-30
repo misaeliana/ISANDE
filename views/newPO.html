@@ -10,7 +10,9 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-        
+
+        <link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     </head>
     <body>
 
@@ -37,7 +39,7 @@
                 <div style="display: flex;">
                     <div style="width: 50%"><h1 class="bold"> Purchase Order #"Number" </h1></div>
                     <div class="btn-status">
-                        <h3>MM/DD/YYYY</h3>
+                        <h3 id="dateToday"></h3>
                     </div>
                 </div>
             </div> 
@@ -47,23 +49,23 @@
                 <h3 class ="bold header-text">Supplier Details</h3>
             </div>
 
-                <div>
-                    <input style="margin-top: 15px;" type="text" class="form-control margin-bottom-10" id="supplierName" name="supplierName" placeholder="Supplier Name">
-                    <input type="text" class="form-control margin-bottom-10" id="contactPerson" name="contactPerson" placeholder="Contact Person">
-                    <input type="text" class="form-control margin-bottom-10" id="contactNumber" name="contactNumber" placeholder="Contact Number">
-                    <input type="text" class="form-control margin-bottom-10" id="Address" name="Address" placeholder="Address">   
-                </div>
+            <div>
+                <input style="margin-top: 15px;" type="text" class="form-control margin-bottom-10" id="supplierName" name="supplierName" placeholder="Supplier Name">
+                <input type="text" class="form-control margin-bottom-10" id="contactPerson" name="contactPerson" placeholder="Contact Person">
+                <input type="text" class="form-control margin-bottom-10" id="contactNumber" name="contactNumber" placeholder="Contact Number">
+                <input type="text" class="form-control margin-bottom-10" id="Address" name="Address" placeholder="Address">   
+            </div>
 
-                <div class="header-colored-bg" style="margin-top: 15px; margin-bottom: 10px">
-                    <h3 class ="bold bold header-text">Order Details</h3>
-                </div>
+            <div class="header-colored-bg" style="margin-top: 15px; margin-bottom: 10px">
+                <h3 class ="bold bold header-text">Order Details</h3>
+            </div>
 
-                <form>
-                    <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="itemCode" name="itemCode" placeholder="Item Code">
-                    <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="qty" name="qty" placeholder="Qty">
-                    <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="unitPrice" name="unitPrice" placeholder="Unit Price">
-                    <input style="margin-top: 5px; margin-bottom: 0px; float: left; height: 34px; width: 34px; background-color: #0F84D9; border: #0F84D9; border-radius: 7px; color: white;" type="button" id="addItem" name="addItem" value="+">
-                </form>
+            <form>
+                <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="itemDescription" name="itemDescription" placeholder="Item Description">
+                <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="qty" name="qty" placeholder="Qty">
+                <!--<input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="unitPrice" name="unitPrice" placeholder="Unit Price">-->
+                <input style="margin-top: 5px; margin-bottom: 0px; float: left; height: 34px; width: 34px; background-color: #0F84D9; border: #0F84D9; border-radius: 7px; color: white;" type="button" id="addItem" name="addItem" value="+">
+            </form>
             
                 <div style="height: 45px"></div>
 
@@ -74,54 +76,25 @@
                     <table class="table">
                         <thead style="background-color: #2F5D62; color: white">
                             <tr>
-                                <th>Item Code</th>
                                 <th>Item Description</th>
                                 <th>Qty</th>
                                 <th>Unit</th>
-                                <th>Unit Price</th>
-                                <th>Amount</th>
+                                <!--<th>Unit Price</th>
+                                <th>Amount</th>-->
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody> 
-                            <tr>
-                                <td>John</td>
-                                <td>Doe</td>
-                                <td>john@example.com</td>
-                                <td>John</td>
-                                <td>Doe</td>
-                                <td>john@example.com</td>
-                                <td>
-                                    <button class="delete-button"><img src="../public/images/delete-icon.png" height="20px" width="15x" alt="Delete" id= "new-invoice-delete-table-row-btn"></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Mary</td>
-                                <td>Moe</td>
-                                <td>mary@example.com</td>
-                                <td>John</td>
-                                <td>Doe</td>
-                                <td>john@example.com</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>July</td>
-                                <td>Dooley</td>
-                                <td>july@example.com</td>
-                                <td>John</td>
-                                <td>Doe</td>
-                                <td>john@example.com</td>
-                                <td></td>
-                            </tr>
+
                         </tbody>
                     </table>
 
-                    <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: right;" type="text" class="form-control margin-bottom-10" id="total-discount" name="discount" placeholder="Discount">
+                    <!--<input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: right;" type="text" class="form-control margin-bottom-10" id="total-discount" name="discount" placeholder="Discount">-->
 
                     <br> 
                     <br> 
                     <br> 
-                    <div class="summary-container">
+                    <!--<div class="summary-container">
                         <div class="summary-text">Subtotal</div>
                         <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
                     </div>
@@ -143,7 +116,21 @@
                     <div class="btn-save-invoice"><button class="btn-light-blue" id="btn-save-invoice" style="margin-bottom: 10px;" >Save</button></div>
                     <div class="btn-export-invoice"><button class="btn-dark-blue" id="btn-export-invoice">Export</button></div>
 
-                    <div style="height: 20px"></div>
+                    <div style="height: 20px"></div>-->
         </div>
+
+        <script>
+            $(document).ready(function() {
+
+                var today = new Date();
+                var dd = String(today.getDate()).padStart(2, '0');
+                var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                var yyyy = today.getFullYear();
+                today = mm + '/' + dd + '/' + yyyy;
+                $('#dateToday').text(today);
+
+
+            })
+        </script>
     </body>
 </html>

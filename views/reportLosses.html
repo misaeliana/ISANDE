@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title> Report Losses </title>
-        <meta name="description" content="Report Losses">
-        <meta name="keyword" content="Moderna, Report Losses">
+        <title> Report Shrinkage </title>
+        <meta name="description" content="Report Shrinkage">
+        <meta name="keyword" content="Moderna, Report Shrinkage">
         <link rel="stylesheet" type="text/css" href="../public/css/general.css">
         <link rel="stylesheet" type="text/css" href="../public/css/list.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -11,6 +11,8 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
         
+        <link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     </head>
     <body>
 
@@ -34,15 +36,16 @@
 
         <div class="content">        
             <div class="fixed-div">
-                <h1 class="bold" style="padding-bottom: 15px;"> Report Losses </h1>
+                <h1 class="bold" style="padding-bottom: 15px;">Report Shrinkage</h1>
+                <h3 id="dateToday" style="float:right"></h3>
                 <div> 
                     <div class="search" style="width: 60%">
-                        <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control margin-bottom-10" id="itemCode" name="itemCode" placeholder="Item Code">
+                        <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control margin-bottom-10" id="itemCode" name="itemDescription" placeholder="Item Description">
                         <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control margin-bottom-10" id="qty" name="qty" placeholder="Qty">
                         <div style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="div-dropdown margin-bottom-10" style="width: 50%;">
                             <select class= "dropdown" id="dropdown-losses">
                                 <option value="all" selected>Damaged</option>
-                                <option value="volvo">Option 1</option>
+                                <option value="volvo">Lost</option>
                                 <option value="saab">Option 2</option>
                                 <option value="saab">Option 3</option>
                             </select>
@@ -59,7 +62,6 @@
                 <table class="table">
                     <thead class="table-head">
                         <tr>
-                            <th>Item Code</th>
                             <th>Item Description</th>
                             <th>Qty</th>
                             <th>Reason</th>
@@ -67,98 +69,7 @@
                         </tr>
                     </thead>
                     <tbody> 
-                        <!-- make rows clickable -->
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>john@example.com</td>
-                            <td>John</td>
-                            <td>Doe</td>
-                        </tr>
-                        <tr>
-                            <td>Mary</td>
-                            <td>Moe</td>
-                            <td>mary@example.com</td>
-                            <td>John</td>
-                            <td>Doe</td>
-                        </tr>
-                        <tr>
-                            <td>July</td>
-                            <td>Dooley</td>
-                            <td>july@example.com</td>
-                            <td>John</td>
-                            <td>Doe</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>john@example.com</td>
-                            <td>John</td>
-                            <td>Doe</td>
-                        </tr>
-                        <tr>
-                            <td>Mary</td>
-                            <td>Moe</td>
-                            <td>mary@example.com</td>
-                            <td>John</td>
-                            <td>Doe</td>
-                        </tr>
-                        <tr>
-                            <td>July</td>
-                            <td>Dooley</td>
-                            <td>july@example.com</td>
-                            <td>John</td>
-                            <td>Doe</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>john@example.com</td>
-                            <td>John</td>
-                            <td>Doe</td>
-                        </tr>
-                        <tr>
-                            <td>Mary</td>
-                            <td>Moe</td>
-                            <td>mary@example.com</td>
-                            <td>John</td>
-                            <td>Doe</td>
-                        </tr>
-                        <tr>
-                            <td>July</td>
-                            <td>Dooley</td>
-                            <td>july@example.com</td>
-                            <td>John</td>
-                            <td>Doe</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>john@example.com</td>
-                            <td>John</td>
-                            <td>Doe</td>
-                        </tr>
-                        <tr>
-                            <td>Mary</td>
-                            <td>Moe</td>
-                            <td>mary@example.com</td>
-                            <td>John</td>
-                            <td>Doe</td>
-                        </tr>
-                        <tr>
-                            <td>July</td>
-                            <td>Dooley</td>
-                            <td>july@example.com</td>
-                            <td>John</td>
-                            <td>Doe</td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>john@example.com</td>
-                            <td>John</td>
-                            <td>Doe</td>
-                        </tr>
+                    
                     </tbody>
                 </table>
 
@@ -166,5 +77,17 @@
 
             </div>
         </div>
+
+        <script>
+            $(document).ready(function() {
+                var today = new Date();
+                var dd = String(today.getDate()).padStart(2, '0');
+                var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                var yyyy = today.getFullYear();
+                today = mm + '/' + dd + '/' + yyyy;
+                $('#dateToday').text(today);
+
+            })
+        </script>
     </body>
 </html>
