@@ -15,7 +15,7 @@ var SuppliersSchema = new mongoose.Schema({
 	},
 
 	number: {
-		type: Number,
+		type: String,
 		required: true
 	},
 
@@ -29,7 +29,7 @@ var SuppliersSchema = new mongoose.Schema({
 		required: true
 	},
 
-	statusID: {
+	informationStatusID: {
 		type: String,
 		required: true
 	}

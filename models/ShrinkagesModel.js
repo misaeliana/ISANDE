@@ -2,14 +2,19 @@
 var mongoose = require('mongoose');
 
 // defines the schema for collection `users`
-var LossesSchema = new mongoose.Schema({
+var ShrinkagesSchema = new mongoose.Schema({
 
 	itemID: {
 		type: String,
 		required: true
 	},
 
-	quantity: {
+	systemCount: {
+		type: Number,
+		required: true
+	},
+
+	manualCount: {
 		type: Number,
 		required: true
 	},
@@ -18,7 +23,6 @@ var LossesSchema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
-
 
 	date: {
 		type: Date,
@@ -31,4 +35,4 @@ var LossesSchema = new mongoose.Schema({
 	}
 });
 
-module.exports = mongoose.model('Losses', LossesSchema);
+module.exports = mongoose.model('Shrinkages', ShrinkagesSchema);

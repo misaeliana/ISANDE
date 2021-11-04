@@ -9,25 +9,25 @@ var DeliveriesSchema = new mongoose.Schema({
 		required: true
 	},
 
-	customerID: {
-		type: String,
-		required: true
-	},
-
-	deliveryStatus: {
-		type: String,
-		required: true
-	},
-
-	employeeID: {
-		type: String,
-		required: true
-	},
-
-	dateDeliveredID: {
+	deliveryDate: {
 		type: Date,
 		required: true
 	},
+
+	dateDelivered: {
+		type: Date,
+		required: false
+	},
+
+	deliveryPersonnel: {
+		type: String,
+		required: true
+	},
+
+	deliveryNotes: {
+		type: String,
+		required: false
+	}
 });
 
 module.exports = mongoose.model('Deliveries', DeliveriesSchema);

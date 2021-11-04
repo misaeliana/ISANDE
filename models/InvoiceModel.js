@@ -4,6 +4,11 @@ var mongoose = require('mongoose');
 // defines the schema for collection `users`
 var InvoicesSchema = new mongoose.Schema({
 
+	invoiceID: {
+		type: String,
+		required: true
+	},
+	
 	customerID: {
 		type: String,
 		required: true
@@ -13,19 +18,24 @@ var InvoicesSchema = new mongoose.Schema({
 		type: Date,
 		required: true
 	},
-	
-	VAT: {
+
+	type: {
+		type: String,
+		required: true
+	},
+
+	status: {
 		type: String,
 		required: true
 	},
 	
-	discount: {
-		type: String,
+	subtotal: {
+		type: Number,
 		required: true
 	},
 	
-	total: {
-		type: String,
+	discountPercentage: {
+		type: Number,
 		required: true
 	},
 	

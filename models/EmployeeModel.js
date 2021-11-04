@@ -20,7 +20,7 @@ var EmployeesSchema = new mongoose.Schema({
 	},
 
 	number: {
-		type: Number,
+		type: String,
 		required: true
 	},
 
@@ -29,12 +29,12 @@ var EmployeesSchema = new mongoose.Schema({
 		required: true
 	}, 
 
-	employee_status: {
+	employeeStatusID: {
 		type: String,
 		required: true
 	},
 
-	information_status: {
+	informationStatusID: {
 		type: String,
 		required: true
 	}

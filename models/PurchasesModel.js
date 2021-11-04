@@ -14,17 +14,12 @@ var PurchasesSchema = new mongoose.Schema({
 		required: true
 	},
 
-	VAT: {
+	subtotal: {
 		type: Number,
 		required: true
 	},
 
-	discount: {
-		type: Number,
-		required: true
-	},
-
-	total: {
+	discountPercentage: {
 		type: Number,
 		required: true
 	},

@@ -14,12 +14,12 @@ var InvoicesItemsSchema = new mongoose.Schema({
 		required: true
 	},
 	
-	employeeID: {
+	quantity: {
 		type: String,
 		required: true
 	},
 	
-	quantity: {
+	discountPerentage: {
 		type: Number, 
 		required: true
 	}

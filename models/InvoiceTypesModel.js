@@ -2,12 +2,12 @@
 var mongoose = require('mongoose');
 
 // defines the schema for collection `users`
-var LossesReasonsSchema = new mongoose.Schema({
+var InvoiceTypesSchema = new mongoose.Schema({
 
-	reason: {
+	type: {
 		type: String,
 		required: true
 	}
 });
 
-module.exports = mongoose.model('LossesReasons', LossesReasonsSchema);
+module.exports = mongoose.model('InvoiceTypes', InvoiceTypeSchema);

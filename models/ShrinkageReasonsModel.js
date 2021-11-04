@@ -2,12 +2,12 @@
 var mongoose = require('mongoose');
 
 // defines the schema for collection `users`
-var EmployeeStatusesSchema = new mongoose.Schema({
+var ShrinkageReasonsSchema = new mongoose.Schema({
 
-	employee_status: {
+	reason: {
 		type: String,
 		required: true
 	}
 });
 
-module.exports = mongoose.model('EmployeeStatuses', EmployeeStatusesSchema);
+module.exports = mongoose.model('ShrinkageReasons', ShrinkageReasonsSchema);

@@ -10,7 +10,7 @@ var CustomersSchema = new mongoose.Schema({
 	},
 
 	number: {
-		type: Number,
+		type: String,
 		required: false
 	},
 
@@ -19,14 +19,9 @@ var CustomersSchema = new mongoose.Schema({
 		required: false
 	},
 
-	notes: {
+	informationStatusID: {
 		type: String,
-		required: false
-	},
-
-	statusID: {
-		type: Number,
-		required: false
+		required: true
 	}
 });
 
