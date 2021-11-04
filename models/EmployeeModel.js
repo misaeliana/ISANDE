@@ -27,6 +27,16 @@ var EmployeesSchema = new mongoose.Schema({
 	position: {
 		type: String,
 		required: true
+	}, 
+
+	employee_status: {
+		type: String,
+		required: true
+	},
+
+	information_status: {
+		type: String,
+		required: true
 	}
 });
 
