@@ -10,6 +10,7 @@
     background-color: #2F5D62;
     display: flex;
     align-items: center;
+    z-index: 1;
 }
 
 .navbar-logo {
