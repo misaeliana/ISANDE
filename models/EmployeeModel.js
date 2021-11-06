@@ -24,7 +24,7 @@ var EmployeesSchema = new mongoose.Schema({
 		required: true
 	},
 
-	position: {
+	positionID: {
 		type: String,
 		required: true
 	}, 

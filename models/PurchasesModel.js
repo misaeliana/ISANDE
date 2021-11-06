@@ -4,12 +4,22 @@ var mongoose = require('mongoose');
 // defines the schema for collection `users`
 var PurchasesSchema = new mongoose.Schema({
 
-	customerID: {
+	supplierID: {
+		type: String,
+		required: true
+	},
+
+	employeeID: {
 		type: String,
 		required: true
 	},
 
 	date: {
+		type: Date,
+		required: true
+	},
+
+	dateReceived: {
 		type: Date,
 		required: true
 	},
@@ -24,7 +34,7 @@ var PurchasesSchema = new mongoose.Schema({
 		required: true
 	},
 
-	employeeID: {
+	statusID: {
 		type: String,
 		required: true
 	}

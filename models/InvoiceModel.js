@@ -19,12 +19,12 @@ var InvoicesSchema = new mongoose.Schema({
 		required: true
 	},
 
-	type: {
+	typeID: {
 		type: String,
 		required: true
 	},
 
-	status: {
+	statusID: {
 		type: String,
 		required: true
 	},

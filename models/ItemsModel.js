@@ -34,15 +34,20 @@ var ItemsSchema = new mongoose.Schema({
 		required: true
 	},
 
-	price: {
+	sellingPrice: {
 		type: Number,
 		required: true
 	},
 
 	statusID: {
-		type: Number,
+		type: String,
 		required: true
-	}
+	},
+
+	informationStatusID: {
+		type: String,
+		required: true
+	},
 });
 
 module.exports = mongoose.model('Items', ItemsSchema);

@@ -9,7 +9,7 @@ var PurchasedStocksSchema = new mongoose.Schema({
 		required: true
 	},
 
-	stockID: {
+	itemID: {
 		type: String,
 		required: true
 	},
@@ -19,10 +19,15 @@ var PurchasedStocksSchema = new mongoose.Schema({
 		required: true
 	},
 
-	count: {
+	quantity: {
 		type: Number,
 		required: true
-	}
+	},
+
+	quantityReceived: {
+		type: Number,
+		required: true
+	},
 });
 
 module.exports = mongoose.model('PurchasedStocks', PurchasedStocksSchema);
