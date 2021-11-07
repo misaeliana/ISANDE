@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Customer Information </title>
+        <meta name="description" content="Customer Information">
+        <meta name="keyword" content="Moderna, Customer Information">
+        <link rel="stylesheet" type="text/css" href="../css/general.css">
+        <link rel="stylesheet" type="text/css" href="../css/information.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        
+    </head>
+    <body>
+
+        <!-- PARTIALS -->
+        <div id="navbar"> 
+            <div class="navbar-logo"> <img src="../public/images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
+            <div class="navbar-logout"> <a href= "login.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+                    <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                </svg>
+            </a>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <a href="#">Home</a>
+            <a href="#">Deliveries</a>
+            <a href="#">Customers</a>
+        </div>
+
+        <div class="content">
+            <br>
+            <p style="display: none" id="customerID">{{_id}}</p>
+            <h1 class="bold">{{name}}</h1> 
+            <hr>
+            <div style= "margin-top: 20px;">
+                <div>
+                    <div class="label-container">
+                        <div class="override-label">Contact Number</div> 
+                        <div class="label-content">{{number}}</div>
+                    </div>
+                    <div class="label-container">
+                        <div class="override-label">Address</div> 
+                        <div class="label-content">{{address}}</div>
+                    </div>
+                </div>
+
+                <div style="height: 10px"></div>
+                   
+                <div class="btn-edit-details"><button id="btn-edit-details" data-toggle="modal" data-target="#modal-edit-customer">Edit Details</button></div>
+                <div class="btn-delete-customer"><button id="btn-delete-customer" class="btn-red">Delete Customer</button></div>
+
+                 <!-- Modal -->
+                <div class="modal fade" id="modal-edit-customer" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="exampleModalLongTitle">Add Customer</h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="edit-customer">
+                                <label for="Customer-name">Customer Name</label> <input id="customer-name" type="text" value="{{name}}"><br>
+                                <p class="error" id="error-new-customer-name" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                                <label for="contact-number">Contact Number</label> <input id="contact-number" type="number" value="{{number}}"><br>
+                                <p class="error" id="error-contact-number" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                                <label for="address">Address</label> <input id="address" type="text" value="{{address}}"><br>
+                                <p class="error" id="error-address" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="btn-update-customer">Update Information</button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                <div style="height: 50px"></div>
+
+               <!-- <div class="label-big-container"> 
+                    <div class="label-wide">
+                        <div class="navbar-logo">Notes</div>
+                        <div class="notes-pencil">MAKE INTO A BUTTON-
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="label-wide-content"></div>
+                </div>--> 
+            </div>
+        </div>
+
+        <script>
+            $(document).ready(function() {
+
+                function capitalize(string){
+                    var words = string.toLowerCase().split(' ');
+                    for (i=0; i<words.length; i++)
+                        words[i] = words[i].charAt(0).toUpperCase() + words[i].substring(1);
+                    return words.join(' ');
+                };
+
+                $('#customer-name').keyup(function() {
+                    var name = capitalize($('#customer-name').val())
+                    $.get('/getCheckCustomerName', {name:name}, function(result) {
+                        if (result.name == name) {
+                            $('#customer-name').css("border", "1px solid #B00000");
+                            $('#error-new-customer-name').text("Customer information already exists");
+                            $('#btn-add-new-customer').prop('disasbled', true);
+                            $('#btn-add-new-customer').css("background-color", "#b3b3b3");
+                        }
+                        else {
+                            $("#customer-name").css("border", "1px solid #DDDDDD");
+                            $('#error-new-customer-name').text("");
+                            $('#btn-add-new-customer').prop('disasbled', false);
+                            $("#btn-add-new-customer").css("background-color", "#0F84D9");
+                        }
+                    })
+                })
+
+
+                function errorMessage(type) {
+                    if (type == "noName") {
+                        $('#customer-name').css("border", "1px solid #B00000");
+                        $('#error-new-customer-name').text("Please input customer name");
+                    } 
+                    else if (type == "noNumber") {
+                        $('#contact-number').css("border", "1px solid #B00000");
+                        $('#error-contact-number').text("Invalid conact number");
+                    }
+                    else if (type == "noAddress") {
+                        $('#address').css("border", "1px solid #B00000");
+                        $('#error-address').text("Input address");
+                    }
+                }
+
+                function customerNameValidation(name) {
+                    if (name == null || name == "") {
+                        errorMessage("noName")
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }   
+
+                function numberValidation(number) {
+                    if (number == 0 || number < 0) {
+                        errorMessage("noNumber")
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }     
+
+                function addressValidation(address) {
+                    if (address == null || address == "") {
+                        errorMessage("noAddress")
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }
+
+                $('#btn-update-customer').click(function() {
+                    var customerID = $('#customerID').text();
+
+                    var name = capitalize($('#customer-name').val());
+                    var number = $('#contact-number').val();
+                    var address = $('#address').val();
+
+                    if (!customerNameValidation(name) && !numberValidation(number) && !addressValidation(address)) {
+
+                            $('#customer-name').css("border", "1px solid #DDDDDD");
+                            $('#contact-number').css("border", "1px solid #DDDDDD");
+                            $('#address').css("border", "1px solid #DDDDDD");
+
+                            $('#error-new-customer-name').text("");
+                            $('#error-contact-number').text("");
+                            $('#error-address').text("");
+
+                            $.post('/postUpdateCustomerInformation', {customerID, name, number, address})
+                                $('#modal-edit-customer').modal('hide');
+                                $('#edit-customer').trigger('reset');
+                                alert("Succesfully updated customer information");
+                                location.reload()
+                    }
+                })
+
+                $('#btn-delete-customer').click(function() {
+                    var customerID = $('#customerID').text();
+                    if (confirm("Are you sure you want to delete this customer?")) {
+                        $.post('/deleteCustomer', {customerID});
+                        alert("Customer information was deleted");
+                        window.location.replace("/customerList")
+                    }
+                    else { }
+
+                })
+            })
+
+        </script>
+    </body>
+</html>
