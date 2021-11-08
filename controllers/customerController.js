@@ -39,7 +39,7 @@ const customerController = {
 	checkCustomerName: function(req, res) {
 		var name = req.query.name;
 
-		db.findMany(Customer, {name:name}, 'name', function(result) {	
+		db.findMany(Customer, {name:name, informationStatusID:"Active"}, 'name', function(result) {	
 			res.send(result[0]);
 		})
 	},
@@ -61,7 +61,7 @@ const customerController = {
 	deleteCustomer: function(req, res) {
 		var customerID = req.body.customerID;
 
-		db.updateOne(Customer, {_id: customerID}, {$set: {informationStatusID:"deleted"}}, function(flag){
+		db.updateOne(Customer, {_id: customerID}, {$set: {informationStatusID:"Deleted"}}, function(flag){
 			if (flag) { }
 		})
 	}

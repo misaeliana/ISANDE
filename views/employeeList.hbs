@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Employees </title>
+        <meta name="description" content="Customer List">
+        <meta name="keyword" content="Moderna, Customer List">
+        <link rel="stylesheet" type="text/css" href="../css/general.css">
+        <link rel="stylesheet" type="text/css" href="../css/list.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        
+    </head>
+    <body>
+
+        <!-- PARTIALS -->
+        <div id="navbar"> 
+            <div class="navbar-logo"> <img src="../public/images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
+            <div class="navbar-logout"> <a href= "login.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+                    <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                </svg>
+            </a>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <a href="#">Home</a>
+            <a href="#">Deliveries</a>
+            <a href="#">Customers</a>
+        </div>
+
+        <div class="content">
+             <div class="fixed-div">
+                <h1 class="bold" style="padding-bottom: 15px;"> Employees </h1>
+                <div> 
+                    <div class="search">
+                        <!--<form>  indicate action 
+                            <input type="text" placeholder="Search" name="search" id="search-field">
+                            <button type="submit" id="search-button"><i class="fa fa-search" ></i></button>
+                        </form>-->
+                        <input type="text" placeholder="Search" name="search" id="search-field">
+                    </div>
+                    <div class= "div-button-end">
+                        <div class="new-customer"><button id="btn-new-customer" class="btn btn-primary" data-toggle="modal" data-target="#modal-add-employee">+ New Employee</button></div>
+                    </div>
+                    <div style="height: 50px"></div>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="modal-add-employee" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="exampleModalLongTitle">Add Employee</h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="add-new-employee">
+                            <label for="employee-name">Employee Name</label> <input id="employee-name" type="text"><br>
+                            <p class="error" id="error-new-employee-name" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <label for="employee-username">Username</label> <input id="employee-username" type="text"><br>
+                            <p class="error" id="error-new-employee-username" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <label for="employee-password">Password</label> <input id="employee-password" type="text"><br>                            
+                            <p class="error" id="error-employee-password" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <label for="Contact-number">Contact Number</label> <input id="contact-number" type="number"><br>                            
+                            <p class="error" id="error-contact-number" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <label for="roler">Position</label> 
+                            <select class="dropdown" id="dropdown-employee-position">
+                                <option value="no-selected">--Select Position--</option>
+                                {{#each positions}}
+                                    <option value="{{_id}}">{{position}}</option>
+                                {{/each}}
+                            </select>
+                            <p class="error" id="error-employee-position" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <br>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="btn-add-new-employee">Add Employee</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+                
+                <table class="table">
+                    <thead class="table-head">
+                        <tr>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Contact Number</th>
+                        </tr>
+                    </thead>
+                    <tbody> 
+                        {{#each employees}}
+                            <tr class="link" style="cursor: pointer" data-href="/employee/{{employeeID}}">
+                                <td>{{name}}</td>
+                                <td>{{position}}</td>
+                                <td>{{number}}</td>
+                            </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <script>
+
+            $(document).ready(function() {
+
+                $(".link").click(function() {
+                    window.location = $(this).data("href");
+                });
+
+                function capitalize(string){
+                    var words = string.toLowerCase().split(' ');
+                    for (i=0; i<words.length; i++)
+                        words[i] = words[i].charAt(0).toUpperCase() + words[i].substring(1);
+                    return words.join(' ');
+                }
+
+                $('#employee-name').keyup(function() {
+                    var name = capitalize($('#employee-name').val())
+                    $.get('/getCheckEmployeeName', {name:name}, function(result) {
+                        if (result.name == name) {
+                            $('#employee-name').css("border", "1px solid #B00000");
+                            $('#error-new-employee-name').text("Employee information already exists");
+                            $('#btn-add-new-employee').prop('disasbled', true);
+                            $('#btn-add-new-employee').css("background-color", "#b3b3b3");
+                        }
+                        else {
+                            $("#employee-name").css("border", "1px solid #DDDDDD");
+                            $('#error-new-employee-username').text("");
+                            $('#btn-add-new-employee').prop('disasbled', false);
+                            $("#btn-add-new-employee").css("background-color", "#0F84D9");
+                        }
+                    })
+                })
+
+                $('#employee-username').keyup(function() {
+                    var username = capitalize($('#employee-username').val())
+                    $.get('/getCheckEmployeeUsername', {username:username}, function(result) {
+                        if (result.username == username) {
+                            $('#employee-username').css("border", "1px solid #B00000");
+                            $('#error-new-employee-name').text("Username is already taken");
+                            $('#btn-add-new-employee').prop('disasbled', true);
+                            $('#btn-add-new-employee').css("background-color", "#b3b3b3");
+                        }
+                        else {
+                            $("#employee-name").css("border", "1px solid #DDDDDD");
+                            $('#error-new-employee-name').text("");
+                            $('#btn-add-new-employee').prop('disasbled', false);
+                            $("#btn-add-new-employee").css("background-color", "#0F84D9");
+                        }
+                    })
+                })
+
+
+                function errorMessage(type) {
+                    if (type == "noName") {
+                        $('#employee-name').css("border", "1px solid #B00000");
+                        $('#error-new-employee-name').text("Please input employee name");
+                    } 
+                    else if (type == "noUsername") {
+                        $('#employee-username').css("border", "1px solid #B00000");
+                        $('#error-new-employee-username').text("Please input employee username");
+                    } 
+                    else if (type == "noNumber") {
+                        $('#contact-number').css("border", "1px solid #B00000");
+                        $('#error-contact-number').text("Invalid contact number");
+                    }
+                    else if (type == "noPosition") {
+                        $('#error-employee-position').text("Choose employee position");
+                    }
+                    
+                }
+
+                function employeeNameValidation(name) {
+                    if (name == null || name == "") {
+                        errorMessage("noName")
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }   
+
+                function employeeUsernameValidation(username) {
+                    if (username == null || username == "") {
+                        errorMessage("noUsername")
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }  
+
+                function numberValidation(number) {
+                    if (number == 0 || number < 0) {
+                        errorMessage("noNumber")
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }     
+
+                function positionValidation(position) {
+                    if (position == "no-selected") {
+                        errorMessage("noPosition")
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }
+
+
+                $('#btn-add-new-employee').click(function() {
+                    var name = capitalize($('#employee-name').val());
+                    var username = $('#employee-username').val();
+                    var password = $('#employee-password').val();
+                    var number = $('#contact-number').val();
+                    var position = $('#dropdown-employee-position').val()
+
+                    if (!employeeNameValidation(name) && !employeeUsernameValidation(username) && !numberValidation(number) && !positionValidation(position)) {
+
+                            $('#employee-name').css("border", "1px solid #DDDDDD");
+                            $('#employee-username').css("border", "1px solid #DDDDDD");
+                            $('#password').css("border", "1px solid #DDDDDD");
+                            $('#contact-number').css("border", "1px solid #DDDDDD");
+                            $('#position').css("border", "1px solid #DDDDDD");
+
+                            $('#error-new-employee-name').text("");
+                            $('#error-new-employee-username').text("");
+                            $('#error-employee-password').text("");
+                            $('#error-contact-number').text("");
+                            $('#error-employee-position').text("");
+
+                            $.post('/postEmployeeInformation', {name, username, password, number, position})
+                                $('#modal-add-employee').modal('hide');
+                                $('#add-new-employee').trigger('reset');
+
+                    }
+
+                })
+            })
+
+        </script>
+    </body>
+</html>

@@ -29,11 +29,6 @@ var EmployeesSchema = new mongoose.Schema({
 		required: true
 	}, 
 
-	employeeStatusID: {
-		type: String,
-		required: true
-	},
-
 	informationStatusID: {
 		type: String,
 		required: true
