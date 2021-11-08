@@ -43,46 +43,60 @@
             </div> 
             <hr>
 
+            <label for="dropdown-new-invoice-type" style="margin-right: 10px">Type</label>
+            <select class="dropdown" id="dropdown-new-invoice-type" style="margin-right: 10px">
+                <option value="all-type" selected>All</option>
+                    <option value="{{_id}}">{{ingredientType}}</option>
+            </select>
+            
+            <label class="date-label" for="delivery-date">Delivery Date</label>
+            <input style="height: 34px" type="date" id="delivery-date" name="delivery-date">
+
+            <label for="dropdown-payment-type" style="margin-right: 10px">Payment Type</label>
+            <select class="dropdown" id="dropdown-payment-type" style="margin-right: 10px">
+                <option value="all-type" selected>All</option>
+                    <option value="{{_id}}">{{ingredientType}}</option>
+            </select>
+
+            <label for="dropdown-delivery-personnel" style="margin-right: 10px">Delivery Personnel</label>
+            <select class="dropdown" id="dropdown-delivery-personnel" style="margin-right: 10px">
+                <option value="all-type" selected>All</option>
+                    <option value="{{_id}}">{{ingredientType}}</option>
+            </select>
+
             <div class="header-colored-bg" style="margin-top: 15px; margin-bottom: 10px">
                 <h3 class ="bold header-text">Customer Details</h3>
             </div>
 
+            <div>
+                <input style="margin-top: 15px;" type="text" class="form-control margin-bottom-10" id="customerName" name="customerName" placeholder="<Customer Name>">
+                <textarea class="form-control margin-bottom-10" id="address" name="address" placeholder="<Address>"></textarea> <!--style="display:none"-->
+                <input type="text" class="form-control margin-bottom-10" id="contactNumber" name="contactNumber" placeholder="<Contact Number>"> <!--style="display:none"-->
                 <div>
-                    <div class="label-container" style="margin-top: 10px">
-                        <div class="override-label"> Name </div> 
-                        <div class="label-content" id="return-name">  </div>
+                    <div>
+                        <textarea class="form-control" id="notes" name="notes" placeholder="<Delivery Notes>"></textarea>
                     </div>
-                    <div class="label-container">
-                        <div class="override-label"> Contact Number </div> 
-                        <div class="label-content" id="return-contact-number">  </div>
-                    </div>
-                    <div class="label-big-container" style="height: 120px"> 
-                        <div class="label-wide">
-                            <div class="navbar-logo">Address</div> 
-                        </div>
-                        <div class="label-wide-content" id="return-address"style="height: 70px"></div>
-                    </div>
-                    <div class="label-big-container" style="height: 140px"> 
-                        <div class="label-wide">
-                            <div class="navbar-logo">Notes</div> 
-                        </div>
-                        <div class="label-wide-content" id="return-notes"style="height: 100px"></div>
+                </div>
+            </div>
+
 
                 <div class="header-colored-bg" style="margin-top: 40px; margin-bottom: 10px">
                     <h3 class ="bold bold header-text">Order Details</h3>
                 </div>
                 
+                <h3 class ="bold">Return Items</h3>
 
                     <table class="table" id="table-return-order-details">
                         <thead style="background-color: #2F5D62; color: white">
                             <tr>
-                                <th>Item Code</th>
                                 <th>Item Description</th>
                                 <th>Qty</th>
                                 <th>Unit</th>
                                 <th>Unit Price</th>
+                                <th>Item Code</th>
                                 <th>Amount</th>
-                                <th></th>
+                                <th>Return</th>
+                                <th>Reason</th>
                             </tr>
                         </thead>
                         <tbody> 
@@ -94,7 +108,15 @@
                                 <td>Doe</td>
                                 <td>john@example.com</td>
                                 <td>
-                                    <button class="delete-button"><img src="../public/images/delete-icon.png" height="20px" width="15x" alt="Delete" id= "new-invoice-delete-table-row-btn"></button>
+                                    <input type="checkbox">
+                                </td>
+                                <td>
+                                    <select class= "dropdown" id="dropdown-return" style="height: 30px">
+                                        <option value="all" selected>Damaged</option>
+                                        <option value="volvo">Option 1</option>
+                                        <option value="saab">Option 2</option>
+                                        <option value="saab">Option 3</option>
+                                    </select>
                                 </td>
                             </tr>
                             <tr>
@@ -105,6 +127,7 @@
                                 <td>Doe</td>
                                 <td>john@example.com</td>
                                 <td></td>
+                                <td></td>
                             </tr>
                             <tr>
                                 <td>July</td>
@@ -114,58 +137,7 @@
                                 <td>Doe</td>
                                 <td>john@example.com</td>
                                 <td></td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <div class="display-flex" style="margin-top: 30px">
-                        <h3 class ="bold h3-left">Return Item</h3>
-                    </div>
-                    <hr style="margin-top: 0px; margin-bottom: 10px;">
-
-                    <form>
-                        <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="return-return-itemCode" name="return-return-itemCode" placeholder="Item Code">
-                        <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="return-return-qty" name="return-return-qty" placeholder="Qty">
-                        <div style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px;" type="text" class="div-dropdown margin-bottom-10" style="width: 50%;">
-                            <select class= "dropdown" id="dropdown-return-return">
-                                <option value="all" selected>Damaged</option>
-                                <option value="volvo">Option 1</option>
-                                <option value="saab">Option 2</option>
-                                <option value="saab">Option 3</option>
-                            </select>
-                        </div>
-                        <input style="margin-top: 5px; margin-bottom: 0px; float: left; height: 34px; width: 34px; background-color: #0F84D9; border: #0F84D9; border-radius: 7px; color: white;" type="button" id="addItem" name="addItem" value="+">
-                    </form>
-
-                    <div style="height: 45px"></div>
-
-                    <div id="div-warning-return-return-item">
-                        <p id="text-warning-return-return-item" style="color: red;">Warning text here</p>
-                    </div>
-
-                    <table class="table" id="table-return-return-item">
-                        <thead style="background-color: #2F5D62; color: white">
-                            <tr>
-                                <th>Item Code</th>
-                                <th>Item Description</th>
-                                <th>Qty</th>
-                                <th>Unit</th>
-                                <th>Unit Price</th>
-                                <th>Amount</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody> 
-                            <tr>
-                                <td>John</td>
-                                <td>Doe</td>
-                                <td>john@example.com</td>
-                                <td>John</td>
-                                <td>Doe</td>
-                                <td>john@example.com</td>
-                                <td>
-                                    <button class="delete-button"><img src="../public/images/delete-icon.png" height="20px" width="15x" alt="Delete" id= "new-invoice-delete-table-row-btn"></button>
-                                </td>
+                                <td></td>
                             </tr>
                         </tbody>
                     </table>
@@ -177,9 +149,9 @@
                     <hr style="margin-top: 0px; margin-bottom: 10px;">
 
                     <form>
-                        <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="return-add-item-itemCode" name="return-add-item-itemCode" placeholder="Item Code">
-                        <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="return-add-item-qty" name="return-add-item-qty" placeholder="Qty">
-                        <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="return-add-item-discount" name="return-add-item-discount" placeholder="Discount">
+                        <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="return-add-item-description" name="return-add-item-description" placeholder="Item Description">
+                        <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px; text-align: right;" type="text" class="form-control" id="return-add-item-qty" name="return-add-item-qty" placeholder="Qty">
+                        <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px; text-align: right;" type="text" class="form-control" id="return-add-item-discount" name="return-add-item-discount" placeholder="Discount">
                         <input style="margin-top: 5px; margin-bottom: 0px; float: left; height: 34px; width: 34px; background-color: #0F84D9; border: #0F84D9; border-radius: 7px; color: white;" type="button" id="return-add-item-addItem" name="return-add-item-addItem" value="+">
                     </form>
 
@@ -192,11 +164,11 @@
                     <table class="table" id="table-return-new-item">
                         <thead style="background-color: #2F5D62; color: white">
                             <tr>
-                                <th>Item Code</th>
                                 <th>Item Description</th>
                                 <th>Qty</th>
                                 <th>Unit</th>
                                 <th>Unit Price</th>
+                                <th>Discount</th>
                                 <th>Amount</th>
                                 <th></th>
                             </tr>
@@ -210,13 +182,13 @@
                                 <td>Doe</td>
                                 <td>john@example.com</td>
                                 <td>
-                                    <button class="delete-button"><img src="../public/images/delete-icon.png" height="20px" width="15x" alt="Delete" id= "new-invoice-delete-table-row-btn"></button>
+                                    <button class="delete-button"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete" id= "return-delete-table-row-btn"></button>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: right;" type="text" class="form-control margin-bottom-10" id="total-discount" name="discount" placeholder="Discount">
+                    <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: right; text-align: right;" type="text" class="form-control margin-bottom-10" id="total-discount" name="discount" placeholder="Discount">
 
                     <br> 
                     <br> 
@@ -230,7 +202,7 @@
                         <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
                     </div>
                     <div class="summary-container">    
-                        <div class="summary-text">Less: Discount</div>
+                        <div class="summary-text">Discount</div>
                         <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
                     </div>
                     <div class="summary-container">
@@ -253,13 +225,19 @@
                     </div>
 
                     <div class="summary-container">
-                        <div class="summary-text">Total Due</div>
+                        <div class="summary-text">Total</div>
                         <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
                     </div>
 
                     <div style="height: 10px"></div>
 
-                    <div class="btn-save-invoice"><button class="btn-light-blue" id="btn-save-invoice" style="margin-bottom: 10px;" >Save</button></div>
+                    <div>
+                        <div style="display: flex;">
+                            <div style="width: 50%"><div class="btn-cancel-invoice"><button class="btn-light-grey" id="btn-save-invoice" style="margin-bottom: 10px;">Cancel</button></div></div>
+                            <div class="btn-save-invoice btn-status"><button class="btn-light-blue" id="btn-save-invoice" style="margin-bottom: 10px;" >Save</button></div>
+                        </div>
+                    </div>
+
                     <div class="btn-export-invoice"><button class="btn-dark-blue" id="btn-export-invoice">Export</button></div>
 
                     <div style="height: 20px"></div>
