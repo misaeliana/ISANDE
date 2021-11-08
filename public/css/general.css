@@ -73,6 +73,15 @@
     height: 30px;
 }
 
+.btn-light-grey {
+    background-color: #f0efef;
+    width: 150px;
+    border-radius: 5px;
+    color: black;
+    border:  #cfcece;
+    height: 30px;
+}
+
 .btn-dark-blue {
     background-color: #42415B;
     width: 150px;

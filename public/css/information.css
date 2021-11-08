@@ -154,15 +154,17 @@
     float: left; 
     display: flex; 
     justify-content:flex-end;
+    text-align: end; 
 }
 
 .summary-info {
-    background-color: #d3d2d2; 
+    background-color: #e0e0e0; 
     width: 150px; 
     height: 30px;
     display: flex;
     align-items: center;
-    padding-left: 10px;
+    padding-right: 10px;
+    justify-content: right;
 }
 
 .margin-bottom-10 {

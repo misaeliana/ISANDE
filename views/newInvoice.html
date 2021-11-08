@@ -46,27 +46,38 @@
             </div> 
             <hr>
 
-            <div class="header-colored-bg">
+            <label for="dropdown-new-invoice-type" style="margin-right: 10px">Type</label>
+            <select class="dropdown" id="dropdown-new-invoice-type" style="margin-right: 10px">
+                <option value="all-type" selected>All</option>
+                    <option value="{{_id}}">{{ingredientType}}</option>
+            </select>
+            
+            <label class="date-label" for="delivery-date">Delivery Date</label>
+            <input style="height: 34px" type="date" id="delivery-date" name="delivery-date">
+
+            <label for="dropdown-payment-type" style="margin-right: 10px">Payment Type</label>
+            <select class="dropdown" id="dropdown-payment-type" style="margin-right: 10px">
+                <option value="all-type" selected>All</option>
+                    <option value="{{_id}}">{{ingredientType}}</option>
+            </select>
+
+            <label for="dropdown-delivery-personnel" style="margin-right: 10px">Delivery Personnel</label>
+            <select class="dropdown" id="dropdown-delivery-personnel" style="margin-right: 10px">
+                <option value="all-type" selected>All</option>
+                    <option value="{{_id}}">{{ingredientType}}</option>
+            </select>
+
+            <div class="header-colored-bg" style="margin-top: 20px;">
                 <h3 class ="bold header-text">Customer Details</h3>
             </div>
 
                 <div>
                     <input style="margin-top: 15px;" type="text" class="form-control margin-bottom-10" id="customerName" name="customerName" placeholder="Customer Name">
-                    <input type="text" class="form-control margin-bottom-10" id="address" name="address" placeholder="Address" style="display:none">
-                    <input type="text" class="form-control margin-bottom-10" id="contactNumber" name="contactNumber" placeholder="Contact Number" style="display:none">
-
+                    <textarea class="form-control margin-bottom-10" id="address" name="address" placeholder="Address"></textarea> <!--style="display:none"-->
+                    <input type="text" class="form-control margin-bottom-10" id="contactNumber" name="contactNumber" placeholder="Contact Number"> <!--style="display:none"-->
                     <div>
-                        <div style="    
-                            width: 15%; 
-                            float: left;
-                        ">
-                            <input type="radio" id="inStore" name="transaction" checked="checked">
-                            <label for="inStore">In-Store</label><br>
-                            <input type="radio" id="delivery" name="transaction">
-                            <label for="delivery">Delivery</label><br>
-                        </div>
                         <div>
-                            <textarea class="form-control" style="width: 85%; height: 68px; text-align: start;" id="notes" name="notes" placeholder="Notes"></textarea>
+                            <textarea class="form-control" id="notes" name="notes" placeholder="Delivery Notes"></textarea>
                         </div>
                     </div>
                 </div>
@@ -95,6 +106,7 @@
                                 <th>Qty</th>
                                 <th>Unit</th>
                                 <th>Unit Price</th>
+                                <th>Discount</th>
                                 <th>Amount</th>
                                 <th></th>
                             </tr>
@@ -103,31 +115,37 @@
                         </tbody>                     
                     </table>
 
-                    <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: right;" type="text" class="form-control margin-bottom-10" id="total-discount" name="discount" placeholder="Discount">
+                    <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: right; text-align: right;" type="text" class="form-control margin-bottom-10" id="total-discount" name="discount" placeholder="Discount">
 
                     <br> 
                     <br> 
                     <br> 
                     <div class="summary-container">
                         <div class="summary-text">Subtotal</div>
-                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
+                        <div class="summary-info-container"><div class="summary-info" style="text-align:right">P 200.00</div></div>
                     </div>
                     <div class="summary-container">
                         <div class="summary-text">VAT</div>
                         <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
                     </div>
                     <div class="summary-container">    
-                        <div class="summary-text">Less: Discount</div>
+                        <div class="summary-text">Discount</div>
                         <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
                     </div>
                     <div class="summary-container">
-                        <div class="summary-text">Total Due</div>
+                        <div class="summary-text">Total</div>
                         <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
                     </div>
 
                     <div style="height: 10px"></div>
 
-                    <div class="btn-save-invoice"><button class="btn-light-blue" id="btn-save-invoice" style="margin-bottom: 10px;" >Save</button></div>
+                    <div>
+                        <div style="display: flex;">
+                            <div style="width: 50%"><div class="btn-cancel-invoice"><button class="btn-light-grey" id="btn-save-invoice" style="margin-bottom: 10px;">Cancel</button></div></div>
+                            <div class="btn-save-invoice btn-status"><button class="btn-light-blue" id="btn-save-invoice" style="margin-bottom: 10px;" >Save</button></div>
+                        </div>
+                    </div>
+
                     <div class="btn-export-invoice"><button class="btn-dark-blue" id="btn-export-invoice">Export</button></div>
 
                     <div style="height: 20px"></div>
