@@ -42,34 +42,34 @@
                         <button type="submit" id="search-button"><i class="fa fa-search" ></i></button>
                         </form>
                     </div>
-                    <div class="div-dropdown" style="    display: flex; 
-                    justify-content: flex-start; width: 35%">
-                        <select class= "dropdown-list" id="dropdown-PO">
-                            <option value="all" selected>All</option>
-                            <option value="volvo">Option 1</option>
-                            <option value="saab">Option 2</option>
-                            <option value="saab">Option 3</option>
-                        </select>
-                    </div>
-                    <div class="div-dropdown" style=>
-                        <div class="btn-new-PO"><button id="btn-new-PO">+ New PO</button></div>
-                    </div>
-                    <div style="height: 50px"></div>
+                   
+                    <div class="btn-new-PO"><button id="btn-new-PO" style="float: right;">+ New PO</button></div>
+                    
                 </div>
+                
+                <br>
+
+                <label for="dropdown-inventory-status" style="margin-right: 10px">Type</label>
+                <select class="dropdown" id="dropdown-inventory-status" style="margin-right: 10px">
+                    <option value="all-type" selected>All</option>
+                        <option value="{{_id}}">{{ingredientType}}</option>
+                </select>
+
+                <div style="height: 20px"></div>
             </div>
-            <!-- try making this overflow scroll -->
+
                 <table class="table">
-                    <thead class="table-head">
+                    <thead class="table-head" style="top: 290px;">
                         <tr>
+                            <th>Date</th>
                             <th>PO</th>
-                            <th>Date Made</th>
                             <th>Supplier</th>
                             <th>Amount</th>
                             <th>Status</th>
                         </tr>
                     </thead>
                     <tbody> 
-                        <!-- make rows clickable -->
+                        <!-- align accordingly -->
                         <tr>
                             <td>John</td>
                             <td>Doe</td>

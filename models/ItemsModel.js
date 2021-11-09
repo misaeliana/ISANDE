@@ -10,7 +10,7 @@ var ItemsSchema = new mongoose.Schema({
 	},
 
 	categoryID: {
-		type: Date,
+		type: String,
 		required: true
 	},
 	

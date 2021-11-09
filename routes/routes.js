@@ -5,7 +5,9 @@ const router = express.Router();
 
 const customerController = require('../controllers/customerController.js');
 
-const employeeController = require('../controllers/employeeController.js')
+const employeeController = require('../controllers/employeeController.js');
+
+const inventoryController = require('../controllers/inventoryController.js');
 
 //--CUSTOMER--
 
@@ -38,6 +40,8 @@ router.post('/postUpdateEmployeeInformation', employeeController.postUpdateInfor
 
 router.post('/deleteEmployee', employeeController.deleteEmployee);
 
-
+//--INVENTORY--
+router.get('/inventory', inventoryController.getInventoryList);
+router.post('/postNewItem', inventoryController.postNewItem);
 
 module.exports = router;
