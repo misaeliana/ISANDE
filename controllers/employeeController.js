@@ -5,34 +5,11 @@ const Employees = require('../models/EmployeeModel.js');
 
 const EmployeePositions = require('../models/EmployeePositionsModel.js');
 
+require('../controllers/helpers.js')();
+
 const employeeController = {
 
 	getEmployeeList: function(req, res) {
-
-		function getAllPositions() {
-			return new Promise((resolve, reject) => {
-				db.findMany(EmployeePositions, {}, '_id position', function (result) {
-					resolve (result)
-				})
-			})
-		}
-
-		function getPositionName(positionID) {
-			return new Promise((resolve, reject) => {
-				db.findOne (EmployeePositions, {_id:positionID}, 'position', function(result) {
-					resolve(result.position)
-				})
-			})
-		}
-
-
-		function getEmployees() {
-			return new Promise((resolve, reject) => {
-				db.findMany(Employees, {informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name positionID number', function(result) {
-					resolve (result)
-				})
-			})
-		}
 
 		async function getInformation() {
 			var employees_temp = await getEmployees();
@@ -93,24 +70,9 @@ const employeeController = {
 	},
 
 	getViewEmployee: function(req, res) {
-		function getAllPositions() {
-			return new Promise((resolve, reject) => {
-				db.findMany(EmployeePositions, {}, '_id position', function (result) {
-					resolve (result)
-				})
-			})
-		}
-
-		function getEmployeeInfo(employeeID) {
-			return new Promise((resolve, reject) => {
-				db.findOne(Employees, {_id: req.params.employeeID}, '_id name username number position', function(result) {
-					resolve (result)
-				})
-			})
-		}
 
 		async function getInformation() {
-			var employeeInfo = await getEmployeeInfo()
+			var employeeInfo = await getEmployeeInfo(req.params.employeeID)
 			var positions = await getAllPositions()
 			res.render('employeeInformation', {employeeInfo, positions})
 		}
