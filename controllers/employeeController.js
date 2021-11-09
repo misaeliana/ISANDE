@@ -28,7 +28,7 @@ const employeeController = {
 
 		function getEmployees() {
 			return new Promise((resolve, reject) => {
-				db.findMany(Employees, {informationStatusID:"Active"}, 'name positionID number', function(result) {
+				db.findMany(Employees, {informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name positionID number', function(result) {
 					resolve (result)
 				})
 			})
@@ -77,7 +77,7 @@ const employeeController = {
 	checkEmployeeName: function(req, res) {
 		var name = req.query.name;
 
-		db.findMany(Employees, {name:name, informationStatusID:"Active"}, 'name', function(result) {	
+		db.findMany(Employees, {name:name, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name', function(result) {	
 			res.send(result[0]);
 		})
 
@@ -86,7 +86,7 @@ const employeeController = {
 	checkEmployeeUsername: function(req, res) {
 		var username = req.query.username;
 
-		db.findMany(Employees, {username:username, informationStatusID:"Active"}, 'username', function(result) {	
+		db.findMany(Employees, {username:username, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'username', function(result) {	
 			res.send(result[0]);
 		})
 
@@ -130,7 +130,7 @@ const employeeController = {
 	deleteEmployee: function(req, res) {
 		var employeeID = req.body.employeeID;
 
-		db.updateOne(Employees, {_id: employeeID}, {$set: {informationStatusID:"Deleted"}}, function(flag){
+		db.updateOne(Employees, {_id: employeeID}, {$set: {informationStatusID:"618a783cc8067bf46fbfd4e5"}}, function(flag){
 			if (flag) { }
 		})
 	}

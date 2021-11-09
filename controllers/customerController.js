@@ -6,7 +6,7 @@ const Customer = require('../models/CustomersModel.js');
 const customerController = {
 
 	getCustomerList: function(req, res) {
-		db.findMany(Customer, {}, 'name number address', function (result) {
+		db.findMany(Customer, {informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name number address', function (result) {
 			var customers = [];
 			for (var i=0; i<result.length; i++) {
 				if (result[i].informationStatusID == "active") {
@@ -39,13 +39,13 @@ const customerController = {
 	checkCustomerName: function(req, res) {
 		var name = req.query.name;
 
-		db.findMany(Customer, {name:name, informationStatusID:"Active"}, 'name', function(result) {	
+		db.findMany(Customer, {name:name, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name', function(result) {	
 			res.send(result[0]);
 		})
 	},
 
 	getViewCustomer: function(req, res) {
-		db.findOne(Customer, {_id: req.params.customerID}, 'name number address', function(result) {
+		db.findOne(Customer, {_id: req.params.customerID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name number address', function(result) {
 			res.render('customerInformation', result)
 		})
 	},
@@ -61,7 +61,7 @@ const customerController = {
 	deleteCustomer: function(req, res) {
 		var customerID = req.body.customerID;
 
-		db.updateOne(Customer, {_id: customerID}, {$set: {informationStatusID:"Deleted"}}, function(flag){
+		db.updateOne(Customer, {_id: customerID}, {$set: {informationStatusID:"618a783cc8067bf46fbfd4e5"}}, function(flag){
 			if (flag) { }
 		})
 	}

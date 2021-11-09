@@ -16,7 +16,7 @@
 
         <!-- PARTIALS -->
         <div id="navbar"> 
-            <div class="navbar-logo"> <img src="../public/images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
+            <div class="navbar-logo"> <img src="../images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
             <div class="navbar-logout"> <a href= "login.html">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
@@ -52,7 +52,6 @@
                 <div style="height: 10px"></div>
                    
                 <div class="btn-edit-details"><button id="btn-edit-details" data-toggle="modal" data-target="#modal-edit-customer">Edit Details</button></div>
-                <div class="btn-delete-customer"><button id="btn-delete-customer" class="btn-red">Delete Customer</button></div>
 
                  <!-- Modal -->
                 <div class="modal fade" id="modal-edit-customer" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -75,7 +74,7 @@
                             </form>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button id="btn-delete-customer" class="btn-red" style="float:left">Delete Employee</button>
                             <button type="button" class="btn btn-primary" id="btn-update-customer">Update Information</button>
                         </div>
                     </div>
