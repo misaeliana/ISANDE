@@ -43,7 +43,7 @@
                     </div>
                 </div>
             </div> 
-            <hr>
+            <hr style="margin-top: 0px;">
 
             <div class="header-colored-bg">
                 <h3 class ="bold header-text">Supplier Details</h3>
@@ -62,8 +62,7 @@
 
             <form>
                 <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="itemDescription" name="itemDescription" placeholder="Item Description">
-                <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="qty" name="qty" placeholder="Qty">
-                <!--<input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="unitPrice" name="unitPrice" placeholder="Unit Price">-->
+                <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px; text-align: right;" type="text" class="form-control" id="qty" name="qty" placeholder="Qty">
                 <input style="margin-top: 5px; margin-bottom: 0px; float: left; height: 34px; width: 34px; background-color: #0F84D9; border: #0F84D9; border-radius: 7px; color: white;" type="button" id="addItem" name="addItem" value="+">
             </form>
             
@@ -75,12 +74,11 @@
 
                     <table class="table">
                         <thead style="background-color: #2F5D62; color: white">
+                            <!--align columns accordingly-->
                             <tr>
                                 <th>Item Description</th>
                                 <th>Qty</th>
                                 <th>Unit</th>
-                                <!--<th>Unit Price</th>
-                                <th>Amount</th>-->
                                 <th></th>
                             </tr>
                         </thead>
@@ -89,34 +87,16 @@
                         </tbody>
                     </table>
 
-                    <!--<input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: right;" type="text" class="form-control margin-bottom-10" id="total-discount" name="discount" placeholder="Discount">-->
-
-                    <br> 
-                    <br> 
-                    <br> 
-                    <!--<div class="summary-container">
-                        <div class="summary-text">Subtotal</div>
-                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
-                    </div>
-                    <div class="summary-container">
-                        <div class="summary-text">VAT</div>
-                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
-                    </div>
-                    <div class="summary-container">    
-                        <div class="summary-text">Less: Discount</div>
-                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
-                    </div>
-                    <div class="summary-container">
-                        <div class="summary-text">Total Due</div>
-                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
+                    <div style="margin-top: 50px;">
+                        <div style="display: flex;">
+                            <div style="width: 50%"><div class="btn-cancel-invoice"><button class="btn-light-grey" id="btn-save-invoice" style="margin-bottom: 10px;">Cancel</button></div></div>
+                            <div class="btn-save-invoice btn-status"><button class="btn-light-blue" id="btn-save-invoice" style="margin-bottom: 10px;" >Save</button></div>
+                        </div>
                     </div>
 
-                    <div style="height: 10px"></div>
-
-                    <div class="btn-save-invoice"><button class="btn-light-blue" id="btn-save-invoice" style="margin-bottom: 10px;" >Save</button></div>
                     <div class="btn-export-invoice"><button class="btn-dark-blue" id="btn-export-invoice">Export</button></div>
 
-                    <div style="height: 20px"></div>-->
+                    
         </div>
 
         <script>

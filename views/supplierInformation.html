@@ -33,6 +33,7 @@
         </div>
 
         <div class="content">
+            <br>
             <h1 class="bold"> "Supplier Name" </h1> 
             <hr>
             <div style= "margin-top: 20px;">
@@ -50,11 +51,11 @@
                         <div class="label-content">  </div>
                     </div>
 
-                    <div class="label-big-container" style="height: 150px"> 
+                    <div class="label-big-container" style="height: 100px"> 
                         <div class="label-wide">
                             <div class="navbar-logo">Address</div>
                         </div>
-                        <div class="label-wide-content" style="height: 100px"></div>
+                        <div class="label-wide-content" style="height: 50px"></div>
                     </div> 
                 </div>
 
@@ -64,47 +65,26 @@
 
                 <div style="height: 20px"></div>
 
-                <div class="label-big-container"> 
-                    <div class="label-wide">
-                        <div class="navbar-logo">Notes</div>
-                        <div class="notes-pencil"> <!--MAKE INTO A BUTTON-->
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
-                                <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="label-wide-content"></div>
-                </div> 
-
             <hr>
 
             <div style="margin-top: 30px;">
                 <div class="display-flex" style="width: 50%; float: left;">
                     <h3 class ="bold h3-left">Items</h3>
                 </div>
-                <div style="display: flex; float: left; width: 50%; justify-content: flex-end"><button class="btn-light-blue" id="btn-supplier-new-item">+ New Item</button></div>
+                <div style="display: flex; float: left; width: 50%; justify-content: flex-end"><button class="btn-light-blue" id="btn-supplier-add-item">+ Add Item</button></div>
             </div>
 
             <table class="table" style="margin-top: 80px;">
                 <thead class="table-head">
                     <tr>
-                        <th>Item Code</th>
-                        <th>Item Description</th>
+                        <th>Description</th>
                         <th>Unit</th>
-                        <th>EOQ</th>
-                        <th>Reorder Level</th>
-                        <th></th>
                     </tr>
                 </thead>
                     <tbody> 
-                        <!-- make rows clickable -->
                         <tr>
                             <td>John</td>
                             <td>Doe</td>
-                            <td>john@example.com</td>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td><button class="edit-button"><img src="../public/images/pencil.png" height="15px" width="12x" alt="Delete" id= "supplier-info-edit-item-row-btn"></button></td>
                         </tr>
                 </tbody> 
             </table>          

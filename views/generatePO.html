@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Purchase Orders </title>
+        <meta name="description" content="Purchase Order List">
+        <meta name="keyword" content="Moderna, Purchase Order List">
+        <link rel="stylesheet" type="text/css" href="../public/css/general.css">
+        <link rel="stylesheet" type="text/css" href="../public/css/list.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        
+    </head>
+    <body>
+
+        <!-- PARTIALS -->
+        <div id="navbar"> 
+            <div class="navbar-logo"> <img src="../public/images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
+            <div class="navbar-logout"> <a href= "login.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+                    <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                </svg>
+            </a>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <a href="#">Home</a>
+            <a href="#">Deliveries</a>
+            <a href="#">Customers</a>
+        </div>
+
+        <div class="content">        
+            <div class="fixed-div">
+                <h1 class="bold" style="padding-bottom: 10px;"> Generate Purchase Order </h1>
+                <div> 
+                    <h3 class ="bold">Low Stock</h3>
+                    <div style="height: 10px"></div>
+                </div>
+            </div>
+
+                <table class="table">
+                    <thead class="table-head">
+                        <tr>
+                            <th>Item Description</th>
+                            <th>Quantity</th>
+                            <th>Unit</th>
+                            <th>Supplier</th>
+                        </tr>
+                    </thead>
+                    <tbody> 
+                        <!-- right align qty -->
+                        <tr>
+                            <td>John</td>
+                            <td><input style="width: 100px; height:30px; text-align: right;" type="text" class="form-control" id="return-add-item-qty" name="return-add-item-qty" placeholder="<EOQ??>"></td>
+                            <td>john@example.com</td>
+                            <td>
+                                <select class="dropdown" id="dropdown-category" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
+                                    <option value="all-type" selected>All</option>
+                                    {{#each inventoryTypes}}
+                                        <option value={{_id}}>{{type}}</option>
+                                    {{/each}}
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- idk why the generate button wont right align ahdjh i legit copy pasted from return lang smh -->
+              
+                <div>
+                    <div style="display: flex;">
+                        <div style="width: 50%"><div class="btn-cancel-invoice"><button class="btn-light-grey" id="btn-cancel-PO" style="margin-bottom: 10px;">Cancel</button></div></div>
+                        <div class="btn-status"><button class="btn-light-blue" id="btn-generate-PO" style="margin-bottom: 10px; float:right">Generate</button></div>
+                    </div>
+                </div>
+
+                <div style="height: 20px"></div>
+            </div>
+    </body>
+</html>
