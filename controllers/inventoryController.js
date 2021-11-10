@@ -1,13 +1,7 @@
 // import module `database` from `../models/db.js`
 const db = require('../models/db.js');
 
-const Items = require('../models/ItemsModel.js');
-
-const ItemStatuses = require('../models/ItemStatusModel.js');
-
-const InventoryTypes = require('../models/InventoryTypeModel.js');
-
-const Units = require('../models/UnitsModel.js');
+require('../controllers/helpers.js')();
 
 const inventoryController = {
 
@@ -37,28 +31,20 @@ const inventoryController = {
 			if (flag) { }
 		})*/
 
-		function getInventoryTypes() {
-			return new Promise((resolve, reject) => {
-				db.findMany(InventoryTypes, {}, '', function(result) {
-					resolve (result);
-				});
-			});
-		}
-
-		function getUnits() {
-			return new Promise((resolve, reject) => {
-				db.findMany(Units, {}, '', function(result) {
-					resolve (result);
-				});
-			});
-		}
-
 		async function getInformation() {
 			var inventoryTypes = await getInventoryTypes();
 			var units = await getUnits();
-			//console.log(inventoryTypes);
+			var itemStatuses = await getItemStatuses();
+			var inventoryItems = await getInventoryItems();
 
-			res.render('inventory', {inventoryTypes, units});
+			for (var i = 0; i < inventoryItems.length; i++) {
+				inventoryItems[i].unitID = await getSpecificUnit(inventoryItems[i].unitID);
+				inventoryItems[i].statusID = await getSpecificItemStatus(inventoryItems[i].statusID);
+			} 
+
+			console.log(inventoryItems);
+
+			res.render('inventory', {inventoryTypes, units, inventoryItems, itemStatuses});
 		}
 
 		getInformation();
@@ -79,8 +65,8 @@ const inventoryController = {
 			informationStatusID: "618a7830c8067bf46fbfd4e4"
 		};
 
-		db.insertOne(Items, item, function (flag) {
-			if (flag) { }
+		db.insertOneResult(Items, item, function (result) {
+			res.send(result);
 		});
 
 	}

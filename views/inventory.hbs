@@ -57,8 +57,8 @@
                 <label for="dropdown-inventory-status" style="margin-right: 10px">Status</label>
                 <select class="dropdown" id="dropdown-inventory-status" style="margin-right: 10px">
                     <option value="all-type" selected>All</option>
-                    {{#each units}}
-                        <option value={{_id}}>{{unit}}</option>
+                    {{#each itemStatuses}}
+                        <option value={{_id}}>{{status}}</option>
                     {{/each}}
                 </select>
             </div>
@@ -119,7 +119,7 @@
                 </div>
             </div>
 
-                <table class="table">
+                <table class="table" id="table-inventory">
                     <thead class="table-head" style="top: 290px;">
                         <tr>
                             <th>Item Description</th>
@@ -131,13 +131,16 @@
                     </thead>
                     <tbody> 
                         <!-- adjust alignment accordingly -->
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>john@example.com</td>
-                            <td>Doe</td>
-                            <td>john@example.com</td>
-                        </tr>
+                        {{#each inventoryItems}}
+                            <tr class="link" style="cursor: pointer" data-href="/inventory/{{_id}}">
+                                <td>{{itemDescription}}</td>
+                                <td style="text-align: right;">{{quantityAvailable}}</td>
+                                <td>{{unitID}}</td>
+                                <td style="text-align: right;">₱ {{sellingPrice}}</td>
+                                <td>{{statusID}}</td>
+                            </tr>
+                        {{/each}}
+                    
                     </tbody>
                 </table>
             </div>
@@ -146,6 +149,10 @@
           <script>
 
             $(document).ready(function() {
+
+                $(".link").click(function() {
+                    window.location = $(this).data("href");
+                });
 
                 function capitalize(string){
                     var words = string.toLowerCase().split(' ');
@@ -164,7 +171,26 @@
 
                     //alert(description + " " + category + " " + unit + " " + reorderLevel + " " + EOQ + " " + sellingPrice);
 
-                    $.post('/postNewItem', {description, category, unit, reorderLevel, EOQ, sellingPrice});
+                    $.post('/postNewItem', {description, category, unit, reorderLevel, EOQ, sellingPrice}, function (result) {
+                     /*
+                    <tr>
+                        <td>{{itemDescription}}</td>
+                        <td style="text-align: right;">{{quantityAvailable}}</td>
+                        <td>{{unitID}}</td>
+                        <td style="text-align: right;">₱ {{sellingPrice}}</td>
+                        <td>{{statusID}}</td>
+                    </tr>
+                    
+
+                    $('#table-inventory').find('tbody').append(
+                        `  <tr> 
+                                <td>${ingredientName}</td> 
+                                <td style="text-align:justify;">${ingredientQty}</td> 
+                                <td value="${ingredientUnitID}" style="text-align:justify;">${ingredientUnit}</td>
+                                <td> <button class="delete-button add-new-dish-delete-btn"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button> </td>
+                            </tr>`
+                    );*/
+                    })
                     $('#modal-new-item').modal('hide');
                     $('#add-new-item').trigger('reset');
                 })
