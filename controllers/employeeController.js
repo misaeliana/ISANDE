@@ -13,21 +13,21 @@ const employeeController = {
 
 		async function getInformation() {
 			var employees_temp = await getEmployees();
-			var employees = []
+			var employees = [];
 			for (var i=0; i<employees_temp.length; i++) {
-				var positionName = await getPositionName(employees_temp[i].positionID)
+				var positionName = await getPositionName(employees_temp[i].positionID);
 				var employee = {
 					employeeID: employees_temp[i]._id,
 					name: employees_temp[i].name,
 					position: positionName, 
 					number:employees_temp[i].number
-				}
+				};
 				employees.push(employee);
 			}
 
 			var positions = await getAllPositions();
 
-			res.render('employeeList', {positions, employees})
+			res.render('employeeList', {positions, employees});
 		}
 
 		getInformation();
@@ -43,11 +43,11 @@ const employeeController = {
 			positionID: req.body.position,
 			employeeStatusID: "Active",
 			informationStatusID: "Active"
-		}
+		};
 
 		db.insertOne(Employees, employee, function (flag) {
 			if (flag) { }
-		})
+		});
 
 	},
 
@@ -56,7 +56,7 @@ const employeeController = {
 
 		db.findMany(Employees, {name:name, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name', function(result) {	
 			res.send(result[0]);
-		})
+		});
 
 	},
 
@@ -65,16 +65,16 @@ const employeeController = {
 
 		db.findMany(Employees, {username:username, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'username', function(result) {	
 			res.send(result[0]);
-		})
+		});
 
 	},
 
 	getViewEmployee: function(req, res) {
 
 		async function getInformation() {
-			var employeeInfo = await getEmployeeInfo(req.params.employeeID)
-			var positions = await getAllPositions()
-			res.render('employeeInformation', {employeeInfo, positions})
+			var employeeInfo = await getEmployeeInfo(req.params.employeeID);
+			var positions = await getAllPositions();
+			res.render('employeeInformation', {employeeInfo, positions});
 		}
 
 		getInformation();
@@ -86,7 +86,7 @@ const employeeController = {
 
 		db.updateOne(Employees, {_id:employeeID}, {$set: {name:req.body.name, username:req.body.username, password:req.body.password, number:req.body.number, position:req.body.position}}, function(flag) {
 			if (flag) { }
-		})
+		});
 	},
 
 	deleteEmployee: function(req, res) {
@@ -94,8 +94,8 @@ const employeeController = {
 
 		db.updateOne(Employees, {_id: employeeID}, {$set: {informationStatusID:"618a783cc8067bf46fbfd4e5"}}, function(flag){
 			if (flag) { }
-		})
+		});
 	}
-}
+};
 
 module.exports = employeeController;

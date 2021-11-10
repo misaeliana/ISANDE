@@ -164,10 +164,9 @@
 
                     //alert(description + " " + category + " " + unit + " " + reorderLevel + " " + EOQ + " " + sellingPrice);
 
-                    $.post('/postNewItem', {description, category, unit, reorderLevel, EOQ, sellingPrice})
-                        $('#modal-new-item').modal('hide');
-                        $('#add-new-item').trigger('reset');
-                    })
+                    $.post('/postNewItem', {description, category, unit, reorderLevel, EOQ, sellingPrice});
+                    $('#modal-new-item').modal('hide');
+                    $('#add-new-item').trigger('reset');
                 })
             })
 
