@@ -1,6 +1,8 @@
 // import module `database` from `../models/db.js`
 const db = require('../models/db.js');
 
+const Items = require('../models/ItemsModel.js');
+
 require('../controllers/helpers.js')();
 
 const inventoryController = {
@@ -36,23 +38,48 @@ const inventoryController = {
 			var units = await getUnits();
 			var itemStatuses = await getItemStatuses();
 			var inventoryItems = await getInventoryItems();
+			var inventory = [];
 
 			for (var i = 0; i < inventoryItems.length; i++) {
-				inventoryItems[i].unitID = await getSpecificUnit(inventoryItems[i].unitID);
-				inventoryItems[i].statusID = await getSpecificItemStatus(inventoryItems[i].statusID);
+				// update status here
+
+				if (inventoryItems[i].informationStatusID == "618a7830c8067bf46fbfd4e4") {
+					var textStatus = await getSpecificItemStatus(inventoryItems[i].statusID);
+					var btnStatus;
+	
+					if (textStatus == "Low Stock") 
+						btnStatus = "low";
+					else if (textStatus == "In Stock")
+						btnStatus = "in";
+	
+					// check information status
+	
+					var item = {
+						_id: inventoryItems[i]._id,
+						itemDescription: inventoryItems[i].itemDescription,
+						categoryID: inventoryItems[i].categoryID,
+						category: await getSpecificInventoryType(inventoryItems[i].categoryID),
+						unit: await getSpecificUnit(inventoryItems[i].unitID),
+						quantityAvailable: inventoryItems[i].quantityAvailable,
+						sellingPrice: inventoryItems[i].sellingPrice,
+						statusID: inventoryItems[i].statusID,
+						status: textStatus,
+						btn_status: btnStatus
+					};
+	
+					inventory.push(item);
+				}
 			} 
 
-			console.log(inventoryItems);
+			console.log(inventory);
 
-			res.render('inventory', {inventoryTypes, units, inventoryItems, itemStatuses});
+			res.render('inventory', {inventoryTypes, units, inventory, itemStatuses});
 		}
 
 		getInformation();
 	},
 
 	postNewItem: function(req, res) {
-		console.log(req.body.description);
-
 		var item = {
 			itemDescription: req.body.description,
 			categoryID: req.body.category,
@@ -66,7 +93,20 @@ const inventoryController = {
 		};
 
 		db.insertOneResult(Items, item, function (result) {
-			res.send(result);
+			console.log(result);
+			var updatedItem = {
+				_id: result._id,
+				itemDescription: result.itemDescription,
+				categoryID: result.categoryID,
+				category: req.body.categoryText,
+				unit: req.body.unitText,
+				quantityAvailable: result.quantityAvailable,
+				sellingPrice: result.sellingPrice,
+				statusID: result.statusID
+			};
+			console.log(updatedItem);
+
+			res.send(updatedItem);
 		});
 
 	}

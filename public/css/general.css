@@ -73,6 +73,23 @@
     height: 30px;
 }
 
+.btn-status {
+    width: 100px;
+    border-radius: 15px;
+    color: white;
+    height: 25px;
+}
+
+.btn-low {
+    background-color: #F2A154;
+    border:  #F2A154;
+}
+
+.btn-in {
+    background-color: #55B66A;
+    border:  #55B66A;
+}
+
 .btn-light-grey {
     background-color: #f0efef;
     width: 150px;

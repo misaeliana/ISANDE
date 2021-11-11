@@ -39,7 +39,7 @@
                     <div class="search">
                         <form> 
                         <input type="text" placeholder="Search" name="search" id="search-field">
-                        <button type="submit" id="search-button"><i class="fa fa-search" ></i></button>
+                        <!--<button type="submit" id="search-button"><i class="fa fa-search" ></i></button>-->
                         </form>
                     </div>
                     <div><button class="btn-light-blue" id="btn-new-item" style="float: right;" data-toggle="modal" data-target="#modal-new-item">+ New Item</button></div>
@@ -50,7 +50,7 @@
                 <select class="dropdown" id="dropdown-inventory-type" style="margin-right: 10px">
                     <option value="all-type" selected>All</option>
                     {{#each inventoryTypes}}
-                                    <option value={{_id}}>{{type}}</option>
+                        <option value={{_id}}>{{type}}</option>
                     {{/each}}
                 </select>
 
@@ -118,11 +118,12 @@
                 </div>
                 </div>
             </div>
-
+                
                 <table class="table" id="table-inventory">
                     <thead class="table-head" style="top: 290px;">
                         <tr>
                             <th>Item Description</th>
+                            <th>Category</th>
                             <th>Quantity</th>
                             <th>Unit</th>
                             <th>Selling Price</th>
@@ -131,13 +132,14 @@
                     </thead>
                     <tbody> 
                         <!-- adjust alignment accordingly -->
-                        {{#each inventoryItems}}
+                        {{#each inventory}}
                             <tr class="link" style="cursor: pointer" data-href="/inventory/{{_id}}">
                                 <td>{{itemDescription}}</td>
+                                <td value="{{categoryID}}" class="category-id">{{category}}</td>
                                 <td style="text-align: right;">{{quantityAvailable}}</td>
-                                <td>{{unitID}}</td>
+                                <td>{{unit}}</td>
                                 <td style="text-align: right;">₱ {{sellingPrice}}</td>
-                                <td>{{statusID}}</td>
+                                <td><button class="btn-status btn-{{btn_status}} status-id" value="{{statusID}}">{{status}}</button></td>
                             </tr>
                         {{/each}}
                     
@@ -161,36 +163,58 @@
                     return words.join(' ');
                 }
 
+                $('#search-field').keyup(function() {
+                    $('#table-inventory tr').show();
+                    var searchItem = $(this).val().toLowerCase();
+                 
+                    $('#table-inventory > tbody > tr').each(function(index) {
+                        var description = $(this).children('td:first').text().toLowerCase();
+
+                        if (!description.includes(searchItem))
+                            $(this).toggle();
+                    })
+                })
+
+                // does not work yet
+                $('#dropdown-inventory-type').change(function() {
+                    $('#table-inventory tr').show();
+                    var filter = $('#dropdown-inventory-type option:selected').text()
+                    
+                    $('#table-view-inventory > tbody > tr').each(function(index) {
+                        var typeID = $(this).children('.category-id').text()
+                        if (filter != statusID && filter!="all-type")
+                            $(this).toggle();
+                    })
+                })
+
                 $('#btn-add-new-item').click(function() {
                     var description = capitalize($('#description').val());
                     var category = $('#dropdown-category').val();
+                    var categoryText = $('#dropdown-category option:selected').text();
                     var unit = $('#dropdown-unit').val();
+                    var unitText = $('#dropdown-unit option:selected').text();
                     var reorderLevel = $('#reorder-level').val();
                     var EOQ = $('#EOQ').val();
                     var sellingPrice = $('#selling-price').val();
 
                     //alert(description + " " + category + " " + unit + " " + reorderLevel + " " + EOQ + " " + sellingPrice);
 
-                    $.post('/postNewItem', {description, category, unit, reorderLevel, EOQ, sellingPrice}, function (result) {
-                     /*
-                    <tr>
-                        <td>{{itemDescription}}</td>
-                        <td style="text-align: right;">{{quantityAvailable}}</td>
-                        <td>{{unitID}}</td>
-                        <td style="text-align: right;">₱ {{sellingPrice}}</td>
-                        <td>{{statusID}}</td>
-                    </tr>
-                    
+                    // save word in other ID
 
-                    $('#table-inventory').find('tbody').append(
-                        `  <tr> 
-                                <td>${ingredientName}</td> 
-                                <td style="text-align:justify;">${ingredientQty}</td> 
-                                <td value="${ingredientUnitID}" style="text-align:justify;">${ingredientUnit}</td>
-                                <td> <button class="delete-button add-new-dish-delete-btn"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button> </td>
-                            </tr>`
-                    );*/
+                    $.post('/postNewItem', {description, category, categoryText, unit, unitText, reorderLevel, EOQ, sellingPrice}, function (updatedItem) {
+
+                        $('#table-inventory').find('tbody').append(
+                            `  <tr class="link" style="cursor: pointer" data-href="/inventory/${updatedItem._id}"> 
+                                    <td>${updatedItem.itemDescription}</td> 
+                                    <td value="${updatedItem.categoryID}" class="category-id">${updatedItem.category}</td>
+                                    <td style="text-align: right;">${updatedItem.quantityAvailable}</td> 
+                                    <td>${updatedItem.unit}</td> 
+                                    <td style="text-align: right;">₱ ${updatedItem.sellingPrice}</td> 
+                                    <td><button class="btn-status btn-low status-id" value="${updatedItem.statusID}">Low Stock</button></td>
+                                </tr>`
+                        );
                     })
+
                     $('#modal-new-item').modal('hide');
                     $('#add-new-item').trigger('reset');
                 })

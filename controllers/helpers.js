@@ -54,6 +54,14 @@ module.exports = function() {
 		});
 	},
 
+	this.getSpecificInventoryType = function(inventoryTypeID) {
+		return new Promise((resolve, reject) => {
+			db.findOne(InventoryTypes, {_id:inventoryTypeID}, 'type', function(result) {
+				resolve (result.type);
+			});
+		});
+	},
+
 	this.getInventoryItems = function() {
 		return new Promise((resolve, reject) => {
 			db.findMany(Items, {}, '', function(result) {
