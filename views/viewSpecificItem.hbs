@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> View Specific Item </title>
+        <meta name="description" content="View Specific Item">
+        <meta name="keyword" content="Moderna, View Specific Item">
+        <link rel="stylesheet" type="text/css" href="../css/general.css">
+        <link rel="stylesheet" type="text/css" href="../css/information.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        
+    </head>
+    <body>
+
+        <!-- PARTIALS -->
+        <div id="navbar"> 
+            <div class="navbar-logo"> <img src="../images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
+            <div class="navbar-logout"> <a href= "login.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+                    <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                </svg>
+            </a>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <a href="#">Home</a>
+            <a href="#">Deliveries</a>
+            <a href="#">Customers</a>
+        </div>
+
+        <div class="content">
+            <div>
+                <div style="display: flex;">
+                    <div style="width: 50%"><h1 class="bold">{{itemInfo.itemDescription}}</h1></div>
+                    <p id="item-description" style="display: none;">{{itemInfo._id}}</p>
+                    <div class="btn-status">
+                        <div style="margin-top: 40px; text-align: center;"><button class="btn-status btn-{{itemInfo.btn_status}}" style="width: 100px; display: inline-block;">{{itemInfo.status}}</button></div>
+                    </div>
+                </div>
+            </div> 
+            <hr style="margin-top: 0px;">
+
+            <div>
+                <table style="width: 100%;">
+                    <th>
+                        <div>
+                            <div class="div-number">{{itemInfo.quantityAvailable}}</div>
+                            <div class="div-number-label">Available</div>
+                        </div>
+                    </th>
+                    <th>
+                        <div>
+                            <div class="div-number">{{itemInfo.reorderLevel}}</div>
+                            <div class="div-number-label">Reorder Level</div>
+                        </div>
+                    </th>
+                    <th>
+                        <div>
+                            <div class="div-number">{{itemInfo.EOQ}}</div>
+                            <div class="div-number-label">EOQ </div>
+                        </div>
+                    </th>
+                    <th>
+                        <div>
+                            <div class="div-number">to be fixed</div>
+                            <div class="div-number-label">To Be Received</div>
+                        </div>
+                    </th>
+                </table>
+            </div>
+
+            <div style="margin-top: 20px;">
+                    <div class="label-container">
+                        <div class="override-label">Category</div> 
+                        <div class="label-content">{{itemInfo.category}}</div>
+                    </div>
+                    <div class="label-container">
+                        <div class="override-label">Quantity</div> 
+                        <div class="label-content">{{itemInfo.quantityAvailable}}</div>
+                    </div>
+                    <div class="label-container">
+                        <div class="override-label">Unit</div> 
+                        <div class="label-content">{{itemInfo.unit}}</div>
+                    </div>
+                    <div class="label-container">
+                        <div class="override-label">Selling Price</div> 
+                        <div class="label-content">₱ {{itemInfo.sellingPrice}}</div>
+                    </div>
+            </div> 
+            <div style="height: 20px"></div>
+
+            <div><button class="btn-light-blue" id="btn-edit-details" style="float: right;" data-toggle="modal" data-target="#modal-edit-item">Edit Details</button></div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="modal-edit-item" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="exampleModalLongTitle">Edit Item</h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="add-new-item">
+                            <label for="description">Description</label> <input id="description" type="text" value="{{itemInfo.itemDescription}}"><br>
+                            <p class="error" id="error-description" style="margin-top: 3px; margin-bottom: 3px;"></p>
+
+                            <!--MAKE IT CURRENT CATEGORY & UNIT-->
+                            <label for="dropdown-category" style="margin-right: 10px">Type</label>
+                            <select class="dropdown" id="dropdown-category" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
+                                <option value="all-type" selected>All</option>
+                                {{#each inventoryTypes}}
+                                    <option value={{_id}}>{{type}}</option>
+                                {{/each}}
+                            </select>
+
+                            <br>
+
+                            <label for="dropdown-unit" style="margin-right: 10px">Unit</label>
+                            <select class="dropdown" id="dropdown-unit" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
+                                <option value="all-type" selected>All</option>
+                                {{#each units}}
+                                    <option value={{_id}}>{{unit}}</option>
+                                {{/each}}
+                            </select>
+
+                             <br>
+
+                            <label for="reorder-level">Reorder Level</label> <input id="reorder-level" type="number" value="{{itemInfo.reorderLevel}}"><br>
+                            <p class="error" id="error-reorder-level" style="margin-top: 3px; margin-bottom: 3px;"></p>
+
+                            <label for="EOQ">EOQ</label> <input id="EOQ" type="number" value="{{itemInfo.EOQ}}"><br>
+                            <p class="error" id="error-EOQ" style="margin-top: 3px; margin-bottom: 3px;"></p>
+
+                            <label for="selling-price">Selling Price</label> <input id="selling-price" type="number" value="{{itemInfo.sellingPrice}}"><br>
+                            <p class="error" id="error-selling-price" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="btn-add-new-item">Save</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 50px;">
+                <div style="display: flex;">
+                    <div style="width: 50%"><h3 class ="bold">Suppliers</h3></div>
+
+                    <div class="btn-status"><button class="btn-light-blue" id="btn-add-supplier" style="float: right;">+ Add Supplier</button></div>
+                </div>
+            </div>
+          
+
+            <table class="table">
+                <thead class="table-regular-head" >
+                    <tr>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody> 
+                    <tr>
+                        <td>Name</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+         <script>
+            $(document).ready(function() {
+                $('#btn-edit-details').click(function() {
+                    var itemID = $('#item-description').text());
+                })
+            })
+        </script>
+    </body>
+</html>

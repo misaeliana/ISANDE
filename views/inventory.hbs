@@ -175,14 +175,26 @@
                     })
                 })
 
-                // does not work yet
                 $('#dropdown-inventory-type').change(function() {
                     $('#table-inventory tr').show();
-                    var filter = $('#dropdown-inventory-type option:selected').text()
+                    var filter = $('#dropdown-inventory-type option:selected').text();
                     
-                    $('#table-view-inventory > tbody > tr').each(function(index) {
-                        var typeID = $(this).children('.category-id').text()
-                        if (filter != statusID && filter!="all-type")
+                    $('#table-inventory > tbody > tr').each(function(index) {
+                        var category = $(this).children('.category-id').text();
+
+                        if (filter != category && filter!="All")
+                            $(this).toggle();
+                    })
+                })
+
+                $('#dropdown-inventory-status').change(function() {
+                    $('#table-inventory tr').show();
+                    var filter = $('#dropdown-inventory-status option:selected').text();
+                    
+                    $('#table-inventory > tbody > tr').each(function(index) {
+                        var status = $(this).children('td:nth-child(6)').text();
+                        alert(status);
+                        if (filter != status && filter!="All")
                             $(this).toggle();
                     })
                 })
@@ -196,9 +208,7 @@
                     var reorderLevel = $('#reorder-level').val();
                     var EOQ = $('#EOQ').val();
                     var sellingPrice = $('#selling-price').val();
-
-                    //alert(description + " " + category + " " + unit + " " + reorderLevel + " " + EOQ + " " + sellingPrice);
-
+                    
                     // save word in other ID
 
                     $.post('/postNewItem', {description, category, categoryText, unit, unitText, reorderLevel, EOQ, sellingPrice}, function (updatedItem) {
@@ -208,7 +218,7 @@
                                     <td>${updatedItem.itemDescription}</td> 
                                     <td value="${updatedItem.categoryID}" class="category-id">${updatedItem.category}</td>
                                     <td style="text-align: right;">${updatedItem.quantityAvailable}</td> 
-                                    <td>${updatedItem.unit}</td> 
+                                    <td class="unit-id">${updatedItem.unit}</td> 
                                     <td style="text-align: right;">₱ ${updatedItem.sellingPrice}</td> 
                                     <td><button class="btn-status btn-low status-id" value="${updatedItem.statusID}">Low Stock</button></td>
                                 </tr>`

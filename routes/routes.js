@@ -42,6 +42,9 @@ router.post('/deleteEmployee', employeeController.deleteEmployee);
 
 //--INVENTORY--
 router.get('/inventory', inventoryController.getInventoryList);
+
 router.post('/postNewItem', inventoryController.postNewItem);
+
+router.get('/inventory/:itemID', inventoryController.getViewItem);
 
 module.exports = router;

@@ -109,6 +109,45 @@ const inventoryController = {
 			res.send(updatedItem);
 		});
 
+	},
+
+	getViewItem: function(req, res) {
+
+		async function getInformation() {
+			//var employeeInfo = await getEmployeeInfo(req.params.employeeID);
+			//var positions = await getAllPositions();
+
+			var item = await getSpecificInventoryItems(req.params.itemID);
+
+			var textStatus = await getSpecificItemStatus(item.statusID);
+			var btnStatus;
+	
+			if (textStatus == "Low Stock") 
+				btnStatus = "low";
+			else if (textStatus == "In Stock")
+				btnStatus = "in";
+
+			var itemInfo = {
+				_id: item._id,
+				itemDescription: item.itemDescription,
+				//categoryID: item.categoryID,
+				category: await getSpecificInventoryType(item.categoryID),
+				unitID: item.unitID,
+				unit: await getSpecificUnit(item.unitID),
+				quantityAvailable: item.quantityAvailable,
+				EOQ: item.EOQ,
+				reorderLevel: item.reorderLevel,
+				sellingPrice: item.sellingPrice,
+				statusID: item.statusID,
+				status: textStatus,
+				btn_status: btnStatus
+			};
+
+			res.render('viewSpecificItem', {itemInfo});
+		}
+
+		getInformation();
+		
 	}
 };
 

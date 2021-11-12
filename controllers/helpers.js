@@ -70,6 +70,14 @@ module.exports = function() {
 		});
 	},
 
+	this.getSpecificInventoryItems = function(itemID) {
+		return new Promise((resolve, reject) => {
+			db.findOne(Items, {_id: itemID}, '', function(result) {
+				resolve (result);
+			});
+		});
+	},
+
 	this.getUnits = function() {
 		return new Promise((resolve, reject) => {
 			db.findMany(Units, {}, '', function(result) {
