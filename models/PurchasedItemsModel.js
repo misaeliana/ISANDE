@@ -2,7 +2,7 @@
 var mongoose = require('mongoose');
 
 // defines the schema for collection `users`
-var PurchasedStocksSchema = new mongoose.Schema({
+var PurchasedItemsSchema = new mongoose.Schema({
 
 	purchaseOrderID: {
 		type: String,
@@ -16,7 +16,7 @@ var PurchasedStocksSchema = new mongoose.Schema({
 
 	price: {
 		type: Number,
-		required: true
+		required: false
 	},
 
 	quantity: {
@@ -26,8 +26,8 @@ var PurchasedStocksSchema = new mongoose.Schema({
 
 	quantityReceived: {
 		type: Number,
-		required: true
+		required: false
 	},
 });
 
-module.exports = mongoose.model('PurchasedStocks', PurchasedStocksSchema);
+module.exports = mongoose.model('PurchasedItems', PurchasedItemsSchema);

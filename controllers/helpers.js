@@ -13,6 +13,9 @@ const ItemStatuses = require('../models/ItemStatusModel.js');
 
 const Units = require('../models/UnitsModel.js');
 
+const PurchaseOrderStatus = require('../models/PurchaseOrderStatusModel.js');
+
+
 module.exports = function() {
 	this.getAllPositions = function() {
 		return new Promise((resolve, reject) => {
@@ -108,5 +111,37 @@ module.exports = function() {
 				resolve (result.status);
 			});
 		});
+	},
+
+	this.getItemID = function(itemDescription) {
+		return new Promise((resolve, reject) => {
+			db.findOne(Items, {itemDescription:itemDescription}, '_id', function(result) {
+				resolve(result._id);
+			})
+		})
+	},
+
+	this.getItemDescription = function(itemID) {
+		return new Promise((resolve, reject) => {
+			db.findOne(Items, {_id:itemID}, 'itemDescription', function(result) {
+				resolve(result.itemDescription);
+			})
+		})
+	},
+
+	this.getPurchaseOrderStatus = function(statusID) {
+		return new Promise((resolve, reject) => {
+			db.findOne(PurchaseOrderStatus, {_id: statusID}, 'purchaseOrderStatus', function(result) {
+				resolve (result.purchaseOrderStatus);
+			})
+		})
+	},
+
+	this.getAllPurchaseOrderStatus = function() {
+		return new Promise((resolve, reject) => {
+			db.findMany(PurchaseOrderStatus, {}, 'purchaseOrderStatus', function(result) {
+				resolve(result)
+			})
+		})
 	}
 };

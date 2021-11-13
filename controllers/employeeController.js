@@ -5,7 +5,7 @@ const Employees = require('../models/EmployeeModel.js');
 
 const EmployeePositions = require('../models/EmployeePositionsModel.js');
 
-require('../controllers/helpers.js')();
+require('../controllers/helpers.js');
 
 const employeeController = {
 

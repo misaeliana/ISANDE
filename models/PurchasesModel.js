@@ -21,17 +21,17 @@ var PurchasesSchema = new mongoose.Schema({
 
 	dateReceived: {
 		type: Date,
-		required: true
+		required: false
 	},
 
 	subtotal: {
 		type: Number,
-		required: true
+		required: false
 	},
 
 	discountPercentage: {
 		type: Number,
-		required: true
+		required: false
 	},
 
 	statusID: {

@@ -9,6 +9,8 @@ const employeeController = require('../controllers/employeeController.js');
 
 const inventoryController = require('../controllers/inventoryController.js');
 
+const purchaseOrderController = require('../controllers/purchaseOrderController.js');
+
 //--CUSTOMER--
 
 router.get('/customerList', customerController.getCustomerList);
@@ -40,11 +42,25 @@ router.post('/postUpdateEmployeeInformation', employeeController.postUpdateInfor
 
 router.post('/deleteEmployee', employeeController.deleteEmployee);
 
+
 //--INVENTORY--
 router.get('/inventory', inventoryController.getInventoryList);
 
 router.post('/postNewItem', inventoryController.postNewItem);
 
 router.get('/inventory/:itemID', inventoryController.getViewItem);
+
+
+//--PURCHASE ORDER--
+router.get('/purchaseOrderList', purchaseOrderController.getPurchaseOrderList);
+
+router.get('/newPurchaseOrder', purchaseOrderController.getCreateNewPurchaseOrder);
+
+router.get('/getItemNamePO', purchaseOrderController.getItems);
+
+router.post('/saveNewPO', purchaseOrderController.saveNewPO);
+
+router.get('/purchaseOrder/:poID', purchaseOrderController.getPurchaseOrder);
+
 
 module.exports = router;
