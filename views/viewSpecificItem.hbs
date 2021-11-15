@@ -36,9 +36,10 @@
             <div>
                 <div style="display: flex;">
                     <div style="width: 50%"><h1 class="bold">{{itemInfo.itemDescription}}</h1></div>
-                    <p id="item-description" style="display: none;">{{itemInfo._id}}</p>
+                    <p id="item-ID" style="display: none;">{{itemInfo._id}}</p>
                     <div class="btn-status">
                         <div style="margin-top: 40px; text-align: center;"><button class="btn-status btn-{{itemInfo.btn_status}}" style="width: 100px; display: inline-block;">{{itemInfo.status}}</button></div>
+                        <p id="item-status-ID" style="display: none;">{{itemInfo.statusID}}</p>
                     </div>
                 </div>
             </div> 
@@ -77,10 +78,11 @@
                     <div class="label-container">
                         <div class="override-label">Category</div> 
                         <div class="label-content">{{itemInfo.category}}</div>
+                        <p id="item-category-ID" style="display: none;">{{itemInfo.categoryID}}</p>
                     </div>
                     <div class="label-container">
                         <div class="override-label">Quantity</div> 
-                        <div class="label-content">{{itemInfo.quantityAvailable}}</div>
+                        <div class="label-content" id="item-quantity">{{itemInfo.quantityAvailable}}</div>
                     </div>
                     <div class="label-container">
                         <div class="override-label">Unit</div> 
@@ -106,7 +108,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form id="add-new-item">
+                        <form id="edit-item">
                             <label for="description">Description</label> <input id="description" type="text" value="{{itemInfo.itemDescription}}"><br>
                             <p class="error" id="error-description" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
@@ -115,7 +117,7 @@
                             <select class="dropdown" id="dropdown-category" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
                                 <option value="all-type" selected>All</option>
                                 {{#each inventoryTypes}}
-                                    <option value={{_id}}>{{type}}</option>
+                                        <option value={{_id}}>{{type}}</option>
                                 {{/each}}
                             </select>
 
@@ -143,7 +145,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="btn-add-new-item">Save</button>
+                        <button type="button" class="btn btn-primary" id="btn-edit-item">Save</button>
                     </div>
                 </div>
                 </div>
@@ -173,8 +175,44 @@
         </div>
          <script>
             $(document).ready(function() {
+                function capitalize(string){
+                    var words = string.toLowerCase().split(' ');
+                    for (i=0; i<words.length; i++)
+                        words[i] = words[i].charAt(0).toUpperCase() + words[i].substring(1);
+                    
+                    return words.join(' ');
+                }
+
                 $('#btn-edit-details').click(function() {
-                    var itemID = $('#item-description').text());
+                    //var itemID = $('#item-description').text());
+                })
+
+                $('#btn-edit-item').click(function() {
+                    var itemID = $('#item-ID').text();
+                    var description = capitalize($('#description').val());
+                    var category = $('#dropdown-category').val();
+                    var unit = $('#dropdown-unit').val();
+                    var quantity = $('#item-quantity').text();
+                    var EOQ = $('#EOQ').val();
+                    var reorderLevel = $('#reorder-level').val();
+                    var sellingPrice = $('#selling-price').val();
+                    var itemStatusID = $('#item-status-ID').text();
+
+                    var categoryText = $('#dropdown-category option:selected').text();
+                    var unitText = $('#dropdown-unit option:selected').text();
+
+                    // update page 
+                    $.ajax({
+                            url: "/postUpdateItemInformation",              
+                            type: "POST",
+                            data: {itemID, description, category, unit, quantity, EOQ, reorderLevel, sellingPrice, itemStatusID},
+                            async: false,
+                            success: function(result){
+                                    $('#modal-edit-item').modal('hide');
+                                    $('#edit-item').trigger('reset');
+                                    window.location.assign('/inventory/' + result._id);
+                            }
+                    }); 
                 })
             })
         </script>

@@ -15,6 +15,8 @@ const Units = require('../models/UnitsModel.js');
 
 const PurchaseOrderStatus = require('../models/PurchaseOrderStatusModel.js');
 
+const InformationStatus = require('../models/InformationStatusModel.js');
+
 
 module.exports = function() {
 	this.getAllPositions = function() {
@@ -105,6 +107,22 @@ module.exports = function() {
 		});
 	},
 
+	this.getSpecificItemStatusID = function(itemStatus) {
+		return new Promise((resolve, reject) => {
+			db.findOne(ItemStatuses, {status: itemStatus}, '_id', function(result) {
+				resolve (result._id);
+			});
+		});
+	}
+
+	this.changeItemInformationStatus = function(itemID, infoStatusID) {
+		return new Promise((resolve, reject) => {
+			db.updateOne(Items, {_id: itemID}, {$set: {informationStatusID: infoStatusID}}, function(flag) {
+				resolve (flag);
+			});
+		});
+	},
+
 	this.getSpecificItemStatus = function(itemStatusID) {
 		return new Promise((resolve, reject) => {
 			db.findOne(ItemStatuses, {_id:itemStatusID}, 'status', function(result) {
@@ -117,31 +135,39 @@ module.exports = function() {
 		return new Promise((resolve, reject) => {
 			db.findOne(Items, {itemDescription:itemDescription}, '_id', function(result) {
 				resolve(result._id);
-			})
-		})
+			});
+		});
 	},
 
 	this.getItemDescription = function(itemID) {
 		return new Promise((resolve, reject) => {
 			db.findOne(Items, {_id:itemID}, 'itemDescription', function(result) {
 				resolve(result.itemDescription);
-			})
-		})
+			});
+		});
 	},
 
 	this.getPurchaseOrderStatus = function(statusID) {
 		return new Promise((resolve, reject) => {
 			db.findOne(PurchaseOrderStatus, {_id: statusID}, 'purchaseOrderStatus', function(result) {
 				resolve (result.purchaseOrderStatus);
-			})
-		})
+			});
+		});
 	},
 
 	this.getAllPurchaseOrderStatus = function() {
 		return new Promise((resolve, reject) => {
 			db.findMany(PurchaseOrderStatus, {}, 'purchaseOrderStatus', function(result) {
-				resolve(result)
-			})
-		})
+				resolve(result);
+			});
+		});
+	},
+
+	this.getInformationStatus = function(infoStatus) {
+		return new Promise((resolve, reject) => {
+			db.findOne(InformationStatus, {informationStatus: infoStatus}, '_id', function(result) {
+				resolve (result._id);
+			});
+		});
 	}
 };

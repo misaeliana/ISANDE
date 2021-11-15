@@ -50,6 +50,8 @@ router.post('/postNewItem', inventoryController.postNewItem);
 
 router.get('/inventory/:itemID', inventoryController.getViewItem);
 
+router.post('/postUpdateItemInformation', inventoryController.postUpdateItemInformation);
+
 
 //--PURCHASE ORDER--
 router.get('/purchaseOrderList', purchaseOrderController.getPurchaseOrderList);

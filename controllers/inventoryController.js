@@ -71,8 +71,6 @@ const inventoryController = {
 				}
 			} 
 
-			console.log(inventory);
-
 			res.render('inventory', {inventoryTypes, units, inventory, itemStatuses});
 		}
 
@@ -93,7 +91,7 @@ const inventoryController = {
 		};
 
 		db.insertOneResult(Items, item, function (result) {
-			console.log(result);
+
 			var updatedItem = {
 				_id: result._id,
 				itemDescription: result.itemDescription,
@@ -104,7 +102,6 @@ const inventoryController = {
 				sellingPrice: result.sellingPrice,
 				statusID: result.statusID
 			};
-			console.log(updatedItem);
 
 			res.send(updatedItem);
 		});
@@ -114,8 +111,8 @@ const inventoryController = {
 	getViewItem: function(req, res) {
 
 		async function getInformation() {
-			//var employeeInfo = await getEmployeeInfo(req.params.employeeID);
-			//var positions = await getAllPositions();
+			var inventoryTypes = await getInventoryTypes();
+			var units = await getUnits();
 
 			var item = await getSpecificInventoryItems(req.params.itemID);
 
@@ -130,7 +127,7 @@ const inventoryController = {
 			var itemInfo = {
 				_id: item._id,
 				itemDescription: item.itemDescription,
-				//categoryID: item.categoryID,
+				categoryID: item.categoryID,
 				category: await getSpecificInventoryType(item.categoryID),
 				unitID: item.unitID,
 				unit: await getSpecificUnit(item.unitID),
@@ -143,11 +140,53 @@ const inventoryController = {
 				btn_status: btnStatus
 			};
 
-			res.render('viewSpecificItem', {itemInfo});
+			res.render('viewSpecificItem', {itemInfo, inventoryTypes, units});
 		}
 
 		getInformation();
 		
+	},
+
+	postUpdateItemInformation: function(req, res) {
+
+		async function updateItemInfo() {
+			var deleteID = await getInformationStatus("Deleted");
+
+			// change current _id status to deleted
+			await changeItemInformationStatus(req.body.itemID, deleteID);
+
+			// get id statuses
+			var lowStockID = await getSpecificItemStatusID("Low Stock");
+			var inStockID = await getSpecificItemStatusID("In Stock");
+
+			var updatedItem = {
+				itemDescription: req.body.description,
+				categoryID: req.body.category,
+				unitID: req.body.unit,
+				quantityAvailable: parseFloat(req.body.quantity),
+				EOQ: parseFloat(req.body.EOQ),
+				reorderLevel: parseFloat(req.body.reorderLevel),
+				sellingPrice: parseFloat(req.body.sellingPrice),
+				statusID: req.body.itemStatusID,
+				informationStatusID: await getInformationStatus("Active")
+			};
+
+			// check if status is correct, if not, change
+			if ((updatedItem.quantityAvailable > updatedItem.reorderLevel) && (updatedItem.statusID == lowStockID))
+				updatedItem.statusID = inStockID;
+			else if ((updatedItem.quantityAvailable <= updatedItem.reorderLevel) && (updatedItem.statusID == inStockID))
+				updatedItem.statusID = lowStockID;
+
+			// save updated item
+			db.insertOneResult(Items, updatedItem, function (result) {
+	
+				res.send(result);
+			});
+		}
+
+
+
+		updateItemInfo();
 	}
 };
 
