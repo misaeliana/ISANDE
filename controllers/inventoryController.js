@@ -77,6 +77,22 @@ const inventoryController = {
 		getInformation();
 	},
 
+	getCheckItemDescription: function(req, res) {
+		var description = req.query.itemDescription;
+		
+		async function checkDescription() {
+			var deleteID = await getInformationStatus("Active");
+
+			// Look for name
+			db.findOne(Items, {itemDescription: description, informationStatusID: deleteID}, 'itemDescription', function (result) {
+                
+                res.send(result);
+            });
+		}
+
+		checkDescription();
+    },
+
 	postNewItem: function(req, res) {
 		var item = {
 			itemDescription: req.body.description,

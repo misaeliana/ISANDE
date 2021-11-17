@@ -103,7 +103,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h3 class="modal-title" id="exampleModalLongTitle">Edit Item</h3>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close" data-dismiss="modal" a ria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -115,23 +115,21 @@
                             <!--MAKE IT CURRENT CATEGORY & UNIT-->
                             <label for="dropdown-category" style="margin-right: 10px">Type</label>
                             <select class="dropdown" id="dropdown-category" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
-                                <option value="all-type" selected>All</option>
+                                <option value="no-selected" selected>Select Type</option>
                                 {{#each inventoryTypes}}
                                         <option value={{_id}}>{{type}}</option>
                                 {{/each}}
                             </select>
-
-                            <br>
+                            <p class="error" id="error-category" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
                             <label for="dropdown-unit" style="margin-right: 10px">Unit</label>
                             <select class="dropdown" id="dropdown-unit" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
-                                <option value="all-type" selected>All</option>
+                                <option value="no-selected" selected>Select Unit</option>
                                 {{#each units}}
                                     <option value={{_id}}>{{unit}}</option>
                                 {{/each}}
                             </select>
-
-                             <br>
+                            <p class="error" id="error-unit" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
                             <label for="reorder-level">Reorder Level</label> <input id="reorder-level" type="number" value="{{itemInfo.reorderLevel}}"><br>
                             <p class="error" id="error-reorder-level" style="margin-top: 3px; margin-bottom: 3px;"></p>
@@ -183,9 +181,162 @@
                     return words.join(' ');
                 }
 
-                $('#btn-edit-details').click(function() {
-                    //var itemID = $('#item-description').text());
+                // INPUT VALIDATION
+
+                function descriptionValidation(description) {
+                    if (description == null || description == "") {
+                        errorMessage("description");
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }
+
+                function typeValidation(type) {
+                    if (type == "no-selected") {
+                        errorMessage("type");
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }
+
+                function unitValidation(unit) {
+                    if (unit == "no-selected") {
+                        errorMessage("unit");
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }
+
+                function reorderLevelValidation(reorderLevel) { 
+                    if (reorderLevel == null || reorderLevel == "") {
+                        errorMessage("reorderLevel");
+                        return 1;
+                    } else if (parseFloat(reorderLevel) <= 0) {
+                        errorMessage("reorderLevelInvalidNum");
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }
+
+                function EOQValidation(EOQ) { 
+                    if (EOQ == null || EOQ == "") {
+                        errorMessage("EOQ");
+                        return 1;
+                    } else if (parseFloat(EOQ) <= 0) {
+                        errorMessage("EOQInvalidNum");
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }
+
+                function sellingPriceValidation(price) {
+                    if (price == null || price == "") {
+                        errorMessage("sellingPrice");
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }
+
+                function errorMessage(type) {
+                    if (type == "description") {
+                        $("#description").css("border", "1px solid #B00000");
+                        $("#error-description").text("Please enter an Item Description.");
+                    } else if (type == "type") {
+                        $("#dropdown-category").css("border", "1px solid #B00000");
+                        $("#error-category").text("Please select a Type.");
+                    } else if (type == "unit") {
+                        $("#dropdown-unit").css("border", "1px solid #B00000");
+                        $("#error-unit").text("Please select a Unit.");
+                    } else if (type == "reorderLevel") {
+                        $("#reorder-level").css("border", "1px solid #B00000");
+                        $("#error-reorder-level").text("Please enter a Reorder Level.");
+                    } else if (type == "reorderLevelInvalidNum") {
+                        $("#reorder-level").css("border", "1px solid #B00000");
+                        $("#error-reorder-level").text("Invalid Reorder Level.");
+                    } else if (type == "EOQ") {
+                        $("#EOQ").css("border", "1px solid #B00000");
+                        $("#error-EOQ").text("Please enter an EOQ.");
+                    } else if (type == "EOQInvalidNum") {
+                        $("#EOQ").css("border", "1px solid #B00000");
+                        $("#error-EOQ").text("Invalid EOQ.");
+                    } else if (type == "sellingPrice") {
+                        $("#selling-price").css("border", "1px solid #B00000");
+                        $("#error-selling-price").text("Please enter a Selling Price.");
+                    } 
+                }
+
+                function resetErrorMessage() {
+                    $("#description").css("border", "1px solid #DDDDDD");
+                    $("#error-description").text("");
+                    $("#dropdown-category").css("border", "1px solid #DDDDDD");
+                    $("#error-category").text("");
+                    $("#dropdown-unit").css("border", "1px solid #DDDDDD");
+                    $("#error-unit").text("");
+                    $("#reorder-level").css("border", "1px solid #DDDDDD");
+                    $("#error-reorder-level").text("");
+                    $("#EOQ").css("border", "1px solid #DDDDDD");
+                    $("#error-EOQ").text("");
+                    $("#selling-price").css("border", "1px solid #DDDDDD");
+                    $("#error-selling-price").text("");
+                }
+
+                $('#description').keyup(function () { 
+                    resetErrorMessage();
+
+                    // Get value 
+                     var description = capitalize($('#description').val());
+                     var itemID = $('#item-ID').text();
+
+                    // Check if dish name exists 
+                    $.get("/getCheckItemDescription", {itemDescription: description}, function (result) {
+                        if (result.itemDescription == description && result._id != itemID) {
+                            $("#description").css("border", "1px solid #B00000");
+                            $("#error-description").text("Item Description already taken.");
+                            $("#btn-edit-item").prop("disabled", true);
+                            $("#btn-edit-item").css("background-color", "#b3b3b3");
+                        } else {
+                            $("#description").css("border", "1px solid #DDDDDD");
+                            $("#error-description").text("");
+                            $("#btn-edit-item").prop("disabled", false);
+                            $("#btn-edit-item").css("background-color", "#0F84D9");
+                        }
+                    });
+                });
+
+                $('#dropdown-category').change(function() {
+                    resetErrorMessage();
                 })
+
+                $('#dropdown-unit').change(function() {
+                    resetErrorMessage();
+                })
+
+                $('#reorder-level').keyup(function () { 
+                    resetErrorMessage();
+                });
+
+                $('#EOQ').keyup(function () { 
+                    resetErrorMessage();
+                });
+
+                $('#selling-price').keyup(function () { 
+                    resetErrorMessage();
+                });
+
+                function checkAll(description, category, unit, reorderLevel, EOQ, sellingPrice) {
+                    descriptionValidation(description);
+                    typeValidation(category);
+                    unitValidation(unit);
+                    reorderLevelValidation(reorderLevel);
+                    EOQValidation(EOQ);
+                    sellingPriceValidation(sellingPrice);
+                }
 
                 $('#btn-edit-item').click(function() {
                     var itemID = $('#item-ID').text();
@@ -201,18 +352,26 @@
                     var categoryText = $('#dropdown-category option:selected').text();
                     var unitText = $('#dropdown-unit option:selected').text();
 
-                    // update page 
-                    $.ajax({
-                            url: "/postUpdateItemInformation",              
-                            type: "POST",
-                            data: {itemID, description, category, unit, quantity, EOQ, reorderLevel, sellingPrice, itemStatusID},
-                            async: false,
-                            success: function(result){
+                    checkAll(description, category, unit, reorderLevel, EOQ, sellingPrice);
+
+                    if (!descriptionValidation(description) && !typeValidation(category) && !unitValidation(unit) && !reorderLevelValidation(reorderLevel) && !EOQValidation(EOQ)  && !sellingPriceValidation(sellingPrice)) {
+
+                        // remove texts and red borders
+                        resetErrorMessage();
+                        
+                        // update page 
+                        $.ajax({
+                                url: "/postUpdateItemInformation",              
+                                type: "POST",
+                                data: {itemID, description, category, unit, quantity, EOQ, reorderLevel, sellingPrice, itemStatusID},
+                                async: false,
+                                success: function(result){
                                     $('#modal-edit-item').modal('hide');
                                     $('#edit-item').trigger('reset');
                                     window.location.assign('/inventory/' + result._id);
-                            }
-                    }); 
+                                }
+                        }); 
+                      }
                 })
             })
         </script>
