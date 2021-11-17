@@ -56,6 +56,8 @@ router.post('/postUpdateItemInformation', inventoryController.postUpdateItemInfo
 
 router.post('/postAddItemSupplier', inventoryController.postAddItemSupplier);
 
+router.get('/editItemSuppliers/:itemID', inventoryController.editItemSuppliers);
+
 
 //--PURCHASE ORDER--
 router.get('/purchaseOrderList', purchaseOrderController.getPurchaseOrderList);

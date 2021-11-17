@@ -149,7 +149,7 @@
                 </div>
             </div>
 
-            <!-- Modal -->
+            <!-- Modal 
             <div class="modal fade" id="modal-add-supplier" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
@@ -177,13 +177,15 @@
                     </div>
                 </div>
                 </div>
-            </div>
+            </div> -->
 
             <div style="margin-top: 50px;">
                 <div style="display: flex;">
                     <div style="width: 50%"><h3 class ="bold">Suppliers</h3></div>
 
-                    <div class="btn-status"><button class="btn-light-blue" id="btn-add-supplier" style="float: right;" data-toggle="modal" data-target="#modal-add-supplier">+ Add Supplier</button></div>
+                    <form action="/editItemSuppliers/{{itemInfo._id}}" style="float: right;" class="btn-status">
+                        <div class="btn-status"><button class="btn-light-blue" id="btn-edit-supplier" style=" width: 150px">Edit Item Suppliers</button></div>
+                    </form>
                 </div>
             </div>
           

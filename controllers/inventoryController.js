@@ -145,24 +145,10 @@ const inventoryController = {
 		async function getInformation() {
 			var inventoryTypes = await getInventoryTypes();
 			var units = await getUnits();
-			var editedSuppliers = [];
-			var suppliers = await getSuppliers();
 			var itemSuppliers = await getItemSuppliers(req.params.itemID);
 			var item = await getSpecificInventoryItems(req.params.itemID);
 			var textStatus = await getSpecificItemStatus(item.statusID);
 			var btnStatus;
-
-			// Check if supplier is already part of item list
-			for (var j = 0; j < suppliers.length; j++) {
-				var found = false;
-
-				for (var k = 0; k < itemSuppliers.length; k++) 
-					if (suppliers[j]._id == itemSuppliers[k].supplierID)
-						found = true;   
-				
-				if (found == false)
-					editedSuppliers.push(suppliers[j]);
-			}
 
 			// Get supplier name 
 			for (var i = 0; i < itemSuppliers.length; i++) {
@@ -191,11 +177,42 @@ const inventoryController = {
 				btn_status: btnStatus
 			};
 
-			res.render('viewSpecificItem', {itemInfo, inventoryTypes, units, editedSuppliers, itemSuppliers});
+			res.render('viewSpecificItem', {itemInfo, inventoryTypes, units, itemSuppliers});
 		}
 
 		getInformation();
 		
+	},
+
+	editItemSuppliers: function(req, res) {
+
+		async function getInformation() {
+			var editedSuppliers = [];
+			var suppliers = await getSuppliers();
+			var itemSuppliers = await getItemSuppliers(req.params.itemID);
+
+			// Check if supplier is already part of item list
+			for (var j = 0; j < suppliers.length; j++) {
+				var found = false;
+
+				for (var k = 0; k < itemSuppliers.length; k++) 
+					if (suppliers[j]._id == itemSuppliers[k].supplierID)
+						found = true;   
+				
+				if (found == false)
+					editedSuppliers.push(suppliers[j]);
+			}
+
+			// Get supplier name 
+			for (var i = 0; i < itemSuppliers.length; i++) {
+				var supplierDetails = await getSpecificSupplier(itemSuppliers[i].supplierID);
+				itemSuppliers[i].supplierID = supplierDetails.name;
+			}
+
+			res.render('editItemSuppliers', {editedSuppliers, itemSuppliers});
+		}
+
+		getInformation();
 	},
 
 	postUpdateItemInformation: function(req, res) {
