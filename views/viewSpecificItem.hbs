@@ -149,11 +149,41 @@
                 </div>
             </div>
 
+            <!-- Modal -->
+            <div class="modal fade" id="modal-add-supplier" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="exampleModalLongTitle">Add Supplier</h3>
+                        <button type="button" class="close" data-dismiss="modal" a ria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="add-supplier">
+                            <label for="dropdown-supplier" style="margin-right: 10px">Supplier</label>
+                            <select class="dropdown" id="dropdown-supplier" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
+                                <option value="no-selected" selected>Select Supplier</option>
+                                {{#each editedSuppliers}}
+                                        <option value={{_id}}>{{name}}</option>
+                                {{/each}}
+                            </select>
+                            <p class="error" id="error-supplier" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="btn-add-supplier">Save</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+
             <div style="margin-top: 50px;">
                 <div style="display: flex;">
                     <div style="width: 50%"><h3 class ="bold">Suppliers</h3></div>
 
-                    <div class="btn-status"><button class="btn-light-blue" id="btn-add-supplier" style="float: right;">+ Add Supplier</button></div>
+                    <div class="btn-status"><button class="btn-light-blue" id="btn-add-supplier" style="float: right;" data-toggle="modal" data-target="#modal-add-supplier">+ Add Supplier</button></div>
                 </div>
             </div>
           
@@ -165,9 +195,11 @@
                     </tr>
                 </thead>
                 <tbody> 
-                    <tr>
-                        <td>Name</td>
-                    </tr>
+                    {{#each itemSuppliers}}
+                        <tr>
+                            <td>{{supplierID}}</td>
+                        </tr>
+                    {{/each}}
                 </tbody>
             </table>
         </div>
@@ -268,7 +300,11 @@
                     } else if (type == "sellingPrice") {
                         $("#selling-price").css("border", "1px solid #B00000");
                         $("#error-selling-price").text("Please enter a Selling Price.");
+                    } else if (type == "supplier") {
+                        $("#dropdown-supplier").css("border", "1px solid #B00000");
+                        $("#error-supplier").text("Please select a Supplier.");
                     } 
+                    
                 }
 
                 function resetErrorMessage() {
@@ -337,6 +373,34 @@
                     EOQValidation(EOQ);
                     sellingPriceValidation(sellingPrice);
                 }
+
+                function supplierValidation(supplier) {
+                    if (supplier == "no-selected") {
+                        errorMessage("supplier");
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }
+
+                $('#dropdown-supplier').change(function() {
+                    $("#dropdown-supplier").css("border", "1px solid #DDDDDD");
+                    $("#error-supplier").text("");
+                })
+
+                $('#btn-add-supplier').click(function() {
+                    var itemID = $('#item-ID').text();
+                    var supplierID = $('#dropdown-supplier').val();
+
+                    if (!supplierValidation(supplierID)) {
+                        $.post('/postAddItemSupplier', {itemID, supplierID}, function () {
+
+                        })
+                            
+                        $('#modal-add-supplier').modal('hide');
+                        $('#add-supplier').trigger('reset');
+                    }
+                })
 
                 $('#btn-edit-item').click(function() {
                     var itemID = $('#item-ID').text();

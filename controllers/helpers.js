@@ -17,6 +17,10 @@ const PurchaseOrderStatus = require('../models/PurchaseOrderStatusModel.js');
 
 const InformationStatus = require('../models/InformationStatusModel.js');
 
+const Suppliers = require('../models/SuppliersModel.js');
+
+const ItemSuppliers = require('../models/ItemSuppliersModel.js');
+
 
 module.exports = function() {
 	this.getAllPositions = function() {
@@ -167,6 +171,30 @@ module.exports = function() {
 		return new Promise((resolve, reject) => {
 			db.findOne(InformationStatus, {informationStatus: infoStatus}, '_id', function(result) {
 				resolve (result._id);
+			});
+		});
+	},
+
+	this.getSuppliers = function() {
+		return new Promise((resolve, reject) => {
+			db.findMany(Suppliers, {}, '', function(result) {
+				resolve (result);
+			});
+		});
+	},
+
+	this.getSpecificSupplier = function(supplierID) {
+		return new Promise((resolve, reject) => {
+			db.findOne(Suppliers, {_id: supplierID}, '', function(result) {
+				resolve (result);
+			});
+		});
+	},
+
+	this.getItemSuppliers = function(itemID) {
+		return new Promise((resolve, reject) => {
+			db.findMany(ItemSuppliers, {itemID: itemID}, '', function(result) {
+				resolve (result);
 			});
 		});
 	}
