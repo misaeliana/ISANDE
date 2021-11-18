@@ -4,8 +4,8 @@
         <title> Purchase Orders </title>
         <meta name="description" content="Purchase Order List">
         <meta name="keyword" content="Moderna, Purchase Order List">
-        <link rel="stylesheet" type="text/css" href="../public/css/general.css">
-        <link rel="stylesheet" type="text/css" href="../public/css/list.css">
+        <link rel="stylesheet" type="text/css" href="../css/general.css">
+        <link rel="stylesheet" type="text/css" href="../css/list.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -16,7 +16,7 @@
 
         <!-- PARTIALS -->
         <div id="navbar"> 
-            <div class="navbar-logo"> <img src="../public/images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
+            <div class="navbar-logo"> <img src="../images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
             <div class="navbar-logout"> <a href= "login.html">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
@@ -50,21 +50,25 @@
                             <th>Supplier</th>
                         </tr>
                     </thead>
-                    <tbody> 
+                    <tbody id="table-purchase-stocks-body"> 
                         <!-- right align qty -->
-                        <tr>
-                            <td>John</td>
-                            <td><input style="width: 100px; height:30px; text-align: right;" type="text" class="form-control" id="return-add-item-qty" name="return-add-item-qty" placeholder="<EOQ??>"></td>
-                            <td>john@example.com</td>
-                            <td>
-                                <select class="dropdown" id="dropdown-category" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
-                                    <option value="all-type" selected>All</option>
-                                    {{#each inventoryTypes}}
-                                        <option value={{_id}}>{{type}}</option>
-                                    {{/each}}
-                                </select>
-                            </td>
-                        </tr>
+                        {{#each items}}
+                            <tr>
+                                <td class="itemDescription">{{itemDescription}}</td>
+                                <td><input value="{{EOQ}}" class="quantity"></td>
+                                <td class="unit">{{unit}}</td>
+                                <td class="supplier">
+                                    <select class="dropdown-supplier">
+                                        <option value="no-selected">--Select Supplier--</option>
+                                        <option value="1">Paint house</option>
+                                        <option value="2">Supplier 1</option>
+                                        {{#each suppliers}}
+                                            <option value="{{_id}}">{{name}}</option>
+                                        {{/each}}
+                                    </select>
+                                </td>
+                            </tr>
+                        {{/each}}
                     </tbody>
                 </table>
 
@@ -79,5 +83,30 @@
 
                 <div style="height: 20px"></div>
             </div>
+
+            <script>
+                $(document).ready(function() {
+
+                    $('#btn-generate-PO').click(function() {
+                        var purchaseItems = []
+
+                        $("#table-purchase-stocks-body > tr").each(function () {
+                            if ($(this).find('.dropdown-supplier').val() != "no-selected") {
+                                var item= {
+                                    itemDescription: $(this).children('.itemDescription').text(),
+                                    quantity: $(this).find('.quantity').val(),
+                                    unit: $(this).children('.unit').text(),
+                                    supplier: $(this).find('.dropdown-supplier').val()
+                                }
+                                purchaseItems.push(item);
+                            }
+                        })
+
+                        var purchaseString = JSON.stringify(purchaseItems)
+                        $.post('/saveGeneratePurchaseOrder', {purchaseString});
+                        //window.location.replace('/purchaseOrderList');
+                    })
+                })
+            </script>
     </body>
 </html>

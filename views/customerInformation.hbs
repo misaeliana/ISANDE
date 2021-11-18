@@ -185,11 +185,13 @@
                             $('#error-contact-number').text("");
                             $('#error-address').text("");
 
-                            $.post('/postUpdateCustomerInformation', {customerID, name, number, address})
-                                $('#modal-edit-customer').modal('hide');
-                                $('#edit-customer').trigger('reset');
-                                alert("Succesfully updated customer information");
-                                location.reload()
+                            $.post('/postUpdateCustomerInformation', {customerID, name, number, address}, function(result) {
+                                    $('#modal-edit-customer').modal('hide');
+                                    $('#edit-customer').trigger('reset');
+                                    alert("Succesfully updated customer information");
+                                    window.location.replace(`/customer/${result}`)
+                            })
+                                
                     }
                 })
 

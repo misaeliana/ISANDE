@@ -9,7 +9,6 @@ const customerController = {
 		db.findMany(Customer, {informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name number address', function (result) {
 			var customers = [];
 			for (var i=0; i<result.length; i++) {
-				if (result[i].informationStatusID == "active") {
 					var customer = {
 						customerID: result[i]._id,
 						name: result[i].name,
@@ -18,7 +17,7 @@ const customerController = {
 					}
 					customers.push(customer);
 				}
-			}
+			console.log (customers)
 			res.render('customerList', {customers});
 		})
 	},
@@ -28,7 +27,7 @@ const customerController = {
 			name: req.body.name,
 			number: req.body.number,
 			address: req.body.address,
-			informationStatusID: "active"
+			informationStatusID: "618a7830c8067bf46fbfd4e4"
 		}
 
 		db.insertOne (Customer, customer, function(flag) {
@@ -53,8 +52,19 @@ const customerController = {
 	postUpdateInformation: function (req, res) {
 		var customerID = req.body.customerID;
 
-		db.updateOne(Customer, {_id:customerID}, {$set: {name:req.body.name, number:req.body.number, address:req.body.address}}, function(flag) {
+		db.updateOne(Customer, {_id:customerID}, {$set: {informationStatusID:"618a783cc8067bf46fbfd4e5"}}, function(flag) {
 			if (flag) { }
+		})
+
+		var customer = {
+			name:req.body.name,
+			number:req.body.number, 
+			address:req.body.address,
+			informationStatusID: "618a7830c8067bf46fbfd4e4"
+		}
+
+		db.insertOneResult(Customer, customer, function(result) {
+			res.send(result._id)
 		})
 	},
 

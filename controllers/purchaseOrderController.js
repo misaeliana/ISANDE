@@ -108,6 +108,96 @@ const purchaseOrderController = {
 		db.findOne(Purchases, {_id:req.params.poID}, '_id supplierID date statusID', function(result) {
 			getItems(result)
 		})
+	},
+
+	generatePurchaseOrder: function(req, res) {
+
+		function getLowItems() {
+			return new Promise((resolve, reject) => {
+				db.findMany(Items, {statusID:"618b32205f628509c592daab", informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'itemDescription EOQ unitID', function(result) {
+					resolve (result);
+				})
+			})
+		}
+
+		async function getItems() {
+			var items = await getLowItems();
+			var suppliers =  await getSuppliers();
+
+			for (var i=0; i<items.length; i++) {
+				items[i].unit = await getSpecificUnit(items[i].unitID);
+			}
+		
+
+			res.render('generatePO', {suppliers, items});
+		}
+
+		getItems()
+		
+	},
+
+	saveGeneratePurchaseOrder: function(req, res) {
+		
+		function getUniqueSuppliers(items) {
+			var suppliers = []
+
+			for (var a=0; a<items.length; a++) {
+				//array does not have supplier
+				if (!(suppliers.includes(items[a].supplier))) 
+					suppliers.push(items[a].supplier)
+			}
+			return suppliers
+		}
+
+		function savePurchase(purchase, poItems) {
+			return new Promise ((resolve, reject) => {
+				db.insertOneResult(Purchases, purchase, function(result) {
+					resolve(result._id)
+				})
+			})
+			
+		}
+
+		async function savePO(dateToday, items) {
+			var uniqueSuppliers = getUniqueSuppliers(items);
+
+			for (var i=0; i<uniqueSuppliers.length; i++) {
+
+				var poItems = [];
+				for (var j=0; j<items.length; j++) {
+					if (uniqueSuppliers[i] == items[j].supplier) {
+						var item = {
+							itemID: await getItemID(items[j].itemDescription),
+							quantity: items[j].quantity
+						}
+						poItems.push(item);
+					}
+				}
+
+				var purchase = {
+					supplierID: uniqueSuppliers[i],
+					employeeID:"hi",
+					date: dateToday,
+					statusID: "618f650546c716a39100a809"
+				}
+				
+				var purchaseID = await savePurchase(purchase)
+				for (var k=0; k<poItems.length; k++)
+						poItems[k].purchaseOrderID = purchaseID
+
+				db.insertMany(PurchasedItems, poItems, function(flag) {
+					if (flag) { }
+				})
+			}
+			res.redirect('/purchaseOrderList');
+		}
+		//------END OF FUNCTIONS-------
+
+
+		var purchaseItems = JSON.parse(req.body.purchaseString);
+		var dateToday = new Date()
+
+		savePO(dateToday, purchaseItems)
 	}
 
 }

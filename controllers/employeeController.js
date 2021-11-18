@@ -84,9 +84,22 @@ const employeeController = {
 	postUpdateInformation: function(req, res) {
 		var employeeID = req.body.employeeID;
 
-		db.updateOne(Employees, {_id:employeeID}, {$set: {name:req.body.name, username:req.body.username, password:req.body.password, number:req.body.number, position:req.body.position}}, function(flag) {
+		db.updateOne(Employees, {_id:employeeID}, {$set: {informationStatusID:"618a783cc8067bf46fbfd4e5"}}, function(flag) {
 			if (flag) { }
 		});
+
+		var employee = {
+			name:req.body.name, 
+			username:req.body.username, 
+			password:req.body.password, 
+			number:req.body.number, 
+			positionID:req.body.position,
+			informationStatusID:"618a7830c8067bf46fbfd4e4"
+		}
+
+		db.insertOneResult(Employees, employee, function(result) {
+			res.send(result._id)
+		})
 	},
 
 	deleteEmployee: function(req, res) {

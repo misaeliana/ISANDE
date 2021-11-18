@@ -58,11 +58,15 @@ router.get('/purchaseOrderList', purchaseOrderController.getPurchaseOrderList);
 
 router.get('/newPurchaseOrder', purchaseOrderController.getCreateNewPurchaseOrder);
 
+router.get('/generatePurchaseOrder', purchaseOrderController.generatePurchaseOrder);
+
 router.get('/getItemNamePO', purchaseOrderController.getItems);
 
 router.post('/saveNewPO', purchaseOrderController.saveNewPO);
 
 router.get('/purchaseOrder/:poID', purchaseOrderController.getPurchaseOrder);
+
+router.post('/saveGeneratePurchaseOrder', purchaseOrderController.saveGeneratePurchaseOrder)
 
 
 module.exports = router;

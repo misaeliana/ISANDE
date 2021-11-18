@@ -17,6 +17,7 @@ const PurchaseOrderStatus = require('../models/PurchaseOrderStatusModel.js');
 
 const InformationStatus = require('../models/InformationStatusModel.js');
 
+const Suppliers = require('../models/SuppliersModel.js')
 
 module.exports = function() {
 	this.getAllPositions = function() {
@@ -169,5 +170,13 @@ module.exports = function() {
 				resolve (result._id);
 			});
 		});
+	},
+
+	this.getSuppliers = function() {
+		return new Promise((resolve, reject) => {
+			db.findMany(Suppliers,{informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name', function(result) {
+				resolve (result);
+			})
+		})
 	}
 };
