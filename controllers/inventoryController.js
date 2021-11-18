@@ -187,21 +187,9 @@ const inventoryController = {
 	editItemSuppliers: function(req, res) {
 
 		async function getInformation() {
-			var editedSuppliers = [];
+			var itemID = req.params.itemID;
 			var suppliers = await getSuppliers();
 			var itemSuppliers = await getItemSuppliers(req.params.itemID);
-
-			// Check if supplier is already part of item list
-			for (var j = 0; j < suppliers.length; j++) {
-				var found = false;
-
-				for (var k = 0; k < itemSuppliers.length; k++) 
-					if (suppliers[j]._id == itemSuppliers[k].supplierID)
-						found = true;   
-				
-				if (found == false)
-					editedSuppliers.push(suppliers[j]);
-			}
 
 			// Get supplier name 
 			for (var i = 0; i < itemSuppliers.length; i++) {
@@ -209,7 +197,7 @@ const inventoryController = {
 				itemSuppliers[i].supplierID = supplierDetails.name;
 			}
 
-			res.render('editItemSuppliers', {editedSuppliers, itemSuppliers});
+			res.render('editItemSuppliers', {itemID, suppliers, itemSuppliers});
 		}
 
 		getInformation();
@@ -262,11 +250,33 @@ const inventoryController = {
 		updateItemInfo();
 	},
 
-	postAddItemSupplier: function(req, res) {
-		db.insertOne(ItemSuppliers, {itemID: req.body.itemID, supplierID: req.body.supplierID}, function (flag) {
-			if (flag) { }
-		});
+	postUpdateItemSuppliers: function(req, res) {
 
+		async function updateItemInfo() {
+			var suppliers = JSON.parse(req.body.JSONsupplierNames);
+			var itemSuppliers = [];
+
+			for (var i = 0; i < suppliers.length; i++) {
+				var itemSupplier = {
+					itemID: req.body.itemID,
+					supplierID: await getSupplierID(suppliers[i])
+				};
+
+				itemSuppliers.push(itemSupplier);
+			}
+
+			// delete all item suppliers with ID
+			await deleteItemSuppliers(req.body.itemID);
+
+			// save new item suppliers
+			db.insertMany(ItemSuppliers, itemSuppliers, function (flag) {
+				if (flag) { }
+			});
+	
+			res.send({redirect: '/inventory/' + req.body.itemID});
+		}
+
+		updateItemInfo();
 	}
 };
 

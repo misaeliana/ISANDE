@@ -117,7 +117,7 @@ module.exports = function() {
 				resolve (result._id);
 			});
 		});
-	}
+	},
 
 	this.changeItemInformationStatus = function(itemID, infoStatusID) {
 		return new Promise((resolve, reject) => {
@@ -191,10 +191,26 @@ module.exports = function() {
 		});
 	},
 
+	this.getSupplierID = function(supplierName) {
+		return new Promise((resolve, reject) => {
+			db.findOne(Suppliers, {name: supplierName}, '', function(result) {
+				resolve (result._id);
+			});
+		});
+	},
+
 	this.getItemSuppliers = function(itemID) {
 		return new Promise((resolve, reject) => {
 			db.findMany(ItemSuppliers, {itemID: itemID}, '', function(result) {
 				resolve (result);
+			});
+		});
+	},
+
+	this.deleteItemSuppliers = function(itemID) {
+		return new Promise((resolve, reject) => {
+			db.deleteMany(ItemSuppliers, {itemID: itemID}, function(flag) {
+				resolve (flag);
 			});
 		});
 	}

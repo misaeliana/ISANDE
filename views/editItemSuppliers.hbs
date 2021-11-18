@@ -43,9 +43,10 @@
             <hr style="margin-top: 0px;">
 
             <form id="new-supplier">
+                <p id="item-ID" style="display: none;">{{itemID}}</p>
                 <select class="dropdown" id="dropdown-supplier" style="margin-top: 5px; margin-bottom: 0px; width: 200px; float: left; margin-right: 10px">
                     <option value="no-selected" selected>Select Supplier</option>
-                    {{#each editedSuppliers}}
+                    {{#each suppliers}}
                             <option value={{_id}}>{{name}}</option>
                     {{/each}}
                 </select>
@@ -63,10 +64,10 @@
                         <th></th>
                     </tr>
                 </thead>
-                <tbody> 
+                <tbody id="table-suppliers-body"> 
                     {{#each itemSuppliers}}
                         <tr>
-                            <td>{{supplierID}}</td>
+                            <td class="supplierName">{{supplierID}}</td>
                             <td><button class="delete-button"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
                         </tr>
                     {{/each}}
@@ -75,7 +76,7 @@
 
              <div>
                 <div style="display: flex;">
-                    <div style="width: 50%"><div class="btn-cancel-invoice"><button class="btn-light-grey" id="btn-cancel-edit-item-suppliers" style="margin-bottom: 10px;">Cancel</button></div></div>
+                    <div style="width: 50%"><div class="btn-cancel-invoice"><a href = "/inventory/{{itemID}}"><button class="btn-light-grey" id="btn-cancel-edit-item-suppliers" style="margin-bottom: 10px;">Cancel</button></a></div></div>
                     <div class="btn-save-invoice btn-status"><button class="btn-light-blue" id="btn-save-edit-item-suppliers" style="margin-bottom: 10px;" >Save</button></div>
                  </div>
             </div>
@@ -88,20 +89,88 @@
                     $(this).closest('tr').remove();
                 });
 
+                function supplierValidation(supplierVal, supplierName) {
+                    var found = false;
+
+                    if (supplierVal == "no-selected") {
+                        errorMessage("no-selected");
+                        return 1;
+                    } else {
+                        $("#table-suppliers-body > tr").each(function () {
+                            if (supplierName == $(this).children('.supplierName').text())
+                                found = true;
+                        });
+
+                        if (found) {
+                            errorMessage("in-list");
+                            return 1;
+                        } else {
+                            return 0;
+                        }
+                    }
+                }
+
+                $('#dropdown-supplier').change(function() {
+                    resetErrorMessage();
+                })
+
+                function resetErrorMessage () {
+                    $("#dropdown-supplier").css("border", "1px solid #DDDDDD");
+                    $("#error-supplier").text("");
+                }
+
+                function errorMessage(type) {
+                    if (type == "no-selected") {
+                        $("#dropdown-supplier").css("border", "1px solid #B00000");
+                        $("#error-supplier").text("Please select a Supplier.");
+                    } else if (type == "in-list") {
+                        $("#dropdown-supplier").css("border", "1px solid #B00000");
+                        $("#error-supplier").text("Supplier already selected.");
+                    }
+                }
+
                 $('#add-supplier').click(function() {
                     var supplierName = $('#dropdown-supplier option:selected').text();
+                    var supplierVal = $('#dropdown-supplier').val();
 
-                    $('#table-suppliers').find('tbody').append(
-                        `  <tr> 
-                                <td>${supplierName}</td> 
-                                <td><button class="delete-button"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
-                            </tr>`
-                    );
+                    if (!supplierValidation(supplierVal, supplierName)) {
+                        resetErrorMessage();
+
+                        $('#table-suppliers').find('tbody').append(
+                            `  <tr> 
+                                    <td class="supplierName">${supplierName}</td> 
+                                    <td><button class="delete-button"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
+                                </tr>`
+                        );
+
+                        $('#new-supplier').trigger('reset');
+                    }
+                });
+
+                $('#btn-save-edit-item-suppliers').click(function() {
+                    var itemID = $('#item-ID').text();
+                    var supplierNames = [];
+
+                      $("#table-suppliers-body > tr").each(function () {
+                        supplierNames.push($(this).children('.supplierName').text());
+                    });
 
                     $('#new-supplier').trigger('reset');
+
+                     var JSONsupplierNames = JSON.stringify(supplierNames);
+
+                     $.ajax({
+                            url: "/updateItemSuppliers",              
+                            type: "POST",
+                            data: {JSONsupplierNames, itemID},
+                            async: false,
+                            success: function(result){
+                                if(result.redirect != null){
+                                    window.location = result.redirect;
+                                }
+                            }
+                    });    
                 });
-                     
-                
             }) 
         </script>
     </body>
