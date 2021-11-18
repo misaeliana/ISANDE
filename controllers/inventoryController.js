@@ -3,6 +3,8 @@ const db = require('../models/db.js');
 
 const Items = require('../models/ItemsModel.js');
 
+const ItemSuppliers = require('../models/ItemSuppliersModel.js');
+
 require('../controllers/helpers.js')();
 
 const inventoryController = {
@@ -20,6 +22,20 @@ const inventoryController = {
 		var itemStatus = {
 			status: "Low Stock"
 		};
+
+		var supplier = {
+			name: "Supplier 1",
+			contactPerson: "Juan De La Cruz",
+			number: "09170998777",
+			email: "juan_cruz@gmail.com",
+			address: "1234 Street, Blank City",
+			informationStatusID: "618a7830c8067bf46fbfd4e4"
+		};
+
+		/*db.insertOne (Suppliers, supplier, function(flag) {
+			if (flag) { }
+		});*/
+
 
 		/*db.insertOne (ItemStatuses, itemStatus, function(flag) {
 			if (flag) { }
@@ -77,6 +93,22 @@ const inventoryController = {
 		getInformation();
 	},
 
+	getCheckItemDescription: function(req, res) {
+		var description = req.query.itemDescription;
+		
+		async function checkDescription() {
+			var deleteID = await getInformationStatus("Active");
+
+			// Look for name
+			db.findOne(Items, {itemDescription: description, informationStatusID: deleteID}, 'itemDescription', function (result) {
+                
+                res.send(result);
+            });
+		}
+
+		checkDescription();
+    },
+
 	postNewItem: function(req, res) {
 		var item = {
 			itemDescription: req.body.description,
@@ -113,11 +145,16 @@ const inventoryController = {
 		async function getInformation() {
 			var inventoryTypes = await getInventoryTypes();
 			var units = await getUnits();
-
+			var itemSuppliers = await getItemSuppliers(req.params.itemID);
 			var item = await getSpecificInventoryItems(req.params.itemID);
-
 			var textStatus = await getSpecificItemStatus(item.statusID);
 			var btnStatus;
+
+			// Get supplier name 
+			for (var i = 0; i < itemSuppliers.length; i++) {
+				var supplierDetails = await getSpecificSupplier(itemSuppliers[i].supplierID);
+				itemSuppliers[i].supplierID = supplierDetails.name;
+			}
 	
 			if (textStatus == "Low Stock") 
 				btnStatus = "low";
@@ -140,11 +177,42 @@ const inventoryController = {
 				btn_status: btnStatus
 			};
 
-			res.render('viewSpecificItem', {itemInfo, inventoryTypes, units});
+			res.render('viewSpecificItem', {itemInfo, inventoryTypes, units, itemSuppliers});
 		}
 
 		getInformation();
 		
+	},
+
+	editItemSuppliers: function(req, res) {
+
+		async function getInformation() {
+			var editedSuppliers = [];
+			var suppliers = await getSuppliers();
+			var itemSuppliers = await getItemSuppliers(req.params.itemID);
+
+			// Check if supplier is already part of item list
+			for (var j = 0; j < suppliers.length; j++) {
+				var found = false;
+
+				for (var k = 0; k < itemSuppliers.length; k++) 
+					if (suppliers[j]._id == itemSuppliers[k].supplierID)
+						found = true;   
+				
+				if (found == false)
+					editedSuppliers.push(suppliers[j]);
+			}
+
+			// Get supplier name 
+			for (var i = 0; i < itemSuppliers.length; i++) {
+				var supplierDetails = await getSpecificSupplier(itemSuppliers[i].supplierID);
+				itemSuppliers[i].supplierID = supplierDetails.name;
+			}
+
+			res.render('editItemSuppliers', {editedSuppliers, itemSuppliers});
+		}
+
+		getInformation();
 	},
 
 	postUpdateItemInformation: function(req, res) {
@@ -179,14 +247,26 @@ const inventoryController = {
 
 			// save updated item
 			db.insertOneResult(Items, updatedItem, function (result) {
-	
-				res.send(result);
+
+				// update itemSupplier	
+				db.updateMany(ItemSuppliers, {itemID: req.body.itemID}, {$set: {itemID: result._id}}, function(flag) {
+					if (flag) { }
+
+					res.send(result);
+				});
 			});
 		}
 
 
 
 		updateItemInfo();
+	},
+
+	postAddItemSupplier: function(req, res) {
+		db.insertOne(ItemSuppliers, {itemID: req.body.itemID, supplierID: req.body.supplierID}, function (flag) {
+			if (flag) { }
+		});
+
 	}
 };
 

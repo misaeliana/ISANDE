@@ -48,9 +48,15 @@ router.get('/inventory', inventoryController.getInventoryList);
 
 router.post('/postNewItem', inventoryController.postNewItem);
 
+router.get('/getCheckItemDescription', inventoryController.getCheckItemDescription);
+
 router.get('/inventory/:itemID', inventoryController.getViewItem);
 
 router.post('/postUpdateItemInformation', inventoryController.postUpdateItemInformation);
+
+router.post('/postAddItemSupplier', inventoryController.postAddItemSupplier);
+
+router.get('/editItemSuppliers/:itemID', inventoryController.editItemSuppliers);
 
 
 //--PURCHASE ORDER--
@@ -67,6 +73,7 @@ router.post('/saveNewPO', purchaseOrderController.saveNewPO);
 router.get('/purchaseOrder/:poID', purchaseOrderController.getPurchaseOrder);
 
 router.post('/saveGeneratePurchaseOrder', purchaseOrderController.saveGeneratePurchaseOrder)
+
 
 
 module.exports = router;

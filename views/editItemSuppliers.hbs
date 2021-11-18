@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Edit Item Suppliers </title>
+        <meta name="description" content="Edit Item Suppliers">
+        <meta name="keyword" content="Moderna, Edit Item Suppliers">
+        <link rel="stylesheet" type="text/css" href="../css/general.css">
+        <link rel="stylesheet" type="text/css" href="../css/information.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+        <link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        
+    </head>
+    <body>
+
+        <!-- PARTIALS -->
+        <div id="navbar"> 
+            <div class="navbar-logo"> <img src="../images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
+            <div class="navbar-logout"> <a href= "login.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+                    <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                </svg>
+            </a>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <a href="#">Home</a>
+            <a href="#">Deliveries</a>
+            <a href="#">Customers</a>
+        </div>
+
+        <div class="content">
+            <div style="display: flex;">
+                <h1 class="bold"> Edit Item Suppliers </h1>
+            </div>
+
+            <hr style="margin-top: 0px;">
+
+            <form id="new-supplier">
+                <select class="dropdown" id="dropdown-supplier" style="margin-top: 5px; margin-bottom: 0px; width: 200px; float: left; margin-right: 10px">
+                    <option value="no-selected" selected>Select Supplier</option>
+                    {{#each editedSuppliers}}
+                            <option value={{_id}}>{{name}}</option>
+                    {{/each}}
+                </select>
+                <input style="margin-top: 5px; margin-bottom: 0px; float: left; height: 34px; width: 34px; background-color: #0F84D9; border: #0F84D9; border-radius: 7px; color: white;" type="button" id="add-supplier" name="add-supplier" value="+">
+            </form>
+            
+            <div style="height: 45px"></div>
+
+            <p class="error" id="error-supplier" style="margin-bottom: 5px;"></p>
+
+            <table class="table" id="table-suppliers">
+                <thead class="table-regular-head">
+                    <tr>
+                        <th>Name</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody> 
+                    {{#each itemSuppliers}}
+                        <tr>
+                            <td>{{supplierID}}</td>
+                            <td><button class="delete-button"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+
+             <div>
+                <div style="display: flex;">
+                    <div style="width: 50%"><div class="btn-cancel-invoice"><button class="btn-light-grey" id="btn-cancel-edit-item-suppliers" style="margin-bottom: 10px;">Cancel</button></div></div>
+                    <div class="btn-save-invoice btn-status"><button class="btn-light-blue" id="btn-save-edit-item-suppliers" style="margin-bottom: 10px;" >Save</button></div>
+                 </div>
+            </div>
+        </div>
+
+        <script>
+            $(document).ready(function() {
+
+                $("#table-suppliers").on('click','.delete-button',function() {
+                    $(this).closest('tr').remove();
+                });
+
+                $('#add-supplier').click(function() {
+                    var supplierName = $('#dropdown-supplier option:selected').text();
+
+                    $('#table-suppliers').find('tbody').append(
+                        `  <tr> 
+                                <td>${supplierName}</td> 
+                                <td><button class="delete-button"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
+                            </tr>`
+                    );
+
+                    $('#new-supplier').trigger('reset');
+                });
+                     
+                
+            }) 
+        </script>
+    </body>
+</html>
