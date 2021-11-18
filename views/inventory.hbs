@@ -286,7 +286,9 @@
                     $('#table-inventory > tbody > tr').each(function(index) {
                         var category = $(this).children('.category-id').text();
 
-                        if (filter != category && filter!="All")
+                        var status = $(this).children('td:nth-child(6)').text();
+
+                        if (filter != status && filter != category && filter!="All")
                             $(this).toggle();
                     })
                 })
@@ -297,8 +299,10 @@
                     
                     $('#table-inventory > tbody > tr').each(function(index) {
                         var status = $(this).children('td:nth-child(6)').text();
-                        alert(status);
-                        if (filter != status && filter!="All")
+
+                         var category = $(this).children('.category-id').text();
+
+                        if (filter != status && filter != category && filter!="All")
                             $(this).toggle();
                     })
                 })

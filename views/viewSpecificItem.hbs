@@ -87,6 +87,7 @@
                     <div class="label-container">
                         <div class="override-label">Unit</div> 
                         <div class="label-content">{{itemInfo.unit}}</div>
+                        <p id="item-unit-ID" style="display: none;">{{itemInfo.unitID}}</p>
                     </div>
                     <div class="label-container">
                         <div class="override-label">Selling Price</div> 
@@ -149,36 +150,6 @@
                 </div>
             </div>
 
-            <!-- Modal 
-            <div class="modal fade" id="modal-add-supplier" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3 class="modal-title" id="exampleModalLongTitle">Add Supplier</h3>
-                        <button type="button" class="close" data-dismiss="modal" a ria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="add-supplier">
-                            <label for="dropdown-supplier" style="margin-right: 10px">Supplier</label>
-                            <select class="dropdown" id="dropdown-supplier" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
-                                <option value="no-selected" selected>Select Supplier</option>
-                                {{#each editedSuppliers}}
-                                        <option value={{_id}}>{{name}}</option>
-                                {{/each}}
-                            </select>
-                            <p class="error" id="error-supplier" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="btn-add-supplier">Save</button>
-                    </div>
-                </div>
-                </div>
-            </div> -->
-
             <div style="margin-top: 50px;">
                 <div style="display: flex;">
                     <div style="width: 50%"><h3 class ="bold">Suppliers</h3></div>
@@ -189,7 +160,6 @@
                 </div>
             </div>
           
-
             <table class="table">
                 <thead class="table-regular-head" >
                     <tr>
@@ -205,8 +175,15 @@
                 </tbody>
             </table>
         </div>
+
          <script>
             $(document).ready(function() {
+                var categoryVal = $("#item-category-ID").text();
+                var unitVal = $("#item-unit-ID").text();
+
+                $("#dropdown-category option[value=" + categoryVal + "]").attr('selected', 'selected');
+                $("#dropdown-unit option[value=" + unitVal + "]").attr('selected', 'selected');
+
                 function capitalize(string){
                     var words = string.toLowerCase().split(' ');
                     for (i=0; i<words.length; i++)
