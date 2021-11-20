@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 // defines the schema for collection `users`
 var InvoiceStatusSchema = new mongoose.Schema({
 
-	type: {
+	status: {
 		type: String,
 		required: true
 	}

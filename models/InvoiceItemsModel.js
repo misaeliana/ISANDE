@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 // defines the schema for collection `users`
 var InvoicesItemsSchema = new mongoose.Schema({
 
-	invoiceID: {
+	invoice_id: {
 		type: String,
 		required: true
 	},
@@ -19,10 +19,10 @@ var InvoicesItemsSchema = new mongoose.Schema({
 		required: true
 	},
 	
-	discountPerentage: {
+	discount: {
 		type: Number, 
 		required: true
 	}
 });
 
-module.exports = mongoose.model('InvoiceItems', InvoiceItemsSchema);
+module.exports = mongoose.model('InvoiceItems', InvoicesItemsSchema);

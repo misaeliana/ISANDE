@@ -21,6 +21,15 @@ const Suppliers = require('../models/SuppliersModel.js');
 
 const ItemSuppliers = require('../models/ItemSuppliersModel.js');
 
+const Invoices = require('../models/InvoiceModel.js');
+
+const InvoiceTypes = require('../models/InvoiceTypesModel.js');
+
+const InvoiceStatus = require('../models/InvoiceStatusModel.js');
+
+const InvoiceItems = require('../models/InvoiceItemsModel.js');
+
+const Customers = require('../models/CustomersModel.js');
 
 module.exports = function() {
 	this.getAllPositions = function() {
@@ -179,8 +188,8 @@ module.exports = function() {
 		return new Promise((resolve, reject) => {
 			db.findMany(Suppliers,{informationStatusID:"618a7830c8067bf46fbfd4e4"}, '', function(result) {
 				resolve (result);
-			})
-		})
+			});
+		});
 	},
 
 	this.getSpecificSupplier = function(supplierID) {
@@ -211,6 +220,38 @@ module.exports = function() {
 		return new Promise((resolve, reject) => {
 			db.deleteMany(ItemSuppliers, {itemID: itemID}, function(flag) {
 				resolve (flag);
+			});
+		});
+	},
+
+	this.getInvoices = function(itemID) {
+		return new Promise((resolve, reject) => {
+			db.findMany(Invoices, {}, '', function(result) {
+				resolve (result);
+			});
+		});
+	},
+
+	this.getSpecificCustomer = function(customerID) {
+		return new Promise((resolve, reject) => {
+			db.findOne(Customers, {_id: customerID}, 'name', function(result) {
+				resolve (result.name);
+			});
+		});
+	},
+
+	this.getSpecificInvoiceType = function(invoiceTypeID) {
+		return new Promise((resolve, reject) => {
+			db.findOne(InvoiceTypes, {_id: invoiceTypeID}, 'type', function(result) {
+				resolve (result.type);
+			});
+		});
+	},
+
+	this.getSpecificInvoiceStatus = function(statusID) {
+		return new Promise((resolve, reject) => {
+			db.findOne(InvoiceStatus, {_id: statusID}, 'status', function(result) {
+				resolve (result.status);
 			});
 		});
 	}

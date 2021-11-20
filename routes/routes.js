@@ -11,6 +11,8 @@ const inventoryController = require('../controllers/inventoryController.js');
 
 const purchaseOrderController = require('../controllers/purchaseOrderController.js');
 
+const invoiceController = require('../controllers/invoiceController.js');
+
 //--CUSTOMER--
 
 router.get('/customerList', customerController.getCustomerList);
@@ -72,8 +74,9 @@ router.post('/saveNewPO', purchaseOrderController.saveNewPO);
 
 router.get('/purchaseOrder/:poID', purchaseOrderController.getPurchaseOrder);
 
-router.post('/saveGeneratePurchaseOrder', purchaseOrderController.saveGeneratePurchaseOrder)
+router.post('/saveGeneratePurchaseOrder', purchaseOrderController.saveGeneratePurchaseOrder);
 
-
+//--INVOICE--
+router.get('/invoices', invoiceController.getInvoiceList);
 
 module.exports = router;

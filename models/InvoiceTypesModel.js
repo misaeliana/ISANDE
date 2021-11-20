@@ -10,4 +10,4 @@ var InvoiceTypesSchema = new mongoose.Schema({
 	}
 });
 
-module.exports = mongoose.model('InvoiceTypes', InvoiceTypeSchema);
+module.exports = mongoose.model('InvoiceTypes', InvoiceTypesSchema);

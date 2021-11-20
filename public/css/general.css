@@ -90,6 +90,21 @@
     border:  #55B66A;
 }
 
+.btn-Paid {
+    background-color: #55B66A;
+    border:  #55B66A;
+}
+
+.btn-COD {
+    background-color: #F2A154;
+    border:  #F2A154;
+}
+
+.btn-Void {
+    background-color: #fa3b22;
+    border:  #fa3b22;
+}
+
 .btn-light-grey {
     background-color: #f0efef;
     width: 150px;

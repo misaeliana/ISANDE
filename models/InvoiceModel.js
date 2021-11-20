@@ -33,8 +33,18 @@ var InvoicesSchema = new mongoose.Schema({
 		type: Number,
 		required: true
 	},
+
+	VAT: {
+		type: Number,
+		required: true
+	},
 	
-	discountPercentage: {
+	discount: {
+		type: Number,
+		required: true
+	},
+
+	total: {
 		type: Number,
 		required: true
 	},
