@@ -79,4 +79,6 @@ router.post('/saveGeneratePurchaseOrder', purchaseOrderController.saveGeneratePu
 //--INVOICE--
 router.get('/invoices', invoiceController.getInvoiceList);
 
+router.get('/invoices/:invoiceID', invoiceController.getViewSpecificInvoice);
+
 module.exports = router;

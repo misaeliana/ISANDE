@@ -378,6 +378,7 @@
                         resetErrorMessage();
 
                         $.post('/postNewItem', {description, category, categoryText, unit, unitText, reorderLevel, EOQ, sellingPrice}, function (updatedItem) {
+                            var sellingPrice = parseFloat(updatedItem.sellingPrice).toFixed(2)
 
                             $('#table-inventory').find('tbody').append(
                                 `  <tr class="link" style="cursor: pointer" data-href="/inventory/${updatedItem._id}"> 
@@ -385,7 +386,7 @@
                                         <td value="${updatedItem.categoryID}" class="category-id">${updatedItem.category}</td>
                                         <td style="text-align: right;">${updatedItem.quantityAvailable}</td> 
                                         <td class="unit-id">${updatedItem.unit}</td> 
-                                        <td style="text-align: right;">₱ ${updatedItem.sellingPrice}</td> 
+                                        <td style="text-align: right;">₱ ${sellingPrice}</td> 
                                         <td><button class="btn-status btn-low status-id" value="${updatedItem.statusID}">Low Stock</button></td>
                                     </tr>`
                             );

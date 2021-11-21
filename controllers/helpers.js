@@ -254,5 +254,21 @@ module.exports = function() {
 				resolve (result.status);
 			});
 		});
+	},
+
+	this.getInvoice = function(_id) {
+		return new Promise((resolve, reject) => {
+			db.findOne(Invoices, {_id: _id}, '', function(result) {
+				resolve (result);
+			});
+		});
+	},
+
+	this.getInvoiceItems = function(_id) {
+		return new Promise((resolve, reject) => {
+			db.findMany(InvoiceItems, {invoice_id: _id}, '', function(result) {
+				resolve (result);
+			});
+		});
 	}
 };

@@ -62,7 +62,7 @@ const invoiceController = {
                     formattedDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
                     invoiceID: invoices[i].invoiceID,
                     customerName: await getSpecificCustomer(invoices[i].customerID),
-                    total: invoices[i].total,
+                    total: parseFloat(invoices[i].total).toFixed(2),
                     type: await getSpecificInvoiceType(invoices[i].typeID),
                     status: await getSpecificInvoiceStatus(invoices[i].statusID)
                 };
@@ -74,6 +74,52 @@ const invoiceController = {
 		}
 
 		getInformation();
+    },
+
+    getViewSpecificInvoice: function(req, res) {
+
+		async function getInformation() {
+            var invoice_id = req.params.invoiceID;
+            var invoice = await getInvoice(invoice_id);
+            var date = new Date(invoice.date);
+            var employee = await getEmployeeInfo(invoice.employeeID);
+            var items = [];
+
+			var invoiceInfo = {
+                invoiceID: invoice.invoiceID,
+                customerName: await getSpecificCustomer(invoice.customerID),
+                date: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
+                type: await getSpecificInvoiceType(invoice.typeID),
+                status: await getSpecificInvoiceStatus(invoice.statusID),
+                subtotal: parseFloat(invoice.subtotal).toFixed(2),
+                VAT: parseFloat(invoice.VAT).toFixed(2),
+                discount: parseFloat(invoice.discount).toFixed(2),
+                total: parseFloat(invoice.total).toFixed(2),
+                employeeName: employee.name
+            };
+            
+            var invoiceItems = await getInvoiceItems(invoice_id);
+
+            for (var i = 0; i < invoiceItems.length; i++) {
+                var itemInfo = await getSpecificInventoryItems(invoiceItems[i].itemID);
+
+               var item = {
+                    itemDescription: itemInfo.itemDescription,
+                    qty: invoiceItems[i].quantity,
+                    unit: await getSpecificUnit(itemInfo.unitID),
+                    unitPrice: parseFloat(itemInfo.sellingPrice).toFixed(2),
+                    discount: parseFloat(invoiceItems[i].discount).toFixed(2),
+                    amount: ((parseFloat(itemInfo.sellingPrice) * parseFloat(invoiceItems[i].quantity)) - parseFloat(invoiceItems[i].discount)).toFixed(2)
+                };
+
+                items.push(item);
+            }
+
+			res.render('viewInvoice', {invoiceInfo, items});
+		}
+
+		getInformation();
+		
 	}
 };
 

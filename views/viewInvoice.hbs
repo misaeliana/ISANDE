@@ -4,8 +4,8 @@
         <title> View Invoice </title>
         <meta name="description" content="View Invoice">
         <meta name="keyword" content="Moderna, View Invoice">
-        <link rel="stylesheet" type="text/css" href="../public/css/general.css">
-        <link rel="stylesheet" type="text/css" href="../public/css/information.css">
+        <link rel="stylesheet" type="text/css" href="../css/general.css">
+        <link rel="stylesheet" type="text/css" href="../css/information.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -16,7 +16,7 @@
 
         <!-- PARTIALS -->
         <div id="navbar"> 
-            <div class="navbar-logo"> <img src="../public/images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
+            <div class="navbar-logo"> <img src="../images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
             <div class="navbar-logout"> <a href= "login.html">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
@@ -36,29 +36,29 @@
             <div> <!-- ADD FIXED -->
                 <div style="display: flex;">
                     <div style="width: 50%"><h1 class="bold"> Invoice #"Number" </h1></div>
-                    <div class="btn-status">
-                        <div><button id="btn-status">Status</button></div>
+                    <div class="btn-status" style="margin-top: 30px">
+                        <div><button class="btn-status btn-{{invoiceInfo.status}}" style="width: 100px; display: inline-block">Status</button></div>
                     </div>
                 </div>
             </div> 
-            <hr>
+            <hr style="margin-top: 0px;">
 
             <div class="display-flex">
                 <h3 class ="bold h3-left">Customer Details</h3>
-                <h3 class="h3-right">MM/DD/YYYY</h3>
+                <h3 class="h3-right">{{invoiceInfo.date}}</h3>
             </div>
 
                 <div>
                     <div class="label-container">
                         <div class="override-label"> Name </div> 
-                        <div class="label-content">  </div>
+                        <div class="label-content">{{invoiceInfo.customerName}}</div>
                     </div>
                 </div>
-                <div class="label-container">
+                <div class="label-container" id="address-div">
                     <div class="override-label"> Address </div> 
-                    <div class="label-content">  </div>
+                    <div class="label-content ">  </div>
                 </div>
-                <div class="label-container">
+                <div class="label-container" id="contantNum-div"> 
                     <div class="override-label"> Contact Number </div> 
                     <div class="label-content">  </div>
                 </div>
@@ -67,52 +67,43 @@
 
                     <h3 class ="bold">Order Details</h3>
 
-                    <div style="display: flex;">
+                    <div class="label-container"> 
+                        <div class="override-label"> Type </div> 
+                        <div class="label-content">{{invoiceInfo.type}}</div>
+                    </div>
+
+                    <div class="label-container"> 
+                        <div class="override-label"> Processed By </div> 
+                    <div class="label-content">{{invoiceInfo.employeeName}}</div>
+                    </div>
+
+                    <div style="display: flex;" id="date-div">
                         <div class="label-container" style="width: 49%; margin-right: 2%;">
-                            <div class="override-label"> Type </div> 
-                            <div class="label-content">  </div>
+                            <div class="override-label">Delivery Date</div> 
+                            <div class="label-content"> </div>
                         </div>
 
-                        <div class="label-container" style="width: 49%">
-                            <div class="override-label"> Processed By </div> 
+                        <div class="label-container" style="width: 49%" >
+                            <div class="override-label">Date Delivered</div> 
                             <div class="label-content">  </div>
                         </div>
                     </div>
 
-                    <div style="display: flex;">
-                        <div class="label-container" style="width: 49%; margin-right: 2%;">
-                            <div class="override-label"> Payment Type </div> 
-                            <div class="label-content">  </div>
+                    <div class="label-container" id="deliveredBy-div">
+                        <div class="override-label">Delivered By</div> 
+                    <div class="label-content">  </div>
                         </div>
 
-                        <div class="label-container" style="width: 49%">
-                            <div class="override-label"> Delivered By </div> 
-                            <div class="label-content">  </div>
-                        </div>
-                    </div>
-
-                    <div style="display: flex;">
-                        <div class="label-container" style="width: 49%; margin-right: 2%;">
-                            <div class="override-label"> Delivery Date </div> 
-                            <div class="label-content">  </div>
-                        </div>
-
-                        <div class="label-container" style="width: 49%">
-                            <div class="override-label"> Date Delivered </div> 
-                            <div class="label-content">  </div>
-                        </div>
-                    </div>
-
-                    <div class="label-big-container"> 
+                    <div class="label-big-container" style="height: 100px" id="notes-div"> 
                         <div class="label-wide">
                             <div class="navbar-logo">Notes</div>
                             
                         </div>
-                        <div class="label-wide-content"></div>
+                        <div class="label-wide-content" style="height: 40px"></div>
                     </div> 
 
 
-                    <table class="table" style="margin-top: 20px;">
+                    <table class="table" style="margin-top: 30px">
                         <thead style="background-color: #2F5D62; color: white">
                             <tr>
                                 <th>Item Description</th>
@@ -124,48 +115,34 @@
                             </tr>
                         </thead>
                         <tbody> 
-                            <tr>
-                                <td>John</td>
-                                <td>Doe</td>
-                                <td>john@example.com</td>
-                                <td>John</td>
-                                <td>Doe</td>
-                                <td>john@example.com</td>
-                            </tr>
-                            <tr>
-                                <td>Mary</td>
-                                <td>Moe</td>
-                                <td>mary@example.com</td>
-                                <td>John</td>
-                                <td>Doe</td>
-                                <td>john@example.com</td>
-                            </tr>
-                            <tr>
-                                <td>July</td>
-                                <td>Dooley</td>
-                                <td>july@example.com</td>
-                                <td>John</td>
-                                <td>Doe</td>
-                                <td>john@example.com</td>
-                            </tr>
+                            {{#each items}}
+                                <tr>
+                                    <td>{{itemDescription}}</td>
+                                    <td style="text-align: right;">{{qty}}</td> 
+                                    <td>{{unit}}</td>
+                                    <td style="text-align: right;">₱ {{unitPrice}}</td> 
+                                    <td style="text-align: right; color: red;">- ₱ {{discount}}</td> 
+                                    <td style="text-align: right;">₱ {{amount}}</td> 
+                                </tr>
+                            {{/each}}
                         </tbody>
                     </table>
 
                     <div class="summary-container">
                         <div class="summary-text">Subtotal</div>
-                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
+                        <div class="summary-info-container"><div class="summary-info">₱ {{invoiceInfo.subtotal}}</div></div>
                     </div>
                     <div class="summary-container">
                         <div class="summary-text">VAT</div>
-                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
+                        <div class="summary-info-container"><div class="summary-info">₱ {{invoiceInfo.VAT}}</div></div>
                     </div>
                     <div class="summary-container">    
                         <div class="summary-text">Discount</div>
-                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
+                        <div class="summary-info-container"><div class="summary-info">₱ {{invoiceInfo.discount}}</div></div>
                     </div>
                     <div class="summary-container">
                         <div class="summary-text">Total</div>
-                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
+                        <div class="summary-info-container"><div class="summary-info">₱ {{invoiceInfo.total}}</div></div>
                     </div>
 
                     <div style="height: 10px"></div>
@@ -174,5 +151,12 @@
 
                     <div style="height: 20px"></div>
         </div>
+         <script>
+            $("#address-div").css("display", "none");
+            $("#contantNum-div").css("display", "none");
+            $("#date-div").css("display", "none");
+            $("#deliveredBy-div").css("display", "none");
+            $("#notes-div").css("display", "none");
+        </script>
     </body>
 </html>

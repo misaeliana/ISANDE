@@ -77,7 +77,7 @@ const inventoryController = {
 						category: await getSpecificInventoryType(inventoryItems[i].categoryID),
 						unit: await getSpecificUnit(inventoryItems[i].unitID),
 						quantityAvailable: inventoryItems[i].quantityAvailable,
-						sellingPrice: inventoryItems[i].sellingPrice,
+						sellingPrice: parseFloat(inventoryItems[i].sellingPrice).toFixed(2),
 						statusID: inventoryItems[i].statusID,
 						status: textStatus,
 						btn_status: btnStatus
@@ -171,7 +171,7 @@ const inventoryController = {
 				quantityAvailable: item.quantityAvailable,
 				EOQ: item.EOQ,
 				reorderLevel: item.reorderLevel,
-				sellingPrice: item.sellingPrice,
+				sellingPrice: parseFloat(item.sellingPrice).toFixed(2),
 				statusID: item.statusID,
 				status: textStatus,
 				btn_status: btnStatus
