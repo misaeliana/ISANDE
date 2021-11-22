@@ -62,14 +62,14 @@
 
             <form>
                 <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="itemDescription" name="itemDescription" placeholder="Item Description">
-                <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px; text-align: right;" type="text" class="form-control" id="qty" name="qty" placeholder="Qty">
+                <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px; text-align: right;" type="number" class="form-control" id="qty" name="qty" placeholder="Qty">
                 <input style="margin-top: 5px; margin-bottom: 0px; float: left; height: 34px; width: 34px; background-color: #0F84D9; border: #0F84D9; border-radius: 7px; color: white;" type="button" id="addItem" name="addItem" value="+">
             </form>
             
                 <div style="height: 45px"></div>
 
-                <div id="div-warning-new-invoice">
-                    <p id="text-warning-new-PO" class="error">Item not found</p>
+                <div id="div-warning-new-po">
+                    <p id="text-warning-new-PO" class="error"></p>
                 </div>
 
                     <table class="table" id="table-poItem">
@@ -121,6 +121,7 @@
                                 },
                                 success: function (data) {
                                     $('#text-warning-new-PO').css('display', 'none')
+                                    $("#itemDescription").css("border", "1px solid #DDDDDD");
                                     response(data);
                                 }
                          });
@@ -128,27 +129,63 @@
                         if (ui.content.length === 0) 
                             $('#text-warning-new-PO').css('display', 'block')
 
-                        else
+                        else 
                             $('#text-warning-new-PO').css('display','none')
                     }
                         
                 });
             })
 
+             function filled(itemDesc, qty) {
+                    var itemDesc = $('#itemDescription').val();
+                    var qty = $('#qty').val();
+
+                    if (itemDesc!="" && qty!="")
+                        return 0
+                    else if ((itemDesc == "" && qty != "") || (itemDesc == "" && qty == ""))
+                        return 1
+                    else if (qty == "" && itemDesc !="")
+                        return 2
+                }
+
+
             $('#addItem').click(function(){
                 var itemDesc = $('#itemDescription').val();
                 var qty = $('#qty').val();
 
-                $('#table-poItem').append(
-                `<tr>
-                    <td class="classItemDescription">${itemDesc}</td>
-                    <td class="classQty">${qty}</td>
-                    <td><button class="delete-button add-stock-delete-button"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
-                </tr>`);
+                //all blanks are filled up
+                if (filled(itemDesc, qty) == 0) {
+                    $.get('/getItemUnit', {itemDesc}, function (result) {
+                        $('#table-poItem').append(
+                        `<tr>
+                            <td class="classItemDescription">${itemDesc}</td>
+                            <td class="classQty">${qty}</td>
+                            <td class="unit">${result}</td>
+                            <td><button class="delete-button add-stock-delete-btn"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
+                        </tr>`);
 
-                $('#itemDescription').val('');
-                $('#qty').val('');
+                        $('#itemDescription').val('');
+                        $('#qty').val('');
+                        $('#text-warning-new-PO').text("");
+                    })
+                }
+                //item description is left blank
+                else if (filled(itemDesc, qty) == 1) {
+                    $("#itemDescription").css("border", "1px solid #B00000");
+                    $('#text-warning-new-PO').text("Input item description");
+                }
+                //quantity is blank
+                else if (filled(itemDesc, qty) == 2) {
+                    $("#quantity").css("border", "1px solid #B00000");
+                    $('#text-warning-new-PO').text("Input quantity")
+                }
+
+                
             })
+
+            $("#table-poItem").on('click','.add-stock-delete-btn',function() {
+                    $(this).closest('tr').remove();
+                });
 
             $('#btn-save-PO').click(function() {
                 var poItems = []
@@ -158,6 +195,7 @@
                         var poItem= {
                             itemDesc: $(this).children('.classItemDescription').text(), 
                             quantity: $(this).children('.classQty').text(),
+                            unit: $(this).children('.unit').text()
                         }
                         poItems.push(poItem);
                     });

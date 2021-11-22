@@ -112,6 +112,14 @@ module.exports = function() {
 		});
 	},
 
+	this.getUnitID = function(unitName) {
+		return new Promise((resolve, reject) => {
+			db.findOne(Units, {unit:unitName}, '_id', function(result) {
+				resolve(result._id)
+			})
+		})
+	}
+
 	this.getItemStatuses = function() {
 		return new Promise((resolve, reject) => {
 			db.findMany(ItemStatuses, {}, '', function(result) {

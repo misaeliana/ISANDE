@@ -17,7 +17,6 @@ const customerController = {
 					}
 					customers.push(customer);
 				}
-			console.log (customers)
 			res.render('customerList', {customers});
 		})
 	},

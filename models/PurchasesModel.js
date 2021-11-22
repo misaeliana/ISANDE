@@ -29,6 +29,16 @@ var PurchasesSchema = new mongoose.Schema({
 		required: false
 	},
 
+	vat: {
+		type: Number, 
+		required: false
+	},
+
+	total: {
+		type: Number,
+		required: false
+	},
+
 	discountPercentage: {
 		type: Number,
 		required: false

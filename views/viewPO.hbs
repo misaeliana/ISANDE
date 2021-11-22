@@ -37,7 +37,15 @@
                 <div style="display: flex;">
                     <div style="width: 50%"><h1 class="bold"> Purchase Order #"Number" </h1></div>
                     <div class="btn-status">
-                        <div><button id="btn-status">Status</button></div>
+                        {{#if newPO}}
+                            <div><button id="btn-status" style="background-color: #0F84D9;">New</button></div>
+                        {{else if sent}}
+                            <div><button id="btn-status" style="background-color: #F2A154;">Sent</button></div>
+                        {{else if received}}
+                            <div><button id="btn-status" style="background-color: #55B66A;">Received</button></div>
+                        {{else if canceled}}
+                            <div><button id="btn-status" style="background-color: #E24E3A;">Sent</button>Canceled</div>
+                        {{/if}}
                     </div>
                 </div>
             </div> 
@@ -50,11 +58,11 @@
                 </div>
                 <div class="label-container">
                     <div class="override-label"> Date Made </div> 
-                    <div class="label-content" id="view-PO-date-made">  </div>
+                    <div class="label-content" id="view-PO-date-made">{{poInfo.fdateMade}}</div>
                 </div>
                 <div class="label-container">
                     <div class="override-label"> Date Received </div> 
-                    <div class="label-content" id="view-PO-date-received">  </div>
+                    <div class="label-content" id="view-PO-date-received">{{poInfo.fdateReceived}}</div>
                 </div>
                 <div class="display-flex" style="margin-top: 30px;">
                     <h3 class ="bold h3-left">Supplier Details</h3>
@@ -102,42 +110,65 @@
                                 <tr>
                                     <td>{{itemDescription}}</td>
                                     <td>{{quantity}}</td>
-                                    <td>{{unit}}</td>
+                                    <td>{{unitName}}</td>
+                                    <td>{{unitPrice}}</td>
+                                    <td>{{amount}}</td>
+                                    <td>{{quantityReceived}}</td>
                                 </tr>
                             {{/each}}
                         </tbody>
                     </table>
-
-                    <div class="summary-container">
-                        <div class="summary-text">Subtotal</div>
-                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
-                    </div>
-                    <div class="summary-container">
-                        <div class="summary-text">VAT</div>
-                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
-                    </div>
-                    <div class="summary-container">    
-                        <div class="summary-text">Discount</div>
-                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
-                    </div>
-                    <div class="summary-container">
-                        <div class="summary-text">Total</div>
-                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
-                    </div>
+                    {{#if received}}
+                        <div class="summary-container">
+                            <div class="summary-text">Subtotal</div>
+                            <div class="summary-info-container"><div class="summary-info">{{poInfo.subtotal}}</div></div>
+                        </div>
+                        <div class="summary-container">
+                            <div class="summary-text">VAT</div>
+                            <div class="summary-info-container"><div class="summary-info">{{poInfo.vat}}</div></div>
+                        </div>
+                        <div class="summary-container">    
+                            <div class="summary-text">Discount</div>
+                            <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
+                        </div>
+                        <div class="summary-container">
+                            <div class="summary-text">Total</div>
+                            <div class="summary-info-container"><div class="summary-info">{{poInfo.total}}</div></div>
+                        </div>
+                    {{/if}}
 
                     <div style="height: 10px"></div>
 
                     <div>
                         <div style="display: flex;">
-                            <div style="width: 50%"><div class="btn-cancel-invoice"><button class="btn-red" id="btn-save-invoice" style="margin-bottom: 10px;">Cancel</button></div></div>
-                            <div class="btn-save-invoice btn-status"><button class="btn-light-blue" id="btn-save-invoice" style="margin-bottom: 10px;" >Edit</button></div>
-                            <!--<div class="btn-save-invoice btn-status"><button class="btn-light-blue" id="btn-save-invoice" style="margin-bottom: 10px;" >Receive Items</button></div>-->
+                            {{#if newPO}}
+                                <div style="width: 50%"><div class="btn-cancel-po"><button class="btn-red" id="btn-save-invoice" style="margin-bottom: 10px;">Cancel</button></div></div>
+                                <div class="btn-save-invoice btn-status"><button class="btn-light-blue" id="btn-edit-po" onclick="document.location.href='/editPO/{{poID}}'"style="margin-bottom: 10px;">Edit</button></div>
+                                 <div class="btn-export-invoice"><button class="btn-dark-blue" id="btn-export-invoice">Export</button></div>
+                            {{else if sent}}
+                                <div style="width: 50%"><div class="btn-cancel-po"><button class="btn-red" id="btn-save-invoice" style="margin-bottom: 10px;">Cancel</button></div></div>
+                                <div class="btn-save-invoice btn-status"><button class="btn-light-blue" id="btn-save-invoice" onclick="document.location.href='/editPO/{{poID}}'" style="margin-bottom: 10px;" >Receive Items</button></div>
+                            {{else}}
+                                <div></div>
+                            {{/if}}
                         </div>
                     </div>
 
-                    <div class="btn-export-invoice"><button class="btn-dark-blue" id="btn-export-invoice">Export</button></div>
                     
                     <div style="height: 20px"></div>
         </div>
+
+        <script>
+            $(document).ready(function() {
+                $('#btn-export-invoice').click(function() {
+                    if (confirm("Once the PO has been exported, it cannot be edited anymore. Do you wish to proceed?")) {
+                        var address = window.location.pathname.split('/');
+                        var poID = address[address.length -1]
+                        $.post('/updatePOStatus', {poID});
+                        location.reload()
+                    }
+                })
+            })
+        </script>
     </body>
 </html>

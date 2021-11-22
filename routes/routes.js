@@ -70,11 +70,22 @@ router.get('/generatePurchaseOrder', purchaseOrderController.generatePurchaseOrd
 
 router.get('/getItemNamePO', purchaseOrderController.getItems);
 
+router.get('/getItemUnit', purchaseOrderController.getItemUnit);
+
 router.post('/saveNewPO', purchaseOrderController.saveNewPO);
 
 router.get('/purchaseOrder/:poID', purchaseOrderController.getPurchaseOrder);
 
 router.post('/saveGeneratePurchaseOrder', purchaseOrderController.saveGeneratePurchaseOrder);
+
+router.get('/editPO/:poID', purchaseOrderController.editPO);
+
+router.post('/updatePOItems', purchaseOrderController.updatePOItems);
+
+router.post('/updatePOStatus', purchaseOrderController.updatePOStatus);
+
+router.post('/updatePOWithPrice', purchaseOrderController.updatePOWithPrice);
+
 
 //--INVOICE--
 router.get('/invoices', invoiceController.getInvoiceList);

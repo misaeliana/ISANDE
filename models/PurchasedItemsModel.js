@@ -14,7 +14,12 @@ var PurchasedItemsSchema = new mongoose.Schema({
 		required: true
 	},
 
-	price: {
+	unitID: {
+		type:String,
+		required: true
+	},
+
+	unitPrice: {
 		type: Number,
 		required: false
 	},
@@ -22,6 +27,11 @@ var PurchasedItemsSchema = new mongoose.Schema({
 	quantity: {
 		type: Number,
 		required: true
+	},
+
+	amount: {
+		type: Number, 
+		required: false
 	},
 
 	quantityReceived: {
