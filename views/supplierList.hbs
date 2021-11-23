@@ -64,9 +64,14 @@
                             <label for="supplier-name">Supplier Name</label> <input id="supplier-name" type="text"><br>
                             <p class="error" id="error-new-supplier-name" style="margin-top: 3px; margin-bottom: 3px;"></p>
                             <label for="contact-person">Contact Person</label> <input id="contact-person" type="text"><br>
+                              <p class="error" id="error-contact-person" style="margin-top: 3px; margin-bottom: 3px;"></p>
                             <label for="contact-number">Contact Number</label> <input id="contact-number" type="number"><br>
+                             <p class="error" id="error-contact-number" style="margin-top: 3px; margin-bottom: 3px;"></p>
                             <label for="email">Email Address</label> <input id="email" type="text"><br>
+                              <p class="error" id="error-email" style="margin-top: 3px; margin-bottom: 3px;"></p>
                             <label for="address">Address</label> <input id="address" type="text"><br>
+                            
+                             <p class="error" id="error-address" style="margin-top: 3px; margin-bottom: 3px;"></p>
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -140,7 +145,7 @@
                     } 
                      else if (type == "noContactPerson") {
                         $('#contact-person').css("border", "1px solid #B00000");
-                        $('#error-contact-number').text("Invalid contact number");
+                        $('#error-contact-person').text("Please input contact person");
                     }
 
                     else if (type == "noNumber") {
@@ -150,7 +155,7 @@
 
                     else if (type == "noEmail") {
                         $('#email').css("border", "1px solid #B00000");
-                        $('#error-contact-number').text("Invalid contact number");
+                        $('#error-email').text("Invalid email");
                     }
 
 
@@ -169,7 +174,7 @@
                         return 0;
                 }   
 
-                function contactPersonValidation(number) {
+                function contactPersonValidation(contactPerson) {
                     if (contactPerson == 0 || contactPerson < 0) {
                         errorMessage("noContactPerson")
                         return 1;
@@ -188,9 +193,9 @@
                 }  
 
 
-                  function emailValidation(address) {
+                  function emailValidation(email) {
                     if (email == null || email == "") {
-                        errorMessage("noAddress")
+                        errorMessage("noEmail")
                         return 1;
                     }
                     else 
@@ -215,21 +220,21 @@
                     var contactPerson = $('#contact-person').val();
                     var email = $('#email').val();
 
-                    if (!supplierValidation(name) && !numberValidation(number) && !addressValidation(address) && !contactPersonValidation(contactPerson) && !emailValidation(email)) {
+                    if (!supplierValidation(name) && !contactPersonValidation(contactPerson) && !numberValidation(number) && !emailValidation(email) && !addressValidation(address)) {
 
                             $('#supplier-name').css("border", "1px solid #DDDDDD");
+                            $('#contact-person').css("border", "1px solid #DDDDDD");
                             $('#contact-number').css("border", "1px solid #DDDDDD");
                             $('#address').css("border", "1px solid #DDDDDD");
-                            $('#contact-person').css("border", "1px solid #DDDDDD");
                             $('#email').css("border", "1px solid #DDDDDD");
 
-                            $('#error-new-supplier-name').text("");
-                            $('#error-contact-number').text("");
-                            $('#error-address').text("");
+                            $('#error-new-supplier-name').text(""); 
                             $('#error-contact-person').text("");
-                            $('#email').text("");
+                            $('#error-contact-number').text("");
+                            $('#error-email').text("");
+                            $('#error-address').text(""); 
 
-                            $.post('/postsupplierInformation', {name, number, address, contactPerson, email}, function(result) {
+                            $.post('/postsupplierInformation', {name,contactPerson, number,, email, address}, function(result) {
                                 $('#modal-edit-supplier').modal('hide');
                                 $('#add-new-supplier').trigger('reset');
                             })
