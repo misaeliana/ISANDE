@@ -208,6 +208,14 @@ module.exports = function() {
 		});
 	},
 
+	this.getSupplierName = function(supplierID) {
+		return new Promise((resolve, reject) => {
+			db.findOne(Suppliers, {_id: supplierID}, 'name', function(result) {
+				resolve (result.name);
+			});
+		});
+	},
+
 	this.getSupplierID = function(supplierName) {
 		return new Promise((resolve, reject) => {
 			db.findOne(Suppliers, {name: supplierName}, '', function(result) {

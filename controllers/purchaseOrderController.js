@@ -24,7 +24,7 @@ const purchaseOrderController = {
 				var purchase = {
 					poID: result[i]._id,
 					date: result[i].date.toLocaleString('en-US'), 
-					supplier: result[i].supplierID,
+					supplier: await getSupplierName(result[i].supplierID),
 					amount: 0, 
 					status: await getPurchaseOrderStatus(result[i].statusID)
 				}
@@ -141,6 +141,7 @@ const purchaseOrderController = {
 				var sent = purchaseInfo.statusID
 				res.render('viewPO', {items, poInfo, sent})
 			}
+
 			//received
 			else if (purchaseInfo.statusID == "618f654646c716a39100a80c") {
 				var poInfo = await getPOInfo (purchaseInfo._id);
@@ -180,9 +181,10 @@ const purchaseOrderController = {
 
 			for (var i=0; i<items.length; i++) {
 				items[i].unit = await getSpecificUnit(items[i].unitID);
+				items[i].suppliers = suppliers
 			}
 
-			res.render('generatePO', {suppliers, items});
+			res.render('generatePO', {items});
 		}
 
 		getItems()
@@ -224,7 +226,6 @@ const purchaseOrderController = {
 							unitID: await getUnitID(items[j].unit),
 							quantity: items[j].quantity
 						}
-						console.log(item)
 						poItems.push(item);
 					}
 				}
@@ -403,14 +404,12 @@ const purchaseOrderController = {
 					complete = false
 			}
 
-			if (complete == true) { //status is received
+			if (complete) { //status is received
 				db.updateOne(Purchases, {_id: poID}, {statusID: "618f654646c716a39100a80c"}, function (flag) {
-					res.send('/purchaseOrder/' +  poID)
 				})
 			}
 			else { //status is incomplete				
 				db.updateOne(Purchases, {_id:poID}, {statusID:"618f653746c716a39100a80b"}, function(flag) {
-					res.send('/purchaseOrder/' +  poID)
 				})
 			}
 		}

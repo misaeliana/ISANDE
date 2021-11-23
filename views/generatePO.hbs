@@ -60,8 +60,6 @@
                                 <td class="supplier">
                                     <select class="dropdown-supplier">
                                         <option value="no-selected">--Select Supplier--</option>
-                                        <option value="1">Paint house</option>
-                                        <option value="2">Supplier 1</option>
                                         {{#each suppliers}}
                                             <option value="{{_id}}">{{name}}</option>
                                         {{/each}}
@@ -90,22 +88,35 @@
 
                     $('#btn-generate-PO').click(function() {
                         var purchaseItems = []
+                        var proceed;
 
                         $("#table-purchase-stocks-body > tr").each(function () {
-                            if ($(this).find('.dropdown-supplier').val() != "no-selected") {
-                                var item= {
-                                    itemDescription: $(this).children('.itemDescription').text(),
-                                    quantity: $(this).find('.quantity').val(),
-                                    unit: $(this).children('.unit').text(),
-                                    supplier: $(this).find('.dropdown-supplier').val()
+                            if ($(this).find('.dropdown-supplier').val() == "no-selected") {
+                                if (confirm("No supplier has been selected for some items. These items will not be included in the purchase order, thus will remain low-in-stock. Do you wish to proceed?")) {
+                                    proceed = true
                                 }
-                                purchaseItems.push(item);
+                                else 
+                                    proceed = false
                             }
                         })
 
-                        var purchaseString = JSON.stringify(purchaseItems)
-                        $.post('/saveGeneratePurchaseOrder', {purchaseString});
-                        //window.location.replace('/purchaseOrderList');
+                        if (proceed == true) {
+                            $("#table-purchase-stocks-body > tr").each(function () {
+                                if ($(this).find('.dropdown-supplier').val() != "no-selected") {
+                                    var item= {
+                                        itemDescription: $(this).children('.itemDescription').text(),
+                                        quantity: $(this).find('.quantity').val(),
+                                        unit: $(this).children('.unit').text(),
+                                        supplier: $(this).find('.dropdown-supplier').val()
+                                    }
+                                    purchaseItems.push(item);
+                                }
+                            })
+                            var purchaseString = JSON.stringify(purchaseItems)
+                            $.post('/saveGeneratePurchaseOrder', {purchaseString});
+                            alert("POs have been generated")
+                            window.location.replace('/purchaseOrderList');
+                        }
                     })
                 })
             </script>

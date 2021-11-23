@@ -40,7 +40,15 @@
                 <div style="display: flex;">
                     <div style="width: 50%"><h1 class="bold"> Purchase Order #"Number" </h1></div>
                     <div class="btn-status">
-                        <div><button id="btn-status">Status</button></div>
+                        {{#if newPO}}
+                            <div><button id="btn-status" style="background-color: #0F84D9;">New</button></div>
+                        {{else if sent}}
+                            <div><button id="btn-status" style="background-color: #F2A154;">Sent</button></div>
+                        {{else if received}}
+                            <div><button id="btn-status" style="background-color: #55B66A;">Received</button></div>
+                        {{else if canceled}}
+                            <div><button id="btn-status" style="background-color: #E24E3A;">Sent</button>Canceled</div>
+                        {{/if}}
                     </div>
                 </div>
             </div> 
@@ -75,7 +83,7 @@
                     <h3 class ="bold bold header-text">Order Details</h3>
                 </div>
 
-
+                {{#if newPO}}
                 <form>
                     <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="itemDescription" name="itemDescription" placeholder="Item Description">
                     <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px; text-align: right;" type="number" class="form-control" id="qty" name="qty" placeholder="Qty">
@@ -86,9 +94,10 @@
          <div style="height: 45px"></div>
             <div class="display-flex" style="margin-top: 20px">
             <div id="div-warning-new-invoice">
-            <p id="text-warning-new-PO" class="error"></p>
+                <p id="text-warning-new-PO" class="error"></p>
             </div> 
         </div>    
+        {{/if}}
 
 
             <table class="table" id="table-poItem">
@@ -163,14 +172,15 @@
                     </div>
                 {{else}}
                     <div style="display: flex;">
-                        <div class="btn-save-invoice btn-status"><button class="btn-light-blue" id="btn-update-sent-po" style="margin-bottom: 10px;">Save</button></div>
+                        <div class="btn-save-invoice btn-status"><button class="btn-light-blue" id="btn-update-sent-po" style="margin-bottom: 10px; float:right">Save</button></div>
                     </div>
                 {{/if}}
 
             </div>
+            {{#if newPO}}
+                <div class="btn-export-invoice"><button class="btn-dark-blue" id="btn-export-invoice">Export</button></div>
+            {{/if}}
 
-            <div class="btn-export-invoice"><button class="btn-dark-blue" id="btn-export-invoice">Export</button></div>
-            
             <div style="height: 20px"></div>
         </div>
 
