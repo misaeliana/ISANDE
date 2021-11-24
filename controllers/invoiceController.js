@@ -146,7 +146,34 @@ const invoiceController = {
 
 		getInformation();
 		
-	}
+	},
+    getNewInvoice: function(req, res) {
+        
+		async function getInvoiceTypes () {
+			var itype = await getAllInvoiceTypes();
+            res.render('newInvoice', {itype});
+		}	//res.sendFile( dir+"/newInvoice.html");
+        getInvoiceTypes();
+	},
+    addNewInvoice: function(req,res){
+            var invoice = {
+                invoiceID: "4",
+                customerID: req.body.custID,
+                date: req.body.date,
+                typeID: req.body.typeID,
+                statusID:req.body.statusID,
+                subtotal: 0,
+                VAT: 0,
+                discount: 0,
+                total:0,
+                employeeID: "6187c88ffa9a0c35600c54a8"
+            }
+    
+            db.insertOne (Invoices, invoice, function(flag) {
+                console.log("Added successfully!")
+                if (flag) { }
+            })
+        }
 };
 
 module.exports = invoiceController;

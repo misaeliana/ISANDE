@@ -305,4 +305,11 @@ module.exports = function() {
 			});
 		});
 	}
+	this.getAllInvoiceTypes = function() {
+		return new Promise((resolve, reject) => {
+			db.findMany(InvoiceTypes, {}, 'type', function(result) {
+				resolve(result);
+			});
+		});
+	}
 };
