@@ -3,6 +3,8 @@ const db = require('../models/db.js');
 
 const Items = require('../models/ItemsModel.js');
 
+const ItemStatus = require('../models/ItemStatusModel.js')
+
 const Suppliers = require('../models/SuppliersModel.js');
 
 const PurchaseOrderStatus = require('../models/PurchaseOrderStatusModel.js');
@@ -25,15 +27,16 @@ const purchaseOrderController = {
 					poID: result[i]._id,
 					date: result[i].date.toLocaleString('en-US'), 
 					supplier: await getSupplierName(result[i].supplierID),
-					amount: 0, 
+					amount: "P " + parseFloat(result[i].total).toFixed(2), 
 					status: await getPurchaseOrderStatus(result[i].statusID)
 				}
 				purchases.push(purchase)
 			}
-			res.render('purchaseOrderList', {purchases});
+			var statuses = await getAllPurchaseOrderStatus()
+			res.render('purchaseOrderList', {purchases, statuses});
 		}
 
-		db.findMany(Purchases, {}, 'date supplierID statusID', function(result) {
+		db.findMany(Purchases, {}, 'date supplierID statusID total', function(result) {
 			getPurchaseInfo(result);
 		})
 		
@@ -71,7 +74,7 @@ const purchaseOrderController = {
 		async function saveItems(purchaseID, items) {
 			for (var i=0; i<items.length; i++) {
 				items[i].purchaseOrderID = purchaseID
-				items[i].itemID = await getItemID(items[i].itemDesc);
+				items[i].itemID = await getItemID(items[i].itemDesc)
 				items[i].unitID = await getUnitID(items[i].unit)
 			}
 
@@ -86,6 +89,9 @@ const purchaseOrderController = {
 			supplierID: "Hello",
 			employeeID: "Hi",
 			date: date,
+			vat: 0,
+			subtotal: 0,
+			total: 0,
 			statusID: "618f650546c716a39100a809"
 		}
 		var purchaseID;
@@ -142,6 +148,12 @@ const purchaseOrderController = {
 				res.render('viewPO', {items, poInfo, sent})
 			}
 
+			//incomplete
+			else if (purchaseInfo.statusID == "618f653746c716a39100a80b") {
+				var incomplete = purchaseInfo.statusID
+				res.render('viewPO', {items, poInfo, incomplete})
+			}
+
 			//received
 			else if (purchaseInfo.statusID == "618f654646c716a39100a80c") {
 				var poInfo = await getPOInfo (purchaseInfo._id);
@@ -156,6 +168,10 @@ const purchaseOrderController = {
 				}
 				
 				var received = purchaseInfo.statusID
+
+				poInfo.fvat = "P " + parseFloat(poInfo.vat).toFixed(2);
+				poInfo.fsubtotal = "P " + parseFloat(poInfo.subtotal).toFixed(2)
+				poInfo.ftotal = "P " + parseFloat(poInfo.total).toFixed(2)
 				res.render('viewPO', {items, poInfo, received})
 			}
 		}
@@ -272,16 +288,18 @@ const purchaseOrderController = {
 				items[i].unitName = await getSpecificUnit(items[i].unitID)
 			}
 			var poID = req.params.poID
+			var units = await getUnits();
+			var inventoryTypes = await getInventoryTypes()
 
 			if (statusID == "618f650546c716a39100a809") {
 				var newPO = statusID;
 				//renders delete button and probably cancel PO button
-				res.render('editPO', {items, poID, newPO})
+				res.render('editPO', {items, poID, units, inventoryTypes,newPO})
 			}
 			else if (statusID == "618f652746c716a39100a80a") {
 				var sent = statusID;
 				//renders input for price 
-				res.render('editPO', {items, poID, sent})
+				res.render('editPO', {items, poID, units, inventoryTypes, sent})
 			}
 		
 		}
@@ -385,9 +403,57 @@ const purchaseOrderController = {
 		}
 
 		function updatePOItemInfo (poID, item) {
-			db.updateOne (PurchasedItems, {purchaseOrderID:poID, itemID:item.itemID}, {$set: {unitPrice:item.price, amount:item.amount, quantityReceived: item.quantityReceived}}, function(flag) {
+			var unitPrice = parseFloat(item.price)
+			var amount  = parseFloat(item.amount)
+			db.updateOne (PurchasedItems, {purchaseOrderID:poID, itemID:item.itemID}, {$set: {unitPrice:unitPrice, amount:amount, quantityReceived: item.quantityReceived}}, function(flag) {
 				if (flag) { }
 			})
+		}
+
+		//----FUNCTIONC FOR UPDATE INVENTORY QUANTITY
+		function getCurrentQuantity(itemID) {
+			return new Promise((resolve, reject) => {
+				db.findOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'quantityAvailable', function(result) {
+					resolve(result.quantityAvailable);
+				})
+			})
+		}
+
+		function getReorderLevel (itemID) {
+			return new Promise((resolve, reject) => {
+				db.findOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'reorderLevel', function(result) {
+					resolve(result.reorderLevel);
+				})
+			})
+		}
+
+		function updateQuantity(itemID, newQuantity) {
+			return new Promise((resolve, reject) => {
+				db.updateOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {quantityAvailable:newQuantity}, function(flag) {
+
+				})
+			})
+		}
+
+		function updateQuantityInStock(itemID, newQuantity) {
+			return new Promise((resolve, reject) => {
+				db.updateOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {$set:{quantityAvailable:newQuantity, statusID:"618b6c82a07cb824ce7bfca2"}}, function(flag) {
+
+				})
+			})
+		}
+
+		async function updateInventory(itemID, quantityReceived) {
+			var reorderLevel = await getReorderLevel(itemID) 
+
+			var currentQuantity = await getCurrentQuantity(itemID);
+			var newQuantity = parseInt(currentQuantity) + parseInt (quantityReceived)
+			
+			//item is still low in stock
+			if (reorderLevel > newQuantity)
+				updateQuantity (itemID, newQuantity)
+			else
+				updateQuantityInStock(itemID, newQuantity)
 		}
 
 		async function updatePO(items, poID) {
@@ -396,11 +462,13 @@ const purchaseOrderController = {
 			for (var i=0; i<currentPOItems.length; i++) {
 				items[i].itemID = await getItemID(items[i].itemDesc)
 				updatePOItemInfo(poID, items[i]);
+				updateInventory (items[i].itemID, items[i].quantityReceived);
 			}
 
 			var complete = true
 			for (var i=0; i<currentPOItems.length && complete; i++) {
-				if (currentPOItems.quantity != currentPOItems.quantityReceived)
+				//quantity received is less that ordered quantity
+				if (items[i].quantityReceived < currentPOItems[i].quantity)
 					complete = false
 			}
 
@@ -408,7 +476,7 @@ const purchaseOrderController = {
 				db.updateOne(Purchases, {_id: poID}, {statusID: "618f654646c716a39100a80c"}, function (flag) {
 				})
 			}
-			else { //status is incomplete				
+			else if (!complete){ //status is incomplete				
 				db.updateOne(Purchases, {_id:poID}, {statusID:"618f653746c716a39100a80b"}, function(flag) {
 				})
 			}
@@ -418,9 +486,9 @@ const purchaseOrderController = {
 		
 		var items = JSON.parse(req.body.itemsString);
 		var poID = req.body.poID;
-		var subtotal = req.body.subtotal;
-		var vat  = req.body.vat;
-		var total = req.body.total;
+		var subtotal = parseFloat(req.body.subtotal);
+		var vat  = parseFloat(req.body.vat);
+		var total = parseFloat(req.body.total);
 		var dateReceived = new Date();
 
 		db.updateOne(Purchases, {_id:poID}, {$set: {dateReceived: dateReceived, subtotal:subtotal, vat: vat, total:total}}, function(flag) {

@@ -51,16 +51,18 @@
                 
                 <br>
 
-                <label for="dropdown-inventory-status" style="margin-right: 10px">Type</label>
-                <select class="dropdown" id="dropdown-inventory-status" style="margin-right: 10px">
+                <label for="dropdown-po-status" style="margin-right: 10px">Status</label>
+                <select class="dropdown" id="dropdown-po-status" style="margin-right: 10px">
                     <option value="all-type" selected>All</option>
-                        <option value="{{_id}}">{{ingredientType}}</option>
+                        {{#each statuses}}
+                            <option value="{{purchaseOrderStatus}}">{{purchaseOrderStatus}}</option>
+                        {{/each}}
                 </select>
 
                 <div style="height: 20px"></div>
             </div>
 
-                <table class="table">
+                <table class="table" id="table-po">
                     <thead class="table-head" style="top: 240px;">
                         <tr>
                             <th>Date</th>
@@ -78,7 +80,7 @@
                                 <td></td>
                                 <td>{{supplier}}</td>
                                 <td>{{amount}}</td>
-                                <td>{{status}}</td>
+                                <td class="btn-status btn-{{status}} status-id">{{status}}</td>
                             </tr>
                         {{/each}}
                     </tbody>
@@ -95,6 +97,17 @@
 
                 $('#btn-new-PO').click(function() {
                     window.location = '/newPurchaseOrder'
+                })
+
+                $('#dropdown-po-status').change(function() {
+                    $('#table-po tr').show();
+                    var filter = $('#dropdown-po-status').val()
+                    
+                    $('#table-po > tbody > tr').each(function(index) {
+                        var statusID = $(this).children('.btn-status').text()
+                        if (filter != statusID && filter!="all-type")
+                            $(this).toggle();
+                    })
                 })
             })
         </script>

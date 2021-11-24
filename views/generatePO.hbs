@@ -88,7 +88,7 @@
 
                     $('#btn-generate-PO').click(function() {
                         var purchaseItems = []
-                        var proceed;
+                        var proceed = true;
 
                         $("#table-purchase-stocks-body > tr").each(function () {
                             if ($(this).find('.dropdown-supplier').val() == "no-selected") {
@@ -100,7 +100,7 @@
                             }
                         })
 
-                        if (proceed == true) {
+                        if (proceed) {
                             $("#table-purchase-stocks-body > tr").each(function () {
                                 if ($(this).find('.dropdown-supplier').val() != "no-selected") {
                                     var item= {

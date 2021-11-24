@@ -105,6 +105,32 @@
     border:  #fa3b22;
 }
 
+.btn-New {
+    background-color: #0F84D9;
+    border:  #F2A154;
+}
+
+.btn-Sent {
+    background-color: #F2A154;
+    border:  #F2A154;
+}
+
+.btn-Received{
+    background-color: #55B66A;
+    border:  #55B66A;
+}
+
+.btn-Incomplete {
+    background-color: #F2A154;
+    border:  #F2A154;
+}
+
+.btn-Canceled {
+    background-color: #fa3b22;
+    border:  #fa3b22;
+}
+
+
 .btn-light-grey {
     background-color: #f0efef;
     width: 150px;
