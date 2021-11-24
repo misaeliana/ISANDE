@@ -11,6 +11,8 @@ const InvoiceStatus = require('../models/InvoiceStatusModel.js');
 
 const InvoiceItems = require('../models/InvoiceItemsModel.js');
 
+const deliveries = require('../models/DeliveriesModel.js');
+
 require('../controllers/helpers.js')();
 
 const invoiceController = {
@@ -47,7 +49,19 @@ const invoiceController = {
 
         // db.insertOne (InvoiceItems, invoiceItem, function(flag) {
 		// 	if (flag) { }
-		// });
+        // });
+        
+        // var delivery = {
+		// 	invoice_id: "6198924057401a04da061a72",
+        //     deliveryDate: "10/12/21",
+        //     dateDelivered: null,
+		// 	deliveryPersonnel: "juan_cruz@gmail.com",
+		// 	deliveryNotes: null,
+        // };
+        
+        // db.insertOne (deliveries, delivery, function(flag) {
+        //     	if (flag) { }
+        //     });
 
 		async function getInformation() {
 
@@ -86,6 +100,7 @@ const invoiceController = {
             var items = [];
 
 			var invoiceInfo = {
+                invoice_id: invoice_id,
                 invoiceID: invoice.invoiceID,
                 customerName: await getSpecificCustomer(invoice.customerID),
                 date: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
@@ -97,6 +112,17 @@ const invoiceController = {
                 total: parseFloat(invoice.total).toFixed(2),
                 employeeName: employee.name
             };
+
+            if (invoiceInfo.type == "Delivery") {
+                var delivery = await getDeliveryInformation(invoice_id);
+
+                employeeName = await getEmployeeInfo(delivery.deliveryPersonnel);
+
+                delivery.deliveryPersonnel = employeeName.name; 
+
+                // get customer info
+                var customer = await getCustomerInfo(invoice.customerID);
+            }
             
             var invoiceItems = await getInvoiceItems(invoice_id);
 
@@ -115,7 +141,7 @@ const invoiceController = {
                 items.push(item);
             }
 
-			res.render('viewInvoice', {invoiceInfo, items});
+			res.render('viewInvoice', {invoiceInfo, items, delivery, customer});
 		}
 
 		getInformation();

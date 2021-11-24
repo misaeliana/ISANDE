@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 // defines the schema for collection `users`
 var DeliveriesSchema = new mongoose.Schema({
 
-	invoiceID: {
+	invoice_id: {
 		type: String,
 		required: true
 	},

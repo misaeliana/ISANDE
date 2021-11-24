@@ -35,7 +35,7 @@
         <div class="content">
             <div> <!-- ADD FIXED -->
                 <div style="display: flex;">
-                    <div style="width: 50%"><h1 class="bold"> Invoice #"Number" </h1></div>
+                    <div style="width: 50%"><h1 class="bold"> Invoice #{{invoiceInfo.invoiceID}} </h1></div>
                     <div class="btn-status" style="margin-top: 30px">
                         <div><button class="btn-status btn-{{invoiceInfo.status}}" style="width: 100px; display: inline-block">Status</button></div>
                     </div>
@@ -56,11 +56,11 @@
                 </div>
                 <div class="label-container" id="address-div">
                     <div class="override-label"> Address </div> 
-                    <div class="label-content ">  </div>
+                    <div class="label-content ">{{customer.address}}</div>
                 </div>
                 <div class="label-container" id="contantNum-div"> 
                     <div class="override-label"> Contact Number </div> 
-                    <div class="label-content">  </div>
+                    <div class="label-content">{{customer.number}}</div>
                 </div>
             
                 <div style="height: 20px"></div>
@@ -69,7 +69,7 @@
 
                     <div class="label-container"> 
                         <div class="override-label"> Type </div> 
-                        <div class="label-content">{{invoiceInfo.type}}</div>
+                        <div class="label-content" id="invoice-type">{{invoiceInfo.type}}</div>
                     </div>
 
                     <div class="label-container"> 
@@ -80,18 +80,18 @@
                     <div style="display: flex;" id="date-div">
                         <div class="label-container" style="width: 49%; margin-right: 2%;">
                             <div class="override-label">Delivery Date</div> 
-                            <div class="label-content"> </div>
+                            <div class="label-content">{{delivery.deliveryDate}}</div>
                         </div>
 
                         <div class="label-container" style="width: 49%" >
                             <div class="override-label">Date Delivered</div> 
-                            <div class="label-content">  </div>
+                            <div class="label-content">{{delivery.dateDelivered}}</div>
                         </div>
                     </div>
 
                     <div class="label-container" id="deliveredBy-div">
                         <div class="override-label">Delivered By</div> 
-                    <div class="label-content">  </div>
+                    <div class="label-content">{{delivery.deliveryPersonnel}}</div>
                         </div>
 
                     <div class="label-big-container" style="height: 100px" id="notes-div"> 
@@ -99,7 +99,7 @@
                             <div class="navbar-logo">Notes</div>
                             
                         </div>
-                        <div class="label-wide-content" style="height: 40px"></div>
+                        <div class="label-wide-content" style="height: 40px">{{delivery.deliveryNotes}}</div>
                     </div> 
 
 
@@ -152,11 +152,13 @@
                     <div style="height: 20px"></div>
         </div>
          <script>
-            $("#address-div").css("display", "none");
-            $("#contantNum-div").css("display", "none");
-            $("#date-div").css("display", "none");
-            $("#deliveredBy-div").css("display", "none");
-            $("#notes-div").css("display", "none");
+            if ($("#invoice-type").text() == "In-Store") {
+                $("#address-div").css("display", "none");
+                $("#contantNum-div").css("display", "none");
+                $("#date-div").css("display", "none");
+                $("#deliveredBy-div").css("display", "none");
+                $("#notes-div").css("display", "none");
+            }
         </script>
     </body>
 </html>

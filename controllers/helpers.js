@@ -31,6 +31,8 @@ const InvoiceItems = require('../models/InvoiceItemsModel.js');
 
 const Customers = require('../models/CustomersModel.js');
 
+const Deliveries = require('../models/DeliveriesModel.js');
+
 module.exports = function() {
 	this.getAllPositions = function() {
 		return new Promise((resolve, reject) => {
@@ -256,6 +258,14 @@ module.exports = function() {
 		});
 	},
 
+	this.getCustomerInfo = function(customerID) {
+		return new Promise((resolve, reject) => {
+			db.findOne(Customers, {_id: customerID}, '', function(result) {
+				resolve (result);
+			});
+		});
+	},
+
 	this.getSpecificInvoiceType = function(invoiceTypeID) {
 		return new Promise((resolve, reject) => {
 			db.findOne(InvoiceTypes, {_id: invoiceTypeID}, 'type', function(result) {
@@ -283,6 +293,14 @@ module.exports = function() {
 	this.getInvoiceItems = function(_id) {
 		return new Promise((resolve, reject) => {
 			db.findMany(InvoiceItems, {invoice_id: _id}, '', function(result) {
+				resolve (result);
+			});
+		});
+	},
+
+	this.getDeliveryInformation = function(invoice_id) {
+		return new Promise((resolve, reject) => {
+			db.findOne(Deliveries, {invoice_id: invoice_id}, '', function(result) {
 				resolve (result);
 			});
 		});
