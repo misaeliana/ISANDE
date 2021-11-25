@@ -109,6 +109,19 @@
                             $(this).toggle();
                     })
                 })
+
+                $('#search-field').keyup(function() {
+                     $('#table-po tr').show();
+                    var searchItem = $(this).val().toLowerCase();
+                 
+                    $('#table-po > tbody > tr').each(function(index) {
+                        var poNumber = $(this).children('td:eq(1)').text();
+                        var supplierName = $(this).children('td:eq(2)').text().toLowerCase();
+
+                        if (!poNumber.includes(searchItem) && !supplierName.includes(searchItem))
+                            $(this).toggle();
+                    })
+                })
             })
         </script>
     </body>

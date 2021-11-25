@@ -114,7 +114,7 @@ const purchaseOrderController = {
 		var purchase = {
 			purchaseOrderNumber: req.body.poNumber,
 			supplierID: "Hello",
-			employeeID: "Hi",
+			employeeID: "6187b8b0680957078c8b52e7",
 			date: date,
 			vat: 0,
 			subtotal: 0,
@@ -134,6 +134,14 @@ const purchaseOrderController = {
 			return new Promise((resolve, reject) => {
 				db.findMany(PurchasedItems, {purchaseOrderID: purchaseID}, 'itemID unitID quantity', function(result) {
 					resolve(result);
+				})
+			})
+		}
+
+		function getSupplierInfo(supplierID) {
+			return new Promise((resolve, reject) => {
+				db.findOne(Suppliers, {_id:supplierID}, 'name contactPerson number address', function(result) {
+					resolve(result)
 				})
 			})
 		}
@@ -162,23 +170,25 @@ const purchaseOrderController = {
 			}
 
 			var poInfo = purchaseInfo
+			var supplier = await getSupplierInfo(poInfo.supplierID)
 			poInfo.fdateMade = poInfo.date.toLocaleString('en-US');
+			poInfo.employeeName = await getEmployeeName(poInfo.employeeID)
 
 			//new po
 			if (purchaseInfo.statusID == "618f650546c716a39100a809") {
 				var newPO = purchaseInfo.statusID
-				res.render('viewPO', {items, poInfo, newPO})
+				res.render('viewPO', {items, poInfo, newPO, supplier})
 			}
 			//sent
 			else if (purchaseInfo.statusID == "618f652746c716a39100a80a") {
-				var sent = purchaseInfo.statusID
-				res.render('viewPO', {items, poInfo, sent})
+				var released = purchaseInfo.statusID
+				res.render('viewPO', {items, poInfo, released, supplier})
 			}
 
 			//incomplete
 			else if (purchaseInfo.statusID == "618f653746c716a39100a80b") {
 				var incomplete = purchaseInfo.statusID
-				res.render('viewPO', {items, poInfo, incomplete})
+				res.render('viewPO', {items, poInfo, incomplete, supplier})
 			}
 
 			//received
@@ -203,7 +213,7 @@ const purchaseOrderController = {
 			}
 		}
 
-		db.findOne(Purchases, {_id:req.params.poID}, '_id purchaseOrderNumber supplierID date statusID', function(result) {
+		db.findOne(Purchases, {_id:req.params.poID}, '_id purchaseOrderNumber supplierID employeeID date statusID', function(result) {
 			getItems(result)
 		})
 	},

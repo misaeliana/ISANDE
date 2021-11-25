@@ -42,12 +42,12 @@
                     <div class="btn-status">
                         {{#if newPO}}
                             <div><button id="btn-status" style="background-color: #0F84D9;">New</button></div>
-                        {{else if sent}}
-                            <div><button id="btn-status" style="background-color: #F2A154;">Sent</button></div>
+                        {{else if released}}
+                            <div><button id="btn-status" style="background-color: #F2A154;">Released</button></div>
                         {{else if received}}
                             <div><button id="btn-status" style="background-color: #55B66A;">Received</button></div>
                         {{else if canceled}}
-                            <div><button id="btn-status" style="background-color: #E24E3A;">Sent</button>Canceled</div>
+                            <div><button id="btn-status" style="background-color: #E24E3A;">Canceled</button>Canceled</div>
                         {{/if}}
                     </div>
                 </div>
@@ -196,7 +196,7 @@
                 </tbody>
             </table>
 
-            {{#if sent}}
+            {{#if released}}
                 <div class="summary-container">
                     <div class="summary-text">Subtotal</div>
                     <div class="summary-info-container"><div class="summary-info" id="subtotal">P 0.00</div></div>

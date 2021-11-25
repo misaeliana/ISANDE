@@ -39,12 +39,12 @@
                     <div class="btn-status">
                         {{#if newPO}}
                             <div><button id="btn-status" style="background-color: #0F84D9;">New</button></div>
-                        {{else if sent}}
-                            <div><button id="btn-status" style="background-color: #F2A154;">Sent</button></div>
+                        {{else if released}}
+                            <div><button id="btn-status" style="background-color: #F2A154;">Released</button></div>
                         {{else if received}}
                             <div><button id="btn-status" style="background-color: #55B66A;">Received</button></div>
                         {{else if canceled}}
-                            <div><button id="btn-status" style="background-color: #E24E3A;">Sent</button>Canceled</div>
+                            <div><button id="btn-status" style="background-color: #E24E3A;">Canceled</button></div>
                         {{/if}}
                     </div>
                 </div>
@@ -54,7 +54,7 @@
             <div>
                 <div class="label-container">
                     <div class="override-label"> Processed By </div> 
-                    <div class="label-content" id="view-PO-processed-by">  </div>
+                    <div class="label-content" id="view-PO-processed-by">{{poInfo.employeeName}}</div>
                 </div>
                 <div class="label-container">
                     <div class="override-label"> Date Made </div> 
@@ -70,21 +70,21 @@
                 <div>
                     <div class="label-container">
                         <div class="override-label"> Name </div> 
-                        <div class="label-content" id="view-PO-name-content">  </div>
+                        <div class="label-content" id="view-PO-name-content">{{supplier.name}}</div>
                     </div>
                     <div class="label-container">
                         <div class="override-label"> Contact Person </div> 
-                        <div class="label-content" id="view-PO-contact-person-content">  </div>
+                        <div class="label-content" id="view-PO-contact-person-content">{{supplier.contactPerson}}</div>
                     </div>
                     <div class="label-container">
                         <div class="override-label"> Contact Number </div> 
-                        <div class="label-content" id="view-PO-contact-number">  </div>
+                        <div class="label-content" id="view-PO-contact-number">{{supplier.number}}</div>
                     </div>
                     <div class="label-big-container" style="height: 100px"> 
                         <div class="label-wide">
                             <div class="navbar-logo">Address</div> 
                         </div>
-                        <div class="label-wide-content" id="view-PO-address-content"style="height: 50px"></div>
+                        <div class="label-wide-content" id="view-PO-address-content"style="height: 50px">{{supplier.address}}</div>
                     </div> 
                     
                 </div>

@@ -66,6 +66,14 @@ module.exports = function() {
 		});
 	},
 
+	this.getEmployeeName = function(employeeID) {
+		return new Promise((resolve, reject) => {
+			db.findOne(Employees, {_id: employeeID}, 'name', function(result) {
+				resolve (result.name);
+			});
+		});
+	},
+
 	this.getInventoryTypes = function() {
 		return new Promise((resolve, reject) => {
 			db.findMany(InventoryTypes, {}, '', function(result) {

@@ -41,8 +41,7 @@ const employeeController = {
 			password: req.body.password,
 			number: req.body.number,
 			positionID: req.body.position,
-			employeeStatusID: "Active",
-			informationStatusID: "Active"
+			informationStatusID: "618a7830c8067bf46fbfd4e4"
 		};
 
 		db.insertOne(Employees, employee, function (flag) {
