@@ -122,20 +122,20 @@
                     <br> 
                     <br> 
                     <div class="summary-container">
-                        <div class="summary-text">Subtotal</div>
-                        <div class="summary-info-container"><div class="summary-info" style="text-align:right">P 200.00</div></div>
+                        <div class="summary-text">Subtotal </div>
+                        <div class="summary-info-container"><div class="summary-info" style="text-align:right"> ₱<div id ="subtotalbox"></div></div></div>
                     </div>
                     <div class="summary-container">
-                        <div class="summary-text">VAT</div>
-                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
+                        <div class="summary-text">VAT </div>
+                        <div class="summary-info-container" ><div class="summary-info"> ₱<div id ="vatbox"></div></div></div>
                     </div>
                     <div class="summary-container">    
-                        <div class="summary-text">Discount</div>
-                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
+                        <div class="summary-text">Discount </div>
+                        <div class="summary-info-container"><div class="summary-info"> ₱<div id ="disbox"></div></div></div>
                     </div>
                     <div class="summary-container">
-                        <div class="summary-text">Total</div>
-                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
+                        <div class="summary-text">Total </div>
+                        <div class="summary-info-container" ><div class="summary-info"> ₱<div id ="totbox"></div></div></div>
                     </div>
 
                     <div style="height: 10px"></div>
@@ -152,6 +152,7 @@
                     <div style="height: 20px"></div>
         </div>
 
+
         <script>
             $(document).ready(function() {
                 var today = new Date();
@@ -162,6 +163,17 @@
                 $('#dateToday').text(today);
                 var value = "Delivery";
 
+                    function filled(itemDesc, qty) {
+                    var itemDesc = $('#itemDescription').val();
+                    var qty = $('#qty').val();
+
+                    if (itemDesc!="" && qty!="")
+                        return 0
+                    else if ((itemDesc == "" && qty != "") || (itemDesc == "" && qty == ""))
+                        return 1
+                    else if (qty == "" && itemDesc !="")
+                        return 2
+                }
 
 
                 $('#drop-down-new-invoice-type').on('change', function() {
@@ -175,7 +187,7 @@
                     $('#address').css('display', 'none');
                     $('#contactNumber').css('display', 'none');
                     }
-                    alert( $(this).find(":selected").val() );
+                    //alert( $(this).find(":selected").val() );
                 })
 
                 function capitalize(string){
@@ -185,20 +197,75 @@
                     return words.join(' ');
                 };
 
+                function removeItem (elementID){
+                    var element = document.getElementById(elementID);
+                    element.parentNode.removeChild(element);
+                }
+                $("#itemDescription" ).autocomplete({
+                    source: function(request, response) {
+                    $.ajax({
+                                url: `/getItemNamePO?query=${request.term}`,
+                                dataType: "json",
+                                data: {
+                                    //request.term refers to the value currently in the text input
+                                    term: request.term,
+                                },
+                                success: function (data) {
+                                    $('#text-warning-new-PO').css('display', 'none')
+                                    $("#itemDescription").css("border", "1px solid #DDDDDD");
+                                    response(data);
+                                }
+                         });
+                    }, response: function (event, ui) {
+                        if (ui.content.length === 0) 
+                            $('#text-warning-new-PO').css('display', 'block')
 
+                        else 
+                            $('#text-warning-new-PO').css('display','none')
+                    }   
+                });
+                let amount = 0;
                 $('#addItem').click(function() {
-                    var itemName = $('#itemDescription').val();
-                    var quantity = $('#qty').val();
-                    var newRow = "<tr><th>"+ 'itemdescription' + 
-                        "</th><th>" + 'QTY' + "</th><th>" + 'Unit' +
-                        "</th><th>" + 'UnitPRice' + "</th><th>" +
-                        'Discount' + "</th><th>" + 'Amount' + "</th><th></th></tr>"
-                     $(newRow).appendTo($("#table-body-item-list"));
-                    //statement to get item info from db
+                   var itemDesc = $('#itemDescription').val();
+                   var quantity = $('#qty').val();
+                   var discount = $('#discount').val();
+                   
+                    
+                    if (filled(itemDesc, qty) == 0) {
+                    $.get('/getItemPrice', {itemDesc}, function (result) {
+                        var sellingPrice = result.sellingPrice;
+                        var totalPrice = sellingPrice*quantity;
+                        amount += totalPrice;
+                        var sub = amount - (amount*.12).toFixed(2);
+                        var vat = amount *.12;
+                        $('#table-body-item-list').append(
+                        `<tr>
+                            <td class="itemDescription">${itemDesc}</td>
+                            <td class="qty">${quantity}</td>
+                            <td class="unit">Piece</td>
+                            <td class="price">${sellingPrice}</td>
+                            <td class="discount">${discount}</td>
+                            <td class = "amount">${totalPrice}</td>
+                            <td><button class="delete-button add-stock-delete-btn"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
+                        </tr>`);
+                        console.log(amount);
+                        $('#subtotalbox').val(sub);
+                        $('#subtotalbox').text(sub);
+                        $('#vatbox').val(vat);
+                        $('#vatbox').text(vat);
+                        $('#disbox').val('0');
+                        $('#disbox').text('0');
+                        $('#totbox').val(amount);
+                        $('#totbox').text(amount)
+                    })
+
+                }
+                    
+                    //statement to get item info from db*/
 
                     
                 }) 
-
+                
                 $('#btn-save-invoice').click(function() {
                     //var orderedItems = [];
                    /* $("#table-body-item-list > tr").each(function () {
@@ -210,10 +277,12 @@
                         orderedItems.push(item);
                     }); */
                     //var custname = capitalize($('#customerName').val());
+
                     var custID = "6198e7cb519d8741ec31ec5d";
                     var date = $('#delivery-date').val();
                     var typeID = $('#drop-down-new-invoice-type').val();
                     var statusID = '0';
+
                     switch(typeID) {
                     case '6197862b09243e3616834793':
                     statusID = '619785d78094faf8c10d1484';
@@ -222,15 +291,19 @@
                     statusID = '619785b0d9a967328c1e8fa6'
                     break;
                     default:}
-                    var subt = 0;
-                    var vat = 0;
-                    var disc = 0;
+
+
+                    var subtotal = $('#subtotalbox').val();
+                    var VAT = $('#vatbox').val();
+                    var discount = $('#disbox').val();
+                    var total = $('#totbox').val();
+                 
+
+
+    
                     var employeeID = "6187c88ffa9a0c35600c54a8"
 
-                    $.post('/createNewInvoice', {custID,date,typeID,statusID,subt,vat,disc,employeeID}, function(result) {
-                            
-                                
-                            })
+                $.post('/createNewInvoice', {custID,date,typeID,statusID,subtotal,VAT,discount,total,employeeID}, function(result) {})
 
                 })
             }) 

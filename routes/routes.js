@@ -92,4 +92,10 @@ router.get('/invoices', invoiceController.getInvoiceList);
 
 router.get('/invoices/:invoiceID', invoiceController.getViewSpecificInvoice);
 
+router.get('/newInvoice', invoiceController.getNewInvoice);
+
+router.post('/createNewInvoice', invoiceController.addNewInvoice);
+
+router.get('/getItemPrice', invoiceController.getItemPrice);
+
 module.exports = router;

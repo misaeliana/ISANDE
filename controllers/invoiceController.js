@@ -157,15 +157,15 @@ const invoiceController = {
 	},
     addNewInvoice: function(req,res){
             var invoice = {
-                invoiceID: "4",
+                invoiceID: "mock",
                 customerID: req.body.custID,
                 date: req.body.date,
                 typeID: req.body.typeID,
                 statusID:req.body.statusID,
-                subtotal: 0,
-                VAT: 0,
-                discount: 0,
-                total:0,
+                subtotal: req.body.subtotal,
+                VAT: req.body.VAT,
+                discount: req.body.discount,
+                total:req.body.total,
                 employeeID: "6187c88ffa9a0c35600c54a8"
             }
     
@@ -173,7 +173,16 @@ const invoiceController = {
                 console.log("Added successfully!")
                 if (flag) { }
             })
+        },
+        getItemPrice: function(req, res) {
+            db.findOne (Items, {itemDescription:req.query.itemDesc},'itemDescription sellingPrice', function (result) {
+                    res.send(result);
+           
+                //reason for the for loop: https://stackoverflow.com/questions/5077409/what-does-autocomplete-request-server-response-look-like
+            })
         }
+        
+        
 };
 
 module.exports = invoiceController;
