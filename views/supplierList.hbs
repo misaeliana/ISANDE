@@ -3,7 +3,7 @@
     <head>
         <title> Suppliers </title>
         <meta name="description" content="Supplier List">
-        <meta name="keyword" content="Moderna, Invoice List">
+        <meta name="keyword" content="Moderna, Supplier List">
         <link rel="stylesheet" type="text/css" href="../public/css/general.css">
         <link rel="stylesheet" type="text/css" href="../public/css/list.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -92,7 +92,7 @@
                     <tr>
                         <th>Name</th>
                         <th>Contact Number</th>
-                        <th>Email Address</th>
+                        <th>Email</th>
                     </tr>
                 </thead>
                 <tbody> 
@@ -100,7 +100,7 @@
                             <tr class="link" style="cursor: pointer" data-href="/supplier/{{supplierID}}">
                                 <td>{{name}}</td>
                                 <td>{{number}}</td>
-                                <td>{{address}}</td>
+                                <td>{{email}}</td>
                             </tr>
                         {{/each}}
                 </tbody>
