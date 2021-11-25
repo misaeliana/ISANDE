@@ -26,6 +26,7 @@ const purchaseOrderController = {
 				var purchase = {
 					poID: result[i]._id,
 					date: result[i].date.toLocaleString('en-US'), 
+					poNumber: result[i].purchaseOrderNumber,
 					supplier: await getSupplierName(result[i].supplierID),
 					amount: "P " + parseFloat(result[i].total).toFixed(2), 
 					status: await getPurchaseOrderStatus(result[i].statusID)
@@ -36,14 +37,26 @@ const purchaseOrderController = {
 			res.render('purchaseOrderList', {purchases, statuses});
 		}
 
-		db.findMany(Purchases, {}, 'date supplierID statusID total', function(result) {
+		db.findMany(Purchases, {}, 'date purchaseOrderNumber supplierID statusID total', function(result) {
 			getPurchaseInfo(result);
 		})
 		
 	},
 
 	getCreateNewPurchaseOrder: function(req, res) {
-		res.render('newPO');
+		db.findMany(Purchases, {}, '', function(result) {
+			var length = result.length - 1;
+			var newPONumber; 
+
+			//no PO in the db yet
+			if (length == -1)
+				newPONumber = 1
+			else
+				newPONumber = result[length].purchaseOrderNumber+1
+
+			res.render('newPO', {newPONumber});
+		})
+		
 	},
 
 	getItems: function(req, res) {
@@ -69,6 +82,19 @@ const purchaseOrderController = {
 		})
 	},
 
+	previousPONumber: function(req, res) {
+		db.findMany(Purchases, {}, '', function(result) {
+
+			if (result.length == 0)
+				res.send("none")
+			else {
+				var length = result.length-1
+				var prevPoNumber = result[length].purchaseOrderNumber.toString();
+				res.send(prevPoNumber)
+			}
+		})
+	},
+
 	saveNewPO: function(req, res) {
 
 		async function saveItems(purchaseID, items) {
@@ -86,6 +112,7 @@ const purchaseOrderController = {
 		var items = JSON.parse(req.body.itemsString);
 		var date = req.body.date
 		var purchase = {
+			purchaseOrderNumber: req.body.poNumber,
 			supplierID: "Hello",
 			employeeID: "Hi",
 			date: date,
@@ -176,7 +203,7 @@ const purchaseOrderController = {
 			}
 		}
 
-		db.findOne(Purchases, {_id:req.params.poID}, '_id supplierID date statusID', function(result) {
+		db.findOne(Purchases, {_id:req.params.poID}, '_id purchaseOrderNumber supplierID date statusID', function(result) {
 			getItems(result)
 		})
 	},
@@ -226,7 +253,20 @@ const purchaseOrderController = {
 					resolve(result._id)
 				})
 			})
-			
+		}
+
+		function getPONumber() {
+			return new Promise((resolve, reject) => {
+				db.findMany(Purchases, {}, '', function(result) {
+					var length = result.length - 1;
+
+					//no PO in the db yet
+					if (length == -1)
+						resolve(1)
+					else
+						resolve(result[length].purchaseOrderNumber+1)
+				})
+			})
 		}
 
 		async function savePO(dateToday, items) {
@@ -247,9 +287,13 @@ const purchaseOrderController = {
 				}
 
 				var purchase = {
+					purchaseOrderNumber: await getPONumber(),
 					supplierID: uniqueSuppliers[i],
 					employeeID:"hi",
 					date: dateToday,
+					vat: 0,
+					subtotal: 0,
+					total: 0,
 					statusID: "618f650546c716a39100a809"
 				}
 				

@@ -37,7 +37,7 @@
         <div class="content">
             <div> <!-- ADD FIXED -->
                 <div style="display: flex;">
-                    <div style="width: 50%"><h1 class="bold"> Purchase Order #"Number" </h1></div>
+                    <div style="width: 50%"><h1 class="bold"> Purchase Order #{{newPONumber}}</h1></div>
                     <div class="btn-status">
                         <h3 id="dateToday"></h3>
                     </div>
@@ -66,11 +66,66 @@
                 <input style="margin-top: 5px; margin-bottom: 0px; float: left; height: 34px; width: 34px; background-color: #0F84D9; border: #0F84D9; border-radius: 7px; color: white;" type="button" id="addItem" name="addItem" value="+">
             </form>
             
+            <!--NEW ITEM MODAL-->
+            <div class="modal fade" id="modal-new-item" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="exampleModalLongTitle">New Item</h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="add-new-item">
+                            <label for="description">Description</label> <input id="description" type="text"><br>
+                            <p class="error" id="error-description" style="margin-top: 3px; margin-bottom: 3px;"></p>
+
+                            <label for="dropdown-category" style="margin-right: 10px">Type</label>
+                            <select class="dropdown" id="dropdown-category" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
+                                <option value="no-selected" selected>Select Type</option>
+                                {{#each inventoryTypes}}
+                                    <option value={{_id}}>{{type}}</option>
+                                {{/each}}
+                            </select>
+                            <p class="error" id="error-category" style="margin-top: 3px; margin-bottom: 3px;"></p>
+
+                            <label for="dropdown-unit" style="margin-right: 10px">Unit</label>
+                            <select class="dropdown" id="dropdown-unit" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
+                                <option value="no-selected" selected>Select Unit</option>
+                                {{#each units}}
+                                    <option value={{_id}}>{{unit}}</option>
+                                {{/each}}
+                            </select>
+                            <p class="error" id="error-unit" style="margin-top: 3px; margin-bottom: 3px;"></p>
+
+
+                            <label for="reorder-level">Reorder Level</label> <input id="reorder-level" type="number"><br>
+                            <p class="error" id="error-reorder-level" style="margin-top: 3px; margin-bottom: 3px;"></p>
+
+                            <label for="EOQ">EOQ</label> <input id="EOQ" type="number"><br>
+                            <p class="error" id="error-EOQ" style="margin-top: 3px; margin-bottom: 3px;"></p>
+
+                            <label for="selling-price">Selling Price</label> <input id="selling-price" type="number"><br>
+                            <p class="error" id="error-selling-price" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="btn-add-new-item">Save</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+
                 <div style="height: 45px"></div>
 
-                <div id="div-warning-new-po">
-                    <p id="text-warning-new-PO" class="error"></p>
-                </div>
+               <div class="display-flex" style="margin-top: 10px">
+                <div id="div-warning-new-invoice">
+                    <button class="btn-light-blue" id="btn-new-item" style="display: none; margin-bottom: 10px;" data-toggle="modal" data-target="#modal-new-item">Add New Item</button>
+                    <p id="text-warning-new-PO" class="error" style="display: none;">Item does not exist</p>
+                </div> 
+            </div>
 
                     <table class="table" id="table-poItem">
                         <thead style="background-color: #2F5D62; color: white">
@@ -126,13 +181,18 @@
                                 }
                          });
                     }, response: function (event, ui) {
-                        if (ui.content.length === 0) 
+                        if (ui.content.length === 0) {
+                            $('#btn-new-item').css('display', 'block')
                             $('#text-warning-new-PO').css('display', 'block')
+                            $('#addItem').prop('disabled', true)
+                        }
 
-                        else 
+                        else {
                             $('#text-warning-new-PO').css('display','none')
+                            $('#btn-new-item').css('display', 'none');
+                            $('#addItem').prop('disabled', false)
+                        }
                     }
-                        
                 });
             })
 
@@ -190,20 +250,233 @@
             $('#btn-save-PO').click(function() {
                 var poItems = []
                 var date = $('#dateToday').text();
+                var poNumber;
 
-                $("#table-poItem-body > tr").each(function () {
-                        var poItem= {
-                            itemDesc: $(this).children('.classItemDescription').text(), 
-                            quantity: $(this).children('.classQty').text(),
-                            unit: $(this).children('.unit').text()
+                $.get('/previousPONumber', function(result) {
+                    if (result == "none")
+                        poNumber = 1;
+                    else
+                        poNumber = result+1
+
+                    $("#table-poItem-body > tr").each(function () {
+                            var poItem= {
+                                itemDesc: $(this).children('.classItemDescription').text(), 
+                                quantity: $(this).children('.classQty').text(),
+                                unit: $(this).children('.unit').text()
+                            }
+                            poItems.push(poItem);
+                        });
+                    var itemsString = JSON.stringify(poItems);  
+                    $.post('/saveNewPO', {itemsString, date, poNumber});
+                    $("#table-poItem tbody tr").remove();
+                    alert("PO saved");
+                    window.location = "/purchaseOrderList"
+                })
+
+
+
+                //STUFF FOR ADDING NEW ITEM FROM PO
+                function capitalize(string){
+                    var words = string.toLowerCase().split(' ');
+                    for (i=0; i<words.length; i++)
+                        words[i] = words[i].charAt(0).toUpperCase() + words[i].substring(1);
+                    return words.join(' ');
+                }
+
+                // INPUT VALIDATION
+
+                function descriptionValidation(description) {
+                    if (description == null || description == "") {
+                        errorMessage("description");
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }
+
+                function typeValidation(type) {
+                    if (type == "no-selected") {
+                        errorMessage("type");
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }
+
+                function unitValidation(unit) {
+                    if (unit == "no-selected") {
+                        errorMessage("unit");
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }
+
+                function reorderLevelValidation(reorderLevel) { 
+                    if (reorderLevel == null || reorderLevel == "") {
+                        errorMessage("reorderLevel");
+                        return 1;
+                    } else if (parseFloat(reorderLevel) <= 0) {
+                        errorMessage("reorderLevelInvalidNum");
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }
+
+                function EOQValidation(EOQ) { 
+                    if (EOQ == null || EOQ == "") {
+                        errorMessage("EOQ");
+                        return 1;
+                    } else if (parseFloat(EOQ) <= 0) {
+                        errorMessage("EOQInvalidNum");
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }
+
+                function sellingPriceValidation(price) {
+                    if (price == null || price == "") {
+                        errorMessage("sellingPrice");
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }
+
+                function errorMessage(type) {
+                    if (type == "description") {
+                        $("#description").css("border", "1px solid #B00000");
+                        $("#error-description").text("Please enter an Item Description.");
+                    } else if (type == "type") {
+                        $("#dropdown-category").css("border", "1px solid #B00000");
+                        $("#error-category").text("Please select a Type.");
+                    } else if (type == "unit") {
+                        $("#dropdown-unit").css("border", "1px solid #B00000");
+                        $("#error-unit").text("Please select a Unit.");
+                    } else if (type == "reorderLevel") {
+                        $("#reorder-level").css("border", "1px solid #B00000");
+                        $("#error-reorder-level").text("Please enter a Reorder Level.");
+                    } else if (type == "reorderLevelInvalidNum") {
+                        $("#reorder-level").css("border", "1px solid #B00000");
+                        $("#error-reorder-level").text("Invalid Reorder Level.");
+                    } else if (type == "EOQ") {
+                        $("#EOQ").css("border", "1px solid #B00000");
+                        $("#error-EOQ").text("Please enter an EOQ.");
+                    } else if (type == "EOQInvalidNum") {
+                        $("#EOQ").css("border", "1px solid #B00000");
+                        $("#error-EOQ").text("Invalid EOQ.");
+                    } else if (type == "sellingPrice") {
+                        $("#selling-price").css("border", "1px solid #B00000");
+                        $("#error-selling-price").text("Please enter a Selling Price.");
+                    } 
+                }
+
+                function resetErrorMessage() {
+                    $("#description").css("border", "1px solid #DDDDDD");
+                    $("#error-description").text("");
+                    $("#dropdown-category").css("border", "1px solid #DDDDDD");
+                    $("#error-category").text("");
+                    $("#dropdown-unit").css("border", "1px solid #DDDDDD");
+                    $("#error-unit").text("");
+                    $("#reorder-level").css("border", "1px solid #DDDDDD");
+                    $("#error-reorder-level").text("");
+                    $("#EOQ").css("border", "1px solid #DDDDDD");
+                    $("#error-EOQ").text("");
+                    $("#selling-price").css("border", "1px solid #DDDDDD");
+                    $("#error-selling-price").text("");
+                }
+
+                 $('#description').keyup(function () { 
+                    resetErrorMessage();
+
+                    // Get value 
+                     var description = capitalize($('#description').val());
+
+                    // Check if dish name exists 
+                    $.get("/getCheckItemDescription", {itemDescription: description}, function (result) {
+                        if (result.itemDescription == description) {
+                            //alert("same");
+                            $("#description").css("border", "1px solid #B00000");
+                            $("#error-description").text("Item Description already taken.");
+                            $("#btn-add-new-item").prop("disabled", true);
+                            $("#btn-add-new-item").css("background-color", "#b3b3b3");
+                        } else {
+                            $("#description").css("border", "1px solid #DDDDDD");
+                            $("#error-description").text("");
+                            $("#btn-add-new-item").prop("disabled", false);
+                            $("#btn-add-new-item").css("background-color", "#0F84D9");
                         }
-                        poItems.push(poItem);
                     });
-                var itemsString = JSON.stringify(poItems);  
-                $.post('/saveNewPO', {itemsString, date});
-                $("#table-poItem tbody tr").remove();
-                alert("PO saved");
-                window.location = "/purchaseOrderList"
+                });
+
+                $('#dropdown-category').change(function() {
+                    resetErrorMessage();
+                })
+
+                $('#dropdown-unit').change(function() {
+                    resetErrorMessage();
+                })
+
+                $('#reorder-level').keyup(function () { 
+                    resetErrorMessage();
+                });
+
+                $('#EOQ').keyup(function () { 
+                    resetErrorMessage();
+                });
+
+                $('#selling-price').keyup(function () { 
+                    resetErrorMessage();
+                });
+
+
+                function checkAll(description, category, unit, reorderLevel, EOQ, sellingPrice) {
+                    descriptionValidation(description);
+                    typeValidation(category);
+                    unitValidation(unit);
+                    reorderLevelValidation(reorderLevel);
+                    EOQValidation(EOQ);
+                    sellingPriceValidation(sellingPrice);
+                }
+
+                $('#btn-add-new-item').click(function() {
+                    var description = capitalize($('#description').val());
+                    var category = $('#dropdown-category').val();
+                    var categoryText = $('#dropdown-category option:selected').text();
+                    var unit = $('#dropdown-unit').val();
+                    var unitText = $('#dropdown-unit option:selected').text();
+                    var reorderLevel = $('#reorder-level').val();
+                    var EOQ = $('#EOQ').val();
+                    var sellingPrice = $('#selling-price').val();
+
+                    checkAll(description, category, unit, reorderLevel, EOQ, sellingPrice);
+
+                    if (!descriptionValidation(description) && !typeValidation(category) && !unitValidation(unit) && !reorderLevelValidation(reorderLevel) && !EOQValidation(EOQ)  && !sellingPriceValidation(sellingPrice)) {
+
+                        // remove texts and red borders
+                        resetErrorMessage();
+
+                        $.post('/postNewItem', {description, category, categoryText, unit, unitText, reorderLevel, EOQ, sellingPrice}, function (updatedItem) {
+                            var sellingPrice = parseFloat(updatedItem.sellingPrice).toFixed(2)
+
+                            $('#table-inventory').find('tbody').append(
+                                `  <tr class="link" style="cursor: pointer" data-href="/inventory/${updatedItem._id}"> 
+                                        <td>${updatedItem.itemDescription}</td> 
+                                        <td value="${updatedItem.categoryID}" class="category-id">${updatedItem.category}</td>
+                                        <td style="text-align: right;">${updatedItem.quantityAvailable}</td> 
+                                        <td class="unit-id">${updatedItem.unit}</td> 
+                                        <td style="text-align: right;">₱ ${sellingPrice}</td> 
+                                        <td><button class="btn-status btn-low status-id" value="${updatedItem.statusID}">Low Stock</button></td>
+                                    </tr>`
+                            );
+                        })
+
+                        $('#modal-new-item').modal('hide');
+                        $('#add-new-item').trigger('reset');
+                    }
+                })
             })
         </script>
     </body>

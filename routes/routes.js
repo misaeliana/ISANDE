@@ -72,6 +72,8 @@ router.get('/getItemNamePO', purchaseOrderController.getItems);
 
 router.get('/getItemUnit', purchaseOrderController.getItemUnit);
 
+router.get('/previousPONumber', purchaseOrderController.previousPONumber)
+
 router.post('/saveNewPO', purchaseOrderController.saveNewPO);
 
 router.get('/purchaseOrder/:poID', purchaseOrderController.getPurchaseOrder);
