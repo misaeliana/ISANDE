@@ -146,47 +146,8 @@ const invoiceController = {
 
 		getInformation();
 		
-<<<<<<< Updated upstream
-	},
-    getNewInvoice: function(req, res) {
-        
-		async function getInvoiceTypes () {
-			var itype = await getAllInvoiceTypes();
-            res.render('newInvoice', {itype});
-		}	//res.sendFile( dir+"/newInvoice.html");
-        getInvoiceTypes();
-	},
-    addNewInvoice: function(req,res){
-            var invoice = {
-                invoiceID: "mock",
-                customerID: req.body.custID,
-                date: req.body.date,
-                typeID: req.body.typeID,
-                statusID:req.body.statusID,
-                subtotal: req.body.subtotal,
-                VAT: req.body.VAT,
-                discount: req.body.discount,
-                total:req.body.total,
-                employeeID: "6187c88ffa9a0c35600c54a8"
-            }
-    
-            db.insertOne (Invoices, invoice, function(flag) {
-                console.log("Added successfully!")
-                if (flag) { }
-            })
-        },
-        getItemPrice: function(req, res) {
-            db.findOne (Items, {itemDescription:req.query.itemDesc},'itemDescription sellingPrice', function (result) {
-                    res.send(result);
-           
-                //reason for the for loop: https://stackoverflow.com/questions/5077409/what-does-autocomplete-request-server-response-look-like
-            })
-        }
-        
-        
-=======
     },
-    
+
     getFilteredRowsInvoice: function(req, res) {
 		var startDate = new Date(req.query.startDate);
 		var endDate = new Date(req.query.endDate);
@@ -221,35 +182,6 @@ const invoiceController = {
 
 		getInformation();
     },
-
-    /*getSearchInvoice: function(req, res) {
-		var searchItem = req.query.searchItem;
-        
-        async function getInformation() {
-
-            var invoice = await getSpecificInvoice(searchItem);
-            var invoicesInfo = [];
-
-            //for (var i = 0; i < invoice.length; i++) {
-                var date = new Date(invoice.date);
-                
-                var invoiceInfo = {
-                    _id: invoice._id,
-                    formattedDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
-                    invoiceID: invoice.invoiceID,
-                    customerName: await getSpecificCustomer(invoice.customerID),
-                    total: parseFloat(invoice.total).toFixed(2),
-                    type: await getSpecificInvoiceType(invoice.typeID),
-                    status: await getSpecificInvoiceStatus(invoice.statusID)
-                };
-    
-                invoicesInfo.push(invoiceInfo);
-           // }
-            res.send(invoicesInfo);
-		}
-
-		getInformation();
-    }*/
     
     getSearchInvoice: function(req, res) {
         var searchItem = req.query.searchItem;
@@ -311,8 +243,45 @@ const invoiceController = {
 		}
 
 		getInformation();
-	}
->>>>>>> Stashed changes
+	},
+    
+    getNewInvoice: function(req, res) {
+        
+		async function getInvoiceTypes () {
+			var itype = await getAllInvoiceTypes();
+            res.render('newInvoice', {itype});
+		}	//res.sendFile( dir+"/newInvoice.html");
+        getInvoiceTypes();
+    },
+    
+    addNewInvoice: function(req,res){
+            var invoice = {
+                invoiceID: "mock",
+                customerID: req.body.custID,
+                date: req.body.date,
+                typeID: req.body.typeID,
+                statusID:req.body.statusID,
+                subtotal: req.body.subtotal,
+                VAT: req.body.VAT,
+                discount: req.body.discount,
+                total:req.body.total,
+                employeeID: "6187c88ffa9a0c35600c54a8"
+            };
+    
+            db.insertOne (Invoices, invoice, function(flag) {
+                console.log("Added successfully!");
+                if (flag) { }
+            });
+        },
+    },
+
+    getItemPrice: function(req, res) {
+        db.findOne(Items, {itemDescription:req.query.itemDesc},'itemDescription sellingPrice', function (result) {
+                res.send(result);
+       
+            //reason for the for loop: https://stackoverflow.com/questions/5077409/what-does-autocomplete-request-server-response-look-like
+        });
+    }
 };
 
 module.exports = invoiceController;

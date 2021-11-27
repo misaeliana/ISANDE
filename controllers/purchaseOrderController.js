@@ -21,7 +21,7 @@ const purchaseOrderController = {
 
 
 		async function getPurchaseInfo (result) {
-			var purchases = []
+			var purchases = [];
 			for (var i=0; i<result.length; i++) {
 				var purchase = {
 					poID: result[i]._id,
@@ -30,16 +30,16 @@ const purchaseOrderController = {
 					supplier: await getSupplierName(result[i].supplierID),
 					amount: "P " + parseFloat(result[i].total).toFixed(2), 
 					status: await getPurchaseOrderStatus(result[i].statusID)
-				}
-				purchases.push(purchase)
+				};
+				purchases.push(purchase);
 			}
-			var statuses = await getAllPurchaseOrderStatus()
+			var statuses = await getAllPurchaseOrderStatus();
 			res.render('purchaseOrderList', {purchases, statuses});
 		}
 
 		db.findMany(Purchases, {}, 'date purchaseOrderNumber supplierID statusID total', function(result) {
 			getPurchaseInfo(result);
-		})
+		});
 		
 	},
 
@@ -50,12 +50,12 @@ const purchaseOrderController = {
 
 			//no PO in the db yet
 			if (length == -1)
-				newPONumber = 1
+				newPONumber = 1;
 			else
-				newPONumber = result[length].purchaseOrderNumber+1
+				newPONumber = result[length].purchaseOrderNumber+1;
 
 			res.render('newPO', {newPONumber});
-		})
+		});
 		
 	},
 
@@ -71,46 +71,46 @@ const purchaseOrderController = {
 				formattedResults.push(formattedResult);
 			}
 			res.send(formattedResults);
-		})
+		});
 	},
 
 	getItemUnit: function(req, res) {
 		db.findOne (Items, {itemDesc:req.body.itemDesc, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'unitID', function(result) {
 			db.findOne(Units, {_id: result.unitID}, 'unit', function (result2) {
-				res.send(result2.unit)
-			})
-		})
+				res.send(result2.unit);
+			});
+		});
 	},
 
 	previousPONumber: function(req, res) {
 		db.findMany(Purchases, {}, '', function(result) {
 
 			if (result.length == 0)
-				res.send("none")
+				res.send("none");
 			else {
-				var length = result.length-1
+				var length = result.length-1;
 				var prevPoNumber = result[length].purchaseOrderNumber.toString();
-				res.send(prevPoNumber)
+				res.send(prevPoNumber);
 			}
-		})
+		});
 	},
 
 	saveNewPO: function(req, res) {
 
 		async function saveItems(purchaseID, items) {
 			for (var i=0; i<items.length; i++) {
-				items[i].purchaseOrderID = purchaseID
-				items[i].itemID = await getItemID(items[i].itemDesc)
-				items[i].unitID = await getUnitID(items[i].unit)
+				items[i].purchaseOrderID = purchaseID;
+				items[i].itemID = await getItemID(items[i].itemDesc);
+				items[i].unitID = await getUnitID(items[i].unit);
 			}
 
 			db.insertMany(PurchasedItems, items, function(flag) {
 				if (flag) {}
-			})
+			});
 		}
 
 		var items = JSON.parse(req.body.itemsString);
-		var date = req.body.date
+		var date = req.body.date;
 		var purchase = {
 			purchaseOrderNumber: req.body.poNumber,
 			supplierID: "Hello",
@@ -120,12 +120,12 @@ const purchaseOrderController = {
 			subtotal: 0,
 			total: 0,
 			statusID: "618f650546c716a39100a809"
-		}
+		};
 		var purchaseID;
 		db.insertOneResult(Purchases, purchase, function(result) {
 			purchaseID = result._id;
-			saveItems(purchaseID, items)
-		})
+			saveItems(purchaseID, items);
+		});
 	},
 
 	getPurchaseOrder: function(req, res) {
@@ -134,88 +134,88 @@ const purchaseOrderController = {
 			return new Promise((resolve, reject) => {
 				db.findMany(PurchasedItems, {purchaseOrderID: purchaseID}, 'itemID unitID quantity', function(result) {
 					resolve(result);
-				})
-			})
+				});
+			});
 		}
 
 		function getSupplierInfo(supplierID) {
 			return new Promise((resolve, reject) => {
 				db.findOne(Suppliers, {_id:supplierID}, 'name contactPerson number address', function(result) {
-					resolve(result)
-				})
-			})
+					resolve(result);
+				});
+			});
 		}
 
 		function getPOInfo (poID) {
 			return new Promise((resolve, reject) => {
 				db.findOne(Purchases, {_id:poID}, 'date dateReceived subtotal vat total', function (result) {
-					resolve(result)
-				})
-			})
+					resolve(result);
+				});
+			});
 		}
 
 		function getReceivedItems(purchaseID) {
 			return new Promise((resolve, reject) => {
 				db.findMany(PurchasedItems, {purchaseOrderID: purchaseID}, 'itemID unitID unitPrice quantity amount quantityReceived', function(result) {
 					resolve(result);
-				})
-			})
+				});
+			});
 		}
 
 		async function getItems(purchaseInfo) {
 			var items  = await getPurchasedItems(purchaseInfo._id);
 			for (var i=0; i<items.length; i++) {
 				items[i].itemDescription = await getItemDescription(items[i].itemID);
-				items[i].unitName = await getSpecificUnit(items[i].unitID)
+				items[i].unitName = await getSpecificUnit(items[i].unitID);
 			}
 
 			var poInfo = purchaseInfo
-			var supplier = await getSupplierInfo(poInfo.supplierID)
+			var supplier = await getSupplierInfo(poInfo.supplierID);
 			poInfo.fdateMade = poInfo.date.toLocaleString('en-US');
-			poInfo.employeeName = await getEmployeeName(poInfo.employeeID)
+			poInfo.employeeName = await getEmployeeName(poInfo.employeeID);
 
 			//new po
 			if (purchaseInfo.statusID == "618f650546c716a39100a809") {
-				var newPO = purchaseInfo.statusID
-				res.render('viewPO', {items, poInfo, newPO, supplier})
+				var newPO = purchaseInfo.statusID;
+				res.render('viewPO', {items, poInfo, newPO, supplier});
 			}
 			//sent
 			else if (purchaseInfo.statusID == "618f652746c716a39100a80a") {
 				var released = purchaseInfo.statusID
-				res.render('viewPO', {items, poInfo, released, supplier})
+				res.render('viewPO', {items, poInfo, released, supplier});
 			}
 
 			//incomplete
 			else if (purchaseInfo.statusID == "618f653746c716a39100a80b") {
-				var incomplete = purchaseInfo.statusID
-				res.render('viewPO', {items, poInfo, incomplete, supplier})
+				var incomplete = purchaseInfo.statusID;
+				res.render('viewPO', {items, poInfo, incomplete, supplier});
 			}
 
 			//received
 			else if (purchaseInfo.statusID == "618f654646c716a39100a80c") {
 				var poInfo = await getPOInfo (purchaseInfo._id);
 				poInfo.fdateMade = poInfo.date.toLocaleString('en-US');
-				poInfo.fdateReceived = poInfo.dateReceived.toLocaleString('en-US')
+				poInfo.fdateReceived = poInfo.dateReceived.toLocaleString('en-US');
 
-				items = await getReceivedItems(purchaseInfo._id)
+				items = await getReceivedItems(purchaseInfo._id);
 
 				for (var i=0; i<items.length; i++) {
 					items[i].itemDescription = await getItemDescription(items[i].itemID);
-					items[i].unitName = await getSpecificUnit(items[i].unitID)
+					items[i].unitName = await getSpecificUnit(items[i].unitID);
 				}
 				
-				var received = purchaseInfo.statusID
+				var received = purchaseInfo.statusID;
 
 				poInfo.fvat = "P " + parseFloat(poInfo.vat).toFixed(2);
-				poInfo.fsubtotal = "P " + parseFloat(poInfo.subtotal).toFixed(2)
-				poInfo.ftotal = "P " + parseFloat(poInfo.total).toFixed(2)
-				res.render('viewPO', {items, poInfo, received})
+				poInfo.fsubtotal = "P " + parseFloat(poInfo.subtotal).toFixed(2);
+				poInfo.ftotal = "P " + parseFloat(poInfo.total).toFixed(2);
+				res.render('viewPO', {items, poInfo, received});
 			}
 		}
 
 		db.findOne(Purchases, {_id:req.params.poID}, '_id purchaseOrderNumber supplierID employeeID date statusID', function(result) {
-			getItems(result)
-		})
+			getItems(result);
+		});
 	},
 
 	generatePurchaseOrder: function(req, res) {
@@ -224,8 +224,8 @@ const purchaseOrderController = {
 			return new Promise((resolve, reject) => {
 				db.findMany(Items, {statusID:"618b32205f628509c592daab", informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'itemDescription EOQ unitID', function(result) {
 					resolve (result);
-				})
-			})
+				});
+			});
 		}
 
 		async function getItems() {
@@ -234,35 +234,35 @@ const purchaseOrderController = {
 
 			for (var i=0; i<items.length; i++) {
 				items[i].unit = await getSpecificUnit(items[i].unitID);
-				items[i].suppliers = suppliers
+				items[i].suppliers = suppliers;
 			}
 
 			res.render('generatePO', {items});
 		}
 
-		getItems()
+		getItems();
 		
 	},
 
 	saveGeneratePurchaseOrder: function(req, res) {
 		
 		function getUniqueSuppliers(items) {
-			var suppliers = []
+			var suppliers = [];
 
 			for (var a=0; a<items.length; a++) {
 				//array does not have supplier
 				if (!(suppliers.includes(items[a].supplier))) 
-					suppliers.push(items[a].supplier)
+					suppliers.push(items[a].supplier);
 			}
-			return suppliers
+			return suppliers;
 		}
 
 		function savePurchase(purchase, poItems) {
 			return new Promise ((resolve, reject) => {
 				db.insertOneResult(Purchases, purchase, function(result) {
-					resolve(result._id)
-				})
-			})
+					resolve(result._id);
+				});
+			});
 		}
 
 		function getPONumber() {
@@ -272,11 +272,11 @@ const purchaseOrderController = {
 
 					//no PO in the db yet
 					if (length == -1)
-						resolve(1)
+						resolve(1);
 					else
-						resolve(result[length].purchaseOrderNumber+1)
-				})
-			})
+						resolve(result[length].purchaseOrderNumber+1);
+				});
+			});
 		}
 
 		async function savePO(dateToday, items) {
@@ -291,7 +291,7 @@ const purchaseOrderController = {
 							itemID: await getItemID(items[j].itemDescription),
 							unitID: await getUnitID(items[j].unit),
 							quantity: items[j].quantity
-						}
+						};
 						poItems.push(item);
 					}
 				}
@@ -305,15 +305,15 @@ const purchaseOrderController = {
 					subtotal: 0,
 					total: 0,
 					statusID: "618f650546c716a39100a809"
-				}
+				};
 				
 				var purchaseID = await savePurchase(purchase)
 				for (var k=0; k<poItems.length; k++)
-						poItems[k].purchaseOrderID = purchaseID
+						poItems[k].purchaseOrderID = purchaseID;
 
 				db.insertMany(PurchasedItems, poItems, function(flag) {
 					if (flag) { }
-				})
+				});
 			}
 			res.redirect('/purchaseOrderList');
 		}
@@ -321,9 +321,9 @@ const purchaseOrderController = {
 
 
 		var purchaseItems = JSON.parse(req.body.purchaseString);
-		var dateToday = new Date()
+		var dateToday = new Date();
 
-		savePO(dateToday, purchaseItems)
+		savePO(dateToday, purchaseItems);
 	},
 
 	editPO: function(req, res) {
@@ -331,24 +331,24 @@ const purchaseOrderController = {
 			return new Promise((resolve, reject) => {
 				db.findMany(PurchasedItems, {purchaseOrderID: purchaseID}, 'itemID quantity unitID', function(result) {
 					resolve(result);
-				})
-			})
+				});
+			});
 		}
 
 		async function getItems(purchaseInfo, statusID) {
 			var items  = await getPurchasedItems(purchaseInfo._id);
 			for (var i=0; i<items.length; i++) {
 				items[i].itemDescription = await getItemDescription(items[i].itemID);
-				items[i].unitName = await getSpecificUnit(items[i].unitID)
+				items[i].unitName = await getSpecificUnit(items[i].unitID);
 			}
-			var poID = req.params.poID
+			var poID = req.params.poID;
 			var units = await getUnits();
-			var inventoryTypes = await getInventoryTypes()
+			var inventoryTypes = await getInventoryTypes();
 
 			if (statusID == "618f650546c716a39100a809") {
 				var newPO = statusID;
 				//renders delete button and probably cancel PO button
-				res.render('editPO', {items, poID, units, inventoryTypes,newPO})
+				res.render('editPO', {items, poID, units, inventoryTypes,newPO});
 			}
 			else if (statusID == "618f652746c716a39100a80a") {
 				var sent = statusID;

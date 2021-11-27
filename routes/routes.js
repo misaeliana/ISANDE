@@ -76,7 +76,7 @@ router.get('/getItemNamePO', purchaseOrderController.getItems);
 
 router.get('/getItemUnit', purchaseOrderController.getItemUnit);
 
-router.get('/previousPONumber', purchaseOrderController.previousPONumber)
+router.get('/previousPONumber', purchaseOrderController.previousPONumber);
 
 router.post('/saveNewPO', purchaseOrderController.saveNewPO);
 
@@ -98,16 +98,14 @@ router.get('/invoices', invoiceController.getInvoiceList);
 
 router.get('/invoices/:invoiceID', invoiceController.getViewSpecificInvoice);
 
-<<<<<<< Updated upstream
 router.get('/newInvoice', invoiceController.getNewInvoice);
 
 router.post('/createNewInvoice', invoiceController.addNewInvoice);
 
 router.get('/getItemPrice', invoiceController.getItemPrice);
-=======
+
 router.get('/getFilteredRowsInvoice', invoiceController.getFilteredRowsInvoice);
 
 router.get('/getSearchInvoice', invoiceController.getSearchInvoice);
->>>>>>> Stashed changes
 
 module.exports = router;
