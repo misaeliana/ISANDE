@@ -272,7 +272,6 @@ const invoiceController = {
                 console.log("Added successfully!");
                 if (flag) { }
             });
-        },
     },
 
     getItemPrice: function(req, res) {
