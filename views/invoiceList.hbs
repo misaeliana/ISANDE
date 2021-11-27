@@ -37,23 +37,23 @@
                 <h1 class="bold" style="padding-bottom: 15px;"> Invoices </h1>
                 <div> 
                     <div class="search">
-                        <form>
                         <input type="text" placeholder="Search" name="search" id="search-field">
-                        </form>
+                        <button type="submit" style="height: 34px; margin-left: 10px" id="search-button"><i class="fa fa-search"></i></button>
                     </div>
                     <div class= "div-button-end">
                         <div  style="justify-content: flex-start">
-                            <label class="date-label" for="start-date-invoice-list;">Start Date</label>
-                            <input style="height: 34px" type="date" id="start-date-invoice-list" name="start-date-invoice-list">
-                            <label class="date-label" style="margin-left: 10px;" for="end-date-invoice-list">End Date</label>
-                            <input style="height: 34px" type="date" id="end-date-invoice-list" name="end-date-invoice-list">
+                            <label class="date-label" for="start-date">Start Date</label>
+                            <input style="height: 34px" type="date" id="start-date" name="start-date">
+                            <label class="date-label" style="margin-left: 10px;" for="end-date">End Date</label>
+                            <input style="height: 34px" type="date" id="end-date" name="end-date">
+                            <button type="submit" style="height: 34px; margin-left: 10px" id="invoice-date-button"><i class="fa fa-search"></i></button>
                         </div>
                     </div>
                     <div style="height: 50px"></div>
                 </div>
             </div>
 
-                <table class="table">
+                <table class="table" id="table-invoice">
                     <thead class="table-head">
                         <tr>
                             <th>Date</th>
@@ -81,8 +81,98 @@
         </div>
         <script>
             $(document).ready(function() {
-                 $(".link").click(function() {
+                $(".link").click(function() {
                     window.location = $(this).data("href");
+                });
+
+                $("#invoice-date-button").click(function() {
+                    var startDate = $("#start-date").val();
+                    var endDate = $("#end-date").val();
+                    $("#search-field").val(null);
+
+                    if (startDate == null || startDate == "" || endDate == null || endDate == "") {
+                        if (startDate == null || startDate == "")
+                            $("#start-date").css("border", "1px solid #B00000")
+
+                        if (endDate == null || endDate == "")
+                            $("#end-date").css("border", "1px solid #B00000")
+                    } else {
+                        var convertedStartDate = new Date(startDate);
+                        var convertedEndDate = new Date(endDate);
+
+                        if(convertedStartDate > convertedEndDate) {
+                            // end date is before start date 
+                            $("#start-date").css("border", "1px solid #B00000");
+                            $("#end-date").css("border", "1px solid #B00000");
+                        }
+                        else {
+                            // valid dates
+                            $("#start-date").css("border", "1px solid #DDDDDD");
+                            $("#end-date").css("border", "1px solid #DDDDDD");
+
+                            $.get("/getFilteredRowsInvoice", {startDate: convertedStartDate, endDate: convertedEndDate}, function (result) {
+
+                                $("#table-invoice tbody tr").remove();
+
+                                for (var i = 0; i < result.length; i++) {
+                                    $("#table-invoice").find("tbody").append(
+                                        `  <tr class="link" style="cursor: pointer" data-href="/order/${result[i]._id}"> 
+                                                <td>${result[i].formattedDate}</td>
+                                                <td>${result[i].invoiceID}</td>
+                                                <td>${result[i].customerName}</td>
+                                                <td style="text-align: right;">₱ ${result[i].total}</td>
+                                                <td>${result[i].type}</td>
+                                                <td><button class="btn-status btn-${result[i].status} status-id">${result[i].status}</button></td>
+                                        </tr>`
+                                    );
+                                }
+
+                                $(".link").click(function() {
+                                    window.location = $(this).data("href");
+                                });
+                                
+                               /* 
+                                    $.get("/getDateToday", {}, function (result2) {
+                                        $("#dateToday").text(result2);
+                                    });
+                                */
+                            });
+                        }
+                    }
+                });
+
+                 $("#search-button").click(function() {
+                    var startDate = $("#start-date").val(null);
+                    var endDate = $("#end-date").val(null);
+                    //$('#table-invoice tr').show();
+                    var searchItem = $("#search-field").val();
+                 
+                    $.get("/getSearchInvoice", {searchItem: searchItem}, function (result) {
+
+                        $("#table-invoice tbody tr").remove();
+
+                        if (result != null) {
+                            for (var i = 0; i < result.length; i++) {
+                                $("#table-invoice").find("tbody").append(
+                                `  <tr class="link" style="cursor: pointer" data-href="/invoices/${result[i]._id}"> 
+                                        <td>${result[i].formattedDate}</td>
+                                        <td>${result[i].invoiceID}</td>
+                                        <td>${result[i].customerName}</td>
+                                        <td style="text-align: right;">₱ ${result[i].total}</td>
+                                        <td>${result[i].type}</td>
+                                        <td><button class="btn-status btn-${result[i].status} status-id">${result[i].status}</button></td>
+                                    </tr>`
+                            );
+                            }
+                        } else {
+                            // say no search results 
+                        }
+
+                        $(".link").click(function() {
+                            window.location = $(this).data("href");
+                        });
+
+                    });
                 });
             })
         </script>

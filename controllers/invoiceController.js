@@ -146,6 +146,7 @@ const invoiceController = {
 
 		getInformation();
 		
+<<<<<<< Updated upstream
 	},
     getNewInvoice: function(req, res) {
         
@@ -183,6 +184,135 @@ const invoiceController = {
         }
         
         
+=======
+    },
+    
+    getFilteredRowsInvoice: function(req, res) {
+		var startDate = new Date(req.query.startDate);
+		var endDate = new Date(req.query.endDate);
+		startDate.setHours(0,0,0,0);
+		endDate.setHours(0,0,0,0);
+        
+        async function getInformation() {
+
+            var invoices = await getInvoices();
+            var invoicesInfo = [];
+
+            for (var i = 0; i < invoices.length; i++) {
+                var date = new Date(invoices[i].date);
+                date.setHours(0,0,0,0);
+                
+                if (!(startDate > date || date > endDate)) {
+                    var invoiceInfo = {
+                        _id: invoices[i]._id,
+                        formattedDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
+                        invoiceID: invoices[i].invoiceID,
+                        customerName: await getSpecificCustomer(invoices[i].customerID),
+                        total: parseFloat(invoices[i].total).toFixed(2),
+                        type: await getSpecificInvoiceType(invoices[i].typeID),
+                        status: await getSpecificInvoiceStatus(invoices[i].statusID)
+                    };
+    
+                    invoicesInfo.push(invoiceInfo);
+				}
+            }
+            res.send(invoicesInfo);
+		}
+
+		getInformation();
+    },
+
+    /*getSearchInvoice: function(req, res) {
+		var searchItem = req.query.searchItem;
+        
+        async function getInformation() {
+
+            var invoice = await getSpecificInvoice(searchItem);
+            var invoicesInfo = [];
+
+            //for (var i = 0; i < invoice.length; i++) {
+                var date = new Date(invoice.date);
+                
+                var invoiceInfo = {
+                    _id: invoice._id,
+                    formattedDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
+                    invoiceID: invoice.invoiceID,
+                    customerName: await getSpecificCustomer(invoice.customerID),
+                    total: parseFloat(invoice.total).toFixed(2),
+                    type: await getSpecificInvoiceType(invoice.typeID),
+                    status: await getSpecificInvoiceStatus(invoice.statusID)
+                };
+    
+                invoicesInfo.push(invoiceInfo);
+           // }
+            res.send(invoicesInfo);
+		}
+
+		getInformation();
+    }*/
+    
+    getSearchInvoice: function(req, res) {
+        var searchItem = req.query.searchItem;
+        
+        async function getInformation() {
+            var invoiceInfo = [];
+            var info;
+            var date;
+
+            var invoice = await getSpecificInvoice(searchItem);
+            var customerIDs = await getCustomerIDs(searchItem);
+
+            if (invoice != null) {
+                date = new Date(invoice.date);
+
+                info = {
+                    _id: invoice._id,
+                    formattedDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
+                    invoiceID: invoice.invoiceID,
+                    customerName: await getSpecificCustomer(invoice.customerID),
+                    total: parseFloat(invoice.total).toFixed(2),
+                    type: await getSpecificInvoiceType(invoice.typeID),
+                    status: await getSpecificInvoiceStatus(invoice.statusID)
+                };
+                invoiceInfo.push(info);
+            }
+            
+            if (customerIDs != null) {
+                for (var i = 0; i < customerIDs.length; i++) {
+                    var customerInvoices = await getCustomerInvocies(customerIDs[i]._id);
+
+                    //console.log("Customer invocies " + customerInvoices);
+
+                    if (customerInvoices != null) {
+
+                        for (var j = 0; j < customerInvoices.length; j++) {
+                            date = new Date(customerInvoices[j].date);
+
+                            info = {
+                                _id: customerInvoices[j]._id,
+                                formattedDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
+                                invoiceID: customerInvoices[j].invoiceID,
+                                customerName: await getSpecificCustomer(customerInvoices[j].customerID),
+                                total: parseFloat(customerInvoices[j].total).toFixed(2),
+                                type: await getSpecificInvoiceType(customerInvoices[j].typeID),
+                                status: await getSpecificInvoiceStatus(customerInvoices[j].statusID)
+                            };
+                            invoiceInfo.push(info);
+                        }
+                    }
+                }
+            }
+
+
+            if (invoiceInfo.length > 0)
+                res.send(invoiceInfo);
+            else 
+                res.send(null);
+		}
+
+		getInformation();
+	}
+>>>>>>> Stashed changes
 };
 
 module.exports = invoiceController;

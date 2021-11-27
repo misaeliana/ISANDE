@@ -37,10 +37,8 @@
                 <h1 class="bold" style="padding-bottom: 15px;"> Inventory </h1>
                 <div> 
                     <div class="search">
-                        <form> 
                         <input type="text" placeholder="Search" name="search" id="search-field">
-                        <!--<button type="submit" id="search-button"><i class="fa fa-search" ></i></button>-->
-                        </form>
+                        <button type="submit" id="search-button"><i class="fa fa-search" ></i></button>
                     </div>
                     <div><button class="btn-light-blue" id="btn-new-item" style="float: right;" data-toggle="modal" data-target="#modal-new-item">+ New Item</button></div>
                 </div>
@@ -267,44 +265,59 @@
                     $("#error-selling-price").text("");
                 }
 
-                $('#search-field').keyup(function() {
-                    $('#table-inventory tr').show();
-                    var searchItem = $(this).val().toLowerCase();
-                 
-                    $('#table-inventory > tbody > tr').each(function(index) {
-                        var description = $(this).children('td:first').text().toLowerCase();
+                function filter(result) {
+                    $("#table-inventory tbody tr").remove();
 
-                        if (!description.includes(searchItem))
-                            $(this).toggle();
-                    })
+                    if (result != null) {
+                        for (var i = 0; i < result.length; i++) {
+                            $("#table-inventory").find("tbody").append(
+                                `  <tr class="link" style="cursor: pointer" data-href="/inventory/${result[i]._id}"> 
+                                        <td>${result[i].itemDescription}</td>
+                                        <td value="${result[i].categoryID}" class="category-id">${result[i].category}</td>
+                                        <td style="text-align: right;">${result[i].quantityAvailable}</td>
+                                        <td>${result[i].unit}</td>
+                                        <td style="text-align: right;">₱ ${result[i].sellingPrice}</td>
+                                        <td><button class="btn-status btn-${result[i].btn_status} status-id">${result[i].status}</button></td>
+                                    </tr>`
+                            );
+                        }
+                    }
+
+                    $(".link").click(function() {
+                        window.location = $(this).data("href");
+                    });
+                }
+
+                $("#search-button").click(function() {
+                    var searchItem = $("#search-field").val();
+
+                    $.get("/getSearchInventory", {searchItem: searchItem}, function (result) {
+                       filter(result);
+                    });
+
                 })
 
                 $('#dropdown-inventory-type').change(function() {
                     $('#table-inventory tr').show();
-                    var filter = $('#dropdown-inventory-type option:selected').text();
+                    var typeFilter = $('#dropdown-inventory-type').val();
+                    var statusFilter = $('#dropdown-inventory-status').val();
                     
-                    $('#table-inventory > tbody > tr').each(function(index) {
-                        var category = $(this).children('.category-id').text();
-
-                        var status = $(this).children('td:nth-child(6)').text();
-
-                        if (filter != status && filter != category && filter!="All")
-                            $(this).toggle();
-                    })
+                    $.get("/getFilterInventory", {typeFilter: typeFilter, statusFilter: statusFilter}, function (result) {
+                        $("#search-field").val(null);
+                        filter(result);
+                    });
                 })
 
-                $('#dropdown-inventory-status').change(function() {
+                 $('#dropdown-inventory-status').change(function() {
                     $('#table-inventory tr').show();
-                    var filter = $('#dropdown-inventory-status option:selected').text();
+                    var typeFilter = $('#dropdown-inventory-type').val();
+                    var statusFilter = $('#dropdown-inventory-status').val();
                     
-                    $('#table-inventory > tbody > tr').each(function(index) {
-                        var status = $(this).children('td:nth-child(6)').text();
+                    $.get("/getFilterInventory", {typeFilter: typeFilter, statusFilter: statusFilter}, function (result) {
+                        $("#search-field").val(null);
+                        filter(result);
+                    });
 
-                         var category = $(this).children('.category-id').text();
-
-                        if (filter != status && filter != category && filter!="All")
-                            $(this).toggle();
-                    })
                 })
 
                 $('#description').keyup(function () { 

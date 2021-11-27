@@ -60,6 +60,10 @@ router.get('/editItemSuppliers/:itemID', inventoryController.editItemSuppliers);
 
 router.post('/updateItemSuppliers', inventoryController.postUpdateItemSuppliers);
 
+router.get('/getSearchInventory', inventoryController.getSearchInventory);
+
+router.get('/getFilterInventory', inventoryController.getFilterInventory);
+
 
 //--PURCHASE ORDER--
 router.get('/purchaseOrderList', purchaseOrderController.getPurchaseOrderList);
@@ -94,10 +98,16 @@ router.get('/invoices', invoiceController.getInvoiceList);
 
 router.get('/invoices/:invoiceID', invoiceController.getViewSpecificInvoice);
 
+<<<<<<< Updated upstream
 router.get('/newInvoice', invoiceController.getNewInvoice);
 
 router.post('/createNewInvoice', invoiceController.addNewInvoice);
 
 router.get('/getItemPrice', invoiceController.getItemPrice);
+=======
+router.get('/getFilteredRowsInvoice', invoiceController.getFilteredRowsInvoice);
+
+router.get('/getSearchInvoice', invoiceController.getSearchInvoice);
+>>>>>>> Stashed changes
 
 module.exports = router;

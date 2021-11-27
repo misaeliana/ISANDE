@@ -53,38 +53,36 @@ const inventoryController = {
 			var inventoryTypes = await getInventoryTypes();
 			var units = await getUnits();
 			var itemStatuses = await getItemStatuses();
-			var inventoryItems = await getInventoryItems();
+			var inventoryItems = await getInventoryItems("618a7830c8067bf46fbfd4e4"); // change
 			var inventory = [];
 
 			for (var i = 0; i < inventoryItems.length; i++) {
 				// update status here
-
-				if (inventoryItems[i].informationStatusID == "618a7830c8067bf46fbfd4e4") {
-					var textStatus = await getSpecificItemStatus(inventoryItems[i].statusID);
-					var btnStatus;
+			
+				var textStatus = await getSpecificItemStatus(inventoryItems[i].statusID);
+				var btnStatus;
 	
-					if (textStatus == "Low Stock") 
-						btnStatus = "low";
-					else if (textStatus == "In Stock")
-						btnStatus = "in";
+				if (textStatus == "Low Stock") 
+					btnStatus = "low";
+				else if (textStatus == "In Stock")
+					btnStatus = "in";
 	
-					// check information status
+				// check information status
 	
-					var item = {
-						_id: inventoryItems[i]._id,
-						itemDescription: inventoryItems[i].itemDescription,
-						categoryID: inventoryItems[i].categoryID,
-						category: await getSpecificInventoryType(inventoryItems[i].categoryID),
-						unit: await getSpecificUnit(inventoryItems[i].unitID),
-						quantityAvailable: inventoryItems[i].quantityAvailable,
-						sellingPrice: parseFloat(inventoryItems[i].sellingPrice).toFixed(2),
-						statusID: inventoryItems[i].statusID,
-						status: textStatus,
-						btn_status: btnStatus
-					};
+				var item = {
+					_id: inventoryItems[i]._id,
+					itemDescription: inventoryItems[i].itemDescription,
+					categoryID: inventoryItems[i].categoryID,
+					category: await getSpecificInventoryType(inventoryItems[i].categoryID),
+					unit: await getSpecificUnit(inventoryItems[i].unitID),
+					quantityAvailable: inventoryItems[i].quantityAvailable,
+					sellingPrice: parseFloat(inventoryItems[i].sellingPrice).toFixed(2),
+					statusID: inventoryItems[i].statusID,
+					status: textStatus,
+					btn_status: btnStatus
+				};
 	
-					inventory.push(item);
-				}
+				inventory.push(item);
 			} 
 
 			res.render('inventory', {inventoryTypes, units, inventory, itemStatuses});
@@ -277,6 +275,138 @@ const inventoryController = {
 		}
 
 		updateItemInfo();
+	},
+
+	getSearchInventory: function(req, res) {
+		var searchItem = req.query.searchItem;
+
+		async function getInformation() {
+			var items = [];
+			var invoice = await getInventoryItemsFromDescription(searchItem, "618a7830c8067bf46fbfd4e4");
+
+			if (invoice != null) {
+				for (var i = 0; i < invoice.length; i++) {
+					var textStatus = await getSpecificItemStatus(invoice[i].statusID);
+					var btnStatus;
+	
+					if (textStatus == "Low Stock") 
+						btnStatus = "low";
+					else if (textStatus == "In Stock")
+						btnStatus = "in";
+	
+					var item = {
+						_id: invoice[i]._id,
+						itemDescription: invoice[i].itemDescription,
+						categoryID: invoice[i].categoryID,
+						category: await getSpecificInventoryType(invoice[i].categoryID),
+						unit: await getSpecificUnit(invoice[i].unitID),
+						quantityAvailable: invoice[i].quantityAvailable,
+						sellingPrice: parseFloat(invoice[i].sellingPrice).toFixed(2),
+						statusID: invoice[i].statusID,
+						status: textStatus,
+						btn_status: btnStatus
+					};
+					items.push(item);
+				}
+			}
+
+			if (items.length > 0)
+                res.send(items);
+            else 
+                res.send(null);
+		}
+
+		getInformation();
+	},
+
+	/*getFilterInventory: function(req, res) {
+		var typeFilter = req.query.typeFilter;
+		var statusFilter = req.query.statusFilter;
+		var inventory = [];
+
+		console.log(typeFilter + ", " + statusFilter);
+
+		async function filters() {
+			var inventoryItems = await getInventoryItems("618a7830c8067bf46fbfd4e4");
+
+			for (var i = 0; i < inventoryItems.length; i++) {
+				if (typeFilter == "all-type" && statusFilter == "all-type") {
+					temp = getInformation(inventoryItems[i]);
+				} else if (typeFilter == "all-type" && statusFilter != "all-type") {
+					if (statusFilter == inventoryItems[i])
+						getInformation(inventoryItems[i]);
+				} else if (typeFilter != "all-type" && statusFilter == "all-type") {
+					if (typeFilter == inventoryItems[i])
+						getInformation(inventoryItems[i]);
+				} else {
+					if (typeFilter == inventoryItems[i].categoryID && statusFilter == inventoryItems[i].statusID) {
+						getInformation(inventoryItems[i]);
+					}
+				}
+			}
+		}*/
+
+	getFilterInventory: function(req, res) {
+		var typeFilter = req.query.typeFilter;
+		var statusFilter = req.query.statusFilter;
+		var inventoryItems;
+
+		console.log(typeFilter + ", " + statusFilter);
+
+		async function filters() {
+			if (typeFilter == "all-type" && statusFilter == "all-type") {
+				inventoryItems = await getInventoryItems("618a7830c8067bf46fbfd4e4");
+				getInformation(inventoryItems);
+			} else if (typeFilter == "all-type" && statusFilter != "all-type") {
+				inventoryItems = await getInventoryItemsStatusFilter(statusFilter, "618a7830c8067bf46fbfd4e4");
+				getInformation(inventoryItems);
+			} else if (typeFilter != "all-type" && statusFilter == "all-type") {
+				inventoryItems = await getInventoryItemsTypeFilter(typeFilter, "618a7830c8067bf46fbfd4e4");
+				getInformation(inventoryItems);
+			} else {
+				inventoryItems = await getInventoryItemsStatusTypeFilter(statusFilter, typeFilter, "618a7830c8067bf46fbfd4e4");
+				getInformation(inventoryItems);
+			}
+		}
+
+		async function getInformation(inventoryItems) {
+			var inventory = [];
+
+			for (var i = 0; i < inventoryItems.length; i++) {
+				var textStatus = await getSpecificItemStatus(inventoryItems[i].statusID);
+				var btnStatus;
+			
+				if (textStatus == "Low Stock") 
+					btnStatus = "low";
+				else if (textStatus == "In Stock")
+					btnStatus = "in";
+			
+				var item = {
+					_id: inventoryItems[i]._id,
+					itemDescription: inventoryItems[i].itemDescription,
+					categoryID: inventoryItems[i].categoryID,
+					category: await getSpecificInventoryType(inventoryItems[i].categoryID),
+					unit: await getSpecificUnit(inventoryItems[i].unitID),
+					quantityAvailable: inventoryItems[i].quantityAvailable,
+					sellingPrice: parseFloat(inventoryItems[i].sellingPrice).toFixed(2),
+					statusID: inventoryItems[i].statusID,
+					status: textStatus,
+					btn_status: btnStatus
+				};
+				inventory.push(item);
+			}
+
+			console.log(inventory);
+
+			if (inventory.length > 0) {
+				res.send(inventory);
+			}
+			else {
+				res.send(null);
+			}
+		}
+
+		filters();
 	}
 };
 

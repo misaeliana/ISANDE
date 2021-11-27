@@ -90,9 +90,33 @@ module.exports = function() {
 		});
 	},
 
-	this.getInventoryItems = function() {
+	this.getInventoryItems = function(informationStatus) {
 		return new Promise((resolve, reject) => {
-			db.findMany(Items, {}, '', function(result) {
+			db.findMany(Items, {informationStatusID: informationStatus}, '', function(result) {
+				resolve (result);
+			});
+		});
+	},
+
+	this.getInventoryItemsStatusFilter = function(statusID, informationStatus) {
+		return new Promise((resolve, reject) => {
+			db.findMany(Items, {statusID: statusID, informationStatusID: informationStatus}, '', function(result) {
+				resolve (result);
+			});
+		});
+	},
+
+	this.getInventoryItemsTypeFilter = function(categoryID, informationStatus) {
+		return new Promise((resolve, reject) => {
+			db.findMany(Items, {categoryID: categoryID, informationStatusID: informationStatus}, '', function(result) {
+				resolve (result);
+			});
+		});
+	},
+
+	this.getInventoryItemsStatusTypeFilter = function(statusID, categoryID, informationStatus) {
+		return new Promise((resolve, reject) => {
+			db.findMany(Items, {statusID: statusID, categoryID: categoryID, informationStatusID: informationStatus}, '', function(result) {
 				resolve (result);
 			});
 		});
@@ -125,10 +149,10 @@ module.exports = function() {
 	this.getUnitID = function(unitName) {
 		return new Promise((resolve, reject) => {
 			db.findOne(Units, {unit:unitName}, '_id', function(result) {
-				resolve(result._id)
-			})
-		})
-	}
+				resolve(result._id);
+			});
+		});
+	},
 
 	this.getItemStatuses = function() {
 		return new Promise((resolve, reject) => {
@@ -174,6 +198,14 @@ module.exports = function() {
 		return new Promise((resolve, reject) => {
 			db.findOne(Items, {_id:itemID}, 'itemDescription', function(result) {
 				resolve(result.itemDescription);
+			});
+		});
+	},
+
+	this.getInventoryItemsFromDescription = function(description, status) {
+		return new Promise((resolve, reject) => {
+			db.findMany(Items, {itemDescription:{$regex: description, $options:'i'}, informationStatusID: status}, '', function(result) {
+				resolve(result);
 			});
 		});
 	},
@@ -250,10 +282,34 @@ module.exports = function() {
 		});
 	},
 
-	this.getInvoices = function(itemID) {
+	this.getInvoices = function() {
 		return new Promise((resolve, reject) => {
 			db.findMany(Invoices, {}, '', function(result) {
 				resolve (result);
+			});
+		});
+	},
+
+	this.getSpecificInvoice = function(invoiceID) {
+		return new Promise((resolve, reject) => {
+			db.findOne(Invoices, {invoiceID: invoiceID}, '', function(result) {
+				resolve (result);
+			});
+		});
+	},
+
+	this.getCustomerIDs = function(customerName) {
+		return new Promise((resolve, reject) => {
+			db.findMany (Customers, {name:{$regex: customerName, $options:'i'}}, '', function (result) {
+				resolve(result);
+			});
+		});
+	},
+
+	this.getCustomerInvocies = function(customerID) {
+		return new Promise((resolve, reject) => {
+			db.findMany (Invoices, {customerID: customerID}, '', function (result) {
+				resolve(result);
 			});
 		});
 	},

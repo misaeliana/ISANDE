@@ -17,11 +17,11 @@ const supplierController = {
                         email: result[i].email,
 						address: result[i].address
                         
-					}
+					};
 					suppliers.push(supplier);
 				}
 			res.render('supplierList', {suppliers});
-		})
+		});
 	},
 
 	postSupplierInformation: function(req, res) {
@@ -32,11 +32,11 @@ const supplierController = {
             email: req.body.number,
 			address: req.body.address,
 			informationStatusID: "618a7830c8067bf46fbfd4e4"
-		}
+		};
 
 		db.insertOne (Supplier, supplier, function(flag) {
 			if (flag) { }
-		})
+		});
 	},
 
 	checkSupplierName: function(req, res) {
@@ -44,13 +44,13 @@ const supplierController = {
 
 		db.findMany(Supplier, {name:name, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name', function(result) {	
 			res.send(result[0]);
-		})
+		});
 	},
 
 	getViewSupplier: function(req, res) {
 		db.findOne(Supplier, {_id: req.params.supplierID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name contactPerson number email address', function(result) {
-			res.render('customerInformation', result)
-		})
+			res.render('customerInformation', result);
+		});
 	},
 
 	postUpdateInformation: function (req, res) {
@@ -58,7 +58,7 @@ const supplierController = {
 
 		db.updateOne(Supplier, {_id:supplierID}, {$set: {informationStatusID:"618a783cc8067bf46fbfd4e5"}}, function(flag) {
 			if (flag) { }
-		})
+		});
 
 		var supplier = {
 			name:req.body.name,
@@ -67,11 +67,11 @@ const supplierController = {
             email:req.body.email,
 			address:req.body.address,
 			informationStatusID: "618a7830c8067bf46fbfd4e4"
-		}
+		};
 
 		db.insertOneResult(Supplier, supplier, function(result) {
-			res.send(result._id)
-		})
+			res.send(result._id);
+		});
 	},
 
 	deleteSupplier: function(req, res) {
@@ -79,8 +79,8 @@ const supplierController = {
 
 		db.updateOne(Supplier, {_id: supplierID}, {$set: {informationStatusID:"618a783cc8067bf46fbfd4e5"}}, function(flag){
 			if (flag) { }
-		})
+		});
 	}
-}
+};
 
 module.exports = supplierController;
