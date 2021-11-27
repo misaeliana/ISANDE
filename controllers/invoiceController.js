@@ -285,21 +285,6 @@ const invoiceController = {
             //reason for the for loop: https://stackoverflow.com/questions/5077409/what-does-autocomplete-request-server-response-look-like
         });
     },
-        
-        
-            db.insertOne (Invoices, invoice, function(flag) {
-                console.log("Added successfully!");
-                if (flag) { }
-            });
-    },
-
-    getItemPrice: function(req, res) {
-        db.findOne(Items, {itemDescription:req.query.itemDesc},'itemDescription sellingPrice', function (result) {
-                res.send(result);
-       
-            //reason for the for loop: https://stackoverflow.com/questions/5077409/what-does-autocomplete-request-server-response-look-like
-        });
-    },
 
     getDeliveryList: function(req, res) {
 
