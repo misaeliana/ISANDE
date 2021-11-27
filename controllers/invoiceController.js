@@ -16,9 +16,9 @@ const deliveries = require('../models/DeliveriesModel.js');
 require('../controllers/helpers.js')();
 
 const invoiceController = {
-
+ 
 	getInvoiceList: function(req, res) {
-
+       
         // var type = {
         //     type: "In-Store"
         // };
@@ -62,8 +62,8 @@ const invoiceController = {
         // db.insertOne (deliveries, delivery, function(flag) {
         //     	if (flag) { }
         //     });
-
 		async function getInformation() {
+            
 
             var invoices = await getInvoices();
             var invoicesInfo = [];
@@ -82,11 +82,10 @@ const invoiceController = {
                 };
 
                 invoicesInfo.push(invoiceInfo);
+           
             }
-
 			res.render('invoiceList', {invoicesInfo});
 		}
-
 		getInformation();
     },
 
@@ -146,43 +145,32 @@ const invoiceController = {
 
 		getInformation();
 		
-    },
-
-    getFilteredRowsInvoice: function(req, res) {
-		var startDate = new Date(req.query.startDate);
-		var endDate = new Date(req.query.endDate);
-		startDate.setHours(0,0,0,0);
-		endDate.setHours(0,0,0,0);
+	},
+    /*getSearchInvoice: function(req, res) {
+		var searchItem = req.query.searchItem;
         
         async function getInformation() {
-
-            var invoices = await getInvoices();
+            var invoice = await getSpecificInvoice(searchItem);
             var invoicesInfo = [];
-
-            for (var i = 0; i < invoices.length; i++) {
-                var date = new Date(invoices[i].date);
-                date.setHours(0,0,0,0);
+            //for (var i = 0; i < invoice.length; i++) {
+                var date = new Date(invoice.date);
                 
-                if (!(startDate > date || date > endDate)) {
-                    var invoiceInfo = {
-                        _id: invoices[i]._id,
-                        formattedDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
-                        invoiceID: invoices[i].invoiceID,
-                        customerName: await getSpecificCustomer(invoices[i].customerID),
-                        total: parseFloat(invoices[i].total).toFixed(2),
-                        type: await getSpecificInvoiceType(invoices[i].typeID),
-                        status: await getSpecificInvoiceStatus(invoices[i].statusID)
-                    };
+                var invoiceInfo = {
+                    _id: invoice._id,
+                    formattedDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
+                    invoiceID: invoice.invoiceID,
+                    customerName: await getSpecificCustomer(invoice.customerID),
+                    total: parseFloat(invoice.total).toFixed(2),
+                    type: await getSpecificInvoiceType(invoice.typeID),
+                    status: await getSpecificInvoiceStatus(invoice.statusID)
+                };
     
-                    invoicesInfo.push(invoiceInfo);
-				}
-            }
+                invoicesInfo.push(invoiceInfo);
+           // }
             res.send(invoicesInfo);
 		}
-
 		getInformation();
-    },
-    
+    }*/
     getSearchInvoice: function(req, res) {
         var searchItem = req.query.searchItem;
         
@@ -190,13 +178,10 @@ const invoiceController = {
             var invoiceInfo = [];
             var info;
             var date;
-
             var invoice = await getSpecificInvoice(searchItem);
             var customerIDs = await getCustomerIDs(searchItem);
-
             if (invoice != null) {
                 date = new Date(invoice.date);
-
                 info = {
                     _id: invoice._id,
                     formattedDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
@@ -212,14 +197,10 @@ const invoiceController = {
             if (customerIDs != null) {
                 for (var i = 0; i < customerIDs.length; i++) {
                     var customerInvoices = await getCustomerInvocies(customerIDs[i]._id);
-
                     //console.log("Customer invocies " + customerInvoices);
-
                     if (customerInvoices != null) {
-
                         for (var j = 0; j < customerInvoices.length; j++) {
                             date = new Date(customerInvoices[j].date);
-
                             info = {
                                 _id: customerInvoices[j]._id,
                                 formattedDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
@@ -234,17 +215,12 @@ const invoiceController = {
                     }
                 }
             }
-
-
             if (invoiceInfo.length > 0)
                 res.send(invoiceInfo);
             else 
                 res.send(null);
 		}
-
-		getInformation();
-	},
-    
+        etInformation();},
     getNewInvoice: function(req, res) {
         
 		async function getInvoiceTypes () {
@@ -252,11 +228,22 @@ const invoiceController = {
             res.render('newInvoice', {itype});
 		}	//res.sendFile( dir+"/newInvoice.html");
         getInvoiceTypes();
-    },
-    
+	},
     addNewInvoice: function(req,res){
+        async function saveItems(invoiceID, items) {
+			for (var i=0; i<items.length; i++) {
+				items[i].invoice_id = invoiceID;    
+                items[i].itemID = await getItemID(items[i].itemDescription);
+				items[i].quantity =  items[i].quantity;
+                items[i].discount = items[i].discount;
+			}
+
+			db.insertMany(InvoiceItems, items, function(flag) {
+				if (flag) {}
+			})
+		}
             var invoice = {
-                invoiceID: "mock",
+                invoiceID: 'mocke',
                 customerID: req.body.custID,
                 date: req.body.date,
                 typeID: req.body.typeID,
@@ -266,21 +253,57 @@ const invoiceController = {
                 discount: req.body.discount,
                 total:req.body.total,
                 employeeID: "6187c88ffa9a0c35600c54a8"
-            };
+            }
+            var items = JSON.parse(req.body.itemString);
+            var invoiceID = '';
+            db.insertOneResult (Invoices, invoice, function(result) {
+                invoiceID = result._id;
+                //console.log("invoice added:")
+                //console.log('invoiceID: ' +invoiceID);
+               saveItems(invoiceID,items)
+            })
+        },
+        getItemPrice: function(req, res) {
+            db.findOne (Items, {itemDescription:req.query.itemDesc},'itemDescription sellingPrice', function (result) {
+                    res.send(result);
+           
+                //reason for the for loop: https://stackoverflow.com/questions/5077409/what-does-autocomplete-request-server-response-look-like
+            })
+        },
+        getFilteredRowsInvoice: function(req, res) {
+            var startDate = new Date(req.query.startDate);
+            var endDate = new Date(req.query.endDate);
+            startDate.setHours(0,0,0,0);
+            endDate.setHours(0,0,0,0);
+            
+            async function getInformation() {
+                var invoices = await getInvoices();
+                var invoicesInfo = [];
+                for (var i = 0; i < invoices.length; i++) {
+                    var date = new Date(invoices[i].date);
+                    date.setHours(0,0,0,0);
+                    
+                    if (!(startDate > date || date > endDate)) {
+                        var invoiceInfo = {
+                            _id: invoices[i]._id,
+                            formattedDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
+                            invoiceID: invoices[i].invoiceID,
+                            customerName: await getSpecificCustomer(invoices[i].customerID),
+                            total: parseFloat(invoices[i].total).toFixed(2),
+                            type: await getSpecificInvoiceType(invoices[i].typeID),
+                            status: await getSpecificInvoiceStatus(invoices[i].statusID)
+                        };
+        
+                        invoicesInfo.push(invoiceInfo);
+                    }
+                }
+                res.send(invoicesInfo);
+            }
     
-            db.insertOne (Invoices, invoice, function(flag) {
-                console.log("Added successfully!");
-                if (flag) { }
-            });
-    },
-
-    getItemPrice: function(req, res) {
-        db.findOne(Items, {itemDescription:req.query.itemDesc},'itemDescription sellingPrice', function (result) {
-                res.send(result);
-       
-            //reason for the for loop: https://stackoverflow.com/questions/5077409/what-does-autocomplete-request-server-response-look-like
-        });
-    }
+            getInformation();
+        },
+        
+        
 };
 
 module.exports = invoiceController;
