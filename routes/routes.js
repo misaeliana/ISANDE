@@ -50,7 +50,7 @@ router.get('/inventory', inventoryController.getInventoryList);
 
 router.post('/postNewItem', inventoryController.postNewItem);
 
-router.get('/getCheckItemDescription', inventoryController.getCheckItemDescription);
+//router.get('/getCheckItemDescription', inventoryController.getCheckItemDescription);
 
 router.get('/inventory/:itemID', inventoryController.getViewItem);
 

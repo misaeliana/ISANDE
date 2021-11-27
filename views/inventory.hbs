@@ -290,6 +290,8 @@
 
                 $("#search-button").click(function() {
                     var searchItem = $("#search-field").val();
+                    $('#dropdown-inventory-type').val("all-type");
+                    $('#dropdown-inventory-status').val("all-type");
 
                     $.get("/getSearchInventory", {searchItem: searchItem}, function (result) {
                        filter(result);

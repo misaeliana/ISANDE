@@ -35,7 +35,7 @@
         <div class="content">
             <div>
                 <div style="display: flex;">
-                    <div style="width: 50%"><h1 class="bold">{{itemInfo.itemDescription}}</h1></div>
+                    <div style="width: 50%"><h1 class="bold" id="item-description">{{itemInfo.itemDescription}}</h1></div>
                     <p id="item-ID" style="display: none;">{{itemInfo._id}}</p>
                     <div class="btn-status">
                         <div style="margin-top: 40px; text-align: center;"><button class="btn-status btn-{{itemInfo.btn_status}}" style="width: 100px; display: inline-block;">{{itemInfo.status}}</button></div>
@@ -110,10 +110,9 @@
                     </div>
                     <div class="modal-body">
                         <form id="edit-item">
-                            <label for="description">Description</label> <input id="description" type="text" value="{{itemInfo.itemDescription}}"><br>
-                            <p class="error" id="error-description" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            {{!-- <label for="description">Description</label> <input id="description" type="text" value="{{itemInfo.itemDescription}}"><br>
+                            <p class="error" id="error-description" style="margin-top: 3px; margin-bottom: 3px;"></p> --}}
 
-                            <!--MAKE IT CURRENT CATEGORY & UNIT-->
                             <label for="dropdown-category" style="margin-right: 10px">Type</label>
                             <select class="dropdown" id="dropdown-category" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
                                 <option value="no-selected" selected>Select Type</option>
@@ -194,15 +193,6 @@
 
                 // INPUT VALIDATION
 
-                function descriptionValidation(description) {
-                    if (description == null || description == "") {
-                        errorMessage("description");
-                        return 1;
-                    }
-                    else 
-                        return 0;
-                }
-
                 function typeValidation(type) {
                     if (type == "no-selected") {
                         errorMessage("type");
@@ -255,10 +245,7 @@
                 }
 
                 function errorMessage(type) {
-                    if (type == "description") {
-                        $("#description").css("border", "1px solid #B00000");
-                        $("#error-description").text("Please enter an Item Description.");
-                    } else if (type == "type") {
+                    if (type == "type") {
                         $("#dropdown-category").css("border", "1px solid #B00000");
                         $("#error-category").text("Please select a Type.");
                     } else if (type == "unit") {
@@ -287,8 +274,6 @@
                 }
 
                 function resetErrorMessage() {
-                    $("#description").css("border", "1px solid #DDDDDD");
-                    $("#error-description").text("");
                     $("#dropdown-category").css("border", "1px solid #DDDDDD");
                     $("#error-category").text("");
                     $("#dropdown-unit").css("border", "1px solid #DDDDDD");
@@ -300,29 +285,6 @@
                     $("#selling-price").css("border", "1px solid #DDDDDD");
                     $("#error-selling-price").text("");
                 }
-
-                $('#description').keyup(function () { 
-                    resetErrorMessage();
-
-                    // Get value 
-                     var description = capitalize($('#description').val());
-                     var itemID = $('#item-ID').text();
-
-                    // Check if dish name exists 
-                    $.get("/getCheckItemDescription", {itemDescription: description}, function (result) {
-                        if (result.itemDescription == description && result._id != itemID) {
-                            $("#description").css("border", "1px solid #B00000");
-                            $("#error-description").text("Item Description already taken.");
-                            $("#btn-edit-item").prop("disabled", true);
-                            $("#btn-edit-item").css("background-color", "#b3b3b3");
-                        } else {
-                            $("#description").css("border", "1px solid #DDDDDD");
-                            $("#error-description").text("");
-                            $("#btn-edit-item").prop("disabled", false);
-                            $("#btn-edit-item").css("background-color", "#0F84D9");
-                        }
-                    });
-                });
 
                 $('#dropdown-category').change(function() {
                     resetErrorMessage();
@@ -344,8 +306,7 @@
                     resetErrorMessage();
                 });
 
-                function checkAll(description, category, unit, reorderLevel, EOQ, sellingPrice) {
-                    descriptionValidation(description);
+                function checkAll(category, unit, reorderLevel, EOQ, sellingPrice) {
                     typeValidation(category);
                     unitValidation(unit);
                     reorderLevelValidation(reorderLevel);
@@ -383,7 +344,7 @@
 
                 $('#btn-edit-item').click(function() {
                     var itemID = $('#item-ID').text();
-                    var description = capitalize($('#description').val());
+                    var description = $('#item-description').text();
                     var category = $('#dropdown-category').val();
                     var unit = $('#dropdown-unit').val();
                     var quantity = $('#item-quantity').text();
@@ -395,9 +356,9 @@
                     var categoryText = $('#dropdown-category option:selected').text();
                     var unitText = $('#dropdown-unit option:selected').text();
 
-                    checkAll(description, category, unit, reorderLevel, EOQ, sellingPrice);
+                    checkAll(category, unit, reorderLevel, EOQ, sellingPrice);
 
-                    if (!descriptionValidation(description) && !typeValidation(category) && !unitValidation(unit) && !reorderLevelValidation(reorderLevel) && !EOQValidation(EOQ)  && !sellingPriceValidation(sellingPrice)) {
+                    if (!typeValidation(category) && !unitValidation(unit) && !reorderLevelValidation(reorderLevel) && !EOQValidation(EOQ)  && !sellingPriceValidation(sellingPrice)) {
 
                         // remove texts and red borders
                         resetErrorMessage();
