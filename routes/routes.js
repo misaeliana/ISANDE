@@ -108,4 +108,8 @@ router.get('/getFilteredRowsInvoice', invoiceController.getFilteredRowsInvoice);
 
 router.get('/getSearchInvoice', invoiceController.getSearchInvoice);
 
+
+//--DELIVERY--
+router.get('/deliveries', invoiceController.getDeliveryList);
+
 module.exports = router;

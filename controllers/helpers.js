@@ -368,7 +368,16 @@ module.exports = function() {
 				resolve (result);
 			});
 		});
+	},
+
+	this.getDeliveries = function() {
+		return new Promise((resolve, reject) => {
+			db.findMany(Deliveries, {dateDelivered: null}, '', function(result) {
+				resolve (result);
+			});
+		});
 	}
+
 	this.getAllInvoiceTypes = function() {
 		return new Promise((resolve, reject) => {
 			db.findMany(InvoiceTypes, {}, 'type', function(result) {
