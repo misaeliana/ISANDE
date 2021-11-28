@@ -294,22 +294,65 @@ const invoiceController = {
 
             for (var i = 0; i < deliveries.length; i++) {
                 var date = new Date(deliveries[i].deliveryDate);
+                var invoice = await getInvoice(deliveries[i].invoice_id);
+
                 var delivery = {
                     _id: deliveries[i]._id,
                     invoice_id: deliveries[i].invoice_id,
-                    invoiceNum: "invoice num",
-                    customerName: "cust name",
-                    paymentStatus: "paid",
-                    amount: "amount", // format
-                    deliveryStatus: "delivery status", // remove??
+                    invoiceNum: invoice.invoiceID,
+                    customerName: await getSpecificCustomer(invoice.customerID),
+                    paymentStatus: await getSpecificInvoiceStatus(invoice.statusID),
+                    amount: invoice.total, // format
                     deliveryDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
-                    deliveryPersonnel: deliveries[i].deliveryPersonnel
+                    deliveryPersonnel: await getEmployeeInfo(deliveries[i].deliveryPersonnel)
                 };
 
                 deliveryInfo.push(delivery);
             }
 
             res.render('deliveryList', {deliveryInfo});
+        }
+
+        getInformation();
+    },
+
+    getDeliveryInfo: function(req, res) {
+        var deliveryID = req.params.deliveryID;
+        var items = [];
+
+        async function getInformation() {
+            var delivery = await getSpecificDelivery(deliveryID);
+            var invoice = await getInvoice(delivery.invoice_id);
+            var customer = await getCustomerInfo(invoice.customerID);
+            var date = new Date(delivery.deliveryDate);
+
+            var deliveryInfo = {
+                invoice_id: invoice.invoiceID,
+                deliveryDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
+                deliveryNotes: delivery.deliveryNotes,
+                paymentStatus: await getSpecificInvoiceStatus(invoice.statusID)
+            };
+
+            // get items
+            var invoiceItems = await getInvoiceItems(invoice._id);
+            console.log(invoiceItems);
+
+            for (var i = 0; i < invoiceItems.length; i++) {
+                var itemInfo = await getSpecificInventoryItems(invoiceItems[i].itemID);
+
+               var item = {
+                    itemDescription: itemInfo.itemDescription,
+                    qty: invoiceItems[i].quantity,
+                    unit: await getSpecificUnit(itemInfo.unitID),
+                    unitPrice: parseFloat(itemInfo.sellingPrice).toFixed(2),
+                    discount: parseFloat(invoiceItems[i].discount).toFixed(2),
+                    amount: ((parseFloat(itemInfo.sellingPrice) * parseFloat(invoiceItems[i].quantity)) - parseFloat(invoiceItems[i].discount)).toFixed(2)
+                };
+
+                items.push(item);
+            }
+
+            res.render('viewDeliveryInformation', {customer, deliveryInfo, invoice, items});
         }
 
         getInformation();

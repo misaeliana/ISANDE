@@ -112,4 +112,6 @@ router.get('/getSearchInvoice', invoiceController.getSearchInvoice);
 //--DELIVERY--
 router.get('/deliveries', invoiceController.getDeliveryList);
 
+router.get('/deliveries/:deliveryID', invoiceController.getDeliveryInfo);
+
 module.exports = router;

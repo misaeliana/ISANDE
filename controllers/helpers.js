@@ -376,6 +376,14 @@ module.exports = function() {
 				resolve (result);
 			});
 		});
+	},
+
+	this.getSpecificDelivery = function(deliveryID) {
+		return new Promise((resolve, reject) => {
+			db.findOne(Deliveries, {_id: deliveryID}, '', function(result) {
+				resolve (result);
+			});
+		});
 	}
 
 	this.getAllInvoiceTypes = function() {
