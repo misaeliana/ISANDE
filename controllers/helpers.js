@@ -33,6 +33,8 @@ const Customers = require('../models/CustomersModel.js');
 
 const Deliveries = require('../models/DeliveriesModel.js');
 
+const Purchases = require('../models/PurchasesModel.js')
+
 module.exports = function() {
 	this.getAllPositions = function() {
 		return new Promise((resolve, reject) => {
@@ -244,7 +246,7 @@ module.exports = function() {
 
 	this.getSpecificSupplier = function(supplierID) {
 		return new Promise((resolve, reject) => {
-			db.findOne(Suppliers, {_id: supplierID}, '', function(result) {
+			db.findOne(Suppliers, {_id: supplierID, informationStatus:"618a7830c8067bf46fbfd4e4"}, '', function(result) {
 				resolve (result);
 			});
 		});
@@ -260,7 +262,7 @@ module.exports = function() {
 
 	this.getSupplierID = function(supplierName) {
 		return new Promise((resolve, reject) => {
-			db.findOne(Suppliers, {name: supplierName}, '', function(result) {
+			db.findOne(Suppliers, {name: supplierName, informationStatusID:"618a7830c8067bf46fbfd4e4"}, '', function(result) {
 				resolve (result._id);
 			});
 		});
@@ -392,5 +394,27 @@ module.exports = function() {
 				resolve(result);
 			});
 		});
-	}		
+	},
+
+	this.getPONumber = function() {
+		return new Promise((resolve, reject) => {
+			db.findMany(Purchases, {}, '', function(result) {
+				var length = result.length - 1;
+
+				//no PO in the db yet
+				if (length == -1)
+					resolve(1);
+				else
+					resolve(result[length].purchaseOrderNumber+1);
+			});
+		});
+	},
+
+	this.getItemUnit = function(itemDesc) {
+		return new Promise((resolve, reject) => {
+			db.findOne(Items, {itemDescription:itemDesc, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'unitID', function(result){
+				resolve(result.unitID)
+			})
+		})
+	}
 };

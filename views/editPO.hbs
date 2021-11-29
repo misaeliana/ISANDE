@@ -38,7 +38,7 @@
         <div class="content">
             <div> <!-- ADD FIXED -->
                 <div style="display: flex;">
-                    <div style="width: 50%"><h1 class="bold"> Purchase Order #"Number" </h1></div>
+                    <div style="width: 50%"><h1 class="bold"> Purchase Order #{{purchaseInfo.purchaseOrderNumber}}</h1></div>
                     <div class="btn-status">
                         {{#if newPO}}
                             <div><button id="btn-status" style="background-color: #0F84D9;">New</button></div>
@@ -61,20 +61,20 @@
                     </div>
                     <div class="label-container">
                         <div class="override-label"> Supplier </div> 
-                        <div class="label-content" id="edit-PO-name-content">  </div>
+                        <div class="label-content" id="edit-PO-name-content">{{supplier.name}}</div>
                     </div>
                     <div class="label-container">
                         <div class="override-label"> Contact Person </div> 
-                        <div class="label-content" id="edit-PO-contact-person-content">  </div>
+                        <div class="label-content" id="edit-PO-contact-person-content">{{supplier.contactPerson}}</div>
                     </div>
                     <div class="label-container">
                         <div class="override-label"> Contact Number </div> 
-                        <div class="label-content" id="edit-PO-contact-number">  </div>
+                        <div class="label-content" id="edit-PO-contact-number">{{supplier.number}}</div>
                     </div>
 
                     <div class="label-container">
                         <div class="override-label"> Address </div> 
-                        <div class="label-content" id="edit-PO-address">  </div>
+                        <div class="label-content" id="edit-PO-address">{{supplier.address}}</div>
                     </div>
                     
                 </div>
@@ -230,9 +230,9 @@
                 {{/if}}
 
             </div>
-            {{#if newPO}}
+            <!--{{#if newPO}}
                 <div class="btn-export-invoice"><button class="btn-dark-blue" id="btn-export-invoice">Export</button></div>
-            {{/if}}
+            {{/if}}-->
 
             <div style="height: 20px"></div>
         </div>
@@ -328,6 +328,7 @@
                     var poID = address[address.length -1]
                     var poItems = []
 
+
                     $("#table-poItem-body > tr").each(function () {
                         var poItem= {
                             itemDesc: $(this).children('.classItemDescription').text(), 
@@ -336,10 +337,11 @@
                         }
                         poItems.push(poItem);
                     });
+
                     var itemsString = JSON.stringify(poItems);  
                     $.post('/updatePOItems', {poID, itemsString});
                     alert("PO updated");
-                    window.location = "/purchaseOrder/{{poID}}";
+                    window.location = `/purchaseOrder/${poID}`;
                 })
 
                 $('.unitPrice').keyup(function() {
@@ -403,9 +405,9 @@
                     var poItems = []
                     var proceed=true;
 
-                    $("#table-purchase-stocks-body > tr").each(function () {
-                        if ($(this).find('.unitPrice').val() == "" || $(this).find('.quantityReceived').val() == "") {
-                            if (confirm("Some items do not have a price or quantity received. This would make the purchase order incomplete. Do you wish to proceed")) {
+                    $("#table-poItem-body > tr").each(function () {
+                        if (($(this).find('.unitPrice').val() == "" || $(this).find('.quantityReceived').val() == "") && proceed) {
+                            if (confirm("Some items do not have a price or quantity received. A new PO will be created for these items. Do you wish to proceed.")) {
                                 proceed = true
                             }
                             else 
@@ -429,9 +431,10 @@
                         var subtotal = parseFloat($('#subtotal').text().slice(1));
                         var vat = parseFloat($('#vat').text().slice(1));
                         var total = parseFloat($('#total').text().slice(1));
-                        $.post('/updatePOWithPrice', {poID, itemsString, subtotal, vat, total});
-                        alert("PO updated");
-                        window.location = "/purchaseOrder/{{poID}}";
+                        $.post('/updatePOWithPrice', {poID, itemsString, subtotal, vat, total}, function(result) {
+                            alert("PO updated");
+                            window.location = "/purchaseOrderList";
+                        });
                     }
                 })
 

@@ -65,8 +65,8 @@
                         </div>
                         <div class="modal-body">
                             <form id="edit-customer">
-                                {{!-- <label for="Customer-name">Customer Name</label> <input id="customer-name" type="text" value="{{name}}"><br>
-                                <p class="error" id="error-new-customer-name" style="margin-top: 3px; margin-bottom: 3px;"></p> --}}
+                                <!--<label for="Customer-name">Customer Name</label> <input id="customer-name" type="text" value="{{name}}"><br>
+                                <p class="error" id="error-new-customer-name" style="margin-top: 3px; margin-bottom: 3px;"></p>-->
                                 <label for="contact-number">Contact Number</label> <input id="contact-number" type="number" value="{{number}}"><br>
                                 <p class="error" id="error-contact-number" style="margin-top: 3px; margin-bottom: 3px;"></p>
                                 <label for="address">Address</label> <input id="address" type="text" value="{{address}}"><br>
@@ -107,7 +107,7 @@
                     return words.join(' ');
                 };
 
-                $('#customer-name').keyup(function() {
+                /*$('#customer-name').keyup(function() {
                     var name = capitalize($('#customer-name').val())
                     $.get('/getCheckCustomerName', {name:name}, function(result) {
                         if (result.name == name) {
@@ -123,15 +123,15 @@
                             $("#btn-add-new-customer").css("background-color", "#0F84D9");
                         }
                     })
-                })
+                })*/
 
 
                 function errorMessage(type) {
-                    if (type == "noName") {
+                    /*if (type == "noName") {
                         $('#customer-name').css("border", "1px solid #B00000");
                         $('#error-new-customer-name').text("Please input customer name");
-                    } 
-                    else if (type == "noNumber") {
+                    } */
+                    if (type == "noNumber") {
                         $('#contact-number').css("border", "1px solid #B00000");
                         $('#error-contact-number').text("Invalid conact number");
                     }
@@ -141,14 +141,14 @@
                     }
                 }
 
-                function customerNameValidation(name) {
+                /*function customerNameValidation(name) {
                     if (name == null || name == "") {
                         errorMessage("noName")
                         return 1;
                     }
                     else 
                         return 0;
-                }   
+                } */  
 
                 function numberValidation(number) {
                     if (number == 0 || number < 0) {
@@ -171,13 +171,13 @@
                 $('#btn-update-customer').click(function() {
                     var customerID = $('#customerID').text();
 
-                    var name = capitalize($('#customer-name').val());
+                    //var name = capitalize($('#customer-name').val());
                     var number = $('#contact-number').val();
                     var address = $('#address').val();
 
                     if (!customerNameValidation(name) && !numberValidation(number) && !addressValidation(address)) {
 
-                            $('#customer-name').css("border", "1px solid #DDDDDD");
+                            //$('#customer-name').css("border", "1px solid #DDDDDD");
                             $('#contact-number').css("border", "1px solid #DDDDDD");
                             $('#address').css("border", "1px solid #DDDDDD");
 
@@ -185,7 +185,7 @@
                             $('#error-contact-number').text("");
                             $('#error-address').text("");
 
-                            $.post('/postUpdateCustomerInformation', {customerID, name, number, address}, function(result) {
+                            $.post('/postUpdateCustomerInformation', {customerID, number, address}, function(result) {
                                     $('#modal-edit-customer').modal('hide');
                                     $('#edit-customer').trigger('reset');
                                     alert("Succesfully updated customer information");

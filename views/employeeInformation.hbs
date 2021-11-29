@@ -65,8 +65,8 @@
                         </div>
                         <div class="modal-body">
                             <form id="update-employee">
-                                <label for="employee-name">Employee Name</label> <input id="employee-name" type="text" value="{{employeeInfo.name}}"><br>
-                                <p class="error" id="error-employee-name" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                                <!--<label for="employee-name">Employee Name</label> <input id="employee-name" type="text" value="{{employeeInfo.name}}"><br>
+                                <p class="error" id="error-employee-name" style="margin-top: 3px; margin-bottom: 3px;"></p>-->
                                 <label for="employee-username">Username</label> <input id="employee-username" type="text" value="{{employeeInfo.username}}"><br>
                                 <p class="error" id="error-employee-username" style="margin-top: 3px; margin-bottom: 3px;"></p>
                                 <label for="employee-password">Password</label> <input id="employee-password" type="text"><br>                            
@@ -118,7 +118,7 @@
                     return words.join(' ');
                 };
 
-                $('#employee-name').keyup(function() {
+                /*$('#employee-name').keyup(function() {
                     var name = capitalize($('#employee-name').val())
                     $.get('/getCheckEmployeeName', {name:name}, function(result) {
                         if (result.name == name) {
@@ -134,7 +134,7 @@
                             $("#btn-update--employee").css("background-color", "#0F84D9");
                         }
                     })
-                })
+                })*/
 
                 $('#employee-username').keyup(function() {
                     var username = $('#employee-username').val();
@@ -156,11 +156,11 @@
 
 
                 function errorMessage(type) {
-                    if (type == "noName") {
+                    /*if (type == "noName") {
                         $('#employee-name').css("border", "1px solid #B00000");
                         $('#error-employee-name').text("Please input employee name");
-                    } 
-                    else if (type == "noUsername") {
+                    } */
+                    if (type == "noUsername") {
                         $('#employee-username').css("border", "1px solid #B00000");
                         $('#error-employee-username').text("Please input employee username");
                     } 
@@ -174,14 +174,14 @@
                     
                 }
 
-                function employeeNameValidation(name) {
+                /*function employeeNameValidation(name) {
                     if (name == null || name == "") {
                         errorMessage("noName")
                         return 1;
                     }
                     else 
                         return 0;
-                }   
+                }   */
 
                 function employeeUsernameValidation(username) {
                     if (username == null || username == "") {
@@ -214,27 +214,27 @@
                 $('#btn-update-employee').click(function() {
                     var employeeID = $('#employeeID').text();
 
-                    var name = capitalize($('#employee-name').val());
+                    //var name = capitalize($('#employee-name').val());
                     var username = $('#employee-username').val();
                     var password = $('#employee-password').val();
                     var number = $('#contact-number').val();
                     var position = $('#dropdown-employee-position').val()
 
-                    if (!employeeNameValidation(name) && !employeeUsernameValidation(username) && !numberValidation(number) && !positionValidation(position)) {
+                    if (!employeeUsernameValidation(username) && !numberValidation(number) && !positionValidation(position)) {
 
-                            $('#employee-name').css("border", "1px solid #DDDDDD");
+                            //$('#employee-name').css("border", "1px solid #DDDDDD");
                             $('#employee-username').css("border", "1px solid #DDDDDD");
                             $('#password').css("border", "1px solid #DDDDDD");
                             $('#contact-number').css("border", "1px solid #DDDDDD");
                             $('#position').css("border", "1px solid #DDDDDD");
 
-                            $('#error-employee-name').text("");
+                            //$('#error-employee-name').text("");
                             $('#error-employee-username').text("");
                             $('#error-employee-password').text("");
                             $('#error-contact-number').text("");
                             $('#error-employee-position').text("");
 
-                            $.post('/postUpdateEmployeeInformation', {employeeID,name, username, password, number, position}, function (result) {
+                            $.post('/postUpdateEmployeeInformation', {employeeID, username, password, number, position}, function (result) {
                                 $('#modal-update-employee').modal('hide');
                                 $('#update-employee').trigger('reset');
                                 alert("Succesfully updated employee information!");

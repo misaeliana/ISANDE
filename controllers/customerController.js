@@ -56,7 +56,7 @@ const customerController = {
 		})
 
 		var customer = {
-			name:req.body.name,
+			//name:req.body.name,
 			number:req.body.number, 
 			address:req.body.address,
 			informationStatusID: "618a7830c8067bf46fbfd4e4"

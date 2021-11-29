@@ -88,7 +88,7 @@ const employeeController = {
 		});
 
 		var employee = {
-			name:req.body.name, 
+			//name:req.body.name, 
 			username:req.body.username, 
 			password:req.body.password, 
 			number:req.body.number, 
