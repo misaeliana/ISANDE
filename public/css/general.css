@@ -194,3 +194,18 @@
     color: #B00000;
     font-weight: 700;
 }
+
+.supplierInfoInput {
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+
+    margin-top: 15px;
+    margin-left: 20px; 
+    width:65%; 
+    position: absolute; 
+    right:100px
+}

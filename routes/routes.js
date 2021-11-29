@@ -86,6 +86,12 @@ router.post('/saveGeneratePurchaseOrder', purchaseOrderController.saveGeneratePu
 
 router.get('/editPO/:poID', purchaseOrderController.editPO);
 
+router.get('/getSupplierName', purchaseOrderController.getSupplierName);
+
+router.get('/getSupplierInformation', purchaseOrderController.getSupplierInformation)
+
+router.get('/isSold', purchaseOrderController.isSold);
+
 router.post('/updatePOItems', purchaseOrderController.updatePOItems);
 
 router.post('/updatePOStatus', purchaseOrderController.updatePOStatus);

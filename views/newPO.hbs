@@ -51,9 +51,13 @@
 
             <div>
                 <input style="margin-top: 15px;" type="text" class="form-control margin-bottom-10" id="supplierName" name="supplierName" placeholder="Supplier Name">
+                <div id="supplier-error" style="display: none;">
+                    <p class="error" id="no-suppler">Supplier does not exist</p>
+                    <button class="btn-light-blue" id="add-new-supplier">+ Add New Supplier</button>
+                </div>
                 <input type="text" class="form-control margin-bottom-10" id="contactPerson" name="contactPerson" placeholder="Contact Person">
                 <input type="text" class="form-control margin-bottom-10" id="contactNumber" name="contactNumber" placeholder="Contact Number">
-                <input type="text" class="form-control margin-bottom-10" id="Address" name="Address" placeholder="Address">   
+                <input type="text" class="form-control margin-bottom-10" id="address" name="Address" placeholder="Address">   
             </div>
 
             <div class="header-colored-bg" style="margin-top: 15px; margin-bottom: 10px">
@@ -173,6 +177,7 @@
                                 data: {
                                     //request.term refers to the value currently in the text input
                                     term: request.term,
+                                    supplier: $('#supplierName').val()
                                 },
                                 success: function (data) {
                                     $('#text-warning-new-PO').css('display', 'none')
@@ -196,17 +201,53 @@
                 });
             })
 
-             function filled(itemDesc, qty) {
-                    var itemDesc = $('#itemDescription').val();
-                    var qty = $('#qty').val();
-
-                    if (itemDesc!="" && qty!="")
-                        return 0
-                    else if ((itemDesc == "" && qty != "") || (itemDesc == "" && qty == ""))
-                        return 1
-                    else if (qty == "" && itemDesc !="")
-                        return 2
+            $("#supplierName" ).autocomplete({
+                source: function(request, response) {
+                $.ajax({
+                            url: `/getSupplierName?query=${request.term}`,
+                            dataType: "json",
+                            data: {
+                                //request.term refers to the value currently in the text input
+                                term: request.term,
+                            },
+                            success: function (data) {
+                                $('#supplier-error').css('display', 'none')
+                                $("#supplierName").css("border", "1px solid #DDDDDD");
+                                response(data);
+                            }
+                     });
+                }, response: function (event, ui) {
+                    if (ui.content.length === 0) {
+                        $('#supplier-error').css('display', 'block')
+                        $('#btn-update-new-po').prop('disabled', true)
+                        $('#btn-update-new-po').css("background-color", "#b3b3b3");
+                    }
+                    else {
+                        $('#supplier-error').css('display', 'none')
+                        $('#btn-update-new-po').prop('disabled', false)
+                        $('#btn-update-new-po').css("background-color", "#0F84D9")  
+                    }
+                }, select: function(event, ui) {
+                    var supplierName = ui.item.label;
+                    $.get('/getSupplierInformation', {supplierName}, function(result) {
+                        $('#contactPerson').val(result.contactPerson);
+                        $('#contactNumber').val(result.number);
+                        $('#address').val(result.address)
+                    })
                 }
+            });
+
+            function filled(itemDesc, qty) {
+                var itemDesc = $('#itemDescription').val();
+                var qty = $('#qty').val();
+
+                if (itemDesc!="" && qty!="")
+                    return 0
+                else if ((itemDesc == "" && qty != "") || (itemDesc == "" && qty == ""))
+                    return 1
+                else if (qty == "" && itemDesc !="")
+                    return 2
+            }
 
 
             $('#addItem').click(function(){

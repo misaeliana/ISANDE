@@ -15,6 +15,8 @@ const Purchases = require('../models/PurchasesModel.js');
 
 const PurchasedItems = require('../models/PurchasedItemsModel.js');
 
+const ItemSuppliers = require('../models/ItemSuppliersModel.js')
+
 const purchaseOrderController = {
 
 	getPurchaseOrderList: function(req, res) {
@@ -60,22 +62,47 @@ const purchaseOrderController = {
 	},
 
 	getItems: function(req, res) {
-		db.findMany (Items, {itemDescription:{$regex:req.query.query, $options:'i'}, informationStatusID: "618a7830c8067bf46fbfd4e4"}, 'itemDescription', function (result) {
-			var formattedResults = [];
-			//reason for the for loop: https://stackoverflow.com/questions/5077409/what-does-autocomplete-request-server-response-look-like
-			for (var i=0; i<result.length; i++) {
-				var formattedResult = {
-					label: result[i].itemDescription,
-					value: result[i].itemDescription
-				};
-				formattedResults.push(formattedResult);
+
+		function getItems(supplierID) {
+			return new Promise((resolve, reject) => {
+				db.findMany(ItemSuppliers, {supplierID:supplierID}, 'itemID', function(result) {
+					resolve (result)
+				})
+			})
+		}
+
+		//source for regex
+		//https://blog.sessionstack.com/how-javascript-works-regular-expressions-regexp-e187e9082913
+
+		async function getFilteredItems() {
+			var supplierID = await getSupplierID(req.query.supplier)
+			var items = await getItems(supplierID)
+			var formattedResults = []
+			var query = new RegExp(req.query.query, 'i')
+			var itemNames = []
+
+			for (var i=0; i<items.length; i++){
+				var itemName = await getItemDescription(items[i].itemID)
+				itemNames.push(itemName);
 			}
-			res.send(formattedResults);
-		});
+
+			for (var i=0; i<itemNames.length; i++) {
+				if (query.test(itemNames[i])) {
+					var formattedResult = {
+						label: await getItemDescription(items[i].itemID),
+						value: await getItemDescription(items[i].itemID)
+					}
+					formattedResults.push(formattedResult)
+				}
+			}
+			res.send(formattedResults)
+		}
+		
+		getFilteredItems();
 	},
 
 	getItemUnit: function(req, res) {
-		db.findOne (Items, {itemDesc:req.body.itemDesc, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'unitID', function(result) {
+		db.findOne (Items, {itemDesc:req.body.itemDesc, informationStatusID:"6n18a7830c8067bf46fbfd4e4"}, 'unitID', function(result) {
 			db.findOne(Units, {_id: result.unitID}, 'unit', function (result2) {
 				res.send(result2.unit);
 			});
@@ -348,6 +375,44 @@ const purchaseOrderController = {
 		db.findOne(Purchases, {_id:req.params.poID}, '_id purchaseOrderNumber supplierID date statusID', function(result) {
 			getItems(result, result.statusID)
 		})
+	},
+
+	getSupplierName: function(req, res) {
+		db.findMany (Suppliers, {informationStatusID:"618a7830c8067bf46fbfd4e4", name:{$regex:req.query.query, $options:'i'}}, 'name', function(result){
+			var formattedResults = [];
+			//reason for the for loop: https://stackoverflow.com/questions/5077409/what-does-autocomplete-request-server-response-look-like
+			for (var i=0; i<result.length; i++) {
+				var formattedResult = {
+					label: result[i].name,
+					value: result[i].name
+				};
+				formattedResults.push(formattedResult);
+			}
+			res.send(formattedResults);
+		})
+	},
+
+	getSupplierInformation: function(req, res) {
+		db.findOne(Suppliers, {name:req.query.supplierName, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name contactPerson number address', function(result) {
+			res.send(result)
+		})
+	},
+
+	isSold: function(req, res) {
+		async function check() {
+			var itemID = await getItemID (req.query.itemDesc);
+			var supplierID = await getSupplierID(req.query.supplierName)
+
+
+			db.findOne (ItemSuppliers, {itemID:itemID, supplierID:supplierID}, '_id', function(result) {
+				if (result == null)
+					res.send("not sold")
+				else
+					res.send("sold")
+			})
+		}
+
+		check();
 	},
 
 	//update function for new PO, add new items, delete items
