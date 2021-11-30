@@ -249,19 +249,38 @@ const purchaseOrderController = {
 
 		function getLowItems() {
 			return new Promise((resolve, reject) => {
-				db.findMany(Items, {statusID:"618b32205f628509c592daab", informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'itemDescription EOQ unitID', function(result) {
+				db.findMany(Items, {statusID:"618b32205f628509c592daab", informationStatusID:"618a7830c8067bf46fbfd4e4"}, '_id itemDescription EOQ unitID', function(result) {
 					resolve (result);
 				});
 			});
 		}
 
+		function getItemSuppliers(itemID) {
+			return new Promise((resolve, reject)=> {
+				db.findMany(ItemSuppliers, {itemID:itemID}, 'supplierID', function(result) {
+					resolve (result)
+				})
+			})
+		}
+
 		async function getItems() {
 			var items = await getLowItems();
-			var suppliers =  await getSuppliers();
+
 
 			for (var i=0; i<items.length; i++) {
 				items[i].unit = await getSpecificUnit(items[i].unitID);
-				items[i].suppliers = suppliers;
+
+				var temp_suppliers = await getItemSuppliers(items[i]._id);
+				var suppliers = []
+				for (var j=0; j<temp_suppliers.length; j++) {
+					var supplier = {
+						_id: temp_suppliers[j],
+						name: await getSupplierName(temp_suppliers[j].supplierID)
+					}
+					suppliers.push(supplier)
+				}
+
+				items[i].suppliers = suppliers
 			}
 
 			res.render('generatePO', {items});
