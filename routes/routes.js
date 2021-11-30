@@ -132,9 +132,11 @@ router.get('/getSearchInvoice', invoiceController.getSearchInvoice);
 
 router.get('/getCustomerInformation', invoiceController.getCustomerInformation)
 
-router.get('/getItemNameInvoice', invoiceController.getItems);
+router.get('/getItemName', invoiceController.getItems);
 
 router.get('/returns', invoiceController.returns);
+
+
 
 
 //--DELIVERY--

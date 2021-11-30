@@ -397,6 +397,13 @@ module.exports = function() {
 			});
 		});
 	},
+	this.getDeliveryPersonnel = function() {
+		return new Promise((resolve, reject) => {
+			db.findMany(Employees, {}, 'name', function(result) {
+				resolve(result);
+			});
+		});
+	},
 
 	this.getPONumber = function() {
 		return new Promise((resolve, reject) => {

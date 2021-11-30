@@ -237,13 +237,51 @@ const invoiceController = {
     },
 
     getNewInvoice: function(req, res) {
-        
 		async function getInvoiceTypes () {
 			var itype = await getAllInvoiceTypes();
-            res.render('newInvoice', {itype});
+            var delperson = await getDeliveryPersonnel();
+            res.render('newInvoice', {itype,delperson});
 		}	//res.sendFile( dir+"/newInvoice.html");
         getInvoiceTypes();
     },
+    getItems: function(req, res) {
+
+		function getItems(itemDescription) {
+			return new Promise((resolve, reject) => {
+				db.findMany(Items, {itemDescription:itemDescription}, '', function(result) {
+					resolve (result)
+				})
+			})
+		}
+
+		//source for regex
+		//https://blog.sessionstack.com/how-javascript-works-regular-expressions-regexp-e187e9082913
+
+		async function getFilteredItems() {
+			var items = await getItems(itemDescription);
+			var formattedResults = [];
+			var query = new RegExp(req.query.query, 'i');
+			var itemNames = []
+
+			for (var i=0; i<items.length; i++){
+				var itemName = await getItemDescription(items[i].itemID)
+				itemNames.push(itemName);
+			}
+
+			for (var i=0; i<itemNames.length; i++) {
+				if (query.test(itemNames[i])) {
+					var formattedResult = {
+						label: await getItemDescription(items[i].itemID),
+						value: await getItemDescription(items[i].itemID)
+					}
+					formattedResults.push(formattedResult)
+				}
+			}
+			res.send(formattedResults)
+		}
+		
+		getFilteredItems();
+	},
     
     addNewInvoice: function(req,res){
         async function saveItems(invoiceID, items) {
@@ -253,10 +291,7 @@ const invoiceController = {
 				items[i].quantity =  items[i].quantity;
                 items[i].discount = items[i].discount;
 			}
-
-			db.insertMany(InvoiceItems, items, function(flag) {
-				if (flag) {}
-			});
+			db.insertMany(InvoiceItems, items, function(flag) {if (flag) {}});
 		}
             var invoice = {
                 invoiceID: 'mocke',
@@ -268,12 +303,25 @@ const invoiceController = {
                 VAT: req.body.VAT,
                 discount: req.body.discount,
                 total:req.body.total,
-                employeeID: "6187c88ffa9a0c35600c54a8"
+                employeeID: req.body.employeeID
             };
             var items = JSON.parse(req.body.itemString);
             var invoiceID = '';
+            console.log("deliveryDate: " + req.body.ddate);
+            console.log("deliveryNotes: "+ req.body.dnotes);
             db.insertOneResult (Invoices, invoice, function(result) {
                 invoiceID = result._id;
+                if(req.body.typeID == '61a591c1233fa7f9abcd5726'){
+                    var dpackage = {
+                        invoice_id: invoiceID,
+                        deliveryDate: req.body.ddate,
+                        dateDelivered: null,
+                        deliveryPersonnel: req.body.employeeID,
+                        deliveryNotes: req.body.dnotes
+                    }
+                    db.insertOne(deliveries, dpackage, function(flag) {if (flag) {}});
+                    console.log("delivery invoice added:");
+                }
                 //console.log("invoice added:")
                 //console.log('invoiceID: ' +invoiceID);
                saveItems(invoiceID,items);
@@ -386,7 +434,6 @@ const invoiceController = {
             var types = await getAllInvoiceTypes()
             res.render('return', {types})
         }
-
         getInfo();
     }
 };

@@ -64,8 +64,10 @@
 
             <label for="dropdown-delivery-personnel" style="margin-right: 10px">Delivery Personnel</label>
             <select class="dropdown" id="dropdown-delivery-personnel" style="margin-right: 10px">
-                <option value="all-type" selected>All</option>
-                    <option value="{{_id}}">{{ingredientType}}</option>
+                    <option value="all-type" selected>All</option>
+                     {{#each delperson}}
+                        <option value={{_id}}>{{name}}</option>
+                    {{/each}}
             </select>
 
             <div class="header-colored-bg" style="margin-top: 20px;">
@@ -149,12 +151,39 @@
 
                     <div class="btn-export-invoice"><button class="btn-dark-blue" id="btn-export-invoice">Export</button></div>
 
-                    <div style="height: 20px"></div>
-        </div>
+                    <div style="height: 20px"></div>    
+
+
+                    <!-- Modal -->
+                <div class="modal fade" id="customerModal">
+                <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                <h2 class="modal-title" id="exampleModalLabel">Customer Details</h2>
+                
+                </div>
+                <div class="modal-body">
+                <label for="name">Name: <input type="text" id="name" name="name"><br></label><br>
+                <label for="phone">Phone: <input type="text" id="phone" name="phone"></label><br>
+                <label for="address">Address: <input type="text" id="address" name="address"></label><br>
+
+               
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+                </div>
+                </div>
+                </div>
+                </div>
 
 
         <script>
             $(document).ready(function() {
+                $('#address').css('display', 'none');
+                $('#contactNumber').css('display', 'none');
+
                 var today = new Date();
                 var dd = String(today.getDate()).padStart(2, '0');
                 var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
@@ -177,16 +206,17 @@
 
 
                 $('#drop-down-new-invoice-type').on('change', function() {
-                    if(this.value == '6197862b09243e3616834793'){
-                   
-                    $('#address').css('display', 'block');
-                    $('#contactNumber').css('display', 'block');
-                    }
-                    else
+                     if(this.value == '6197863ac4f0088e95c9bf84')
                     {
                     $('#address').css('display', 'none');
                     $('#contactNumber').css('display', 'none');
+                    alert("in-store")
                     }
+                    else if(this.value == '61a591c1233fa7f9abcd5726'){
+                    $('#address').css('display', 'block');
+                    $('#contactNumber').css('display', 'block');
+                    }
+                   
                     //alert( $(this).find(":selected").val() );
                 })
 
@@ -204,7 +234,7 @@
                 $("#itemDescription" ).autocomplete({
                     source: function(request, response) {
                     $.ajax({
-                                url: `/getItemNamePO?query=${request.term}`,
+                                url: `/getItemName?query=${request.term}`,
                                 dataType: "json",
                                 data: {
                                     //request.term refers to the value currently in the text input
@@ -232,7 +262,7 @@
                    var discount = $('#discount').val();
                    
                     
-                    if (filled(itemDesc, qty) == 0) {
+                    if(filled(itemDesc, qty) == 0) {
                     $.get('/getItemPrice', {itemDesc}, function (result) {
                         var sellingPrice = result.sellingPrice;
                         var dis = discount/100;
@@ -294,13 +324,20 @@
                     
                     //var custname = capitalize($('#customerName').val());
                     var statusID = '0';
-                    var date =  $('#dateToday').text();
-                    var typeID = $('#drop-down-new-invoice-type').val();
 
+                    var custID = "6198e7cb519d8741ec31ec5d";
+                    var address = '';
+                    var date =  $('#dateToday').text();
+                    var ddate = date;
+                    var dnotes = '';
+
+                    var typeID = $('#drop-down-new-invoice-type').val();    
                     switch(typeID) {
                         //delivery type
-                    case '6197862b09243e3616834793':
+                    case '61a591c1233fa7f9abcd5726':
                     statusID = '619785d78094faf8c10d1484';
+                    var ddate = $('#delivery-date').val();
+                    var dnotes = $('#notes').text();
                     break;
                         //In-store type
                     case '6197863ac4f0088e95c9bf84':
@@ -308,17 +345,14 @@
                     break;
                     default:}
 
-                    var custID = "6198e7cb519d8741ec31ec5d";
+                  
                     var subtotal = $('#subtotalbox').val();
                     var VAT = $('#vatbox').val();
                     var discount = $('#disbox').val();
                     var total = $('#totbox').val();
-                 
-    
-                    var employeeID = "6187c88ffa9a0c35600c54a8"
+                    var employeeID = $('#dropdown-delivery-personnel').val();
 
-               $.post('/createNewInvoice', {custID,date,typeID,statusID,subtotal,VAT,discount,total,employeeID,itemString}, function(result) {
-               })
+               $.post('/createNewInvoice', {custID,date,typeID,statusID,subtotal,VAT,discount,total,employeeID,ddate,dnotes,itemString}, function(result) {})
                 })
             }) 
         </script>
