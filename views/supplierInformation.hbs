@@ -4,8 +4,8 @@
         <title> Supplier Information </title>
         <meta name="description" content="Supplier Information">
         <meta name="keyword" content="Moderna, Supplier Information">
-        <link rel="stylesheet" type="text/css" href="../public/css/general.css">
-        <link rel="stylesheet" type="text/css" href="../public/css/information.css">
+        <link rel="stylesheet" type="text/css" href="../css/general.css">
+        <link rel="stylesheet" type="text/css" href="../css/information.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -16,7 +16,7 @@
 
         <!-- PARTIALS -->
         <div id="navbar"> 
-            <div class="navbar-logo"> <img src="../public/images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
+            <div class="navbar-logo"> <img src="../images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
             <div class="navbar-logout"> <a href= "login.html">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
@@ -90,7 +90,7 @@
                                 <label for="contact-number">Contact Number</label> <input id="contact-number" type="number" value="{{number}}"><br>
                                 <p class="error" id="error-contact-number" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
-                                  <label for="email">Email</label> <input id="address" type="text" value="{{email}}"><br>
+                                  <label for="email">Email</label> <input id="email" type="text" value="{{email}}"><br>
                                 <p class="error" id="error-email" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
                                 <label for="address">Address</label> <input id="address" type="text" value="{{address}}"><br>
@@ -116,7 +116,7 @@
                 <div style="display: flex; float: left; width: 50%; justify-content: flex-end"><button class="btn-light-blue" id="btn-supplier-add-item">+ Add Item</button></div>
             </div>
 
-            <table class="table" style="margin-top: 80px;">
+      *    <table class="table" style="margin-top: 80px;">
                 <thead class="table-head">
                     <tr>
                         <th>Description</th>
@@ -137,7 +137,7 @@
                     return words.join(' ');
                 };
 
-                $('#supplier-name').keyup(function() {
+       /*         $('#supplier-name').keyup(function() {
                     var name = capitalize($('#supplier-name').val())
                     $.get('/getCheckSupplierName', {name:name}, function(result) {
                         if (result.name == name) {
@@ -153,16 +153,16 @@
                             $("#btn-add-new-suppler").css("background-color", "#0F84D9");
                         }
                     })
-                })
+                })*/
 
 
                 function errorMessage(type) {
-                    if (type == "noName") {
+                /*    if (type == "noName") {
                         $('#supplier-name').css("border", "1px solid #B00000");
                         $('#error-new-supplier-name').text("Please input supplier name");
-                    } 
+                    } */
 
-                    else if (type == "noContactPerson") {
+                    if (type == "noContactPerson") {
                         $('#contact-person').css("border", "1px solid #B00000");
                         $('#error-contact-person').text("Invalid contact person");
                     }
@@ -180,14 +180,14 @@
                     }
                 }
 
-                function supplierNameValidation(name) {
+         /*       function supplierNameValidation(name) {
                     if (name == null || name == "") {
                         errorMessage("noName")
                         return 1;
                     }
                     else 
                         return 0;
-                }   
+                }   */
 
                 function contactPersonValidation(contactPerson) {
                     if (contactPerson == null || contactPerson == "") {
@@ -197,7 +197,7 @@
                     else 
                         return 0;
                 }   
-                function numberValidation(number) {
+        /       function numberValidation(number) {
                     if (number == 0 || number < 0) {
                         errorMessage("noNumber")
                         return 1;
@@ -228,7 +228,8 @@
                 $('#btn-update-supplier').click(function() {
                     var supplierID = $('#supplierID').text();
 
-                    var name = capitalize($('#supplier-name').val());
+                  //  var name = capitalize($('#supplier-name').val());
+
                     var contactPerson = $('#contact-person').val();
                     var number = $('#contact-number').val();  
                     var email = $('#email').val();
@@ -237,7 +238,7 @@
                     if (!supplierNameValidation(name) && !contactPersonValidation(contactPerson) &&!numberValidation(number) 
                     && !emailValidation(email) && !addressValidation(address)) {
 
-                            $('#supplier-name').css("border", "1px solid #DDDDDD");
+                         //   $('#supplier-name').css("border", "1px solid #DDDDDD");
                             $('#contact-person').css("border", "1px solid #DDDDDD");
                             $('#contact-number').css("border", "1px solid #DDDDDD");
                             $('#address').css("border", "1px solid #DDDDDD");
@@ -249,7 +250,7 @@
                             $('#error-email').text("");
                             $('#error-address').text(""); 
 
-                            $.post('/postUpdateSupplierInformation', {supplierID, name, contactPerson, number, email, address}, function(result) {
+                            $.post('/postUpdateSupplierInformation', {supplierID, contactPerson, number, email, address}, function(result) {
                                     $('#modal-edit-supplier').modal('hide');
                                     $('#edit-supplier').trigger('reset');
                                     alert("Succesfully updated supplier information");
@@ -267,13 +268,8 @@
                         window.location.replace("/supplierList")
                     }
                     else { }
-
                 })
             })
-
         </script>
-
-
-
     </body>
 </html>

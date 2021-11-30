@@ -4,8 +4,8 @@
         <title> Suppliers </title>
         <meta name="description" content="Supplier List">
         <meta name="keyword" content="Moderna, Supplier List">
-        <link rel="stylesheet" type="text/css" href="../public/css/general.css">
-        <link rel="stylesheet" type="text/css" href="../public/css/list.css">
+        <link rel="stylesheet" type="text/css" href="../css/general.css">
+        <link rel="stylesheet" type="text/css" href="../css/list.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -16,7 +16,7 @@
 
         <!-- PARTIALS -->
         <div id="navbar"> 
-            <div class="navbar-logo"> <img src="../public/images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
+            <div class="navbar-logo"> <img src="../images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
             <div class="navbar-logout"> <a href= "login.html">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
@@ -42,10 +42,11 @@
                 <h1 class="bold" style="padding-bottom: 15px;"> Suppliers </h1>
                 <div> 
                     <div class="search">
-                        <form> <!-- indicate action -->
+                   <!--<form>  indicate action 
                             <input type="text" placeholder="Search" name="search" id="search-field">
                             <button type="submit" id="search-button"><i class="fa fa-search" ></i></button>
-                        </form>
+                        </form>-->
+                         <input type="text" placeholder="Search" name="search" id="search-field">
                     </div>
                     <div class= "div-button-end">
                         <div class="btn-new-supplier"><button id="btn-new-supplier" data-toggle="modal" data-target="#modal-add-supplier">+ New Supplier</button></div>
@@ -87,7 +88,7 @@
                 </div>
             </div>
 
-            <table class="table">
+            <table class="table" id="table-supplier">
                 <thead class="table-head">
                     <tr>
                         <th>Name</th>
@@ -105,8 +106,6 @@
                         {{/each}}
                 </tbody>
             </table>
-             
-
         </div>
 
   <script>
@@ -163,7 +162,6 @@
                         $('#error-email').text("Invalid email");
                     }
 
-
                     else if (type == "noAddress") {
                         $('#address').css("border", "1px solid #B00000");
                         $('#error-address').text("Input address");
@@ -179,7 +177,7 @@
                         return 0;
                 }   
 
-             function contactPersonValidation(contactPerson) {
+                function contactPersonValidation(contactPerson) {
                     if (contactPerson == null || contactPerson == "") {
                         errorMessage("noContactPerson")
                         return 1;
@@ -188,17 +186,18 @@
                         return 0;
                 }   
 
-                    function numberValidation(number) {
+                function numberValidation(number) {
                     if (number == 0 || number < 0) {
                         errorMessage("noNumber")
                         return 1;
                     }
                     else 
                         return 0;
-                }  
+                }     
 
 
-                  function emailValidation(email) {
+
+                function emailValidation(email) {
                     if (email == null || email == "") {
                         errorMessage("noEmail")
                         return 1;
@@ -220,13 +219,13 @@
 
                 $('#btn-add-new-supplier').click(function() {
                     var name = capitalize($('#supplier-name').val());
-                    var contactPerson = $('#contact-person').val();
+                    var contactPerson =$('#contact-person').val();
                     var number = $('#contact-number').val();  
                     var email = $('#email').val();
                     var address = $('#address').val();
                 
 
-                    if (!supplierValidation(name) && !contactPersonValidation(contactPerson) && !numberValidation(number) && !emailValidation(email) && !addressValidation(address)) {
+                    if (!supplierNameValidation(name) && !contactPersonValidation(contactPerson) && !numberValidation(number) && !emailValidation(email) && !addressValidation(address)) {
 
                             $('#supplier-name').css("border", "1px solid #DDDDDD");
                             $('#contact-person').css("border", "1px solid #DDDDDD");
@@ -243,10 +242,19 @@
                             $.post('/postsupplierInformation', {name, contactPerson, number, email, address}, function(result) {
                                 $('#modal-edit-supplier').modal('hide');
                                 $('#add-new-supplier').trigger('reset');
-                            })
-
+                        })
                     }
+                })
 
+                    $('#search-field').keyup(function() {
+                     $('#table-supplier tr').show();
+                    var searchItem = $(this).val().toLowerCase();
+                 
+                    $('#table-supplier > tbody > tr').each(function(index) {
+                        var supplierName = $(this).children('td:first').text().toLowerCase();
+                        if (!supplierName.includes(searchItem))
+                            $(this).toggle();
+                    })
                 })
             })
 
