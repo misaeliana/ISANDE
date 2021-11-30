@@ -12,6 +12,7 @@ const inventoryController = require('../controllers/inventoryController.js');
 const purchaseOrderController = require('../controllers/purchaseOrderController.js');
 
 const invoiceController = require('../controllers/invoiceController.js');
+const supplierController = require('../controllers/supplierController.js');
 
 //--CUSTOMER--
 
@@ -27,6 +28,19 @@ router.post('/postUpdateCustomerInformation', customerController.postUpdateInfor
 
 router.post('/deleteCustomer', customerController.deleteCustomer);
 
+//--SUPPLIER--
+
+router.get('/supplierList', supplierController.getSupplierList);
+
+router.post('/postSupplierInformation', supplierController.postSupplierInformation);
+
+router.get('/getCheckSupplierName', supplierController.checkSupplierName);
+
+router.get('/supplier/:supplierID', supplierController.getViewSupplier);
+
+router.post('/postUpdateSupplierInformation', supplierController. postUpdateInformation);
+
+router.post('/deleteSupplier', supplierController.deleteSupplier);
 
 //--EMPLOYEE--
 
