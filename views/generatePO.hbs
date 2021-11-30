@@ -113,9 +113,10 @@
                                 }
                             })
                             var purchaseString = JSON.stringify(purchaseItems)
-                            $.post('/saveGeneratePurchaseOrder', {purchaseString});
-                            alert("POs have been generated")
-                            window.location.replace('/purchaseOrderList');
+                            $.post('/saveGeneratePurchaseOrder', {purchaseString}, function(result) {
+                                alert("POs have been generated")
+                                window.location.replace('/purchaseOrderList');
+                            });
                         }
                     })
                 })

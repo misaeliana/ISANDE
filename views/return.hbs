@@ -4,19 +4,21 @@
         <title> Return </title>
         <meta name="description" content="Return">
         <meta name="keyword" content="Moderna, Return">
-        <link rel="stylesheet" type="text/css" href="../public/css/general.css">
-        <link rel="stylesheet" type="text/css" href="../public/css/information.css">
+        <link rel="stylesheet" type="text/css" href="../css/general.css">
+        <link rel="stylesheet" type="text/css" href="../css/information.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-        
+
+        <link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     </head>
     <body>
 
         <!-- PARTIALS -->
         <div id="navbar"> 
-            <div class="navbar-logo"> <img src="../public/images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
+            <div class="navbar-logo"> <img src="../images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
             <div class="navbar-logout"> <a href= "login.html">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
@@ -43,35 +45,41 @@
             </div> 
             <hr>
 
-            <label for="dropdown-new-invoice-type" style="margin-right: 10px">Type</label>
-            <select class="dropdown" id="dropdown-new-invoice-type" style="margin-right: 10px">
-                <option value="all-type" selected>All</option>
-                    <option value="{{_id}}">{{ingredientType}}</option>
-            </select>
-            
-            <label class="date-label" for="delivery-date">Delivery Date</label>
-            <input style="height: 34px" type="date" id="delivery-date" name="delivery-date">
+            <div style="display: flex; align-content: center;">
+                <label for="dropdown-return-type" style="margin-right: 10px">Type</label>
+                <select class="dropdown" id="dropdown-return-type" style="margin-right: 10px">
+                    {{#each types}}
+                        <option value="{{_id}}">{{type}}</option>
+                    {{/each}}
+                </select>
+                
+                <div id="delivery-info" style="display: none;">
+                    <label class="date-label" for="delivery-date">Delivery Date</label>
+                    <input style="height: 34px" type="date" id="delivery-date" name="delivery-date">
 
-            <label for="dropdown-payment-type" style="margin-right: 10px">Payment Type</label>
-            <select class="dropdown" id="dropdown-payment-type" style="margin-right: 10px">
-                <option value="all-type" selected>All</option>
-                    <option value="{{_id}}">{{ingredientType}}</option>
-            </select>
+                    <label for="dropdown-payment-type" style="margin-right: 10px">Payment Type</label>
+                    <select class="dropdown" id="dropdown-payment-type" style="margin-right: 10px">
+                        <option value="all-type" selected>All</option>
+                        <option value="cash">Cash</option>
+                        <option value="cod">COD</option>
+                    </select>
 
-            <label for="dropdown-delivery-personnel" style="margin-right: 10px">Delivery Personnel</label>
-            <select class="dropdown" id="dropdown-delivery-personnel" style="margin-right: 10px">
-                <option value="all-type" selected>All</option>
-                    <option value="{{_id}}">{{ingredientType}}</option>
-            </select>
+                    <label for="dropdown-delivery-personnel" style="margin-right: 10px">Delivery Personnel</label>
+                    <select class="dropdown" id="dropdown-delivery-personnel" style="margin-right: 10px">
+                        <option value="all-type" selected>All</option>
+                            <option value="{{_id}}">{{ingredientType}}</option>
+                    </select>
+                </div>
+            </div>
 
             <div class="header-colored-bg" style="margin-top: 15px; margin-bottom: 10px">
                 <h3 class ="bold header-text">Customer Details</h3>
             </div>
 
             <div>
-                <input style="margin-top: 15px;" type="text" class="form-control margin-bottom-10" id="customerName" name="customerName" placeholder="<Customer Name>">
-                <textarea class="form-control margin-bottom-10" id="address" name="address" placeholder="<Address>"></textarea> <!--style="display:none"-->
-                <input type="text" class="form-control margin-bottom-10" id="contactNumber" name="contactNumber" placeholder="<Contact Number>"> <!--style="display:none"-->
+                <input style="margin-top: 15px;" type="text" class="form-control margin-bottom-10" id="customerName" name="customerName" placeholder="Customer Name">
+                <textarea class="form-control margin-bottom-10" id="address" name="address" placeholder="Address"></textarea> <!--style="display:none"-->
+                <input type="text" class="form-control margin-bottom-10" id="contactNumber" name="contactNumber" placeholder="Contact Number"> <!--style="display:none"-->
                 <div>
                     <div>
                         <textarea class="form-control" id="notes" name="notes" placeholder="<Delivery Notes>"></textarea>
@@ -118,26 +126,6 @@
                                         <option value="saab">Option 3</option>
                                     </select>
                                 </td>
-                            </tr>
-                            <tr>
-                                <td>Mary</td>
-                                <td>Moe</td>
-                                <td>mary@example.com</td>
-                                <td>John</td>
-                                <td>Doe</td>
-                                <td>john@example.com</td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>July</td>
-                                <td>Dooley</td>
-                                <td>july@example.com</td>
-                                <td>John</td>
-                                <td>Doe</td>
-                                <td>john@example.com</td>
-                                <td></td>
-                                <td></td>
                             </tr>
                         </tbody>
                     </table>
@@ -242,5 +230,82 @@
 
                     <div style="height: 20px"></div>
         </div>
+
+        <script>
+            $(document).ready(function(){
+
+                $('#dropdown-return-type').change(function() {
+                    var val = $('#dropdown-return-type option:selected').text();
+
+                    if (val == "In-Store") {
+                        $('#delivery-info').css('display', 'none')
+                    }
+                    else
+                        $('#delivery-info').css('display', 'block')
+                })
+
+                //should be for delivery only
+                $("#customerName" ).autocomplete({
+                    source: function(request, response) {
+                    $.ajax({
+                                url: `/getCustomerName?query=${request.term}`,
+                                dataType: "json",
+                                data: {
+                                    //request.term refers to the value currently in the text input
+                                    term: request.term,
+                                },
+                                success: function (data) {
+                                    $('#customer-error').css('display', 'none')
+                                    $("#customer").css("border", "1px solid #DDDDDD");
+                                    response(data);
+                                }
+                         });
+                    }, response: function (event, ui) {
+                        if (ui.content.length === 0) {
+                            $('#supplier-error').css('display', 'block')
+                            $('#btn-update-new-po').prop('disabled', true)
+                            $('#btn-update-new-po').css("background-color", "#b3b3b3");
+                        }
+                        else {
+                            $('#supplier-error').css('display', 'none')
+                            $('#btn-update-new-po').prop('disabled', false)
+                            $('#btn-update-new-po').css("background-color", "#0F84D9")  
+                        }
+                    }, select: function(event, ui) {
+                        var customerName = ui.item.label;
+                        $.get('/getCustomerInformation', {customerName}, function(result) {
+                            $('#contactNumber').val(result.number);
+                            $('#address').val(result.address)
+                        })
+                    }
+                });
+
+
+                $("#return-add-item-description").autocomplete({
+                    source: function(request, response) {
+                    $.ajax({
+                                url: `/getItemNameInvoice?query=${request.term}`,
+                                dataType: "json",
+                                data: {
+                                    //request.term refers to the value currently in the text input
+                                    term: request.term
+                                },
+                                success: function (data) {
+                                    
+                                    response(data);
+                                }
+                         });
+                    }, response: function (event, ui) {
+                        if (ui.content.length === 0) {
+                            
+                        }
+
+                        else {
+                            
+                        }
+                    }
+                });
+            })
+        </script>
     </body>
 </html>

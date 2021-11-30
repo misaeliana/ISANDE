@@ -165,6 +165,38 @@
                 </div>
             </div>
 
+            <!----------MODAL FOR CHANGING SUPPLIERS----------------->
+            <div class="modal fade" id="modal-change-item-supplier" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="exampleModalLongTitle">Change Item Suppliers</h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <table id="table-change-item-supplier">
+                            <thead>
+                                <tr>
+                                    <th>Item Description</th>
+                                    <th>Quantity</th>
+                                    <th>Unit</th>
+                                    <th>Supplier</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-change-item-supplier-body">
+                            </tbody>
+                        </table>  
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="btn-save-change-item-supplier">Save</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+
              <div style="height: 45px"></div>
                 <div class="display-flex" style="margin-top: 10px">
                 <div id="div-warning-new-invoice">
@@ -270,10 +302,12 @@
                                 data: {
                                     //request.term refers to the value currently in the text input
                                     term: request.term,
+                                    supplier: $('#supplierName').val()
                                 },
                                 success: function (data) {
                                     $('#text-warning-new-PO').css('display', 'none')
                                     $("#itemDescription").css("border", "1px solid #DDDDDD");
+                                    console.log(data)
                                     response(data);
                                 }
                          });
@@ -344,7 +378,7 @@
                     }
                 })
 
-                $("#supplierName" ).autocomplete({
+                $("#supplierName").autocomplete({
                     source: function(request, response) {
                     $.ajax({
                                 url: `/getSupplierName?query=${request.term}`,
@@ -379,17 +413,18 @@
                         })
 
                         var forceBreak = false
+
+
                         $("#table-poItem-body > tr").each(function () {
                             var itemDesc = $(this).children('.classItemDescription').text()
-                            console.log(itemDesc)
-                            $.get('/isSold', {supplierName, itemDesc}, function(result) {
-                                console.log(result)
-                                //item is not carried by the new supplier
-                                if (result == "not sold") {
+                            $.ajax({
+                                type:"GET",
+                                url: '/isSold',
+                                data: {supplierName, itemDesc},
+                                async: false
+                            }).done(function(result) {
+                                if (result == "not sold") 
                                     forceBreak= true
-                                    return false;
-                                }
-                                        
                             })
                         });
 
@@ -397,15 +432,50 @@
                         if (forceBreak) {
                             if (confirm("Some items are not offered by this supplier. These items will be removed from this purchase order and be placed in a separate purchase order. Do you wish to proceed"))
                                 proceed = true
-                            else
+                            else {
+                                $('#btn-update-new-po').prop('disabled', true)
+                                $('#btn-update-new-po').css("background-color", "#b3b3b3");
                                 proceed = false
+                            }
                         }
-
 
                         //new po will be created for items that are not sold by the supplier
                         if (proceed) {
+                            var newPOItems = []
+
                             $("#table-poItem-body > tr").each(function () {
+                                var itemDesc = $(this).children('.classItemDescription').text()
+                                var qty = $(this).find('.classQty').val();
+                                var unit = $(this).children('.classUnit').text()
+                                var row = $(this)
+
+                                $.get('/isSold', {supplierName, itemDesc}, function(result) {
+                                    if (result == "not sold") {
+
+                                        row.remove();
+                                        $('#table-change-item-supplier-body').append(
+                                            `<tr>
+                                                <td class="change-supplier-itemDesc">${itemDesc}</td>
+                                                <td><input class="change-supplier-qty " value=${qty}></td>
+                                                <td class="change-supplier-unit">${unit}</td>
+                                                <td><select class="change-supplier-supplier">
+                                                    <option value="no-selected">--Select Supplier--</option>
+                                                </select></td>
+                                            </tr>`)
+
+                                        $.get('/getItemSuppliers', {itemDesc}, function(result) {
+                                            var lastRow = $('#table-change-item-supplier-body tr:last').find('.change-supplier-supplier')
+
+                                            for (var i=0; i<result.length; i++) {
+                                                $(lastRow).append(
+                                                    `<option value="${result[i].id}">${result[i].name}</option>
+                                                    `)
+                                            }
+                                        })
+                                    }
+                                })
                             })
+                            $('#modal-change-item-supplier').modal('show')
                         }
                     }
                         
@@ -428,9 +498,12 @@
                     });
 
                     var itemsString = JSON.stringify(poItems);  
-                    $.post('/updatePOItems', {poID, itemsString});
-                    alert("PO updated");
-                    window.location = `/purchaseOrder/${poID}`;
+                    var supplierName = $('#supplierName').val()
+                    $.post('/updatePOItems', {poID, itemsString, supplierName}, function(result) {
+                        alert("PO updated");
+                        window.location = `/purchaseOrder/${poID}`;
+                    });
+                    
                 })
 
                 $('.unitPrice').keyup(function() {
@@ -527,6 +600,26 @@
                     }
                 })
 
+
+                $('#btn-save-change-item-supplier').click(function(result){
+                    var purchaseItems = []
+                    $("#table-change-item-supplier-body > tr").each(function () {
+                        var poItem= {
+                            itemDescription: $(this).children('.change-supplier-itemDesc').text(), 
+                            quantity: $(this).find('.change-supplier-qty').val(),
+                            unit: $(this).children('.change-supplier-unit').text(),
+                            supplier: $(this).find('.change-supplier-supplier').val()
+                        }
+                        purchaseItems.push(poItem);
+                    });
+
+                    var purchaseString = JSON.stringify(purchaseItems);  
+                    $.post('/saveGeneratePurchaseOrder', {purchaseString}, function(result) {
+                        alert("New purchase orders have been created");
+                        $('#modal-change-item-supplier').modal('hide');
+                    });
+                    
+                })
 
 
                 //STUFF FOR ADDING NEW ITEM FROM PO
