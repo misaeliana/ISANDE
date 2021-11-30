@@ -157,14 +157,6 @@ const purchaseOrderController = {
 
 	getPurchaseOrder: function(req, res) {
 
-		function getPurchasedItems (purchaseID) {
-			return new Promise((resolve, reject) => {
-				db.findMany(PurchasedItems, {purchaseOrderID: purchaseID}, 'itemID unitID quantity', function(result) {
-					resolve(result);
-				});
-			});
-		}
-
 		function getSupplierInfo(supplierID) {
 			return new Promise((resolve, reject) => {
 				db.findOne(Suppliers, {_id:supplierID}, 'name contactPerson number address', function(result) {
@@ -190,7 +182,7 @@ const purchaseOrderController = {
 		}
 
 		async function getItems(purchaseInfo) {
-			var items  = await getPurchasedItems(purchaseInfo._id);
+			var items  = await getCurrentPOItems(purchaseInfo._id);
 			for (var i=0; i<items.length; i++) {
 				items[i].itemDescription = await getItemDescription(items[i].itemID);
 				items[i].unitName = await getSpecificUnit(items[i].unitID);
@@ -255,14 +247,6 @@ const purchaseOrderController = {
 			});
 		}
 
-		function getItemSuppliers(itemID) {
-			return new Promise((resolve, reject)=> {
-				db.findMany(ItemSuppliers, {itemID:itemID}, 'supplierID', function(result) {
-					resolve (result)
-				})
-			})
-		}
-
 		async function getItems() {
 			var items = await getLowItems();
 
@@ -274,7 +258,7 @@ const purchaseOrderController = {
 				var suppliers = []
 				for (var j=0; j<temp_suppliers.length; j++) {
 					var supplier = {
-						_id: temp_suppliers[j],
+						_id: temp_suppliers[j].supplierID,
 						name: await getSupplierName(temp_suppliers[j].supplierID)
 					}
 					suppliers.push(supplier)
@@ -347,7 +331,8 @@ const purchaseOrderController = {
 					if (flag) { }
 				});
 			}
-			res.redirect('/purchaseOrderList');
+			res.sendStatus(200)
+			//res.redirect('/purchaseOrderList');
 		}
 		//------END OF FUNCTIONS-------
 
@@ -359,16 +344,9 @@ const purchaseOrderController = {
 	},
 
 	editPO: function(req, res) {
-		function getPurchasedItems (purchaseID) {
-			return new Promise((resolve, reject) => {
-				db.findMany(PurchasedItems, {purchaseOrderID: purchaseID}, 'itemID quantity unitID', function(result) {
-					resolve(result);
-				});
-			});
-		}
 
 		async function getItems(purchaseInfo, statusID) {
-			var items  = await getPurchasedItems(purchaseInfo._id);
+			var items  = await getCurrentPOItems(purchaseInfo._id);
 			for (var i=0; i<items.length; i++) {
 				items[i].itemDescription = await getItemDescription(items[i].itemID);
 				items[i].unitName = await getSpecificUnit(items[i].unitID);
@@ -437,14 +415,6 @@ const purchaseOrderController = {
 	//update function for new PO, add new items, delete items
 	updatePOItems: function(req, res) {
 
-		function getCurrentPOItems(poID) {
-			return new Promise((resolve, reject) => {
-				db.findMany(PurchasedItems, {purchaseOrderID:poID}, 'itemID unitID quantity', function(result) {
-					resolve(result);
-				})
-			})
-		}
-
 		function updatePurchaseItems(itemID, newQuantity, poID) {
 			db.updateOne(PurchasedItems, {purchaseOrderID: poID, itemID:itemID}, {quantity: newQuantity}, function(result) {
 
@@ -500,6 +470,12 @@ const purchaseOrderController = {
 					addItem (items[i], poID)
 				}
 			}
+
+			var supplierID = await getSupplierID(req.body.supplierName)
+			db.updateOne(Purchases, {_id:poID}, {supplierID:supplierID}, function(result) {
+
+			})
+
 			res.sendStatus(200)
 		}
 
@@ -521,14 +497,6 @@ const purchaseOrderController = {
 
 	//update function for sent PO, update with prices and quantity received
 	updatePOWithPrice: function(req, res) {
-
-		function getCurrentPOItems(poID) {
-			return new Promise((resolve, reject) => {
-				db.findMany(PurchasedItems, {purchaseOrderID:poID}, 'itemID unitID quantity', function(result) {
-					resolve(result);
-				})
-			})
-		}
 
 		function updatePOItemInfo (poID, item) {
 			var unitPrice = parseFloat(item.price)
@@ -697,6 +665,26 @@ const purchaseOrderController = {
 		db.updateOne(Purchases, {_id:poID}, {$set: {dateReceived: dateReceived, subtotal:subtotal, vat: vat, total:total}}, function(flag) {
 				updatePO(items, poID);
 		})
+	},
+
+	getItemSuppliers: function(req, res) {
+
+		async function getSuppliers() {
+			var itemID = await getItemID(req.query.itemDesc)
+			var temp_suppliers = await getItemSuppliers(itemID)
+			
+			var suppliers = []		
+			for (var i=0; i<temp_suppliers.length; i++) {
+				var supplier = {
+					id:temp_suppliers[i].supplierID,
+					name: await getSupplierName(temp_suppliers[i].supplierID)
+				}
+				suppliers.push(supplier)
+			}
+			res.send(suppliers)
+		}
+
+		getSuppliers()
 	}
 
 }

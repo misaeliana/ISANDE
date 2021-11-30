@@ -112,6 +112,8 @@ router.post('/updatePOStatus', purchaseOrderController.updatePOStatus);
 
 router.post('/updatePOWithPrice', purchaseOrderController.updatePOWithPrice);
 
+router.get('/getItemSuppliers', purchaseOrderController.getItemSuppliers)
+
 
 //--INVOICE--
 router.get('/invoices', invoiceController.getInvoiceList);
@@ -127,6 +129,12 @@ router.get('/getItemPrice', invoiceController.getItemPrice);
 router.get('/getFilteredRowsInvoice', invoiceController.getFilteredRowsInvoice);
 
 router.get('/getSearchInvoice', invoiceController.getSearchInvoice);
+
+router.get('/getCustomerInformation', invoiceController.getCustomerInformation)
+
+router.get('/getItemNameInvoice', invoiceController.getItems);
+
+router.get('/returns', invoiceController.returns);
 
 
 //--DELIVERY--

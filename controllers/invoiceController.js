@@ -13,6 +13,8 @@ const InvoiceItems = require('../models/InvoiceItemsModel.js');
 
 const deliveries = require('../models/DeliveriesModel.js');
 
+const Customer = require('../models/CustomersModel.js');
+
 require('../controllers/helpers.js')();
 
 const invoiceController = {
@@ -356,6 +358,36 @@ const invoiceController = {
         }
 
         getInformation();
+    },
+
+    getCustomerInformation: function(req, res) {
+        db.findOne(Customer, {customerName:req.query.customerName, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name number address', function(result) {
+            res.send(result)
+        })
+    },
+
+    getItems: function(req, res) {
+        db.findMany (Items, {itemDescription:{$regex:req.query.query, $options:'i'}, informationStatusID: "618a7830c8067bf46fbfd4e4"}, 'itemDescription', function (result) {
+            var formattedResults = [];
+            //reason for the for loop: https://stackoverflow.com/questions/5077409/what-does-autocomplete-request-server-response-look-like
+            for (var i=0; i<result.length; i++) {
+                var formattedResult = {
+                    label: result[i].itemDescription,
+                    value: result[i].itemDescription
+                };
+                formattedResults.push(formattedResult);
+            }
+            res.send(formattedResult)
+        })
+    },
+
+    returns: function(req, res) {
+        async function getInfo(){
+            var types = await getAllInvoiceTypes()
+            res.render('return', {types})
+        }
+
+        getInfo();
     }
 };
 

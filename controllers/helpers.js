@@ -35,6 +35,8 @@ const Deliveries = require('../models/DeliveriesModel.js');
 
 const Purchases = require('../models/PurchasesModel.js')
 
+const PurchasedItems = require('../models/PurchasedItemsModel.js')
+
 module.exports = function() {
 	this.getAllPositions = function() {
 		return new Promise((resolve, reject) => {
@@ -416,5 +418,13 @@ module.exports = function() {
 				resolve(result.unitID)
 			})
 		})
-	}
+	},
+
+	this.getCurrentPOItems = function (poID) {
+			return new Promise((resolve, reject) => {
+				db.findMany(PurchasedItems, {purchaseOrderID:poID}, 'itemID unitID quantity', function(result) {
+					resolve(result);
+				})
+			})
+		}
 };
