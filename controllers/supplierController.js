@@ -1,12 +1,12 @@
 // import module `database` from `../models/db.js`
 const db = require('../models/db.js');
 
-const Supplier = require('../models/SuppliersModel.js');
+const Suppliers = require('../models/SuppliersModel.js');
 
 const supplierController = {
 
 	getSupplierList: function(req, res) {
-		db.findMany(Supplier, {informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name contactPerson number email address', function (result) {
+		db.findMany(Suppliers, {informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name contactPerson number email address', function (result) {
 			var suppliers = [];
 			for (var i=0; i<result.length; i++) {
 					var supplier = {
@@ -34,7 +34,7 @@ const supplierController = {
 			informationStatusID: "618a7830c8067bf46fbfd4e4"
 		};
 
-		db.insertOne (Supplier, supplier, function(flag) {
+		db.insertOne (Suppliers, supplier, function(flag) {
 			if (flag) { }
 		});
 	},
@@ -42,13 +42,13 @@ const supplierController = {
 	checkSupplierName: function(req, res) {
 		var name = req.query.name;
 
-		db.findMany(Supplier, {name:name, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name', function(result) {	
+		db.findMany(Suppliers, {name:name, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name', function(result) {	
 			res.send(result[0]);
 		});
 	},
 
 	getViewSupplier: function(req, res) {
-		db.findOne(Supplier, {_id: req.params.supplierID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name contactPerson number email address', function(result) {
+		db.findOne(Suppliers, {_id: req.params.supplierID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name contactPerson number email address', function(result) {
 			res.render('customerInformation', result);
 		});
 	},
@@ -56,7 +56,7 @@ const supplierController = {
 	postUpdateInformation: function (req, res) {
 		var supplierID = req.body.supplierID;
 
-		db.updateOne(Supplier, {_id:supplierID}, {$set: {informationStatusID:"618a783cc8067bf46fbfd4e5"}}, function(flag) {
+		db.updateOne(Suppliers, {_id:supplierID}, {$set: {informationStatusID:"618a783cc8067bf46fbfd4e5"}}, function(flag) {
 			if (flag) { }
 		});
 
@@ -69,7 +69,7 @@ const supplierController = {
 			informationStatusID: "618a7830c8067bf46fbfd4e4"
 		};
 
-		db.insertOneResult(Supplier, supplier, function(result) {
+		db.insertOneResult(Suppliers, supplier, function(result) {
 			res.send(result._id);
 		});
 	},
@@ -77,7 +77,7 @@ const supplierController = {
 	deleteSupplier: function(req, res) {
 		var supplierID = req.body.supplierID;
 
-		db.updateOne(Supplier, {_id: supplierID}, {$set: {informationStatusID:"618a783cc8067bf46fbfd4e5"}}, function(flag){
+		db.updateOne(Suppliers, {_id: supplierID}, {$set: {informationStatusID:"618a783cc8067bf46fbfd4e5"}}, function(flag){
 			if (flag) { }
 		});
 	}

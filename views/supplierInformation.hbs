@@ -197,7 +197,7 @@
                     else 
                         return 0;
                 }   
-        /       function numberValidation(number) {
+                function numberValidation(number) {
                     if (number == 0 || number < 0) {
                         errorMessage("noNumber")
                         return 1;
@@ -235,7 +235,7 @@
                     var email = $('#email').val();
                     var address = $('#address').val();
 
-                    if (!supplierNameValidation(name) && !contactPersonValidation(contactPerson) &&!numberValidation(number) 
+                    if (/*!supplierNameValidation(name) &&*/!contactPersonValidation(contactPerson) &&!numberValidation(number) 
                     && !emailValidation(email) && !addressValidation(address)) {
 
                          //   $('#supplier-name').css("border", "1px solid #DDDDDD");
@@ -244,7 +244,7 @@
                             $('#address').css("border", "1px solid #DDDDDD");
                             $('#email').css("border", "1px solid #DDDDDD");
 
-                            $('#error-new-supplier-name').text(""); 
+                         //   $('#error-new-supplier-name').text(""); 
                             $('#error-contact-person').text("");
                             $('#error-contact-number').text("");
                             $('#error-email').text("");
