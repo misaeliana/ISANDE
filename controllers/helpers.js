@@ -182,6 +182,14 @@ module.exports = function() {
 		});
 	},
 
+	this.updateInvoiceStatus = function(_id, statusID) {
+		return new Promise((resolve, reject) => {
+			db.updateOne(Invoices, {_id: _id}, {$set: {statusID: statusID}}, function(result) {
+				resolve (result);
+			});
+		});
+	},
+
 	this.getSpecificItemStatus = function(itemStatusID) {
 		return new Promise((resolve, reject) => {
 			db.findOne(ItemStatuses, {_id:itemStatusID}, 'status', function(result) {
@@ -350,10 +358,34 @@ module.exports = function() {
 		});
 	},
 
+	this.getSpecificInvoiceStatus = function(statusID) {
+		return new Promise((resolve, reject) => {
+			db.findOne(InvoiceStatus, {_id: statusID}, 'status', function(result) {
+				resolve (result.status);
+			});
+		});
+	},
+
 	this.getInvoice = function(_id) {
 		return new Promise((resolve, reject) => {
 			db.findOne(Invoices, {_id: _id}, '', function(result) {
 				resolve (result);
+			});
+		});
+	},
+
+	this.getDeliveryInvoice = function(typeID, customerID) {
+		return new Promise((resolve, reject) => {
+			db.findMany(Invoices, {typeID: typeID, customerID: customerID}, '', function(result) {
+				resolve (result);
+			});
+		});
+	},
+
+	this.getInvoiceType = function(typeName) {
+		return new Promise((resolve, reject) => {
+			db.findOne(InvoiceTypes, {type: typeName}, '', function(result) {
+				resolve (result._id);
 			});
 		});
 	},
@@ -388,7 +420,39 @@ module.exports = function() {
 				resolve (result);
 			});
 		});
+	},
+
+	this.getNotDelivered = function(invoiceID) {
+		return new Promise((resolve, reject) => {
+			db.findOne(Deliveries, {invoiceID: invoiceID, dateDelivered: null}, '', function(result) {
+				resolve (result);
+			});
+		});
+	},
+
+	this.postUpdateDeliveryDate = function(_id, date) {
+		return new Promise((resolve, reject) => {
+			db.updateOne(Deliveries, {_id: _id}, {$set: {dateDelivered: date}}, function(result) {
+				resolve (result);
+			});
+		});
 	}
+
+	this.getSpecificDeliveryUsingID = function(invoiceID) {
+		return new Promise((resolve, reject) => {
+			db.findOne(Deliveries, {invoice_id: invoiceID}, '', function(result) {
+				resolve (result);
+			});
+		});
+	},
+
+	this.getSpecificInvoiceStatusName = function(status) {
+		return new Promise((resolve, reject) => {
+			db.findOne(InvoiceStatus, {status: status}, '_id', function(result) {
+				resolve (result._id);
+			});
+		});
+	},
 
 	this.getAllInvoiceTypes = function() {
 		return new Promise((resolve, reject) => {

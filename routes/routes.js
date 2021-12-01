@@ -144,4 +144,8 @@ router.get('/deliveries', invoiceController.getDeliveryList);
 
 router.get('/deliveries/:deliveryID', invoiceController.getDeliveryInfo);
 
+router.get('/getSearchDeliveryList', invoiceController.getSearchDeliveryList);
+
+router.post('/postUpdateDelivery', invoiceController.postUpdateDelivery);
+
 module.exports = router;

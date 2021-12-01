@@ -34,23 +34,17 @@
 
         <div class="content">
          <div class="fixed-div">
-                <h1 class="bold" style="padding-bottom: 15px;"> Deliveries </h1>
+                <h1 class="bold" style="padding-bottom: 20px;"> Deliveries </h1>
                 <div> 
                     <div class="search">
                         <input type="text" placeholder="Search" name="search" id="search-field">
                         <button type="submit" style="height: 34px; margin-left: 10px" id="search-button"><i class="fa fa-search"></i></button>
                     </div>
-                    <div class="btn-new-PO">
-                        <select class="dropdown" id="dropdown-status" style="margin-right: 10px;">
-                            <option value="all-type" selected>All</option>
-                            <option value="{{_id}}">{{ingredientType}}</option>
-                        </select>
-                    </div> 
-                    <div style="height: 20px"></div>
+                    <div style="height: 50px"></div>
                 </div> 
             </div>    
                 
-                <table class="table">
+                <table class="table" id="table-delivery">
                     <thead class="table-head">
                         <tr>
                             <th>Delivery Date</th>
@@ -66,7 +60,7 @@
                                 <td>{{deliveryDate}}</td>
                                 <td>{{invoiceNum}}</td>
                                 <td>{{customerName}}</td>
-                                <td style="text-align:end;">{{amount}}</td>
+                                <td style="text-align:end;">₱ {{amount}}</td>
                                 <td><button class="btn-status btn-{{paymentStatus}} status-id">{{paymentStatus}}</button></td>
                             </tr>
                         {{/each}}
@@ -80,6 +74,38 @@
                 $(".link").click(function() {
                     window.location = $(this).data("href");
                 });
+
+                function filter(result) {
+                    $("#table-delivery tbody tr").remove();
+
+                    if (result != null) {
+                        for (var i = 0; i < result.length; i++) {
+                            $("#table-delivery").find("tbody").append(
+                                    `<tr class="link" style="cursor: pointer" data-href="/deliveries/${result[i]._id}">
+                                        <td>${result[i].deliveryDate}</td>
+                                        <td>${result[i].invoiceNum}</td>
+                                        <td>${result[i].customerName}</td>
+                                        <td style="text-align:end;">₱ ${result[i].amount}</td>
+                                        <td><button class="btn-status btn-${result[i].paymentStatus} status-id">${result[i].paymentStatus}</button></td>
+                                    </tr>`
+                            );
+                        }
+                    }
+
+                    $(".link").click(function() {
+                        window.location = $(this).data("href");
+                    });
+                }
+
+                $("#search-button").click(function() {
+                    var searchItem = $("#search-field").val();
+
+                    $.get("/getSearchDeliveryList", {searchItem: searchItem}, function (result) {
+
+                        filter(result);
+                    });
+
+                })
             })
         </script>
     </body>

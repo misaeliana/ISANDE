@@ -35,7 +35,9 @@
         <div class="content">
             <div> 
                 <div style="display: flex;">
-                    <div style="width: 50%"><h1 class="bold"> Invoice #{{deliveryInfo.invoice_id}} </h1></div>
+                    <div style="width: 50%"><h1 class="bold"> Invoice #{{deliveryInfo.invoiceNum}} </h1></div>
+                    <p id="invoice-ID" style="display: none;">{{deliveryInfo.invoice_id}}</p>
+                    <p id="delivery-ID" style="display: none;">{{deliveryInfo._id}}</p>
                     <div class="btn-status" style="margin-top: 30px">
                         <div><button class="btn-status btn-{{deliveryInfo.paymentStatus}}" style="width: 100px; display: inline-block">{{deliveryInfo.paymentStatus}}</button></div>
                     </div>
@@ -79,7 +81,6 @@
                         </div>
                         <div class="label-wide-content" style="height: 40px">{{deliveryInfo.deliveryNotes}}</div>
                     </div> 
-
 
                     <table class="table" style="margin-top: 30px">
                         <thead style="background-color: #2F5D62; color: white">
@@ -125,13 +126,45 @@
 
                     <div style="height: 10px"></div>
 
-                    <div class="btn-export-invoice"><button class="btn-light-blue" id="btn-confirm-delivery">Confirm Delivery</button></div>
+                    <div class="btn-export-invoice"><button class="btn-light-blue" id="btn-confirm-delivery" data-toggle="modal" data-target="#modal-confirm-delivery">Confirm Delivery</button></div>
 
                     <div style="height: 20px"></div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="modal-confirm-delivery" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="exampleModalLongTitle">Confirm Delivery</h3>
+                        </div>
+                        <div class="modal-body">
+                            <p>Confirming delivery will mark the items as delivered. Do you wish to Proceed?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                            <button type="button" class="btn btn-primary" id="btn-delivered">Yes</button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
         </div>
          <script>
            $(document).ready(function() {
-            
+                $("#btn-delivered").click(function() {
+                    var _id = $('#delivery-ID').text();
+                    var invoice_id = $('#invoice-ID').text();
+
+                    $.ajax({
+                        url: "/postUpdateDelivery",              
+                        type: "POST",
+                        data: {_id, invoice_id},
+                        async: false,
+                        success: function(result){
+                            $('#modal-confirm-delivery').modal('hide');
+                            window.location.assign('/deliveries');
+                        }
+                    }); 
+                });         
             })
         </script>
     </body>
