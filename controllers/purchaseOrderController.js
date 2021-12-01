@@ -39,7 +39,7 @@ const purchaseOrderController = {
 			res.render('purchaseOrderList', {purchases, statuses});
 		}
 
-		db.findMany(Purchases, {}, 'date purchaseOrderNumber supplierID statusID total', function(result) {
+		db.findMany(Purchases, {statusID: {$ne:"61a632b4f6780b76e175421f"}}, 'date purchaseOrderNumber supplierID statusID total', function(result) {
 			getPurchaseInfo(result);
 		});
 		
@@ -685,6 +685,22 @@ const purchaseOrderController = {
 		}
 
 		getSuppliers()
+	},
+
+	deletePO: function(req, res) {
+		db.updateOne(Purchases, {_id: req.body.poID}, {statusID:"61a632b4f6780b76e175421f"}, function(flag) {
+			if (flag) {
+				res.sendStatus(200)
+			}
+		})
+	},
+
+	cancelPO: function(req, res) {
+		db.updateOne(Purchases, {_id: req.body.poID}, {statusID:"618f654d46c716a39100a80d"}, function(flag) {
+			if (flag) {
+				res.sendStatus(200)
+			}
+		})
 	}
 
 }

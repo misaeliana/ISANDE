@@ -294,6 +294,13 @@
         <script>
              $(document).ready(function(){
 
+                $('#itemDescription').focus(function() {
+                    if ($("#supplierName").val() == ""){
+                        alert("Please select a supplier first")
+                        $('#itemDescription').blur()
+                    }
+                })
+
                 $("#itemDescription" ).autocomplete({
                     source: function(request, response) {
                     $.ajax({

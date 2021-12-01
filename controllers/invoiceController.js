@@ -417,8 +417,23 @@ const invoiceController = {
         getInformation();
     },
 
+    getCustomerName: function(req, res) {
+        db.findMany(Customer, {name:{$regex:req.query.query, $options:'i'}, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name', function(result) {
+            var formattedResults = [];
+    
+            for (var i=0; i<result.length; i++) {
+                var formattedResult = {
+                    label: result[i].name,
+                    value: result[i].name
+                }
+                formattedResults.push(formattedResult);
+            }
+            res.send(formattedResults)
+        })
+    },
+
     getCustomerInformation: function(req, res) {
-        db.findOne(Customer, {customerName:req.query.customerName, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name number address', function(result) {
+        db.findOne(Customer, {name:req.query.customerName, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name number address', function(result) {
             res.send(result)
         })
     },
@@ -434,7 +449,7 @@ const invoiceController = {
                 };
                 formattedResults.push(formattedResult);
             }
-            res.send(formattedResult)
+            res.send(formattedResults)
         })
     },
 

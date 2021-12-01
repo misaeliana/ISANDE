@@ -142,11 +142,11 @@
                     <div>
                         <div style="display: flex;">
                             {{#if newPO}}
-                                <div style="width: 50%"><div class="btn-cancel-po"><button class="btn-red" id="btn-save-invoice" style="margin-bottom: 10px;">Cancel</button></div></div>
+                                <div style="width: 50%"><div class="btn-cancel-po"><button class="btn-red" id="btn-delete-po" style="margin-bottom: 10px;">Delete</button></div></div>
                                 <div class="btn-save-invoice btn-status"><button class="btn-light-blue" id="btn-edit-po" onclick="document.location.href='/editPO/{{poInfo._id}}'"style="margin-bottom: 10px;">Edit</button></div>
                                  <div class="btn-export-invoice"><button class="btn-dark-blue" id="btn-export-invoice">Export</button></div>
                             {{else if released}}
-                                <div style="width: 50%"><div class="btn-cancel-po"><button class="btn-red" id="btn-save-invoice" style="margin-bottom: 10px;">Cancel</button></div></div>
+                                <div style="width: 50%"><div class="btn-cancel-po"><button class="btn-red" id="btn-cancel-po" style="margin-bottom: 10px;">Cancel</button></div></div>
                                 <div class="btn-save-invoice btn-status"><button class="btn-light-blue" id="btn-save-invoice" onclick="document.location.href='/editPO/{{poInfo._id}}'" style="margin-bottom: 10px;" >Receive Items</button></div>
                             {{else}}
                                 <div></div>
@@ -168,6 +168,28 @@
                             window.location.reload()
                         });
                     }
+                })
+
+                $('#btn-delete-po').click(function () {
+                    if (confirm("Do you want to delete this purchase order? This cannot be undone.")) {
+                        var address = window.location.pathname.split('/');
+                        var poID = address[address.length -1]
+                        $.post('/deletePO', {poID}, function(result) {
+                            alert("Purchase Order has been deleted")
+                            window.location = "/purchaseOrderList"
+                        })
+                    } 
+                })
+
+                $('#btn-cancel-po').click(function () {
+                    if (confirm("Do you want to cacel this purchase order? This cannot be undone.")) {
+                        var address = window.location.pathname.split('/');
+                        var poID = address[address.length -1]
+                        $.post('/cancelPO', {poID}, function(result) {
+                            alert("Purchase Order has been canceled")
+                            window.location = "/purchaseOrderList"
+                        })
+                    } 
                 })
             })
         </script>

@@ -483,6 +483,20 @@ module.exports = function() {
 		});
 	},
 
+	this.getInvoiceNumber = function() {
+		return new Promise((resolve, reject) => {
+			db.findMany(Invoices, {}, '', function(result) {
+				var length = result.length - 1;
+
+				//no PO in the db yet
+				if (length == -1)
+					resolve(1);
+				else
+					resolve(result[length].purchaseOrderNumber+1);
+			});
+		});
+	},
+
 	this.getItemUnit = function(itemDesc) {
 		return new Promise((resolve, reject) => {
 			db.findOne(Items, {itemDescription:itemDesc, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'unitID', function(result){

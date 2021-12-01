@@ -252,24 +252,18 @@
                                 dataType: "json",
                                 data: {
                                     //request.term refers to the value currently in the text input
-                                    term: request.term,
+                                    term: request.term
                                 },
                                 success: function (data) {
-                                    $('#customer-error').css('display', 'none')
-                                    $("#customer").css("border", "1px solid #DDDDDD");
                                     response(data);
                                 }
                          });
                     }, response: function (event, ui) {
                         if (ui.content.length === 0) {
-                            $('#supplier-error').css('display', 'block')
-                            $('#btn-update-new-po').prop('disabled', true)
-                            $('#btn-update-new-po').css("background-color", "#b3b3b3");
+
                         }
                         else {
-                            $('#supplier-error').css('display', 'none')
-                            $('#btn-update-new-po').prop('disabled', false)
-                            $('#btn-update-new-po').css("background-color", "#0F84D9")  
+
                         }
                     }, select: function(event, ui) {
                         var customerName = ui.item.label;
