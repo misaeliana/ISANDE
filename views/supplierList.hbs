@@ -82,7 +82,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="btn-add-new-supplier" disabled="true">Add Supplier</button>
+                        <button type="button" class="btn btn-primary" id="btn-add-new-supplier">Add Supplier</button>
+              
                     </div>
                 </div>
                 </div>
@@ -103,6 +104,7 @@
                                 <td>{{number}}</td>
                                 <td>{{email}}</td>
                             </tr>
+                            
                         {{/each}}
                 </tbody>
             </table>
@@ -112,7 +114,7 @@
 
             $(document).ready(function() {
 
-                $(".link").click(function() {
+             $(".link").click(function() {
                     window.location = $(this).data("href");
                 });
 
@@ -223,7 +225,6 @@
                     var number = $('#contact-number').val();  
                     var email = $('#email').val();
                     var address = $('#address').val();
-                
 
                     if (!supplierNameValidation(name) && !contactPersonValidation(contactPerson) && !numberValidation(number) && !emailValidation(email) && !addressValidation(address)) {
 
@@ -239,20 +240,21 @@
                             $('#error-email').text("");
                             $('#error-address').text(""); 
 
-                            $.post('/postsupplierInformation', {name, contactPerson, number, email, address}, function(result) {
-                                $('#modal-edit-supplier').modal('hide');
+                            $.post('/postSupplierInformation', {name, contactPerson, number, email, address})
+                                $('#modal-add-supplier').modal('hide');
                                 $('#add-new-supplier').trigger('reset');
-                        })
-                    }
+                                location.reload()
+
+                   }
                 })
 
-                    $('#search-field').keyup(function() {
-                     $('#table-supplier tr').show();
+                $('#search-field').keyup(function() {
+                     $('#table-employee tr').show();
                     var searchItem = $(this).val().toLowerCase();
                  
-                    $('#table-supplier > tbody > tr').each(function(index) {
-                        var supplierName = $(this).children('td:first').text().toLowerCase();
-                        if (!supplierName.includes(searchItem))
+                    $('#table-employee > tbody > tr').each(function(index) {
+                        var employeeName = $(this).children('td:first').text().toLowerCase();
+                        if (!employeeName.includes(searchItem))
                             $(this).toggle();
                     })
                 })

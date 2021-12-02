@@ -191,20 +191,21 @@
                         $('#error-contact-number').text("");
                         $('#error-address').text("");
 
-                        $.post('/postCustomerInformation', {name, number, address}, function(result) {
-                            $('#modal-edit-customer').modal('hide');
-                            $('#add-new-customer').trigger('reset');
-                        })
-                    }
+                         $.post('/postCustomerInformation', {name, number,address})
+                                $('#modal-add-customer').modal('hide');
+                                $('#add-new-customer').trigger('reset');
+                                location.reload()
+
+                   }
                 })
 
                 $('#search-field').keyup(function() {
-                     $('#table-customer tr').show();
+                     $('#table-employee tr').show();
                     var searchItem = $(this).val().toLowerCase();
                  
-                    $('#table-customer > tbody > tr').each(function(index) {
-                        var customerName = $(this).children('td:first').text().toLowerCase();
-                        if (!customerName.includes(searchItem))
+                    $('#table-employee > tbody > tr').each(function(index) {
+                        var employeeName = $(this).children('td:first').text().toLowerCase();
+                        if (!employeeName.includes(searchItem))
                             $(this).toggle();
                     })
                 })

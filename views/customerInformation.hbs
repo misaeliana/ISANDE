@@ -175,13 +175,13 @@
                     var number = $('#contact-number').val();
                     var address = $('#address').val();
 
-                    if (!customerNameValidation(name) && !numberValidation(number) && !addressValidation(address)) {
+                    if (/*!customerNameValidation(name) && */!numberValidation(number) && !addressValidation(address)) {
 
                             //$('#customer-name').css("border", "1px solid #DDDDDD");
                             $('#contact-number').css("border", "1px solid #DDDDDD");
                             $('#address').css("border", "1px solid #DDDDDD");
 
-                            $('#error-new-customer-name').text("");
+                           // $('#error-new-customer-name').text("");
                             $('#error-contact-number').text("");
                             $('#error-address').text("");
 
@@ -189,7 +189,7 @@
                                     $('#modal-edit-customer').modal('hide');
                                     $('#edit-customer').trigger('reset');
                                     alert("Succesfully updated customer information");
-                                    window.location.replace(`/customer/${result}`)
+                                   window.location.replace(`/customer/${result}`)
                             })
                                 
                     }

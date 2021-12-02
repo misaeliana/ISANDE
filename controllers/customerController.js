@@ -1,12 +1,12 @@
 // import module `database` from `../models/db.js`
 const db = require('../models/db.js');
 
-const Customer = require('../models/CustomersModel.js');
+const Customers = require('../models/CustomersModel.js');
 
 const customerController = {
 
 	getCustomerList: function(req, res) {
-		db.findMany(Customer, {informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name number address', function (result) {
+		db.findMany(Customers, {informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name number address', function (result) {
 			var customers = [];
 			for (var i=0; i<result.length; i++) {
 					var customer = {
@@ -29,7 +29,7 @@ const customerController = {
 			informationStatusID: "618a7830c8067bf46fbfd4e4"
 		}
 
-		db.insertOne (Customer, customer, function(flag) {
+		db.insertOne (Customers, customer, function(flag) {
 			if (flag) { }
 		})
 	},
@@ -37,13 +37,13 @@ const customerController = {
 	checkCustomerName: function(req, res) {
 		var name = req.query.name;
 
-		db.findMany(Customer, {name:name, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name', function(result) {	
+		db.findMany(Customers, {name:name, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name', function(result) {	
 			res.send(result[0]);
 		})
 	},
 
 	getViewCustomer: function(req, res) {
-		db.findOne(Customer, {_id: req.params.customerID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name number address', function(result) {
+		db.findOne(Customers, {_id: req.params.customerID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name number address', function(result) {
 			res.render('customerInformation', result)
 		})
 	},
@@ -51,7 +51,7 @@ const customerController = {
 	postUpdateInformation: function (req, res) {
 		var customerID = req.body.customerID;
 
-		db.updateOne(Customer, {_id:customerID}, {$set: {informationStatusID:"618a783cc8067bf46fbfd4e5"}}, function(flag) {
+		db.updateOne(Customers, {_id:customerID}, {$set: {informationStatusID:"618a783cc8067bf46fbfd4e5"}}, function(flag) {
 			if (flag) { }
 		})
 
@@ -62,7 +62,7 @@ const customerController = {
 			informationStatusID: "618a7830c8067bf46fbfd4e4"
 		}
 
-		db.insertOneResult(Customer, customer, function(result) {
+		db.insertOneResult(Customers, customer, function(result) {
 			res.send(result._id)
 		})
 	},

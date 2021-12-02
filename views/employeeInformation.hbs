@@ -220,7 +220,7 @@
                     var number = $('#contact-number').val();
                     var position = $('#dropdown-employee-position').val()
 
-                    if (!employeeUsernameValidation(username) && !numberValidation(number) && !positionValidation(position)) {
+                    if (/*!employeeUsernameValidation(username) && */!numberValidation(number) && !positionValidation(position)) {
 
                             //$('#employee-name').css("border", "1px solid #DDDDDD");
                             $('#employee-username').css("border", "1px solid #DDDDDD");
