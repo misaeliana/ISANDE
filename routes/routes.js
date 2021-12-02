@@ -141,6 +141,8 @@ router.get('/getItemName', invoiceController.getItems);
 
 router.get('/returns', invoiceController.returns);
 
+router.post('/createNewCustomer', invoiceController.addNewCustomer);
+
 
 
 

@@ -75,7 +75,14 @@
             </div>
 
                 <div>
-                    <input style="margin-top: 15px;" type="text" class="form-control margin-bottom-10" id="customerName" name="customerName" placeholder="Customer Name">
+                    <!--<input style="margin-top: 15px;" type="text" class="form-control margin-bottom-10" id="customer-Name" name="customer-Name" placeholder="Customer Name">-->
+                    <select style="margin-top: 15px;" class = "form-control margin-bottom-10" id = "dropdown-custom" style="margin-right: 10px">
+                    <option value="default" selected disabled hidden>Customer Name</option>
+                    <option value="addnew"><--Add new--></option>
+                      {{#each customerList}}
+                        <option value={{_id}}>{{name}}</option>
+                      {{/each}}
+                    </select>
                     <textarea class="form-control margin-bottom-10" id="address" name="address" placeholder="Address"></textarea> <!--style="display:none"-->
                     <input type="text" class="form-control margin-bottom-10" id="contactNumber" name="contactNumber" placeholder="Contact Number"> <!--style="display:none"-->
                     <div>
@@ -159,19 +166,19 @@
                 <div class="modal-dialog" role="document">
                 <div class="modal-content">
                 <div class="modal-header">
-                <h2 class="modal-title" id="exampleModalLabel">Customer Details</h2>
+                <h2 class="modal-title" id="modalTitle">Customer Details</h2>
                 
                 </div>
                 <div class="modal-body">
-                <label for="name">Name: <input type="text" id="name" name="name"><br></label><br>
-                <label for="phone">Phone: <input type="text" id="phone" name="phone"></label><br>
-                <label for="address">Address: <input type="text" id="address" name="address"></label><br>
+                <label for="name">Name: <input type="text" id="custname" name="name"><br></label><br>
+                <label for="phone">Phone: <input type="text" id="custphone" name="phone"></label><br>
+                <label for="address">Address: <input type="text" id="custaddress" name="address"></label><br>
 
                
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" id = "save-cust" class="btn btn-primary">Save changes</button>
                 </div>
                 </div>
                 </div>
@@ -192,7 +199,7 @@
                 $('#dateToday').text(today);
                 var value = "Delivery";
 
-                    function filled(itemDesc, qty) {
+                function filled(itemDesc, qty) {
                     var itemDesc = $('#itemDescription').val();
                     var qty = $('#qty').val();
 
@@ -204,13 +211,26 @@
                         return 2
                 }
 
+                 function custfilled(customerName) {
+                    var custField = $('#customerName').val();
+
+                    if(custField == ""){
+                        return 1
+                    }
+                    else
+                    {
+                        return 0
+                    }
+                }
+
+
 
                 $('#drop-down-new-invoice-type').on('change', function() {
                      if(this.value == '6197863ac4f0088e95c9bf84')
                     {
                     $('#address').css('display', 'none');
                     $('#contactNumber').css('display', 'none');
-                    alert("in-store")
+                    //alert("in-store")
                     }
                     else if(this.value == '61a591c1233fa7f9abcd5726'){
                     $('#address').css('display', 'block');
@@ -218,6 +238,32 @@
                     }
                    
                     //alert( $(this).find(":selected").val() );
+                })
+                  $('#dropdown-custom').on('change', function() {
+                     if(this.value == 'addnew')
+                    {
+                       $('.modal').modal('show');
+                    }
+                    else{
+                    }
+                })
+
+                /*Modal functions*/
+                $('#save-cust').click(function() {
+                    var custname = $('#custname').val();
+                    var custphone = $('#custphone').val();
+                    var custaddress = $('#custaddress').val();
+                if( custname == ""|| custphone == ""||custaddress == ""){
+                    console.log("One of the fields is empty");
+                }
+                else{
+               
+                $.post('/createNewCustomer', {custname,custphone,custaddress}, function(result) {
+                   $(".form-control").chosen();
+                    $('.modal').modal('hide');
+                })
+                }
+               
                 })
 
                 function capitalize(string){
@@ -322,10 +368,10 @@
                     var itemString = JSON.stringify(orderedItems);  
                    
                     
-                    //var custname = capitalize($('#customerName').val());
+                    var custname = capitalize($('#customerName').val());
                     var statusID = '0';
 
-                    var custID = "6198e7cb519d8741ec31ec5d";
+                    var custID = $('#dropdown-custom').val;
                     var address = '';
                     var date =  $('#dateToday').text();
                     var ddate = date;
@@ -337,15 +383,13 @@
                     case '61a591c1233fa7f9abcd5726':
                     statusID = '619785d78094faf8c10d1484';
                     var ddate = $('#delivery-date').val();
-                    var dnotes = $('#notes').text();
+                    var dnotes = $('#notes').val();
                     break;
                         //In-store type
                     case '6197863ac4f0088e95c9bf84':
                     statusID = '619785b0d9a967328c1e8fa6'
                     break;
                     default:}
-
-                  
                     var subtotal = $('#subtotalbox').val();
                     var VAT = $('#vatbox').val();
                     var discount = $('#disbox').val();

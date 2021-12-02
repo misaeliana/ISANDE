@@ -468,6 +468,13 @@ module.exports = function() {
 			});
 		});
 	},
+	this.getCustomers = function() {
+		return new Promise((resolve, reject) => {
+			db.findMany(Customers, {}, 'name', function(result) {
+				resolve(result);
+			});
+		});
+	},
 
 	this.getPONumber = function() {
 		return new Promise((resolve, reject) => {

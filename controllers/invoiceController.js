@@ -240,7 +240,8 @@ const invoiceController = {
 		async function getInvoiceTypes () {
 			var itype = await getAllInvoiceTypes();
             var delperson = await getDeliveryPersonnel();
-            res.render('newInvoice', {itype,delperson});
+            var customerList = await getCustomers();
+            res.render('newInvoice', {itype,delperson,customerList});
 		}	//res.sendFile( dir+"/newInvoice.html");
         getInvoiceTypes();
     },
@@ -333,6 +334,18 @@ const invoiceController = {
                 res.send(result);
            
             //reason for the for loop: https://stackoverflow.com/questions/5077409/what-does-autocomplete-request-server-response-look-like
+        });
+    },
+
+    addNewCustomer: function(req,res){
+        var newCustomer ={
+            name: req.body.custname,
+            number: req.body.custphone,
+            address: req.body.custaddress,
+            informationStatusID: '618a783cc8067bf46fbfd4e5'
+        }
+        db.insertOne(Customer, newCustomer, function(flag) {
+            console.log("customer added:")
         });
     },
 
