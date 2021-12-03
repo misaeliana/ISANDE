@@ -147,6 +147,9 @@
 
                     <div style="height: 10px"></div>
 
+                    <p>Temporary button -Tiffany</p>
+                    <button id="return">Return</button>
+
                     <div class="btn-export-invoice"><button class="btn-dark-blue" id="btn-export-invoice">Export</button></div>
 
                     <div style="height: 20px"></div>
@@ -159,6 +162,16 @@
                 $("#deliveredBy-div").css("display", "none");
                 $("#notes-div").css("display", "none");
             }
+
+            $(document).ready(function() {
+                $('#return').click(function() {
+                    var address = window.location.pathname.split('/');
+                    var invoiceID = address[address.length -1]
+
+                    window.location = `/return/${invoiceID}`
+                })
+                
+            })
         </script>
     </body>
 </html>

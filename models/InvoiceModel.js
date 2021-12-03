@@ -5,7 +5,7 @@ var mongoose = require('mongoose');
 var InvoicesSchema = new mongoose.Schema({
 
 	invoiceID: {
-		type: String,
+		type: Number,
 		required: true
 	},
 	

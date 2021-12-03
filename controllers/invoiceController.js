@@ -15,6 +15,12 @@ const deliveries = require('../models/DeliveriesModel.js');
 
 const Customer = require('../models/CustomersModel.js');
 
+const ReturnReasons = require('../models/ReturnReasonsModel.js');
+
+const Shrinkages = require('../models/ShrinkagesModel.js');
+
+const ShrinkagesReasons = require('../models/ShrinkageReasonsModel.js');
+
 require('../controllers/helpers.js')();
 
 const invoiceController = {
@@ -245,7 +251,7 @@ const invoiceController = {
 		}	//res.sendFile( dir+"/newInvoice.html");
         getInvoiceTypes();
     },
-    getItems: function(req, res) {
+    /*getItems: function(req, res) {
 
 		function getItems(itemDescription) {
 			return new Promise((resolve, reject) => {
@@ -282,7 +288,7 @@ const invoiceController = {
 		}
 		
 		getFilteredItems();
-	},
+	},*/
     
     addNewInvoice: function(req,res){
         async function saveItems(invoiceID, items) {
@@ -294,8 +300,12 @@ const invoiceController = {
 			}
 			db.insertMany(InvoiceItems, items, function(flag) {if (flag) {}});
 		}
-            var invoice = {
-                invoiceID: 'mocke',
+
+
+        async function saveInvoice() {
+            var invoiceID = await getInvoiceNumber()
+             var invoice = {
+                invoiceID: invoiceID,
                 customerID: req.body.custID,
                 date: req.body.date,
                 typeID: req.body.typeID,
@@ -326,7 +336,11 @@ const invoiceController = {
                 //console.log("invoice added:")
                 //console.log('invoiceID: ' +invoiceID);
                saveItems(invoiceID,items);
-            });
+        });
+        }
+       
+
+        saveInvoice();
     },
 
     getItemPrice: function(req, res) {
@@ -445,35 +459,6 @@ const invoiceController = {
         })
     },
 
-    getCustomerInformation: function(req, res) {
-        db.findOne(Customer, {name:req.query.customerName, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name number address', function(result) {
-            res.send(result)
-        })
-    },
-
-    getItems: function(req, res) {
-        db.findMany (Items, {itemDescription:{$regex:req.query.query, $options:'i'}, informationStatusID: "618a7830c8067bf46fbfd4e4"}, 'itemDescription', function (result) {
-            var formattedResults = [];
-            //reason for the for loop: https://stackoverflow.com/questions/5077409/what-does-autocomplete-request-server-response-look-like
-            for (var i=0; i<result.length; i++) {
-                var formattedResult = {
-                    label: result[i].itemDescription,
-                    value: result[i].itemDescription
-                };
-                formattedResults.push(formattedResult);
-            }
-            res.send(formattedResults)
-        })
-    },
-
-    returns: function(req, res) {
-        async function getInfo(){
-            var types = await getAllInvoiceTypes()
-            res.render('return', {types})
-        }
-        getInfo();
-    },
-
     getSearchDeliveryList: function(req, res) {
         var searchItem = req.query.searchItem;
         
@@ -560,6 +545,234 @@ const invoiceController = {
         }
 
         updateInfo();
+    },
+
+    getCustomerInformation: function(req, res) {
+        db.findOne(Customer, {name:req.query.customerName, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name number address', function(result) {
+            res.send(result)
+        })
+    },
+
+    getItems: function(req, res) {
+        db.findMany (Items, {itemDescription:{$regex:req.query.query, $options:'i'}, informationStatusID: "618a7830c8067bf46fbfd4e4"}, 'itemDescription', function (result) {
+            var formattedResults = [];
+            //reason for the for loop: https://stackoverflow.com/questions/5077409/what-does-autocomplete-request-server-response-look-like
+            for (var i=0; i<result.length; i++) {
+                var formattedResult = {
+                    label: result[i].itemDescription,
+                    value: result[i].itemDescription
+                };
+                formattedResults.push(formattedResult);
+            }
+            res.send(formattedResults)
+        })
+    },
+
+    returns: function(req, res) {
+        async function getInfo() {
+            var types = await getAllInvoiceTypes()
+
+            var temp_invoiceInfo = await getInvoice(req.params.invoiceID)
+            var temp_invoiceItems = await getInvoiceItems(temp_invoiceInfo._id)
+            var returnReasons = await getReturnReasons();
+            var paymentTypes = await getInvoiceStatus()
+            var deliveryPersonnel = await getDeliveryPersonnel();
+
+            var invoiceItems = []
+            for (var i=0; i<temp_invoiceItems.length; i++) {
+                var unitID = await getItemUnitItemID(temp_invoiceItems[i].itemID)
+                var quantity = temp_invoiceItems[i].quantity
+                var unitPrice = await getItemPrice(temp_invoiceItems[i].itemID)
+                var amount = quantity * parseFloat(unitPrice)
+
+                var invoiceItem = {
+                    itemDescription: await getItemDescription(temp_invoiceItems[i].itemID),
+                    quantity: quantity,
+                    unit: await getSpecificUnit(unitID),
+                    unitPrice: "P " + parseFloat(unitPrice).toFixed(2),
+                    discount: "P " + temp_invoiceItems[i].discount,
+                    amount: "P " + parseFloat(amount).toFixed(2),
+                    returnReasons: returnReasons
+                }
+                invoiceItems.push(invoiceItem)
+            }
+
+            var customerInfo = await getCustomerInfo(temp_invoiceInfo.customerID)
+
+            var invoiceInfo = { 
+                invoiceID: temp_invoiceInfo.invoiceID,
+                subtotal: parseFloat(temp_invoiceInfo.subtotal).toFixed(2),
+                VAT: parseFloat(temp_invoiceInfo.VAT).toFixed(2),
+                discount: parseFloat(temp_invoiceInfo.discount).toFixed(2),
+                total: parseFloat(temp_invoiceInfo.total).toFixed(2)
+            }
+
+            res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems})
+        }
+
+        getInfo();
+    },
+
+    checkQuantity: function(req, res) {
+        db.findOne(Items, {itemDescription:req.query.itemDesc, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'quantityAvailable', function (result){
+            if (result.quantityAvailable < req.query.quantity)
+                res.send(false)
+            else
+                res.send(true)
+        })
+    },
+
+    getItemInfo: function(req, res) {
+        function getItemInfo() {
+            return new Promise((resolve, reject) => {
+                db.findOne(Items, {itemDescription:req.query.itemDesc, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'unitID sellingPrice', function(result) {
+                    resolve(result)
+                })
+            })
+        }
+
+        async function getInfo() {
+            var temp_item = await getItemInfo();
+            var item = {
+                unit: await getSpecificUnit(temp_item.unitID),
+                sellingPrice: temp_item.sellingPrice
+            }
+            res.send(item)
+        }
+
+        getInfo();
+    },
+
+    saveReturn: function(req, res) {
+
+        function getShrinkageReasonID() {
+            return new Promise((resolve, reject) => {
+                db.findOne(ShrinkagesReasons, {reason:"Damaged"}, '_id', function(result) {
+                    resolve(result._id)
+                })
+            })
+        }   
+
+        async function damagedItem(returnItem) {
+            var shrinkage = {
+                itemID: await getItemID(returnItem.itemDesc),
+                quantityLost: returnItem.quantity,
+                reasonID: await getShrinkageReasonID(),
+                date: new Date(),
+                employeeID: "619fb6910640ab1d9518d3b6"
+            }
+
+            db.insertOne(Shrinkages, shrinkage, function(flag) {
+
+            })
+        }
+
+        function incorrectItem(returnItem) {
+            db.findOne(Items, {itemDescription:returnItem.itemDesc}, 'quantityAvailable', function(result) {
+                var updatedQuantity = parseInt(result.quantityAvailable) + parseInt(returnItem.quantity)
+                db.updateOne(Items, {itemDescription:returnItem.itemDesc}, {quantityAvailable: updatedQuantity}, function(flag) {
+
+                })
+            })
+        }
+
+        function processReturn(oldInvoiceID, returns) {
+            for (var i=0; i<returns.length; i++) {
+
+                //item is damaged
+                if (returns[i].reason == "61a76e7357d8d868d3eb5b2c") 
+                    damagedItem(returns[i])
+
+                //item was incorrect
+                else if (returns[i].reason == "61a76e7f57d8d868d3eb5b2d") 
+                    incorrectItem(returns[i])
+            }
+
+            db.updateOne(Invoices, {_id:oldInvoiceID}, {statusID:"619785ceda48eab55320c0c8"}, function(flag) {
+
+            })
+        }
+
+        //--------FUNCTIONS FOR NEW INVOICE---------//
+
+        function makeInvoiceID(invoiceNumber, customerID, invoiceInfo) {
+            return new Promise((resolve, reject) => {
+                var invoice = {
+                    invoiceID: invoiceNumber,
+                    customerID:customerID,
+                    date: new Date(),
+                    typeID: invoiceInfo.invoiceType,
+                    statusID: invoiceInfo.statusID,
+                    subtotal: invoiceInfo.subtotal, 
+                    VAT: invoiceInfo.vat,
+                    discount: invoiceInfo.discount,
+                    total: invoiceInfo.total,
+                    employeeID: "6193c0e4ea47cc5edfb484d2"
+                }
+
+                db.insertOneResult(Invoices, invoice, function(result) {
+                    resolve (result._id)
+                })
+            })
+        }
+
+        //item deduction for sale
+        function updateQuantity(invoiceItem) {
+            db.findOne(Items, {itemDescription:invoiceItem.itemDesc}, 'quantityAvailable', function(result) {
+                var updatedQuantity = parseInt(result.quantityAvailable) - parseInt(invoiceItem.quantity)
+                db.updateOne(Items, {itemDescription:invoiceItem.itemDesc}, {quantityAvailable: updatedQuantity}, function(flag) {
+
+                })
+            })
+        }
+
+        //------------FUNCTION FOR DELIVERY-------------- 
+
+        function newDelivery(invoiceID, deliveryInfo) {
+            deliveryInfo.invoice_id = invoiceID            
+            db.insertOne(deliveries, deliveryInfo, function(flag) {
+                if (flag)
+                    res.send(invoiceID)
+            })
+        }
+
+        //------------MAIN FUNCTION FOR NEW INVOICE-------------
+
+        async function newInvoice(invoiceInfo, invoiceItems, deliveryInfo) {
+            var invoiceNumber = await getInvoiceNumber()
+            var customerID =  await getCustomerID(invoiceInfo.customerName)
+
+            var invoiceID = await makeInvoiceID(invoiceNumber, customerID, invoiceInfo);
+
+            for (var i=0; i<invoiceItems.length; i++) {
+                invoiceItems[i].itemID = await getItemID(invoiceItems[i].itemDesc)
+                invoiceItems[i].invoice_id = invoiceID
+                invoiceItems[i].discount = 0
+                updateQuantity (invoiceItems[i])
+            }
+
+
+            db.insertMany(InvoiceItems, invoiceItems, function(flag) {
+            
+            })
+
+            //order is delivery
+            if (invoiceInfo.invoiceType == "61a591c1233fa7f9abcd5726") 
+                newDelivery(invoiceID, deliveryInfo)
+            else
+                res.send(invoiceID) 
+            
+        }
+
+        var oldInvoiceID = req.body.oldInvoiceID
+        var returns = JSON.parse(req.body.returnsString)
+        var newInvoiceItems = JSON.parse(req.body.newInvoiceItemsString)   
+        var newInvoiceInfo = JSON.parse(req.body.invoiceInfoString)
+        var deliveryInfo = JSON.parse(req.body.deliveryInfoString)
+    
+        processReturn(oldInvoiceID, returns)
+        newInvoice(newInvoiceInfo, newInvoiceItems, deliveryInfo)
+
     }
 };
 

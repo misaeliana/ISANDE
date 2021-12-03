@@ -137,13 +137,17 @@ router.get('/getCustomerName', invoiceController.getCustomerName);
 
 router.get('/getCustomerInformation', invoiceController.getCustomerInformation)
 
-router.get('/getItemName', invoiceController.getItems);
+router.get('/getItemNameInvoice', invoiceController.getItems);
 
-router.get('/returns', invoiceController.returns);
+router.get('/return/:invoiceID', invoiceController.returns);
 
 router.post('/createNewCustomer', invoiceController.addNewCustomer);
 
+router.get('/checkQuantity', invoiceController.checkQuantity);
 
+router.get('/getItemInfo', invoiceController.getItemInfo)
+
+router.post('/saveReturn', invoiceController.saveReturn);
 
 
 //--DELIVERY--

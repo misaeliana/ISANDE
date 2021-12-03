@@ -37,6 +37,8 @@ const Purchases = require('../models/PurchasesModel.js')
 
 const PurchasedItems = require('../models/PurchasedItemsModel.js')
 
+const ReturnReasons = require('../models/ReturnReasonsModel.js')
+
 module.exports = function() {
 	this.getAllPositions = function() {
 		return new Promise((resolve, reject) => {
@@ -358,13 +360,6 @@ module.exports = function() {
 		});
 	},
 
-	this.getSpecificInvoiceStatus = function(statusID) {
-		return new Promise((resolve, reject) => {
-			db.findOne(InvoiceStatus, {_id: statusID}, 'status', function(result) {
-				resolve (result.status);
-			});
-		});
-	},
 
 	this.getInvoice = function(_id) {
 		return new Promise((resolve, reject) => {
@@ -463,7 +458,7 @@ module.exports = function() {
 	},
 	this.getDeliveryPersonnel = function() {
 		return new Promise((resolve, reject) => {
-			db.findMany(Employees, {}, 'name', function(result) {
+			db.findMany(Employees, {informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name', function(result) {
 				resolve(result);
 			});
 		});
@@ -499,7 +494,7 @@ module.exports = function() {
 				if (length == -1)
 					resolve(1);
 				else
-					resolve(result[length].purchaseOrderNumber+1);
+					resolve(result[length].invoiceID+1);
 			});
 		});
 	},
@@ -512,11 +507,51 @@ module.exports = function() {
 		})
 	},
 
-	this.getCurrentPOItems = function (poID) {
-			return new Promise((resolve, reject) => {
-				db.findMany(PurchasedItems, {purchaseOrderID:poID}, 'itemID unitID quantity', function(result) {
-					resolve(result);
-				})
+	this.getItemUnitItemID = function(itemID) {
+		return new Promise((resolve, reject) => {
+			db.findOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'unitID', function(result){
+				resolve(result.unitID)
 			})
-		}
+		})
+	},
+
+	this.getCurrentPOItems = function (poID) {
+		return new Promise((resolve, reject) => {
+			db.findMany(PurchasedItems, {purchaseOrderID:poID}, 'itemID unitID quantity', function(result) {
+				resolve(result);
+			})
+		})
+	},
+
+	this.getItemPrice = function (itemID) {
+		return new Promise((resolve, reject) =>{
+			db.findOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'sellingPrice', function(result) {
+				resolve(result.sellingPrice)
+			})
+		})
+	},
+
+	this.getReturnReasons = function() {
+		return new Promise((resolve, reject) => {
+			db.findMany(ReturnReasons, {}, '', function(result) {
+				resolve(result)
+			})
+		})
+	},
+
+	this.getCustomerID = function(customerName) {
+		return new Promise((resolve, reject) => {
+			db.findOne(Customers, {name:customerName}, '_id', function(result){
+				resolve(result._id)
+			}) 
+		})
+	},
+
+	this.getInvoiceStatus = function() {
+		return new Promise((resolve, reject) => {
+			db.findMany(InvoiceStatus, {$or: [{status:"Paid"}, {status:"COD"}]}, '', function(result) {
+				resolve(result)
+			})
+		})
+	}
 };

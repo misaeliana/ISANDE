@@ -37,7 +37,7 @@
         <div class="content">
             <div> <!-- ADD FIXED -->
                 <div style="display: flex;">
-                    <div style="width: 50%"><h1 class="bold"> Invoice #"Number" </h1></div>
+                    <div style="width: 50%"><h1 class="bold"> Invoice #{{invoiceInfo.invoiceID}} </h1></div>
                     <div class="btn-status">
                         <h3>MM/DD/YYYY</h3>
                     </div>
@@ -53,21 +53,24 @@
                     {{/each}}
                 </select>
                 
-                <div id="delivery-info" style="display: none;">
+                <div class="delivery-info" style="display: none;">
                     <label class="date-label" for="delivery-date">Delivery Date</label>
                     <input style="height: 34px" type="date" id="delivery-date" name="delivery-date">
 
                     <label for="dropdown-payment-type" style="margin-right: 10px">Payment Type</label>
                     <select class="dropdown" id="dropdown-payment-type" style="margin-right: 10px">
-                        <option value="all-type" selected>All</option>
-                        <option value="cash">Cash</option>
-                        <option value="cod">COD</option>
+                        <option value="no-selected">--Select Payment Type--</option>
+                        {{#each paymentTypes}}
+                            <option value="{{_id}}">{{status}}</option>
+                        {{/each}}
                     </select>
 
                     <label for="dropdown-delivery-personnel" style="margin-right: 10px">Delivery Personnel</label>
                     <select class="dropdown" id="dropdown-delivery-personnel" style="margin-right: 10px">
-                        <option value="all-type" selected>All</option>
-                            <option value="{{_id}}">{{ingredientType}}</option>
+                        <option value="no-selected">--Select Delivery Personnel--</option>
+                        {{#each deliveryPersonnel}}
+                            <option value="{{_id}}">{{name}}</option>
+                        {{/each}}
                     </select>
                 </div>
             </div>
@@ -77,13 +80,11 @@
             </div>
 
             <div>
-                <input style="margin-top: 15px;" type="text" class="form-control margin-bottom-10" id="customerName" name="customerName" placeholder="Customer Name">
-                <textarea class="form-control margin-bottom-10" id="address" name="address" placeholder="Address"></textarea> <!--style="display:none"-->
-                <input type="text" class="form-control margin-bottom-10" id="contactNumber" name="contactNumber" placeholder="Contact Number"> <!--style="display:none"-->
-                <div>
-                    <div>
-                        <textarea class="form-control" id="notes" name="notes" placeholder="<Delivery Notes>"></textarea>
-                    </div>
+                 <input style="margin-top: 15px;" type="text" class="form-control margin-bottom-10" id="customerName" name="customerName" placeholder="Customer Name" value="{{customerInfo.name}}">
+                 <div class="delivery-info" style="display: none;">
+                    <textarea class="form-control margin-bottom-10" id="address" name="address" placeholder="Address">{{customerInfo.address}}</textarea> <!--style="display:none"-->
+                    <input type="text" class="form-control margin-bottom-10" id="contactNumber" name="contactNumber" placeholder="Contact Number" value="{{customerInfo.number}}"> <!--style="display:none"-->
+                    <textarea class="form-control" id="delivery-notes" name="notes" placeholder="Delivery Notes"></textarea>
                 </div>
             </div>
 
@@ -101,32 +102,34 @@
                                 <th>Qty</th>
                                 <th>Unit</th>
                                 <th>Unit Price</th>
-                                <th>Item Code</th>
+                                <th>Discount</th>
                                 <th>Amount</th>
                                 <th>Return</th>
                                 <th>Reason</th>
                             </tr>
                         </thead>
                         <tbody> 
-                            <tr>
-                                <td>John</td>
-                                <td>Doe</td>
-                                <td>john@example.com</td>
-                                <td>John</td>
-                                <td>Doe</td>
-                                <td>john@example.com</td>
-                                <td>
-                                    <input type="checkbox">
-                                </td>
-                                <td>
-                                    <select class= "dropdown" id="dropdown-return" style="height: 30px">
-                                        <option value="all" selected>Damaged</option>
-                                        <option value="volvo">Option 1</option>
-                                        <option value="saab">Option 2</option>
-                                        <option value="saab">Option 3</option>
-                                    </select>
-                                </td>
-                            </tr>
+                            {{#each invoiceItems}}
+                                <tr class="return-row">
+                                    <td class="return-item-desc">{{itemDescription}}</td>
+                                    <td class="return-quantity">{{quantity}}</td>
+                                    <td>{{unit}}</td>
+                                    <td class="return-unit-price">{{unitPrice}}</td>
+                                    <td class="return-discount">{{discount}}</td>
+                                    <td class="return-amount">{{amount}}</td>
+                                    <td>
+                                        <input type="checkbox" class="return-check">
+                                    </td>
+                                    <td>
+                                        <select class= "dropdown return-reason" style="height: 30px" disabled>
+                                            <option value="no-selected" selected>--Select Reason--</option>
+                                            {{#each returnReasons}}
+                                                <option value="{{_id}}">{{reason}}</option>
+                                            {{/each}}
+                                        </select>
+                                    </td>
+                                </tr>
+                            {{/each}}
                         </tbody>
                     </table>
 
@@ -140,13 +143,13 @@
                         <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="return-add-item-description" name="return-add-item-description" placeholder="Item Description">
                         <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px; text-align: right;" type="text" class="form-control" id="return-add-item-qty" name="return-add-item-qty" placeholder="Qty">
                         <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px; text-align: right;" type="text" class="form-control" id="return-add-item-discount" name="return-add-item-discount" placeholder="Discount">
-                        <input style="margin-top: 5px; margin-bottom: 0px; float: left; height: 34px; width: 34px; background-color: #0F84D9; border: #0F84D9; border-radius: 7px; color: white;" type="button" id="return-add-item-addItem" name="return-add-item-addItem" value="+">
+                        <input style="margin-top: 5px; margin-bottom: 0px; float: left; height: 34px; width: 34px; background-color: #0F84D9; border: #0F84D9; border-radius: 7px; color: white;" type="button" id="return-add-item" name="return-add-item-addItem" value="+">
                     </form>
 
                     <div style="height: 45px"></div>
 
                     <div id="div-warning-return-new-item">
-                        <p id="text-warning-return-new-item" style="color: red;">Warning text here</p>
+                        <p id="text-warning" style="color: red; display: none;"></p>
                     </div>
 
                     <table class="table" id="table-return-new-item">
@@ -161,60 +164,50 @@
                                 <th></th>
                             </tr>
                         </thead>
-                        <tbody> 
-                            <tr>
-                                <td>John</td>
-                                <td>Doe</td>
-                                <td>john@example.com</td>
-                                <td>John</td>
-                                <td>Doe</td>
-                                <td>john@example.com</td>
-                                <td>
-                                    <button class="delete-button"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete" id= "return-delete-table-row-btn"></button>
-                                </td>
-                            </tr>
+                        <tbody id="table-return-new-item-body"> 
+                            
                         </tbody>
                     </table>
 
-                    <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: right; text-align: right;" type="text" class="form-control margin-bottom-10" id="total-discount" name="discount" placeholder="Discount">
+                    <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: right; text-align: right;" type="number" class="form-control margin-bottom-10" id="total-discount" name="discount" placeholder="Discount">
 
                     <br> 
                     <br> 
                     <br> 
                     <div class="summary-container">
                         <div class="summary-text">Subtotal</div>
-                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
+                        <div class="summary-info-container"><div class="summary-info" id="subtotal">P {{invoiceInfo.subtotal}}</div></div>
                     </div>
                     <div class="summary-container">
                         <div class="summary-text">VAT</div>
-                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
+                        <div class="summary-info-container"><div class="summary-info" id="vat">P {{invoiceInfo.VAT}}</div></div>
                     </div>
                     <div class="summary-container">    
                         <div class="summary-text">Discount</div>
-                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
+                        <div class="summary-info-container"><div class="summary-info" id="discount">P {{invoiceInfo.discount}}</div></div>
                     </div>
                     <div class="summary-container">
                         <div class="summary-text">Order Total</div>
-                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
+                        <div class="summary-info-container"><div class="summary-info" id="orderTotal">P {{invoiceInfo.total}}</div></div>
                     </div>
 
                     <hr style="margin-top: 0px; margin-bottom: 10px;">
 
                     <div class="summary-container">
                         <div class="summary-text">Paid by Customer</div>
-                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
+                        <div class="summary-info-container"><div class="summary-info" id="paid">P {{invoiceInfo.total}}</div></div>
                     </div>
 
                     <hr style="margin-top: 0px; margin-bottom: 10px;">
 
                     <div class="summary-container">
                         <div class="summary-text">Refunded</div>
-                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
+                        <div class="summary-info-container"><div class="summary-info" id="refund-amount">P 0</div></div>
                     </div>
 
                     <div class="summary-container">
                         <div class="summary-text">Total</div>
-                        <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
+                        <div class="summary-info-container"><div class="summary-info" id="total">P 0</div></div>
                     </div>
 
                     <div style="height: 10px"></div>
@@ -222,7 +215,7 @@
                     <div>
                         <div style="display: flex;">
                             <div style="width: 50%"><div class="btn-cancel-invoice"><button class="btn-light-grey" id="btn-save-invoice" style="margin-bottom: 10px;">Cancel</button></div></div>
-                            <div class="btn-save-invoice btn-status"><button class="btn-light-blue" id="btn-save-invoice" style="margin-bottom: 10px;" >Save</button></div>
+                            <div class="btn-save-return btn-status"><button class="btn-light-blue" id="btn-save-return" style="margin-bottom: 10px;" >Save</button></div>
                         </div>
                     </div>
 
@@ -238,10 +231,10 @@
                     var val = $('#dropdown-return-type option:selected').text();
 
                     if (val == "In-Store") {
-                        $('#delivery-info').css('display', 'none')
+                        $('.delivery-info').css('display', 'none')
                     }
                     else
-                        $('#delivery-info').css('display', 'block')
+                        $('.delivery-info').css('display', 'block')
                 })
 
                 //should be for delivery only
@@ -274,7 +267,6 @@
                     }
                 });
 
-
                 $("#return-add-item-description").autocomplete({
                     source: function(request, response) {
                     $.ajax({
@@ -299,6 +291,192 @@
                         }
                     }
                 });
+
+                $('#total-discount').keyup(function() {
+                    computeTotal()
+                })
+
+                $('.return-check').change(function() {
+                    if ($(this).is(":checked"))
+                        $(this).parents('tr').find(".return-reason").prop('disabled', false)
+                    else
+                        $(this).parents('tr').find(".return-reason").prop('disabled', true)
+                    computeTotal();
+                });
+
+                $("#table-return-new-item-body").on('click','.delete-item-btn',function() {
+                    $(this).closest('tr').remove();
+                    computeTotal();
+                });
+
+
+                function computeTotal() {
+                    var refund = 0;
+                    var orderTotal = 0;
+                    var discount = 0
+                    var newItemsTotal = 0
+
+                    var paid = $('#paid').text().slice(1)
+
+                    $('#table-return-order-details > tbody > tr').each(function() {
+                        //item to be returned, either added to shrinkage or added back to inventory
+                        if ($(this).find('.return-check').is(":checked")) 
+                            refund += parseFloat($(this).children('.return-amount').text().slice(1))
+
+                        else 
+                            orderTotal += parseFloat($(this).children('.return-amount').text().slice(1))         
+                    })
+
+                    $('#table-return-new-item-body > tr').each(function() {
+                        var amount = parseFloat($(this).find('.amount').text().slice(1))
+                        orderTotal += parseFloat(amount)
+                        newItemsTotal += parseFloat(amount)
+                    })
+
+                    var discountPercent = $('#total-discount').val()
+                    //there is discount
+                    if (discountPercent != "")
+                        discount = orderTotal * (discountPercent/100)
+
+                    orderTotal -= discount
+                    var subtotal = orderTotal/1.12
+                    var vat = orderTotal - subtotal
+
+                    var balance = paid-refund
+
+                    var total = orderTotal - balance 
+
+                    $('#subtotal').text("P " + parseFloat(subtotal).toFixed(2))
+                    $('#vat').text("P " + parseFloat(vat).toFixed(2))
+                    $('#discount').text("P " + parseFloat(discount).toFixed(2))
+                    $('#orderTotal').text("P " + parseFloat(orderTotal).toFixed(2))
+
+                    $('#refund-amount').text("P " + parseFloat(refund).toFixed(2))
+                    $('#total').text("P " + parseFloat(total).toFixed(2))
+                }
+
+
+                $('#return-add-item').click(function() {
+                    var itemDesc = $('#return-add-item-description').val()
+                    var quantity = $('#return-add-item-qty').val()
+                    var discount = $('#return-add-item-discount').val()
+
+                    $.get('/checkQuantity', {itemDesc, quantity}, function(result) {
+                        //there is enough quantity
+                        if (result) {
+                            $.get('/getItemInfo', {itemDesc}, function(result) {
+                                var amount = quantity * result.sellingPrice
+                                if (discount != "") 
+                                    amount -= discount
+                                else   
+                                    discount = 0
+                                
+
+                                $('#table-return-new-item-body').append(
+                                    `<tr>
+                                        <td class="itemDesc">${itemDesc}</td>
+                                        <td class="quantity">${quantity}</td>
+                                        <td class="unit">${result.unit}</td>
+                                        <td class="unitPrice">P ${result.sellingPrice}</td>
+                                        <td class="discount">P ${discount}</td>
+                                        <td class="amount">P ${amount}</td> 
+                                        <td> <button class="delete-button delete-item-btn"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button> </td>
+                                    </tr>`)
+
+                                computeTotal()
+                            })
+                            $('#text-warning').css('display', 'none')
+                            $('#return-add-item-description').val('')
+                            $('#return-add-item-qty').val('')
+                            $('#return-add-item-discount').val('')
+                        }
+
+                        else {
+                            $('#text-warning').text("Cannot add Item. There is not enough quantity for the item.")
+                            $('#text-warning').css('display', 'block')
+                        }
+                    })
+                })
+
+                $('#btn-save-return').click(function () {
+                    var returns = []
+                    var newInvoiceItems = []
+
+                    var address = window.location.pathname.split('/');
+                    var oldInvoiceID = address[address.length -1]
+
+                    $('#table-return-order-details > tbody > tr').each(function() {
+                        //item to be returned, either added to shrinkage or added back to inventory
+                        if ($(this).find('.return-check').is(":checked")) {
+                            var returnItem = {
+                                itemDesc: $(this).children('.return-item-desc').text(),
+                                quantity: $(this).children('.return-quantity').text(),
+                                reason: $(this).find('.return-reason').val()
+                            }
+                            returns.push(returnItem)
+                        } 
+                        else {
+                            var invoiceItem = {
+                                itemDesc: $(this).children('.return-item-desc').text(),
+                                quantity: $(this).children('.return-quantity').text(),
+                                discount: $(this).children('.discount').text().slice(1)
+                            }
+                            newInvoiceItems.push(invoiceItem);
+                        }
+                    })
+
+                    $('#table-return-new-item-body > tr').each(function() {
+                        var invoiceItem = {
+                            itemDesc: $(this).children('.itemDesc').text(),
+                            quantity: $(this).children('.quantity').text(),
+                            discount: $(this).children('.discount').text().slice(1)
+                        }
+                        newInvoiceItems.push(invoiceItem);
+                    })
+
+                    var invoiceType = $('#dropdown-return-type').val()
+                    var deliveryInfo
+                    //order is a delivery
+                    if (invoiceType == "61a591c1233fa7f9abcd5726") {
+                        var invoiceInfo = {
+                            customerName: $('#customerName').val(),
+                            invoiceType: invoiceType,
+                            statusID: $('#dropdown-payment-type').val(),
+                            subtotal: parseFloat($('#subtotal').text().slice(1)),
+                            vat: parseFloat($('#vat').text().slice(1)),
+                            discount: 0,
+                            total: parseFloat($('#total').text().slice(1))
+                        }
+
+                        deliveryInfo = {
+                            deliveryDate: new Date($('#delivery-date').val()),
+                            deliveryPersonnel: $('#dropdown-delivery-personnel').val(),
+                            deliveryNotes: $('#delivery-notes').val()
+                        }
+                    }
+                    else {
+                        var invoiceInfo = {
+                            customerName: $('#customerName').val(),
+                            invoiceType: invoiceType,
+                            statusID: "619785b0d9a967328c1e8fa6",
+                            subtotal: parseFloat($('#subtotal').text().slice(1)),
+                            vat: parseFloat($('#vat').text().slice(1)),
+                            discount: 0,
+                            total: parseFloat($('#total').text().slice(1))
+                        }
+                        deliveryInfo= {}
+                    }
+
+                    var invoiceInfoString = JSON.stringify(invoiceInfo)
+                    var returnsString = JSON.stringify(returns)
+                    var newInvoiceItemsString = JSON.stringify(newInvoiceItems)
+                    var deliveryInfoString = JSON.stringify(deliveryInfo)
+                    $.post('/saveReturn', {oldInvoiceID, invoiceInfoString, returnsString, newInvoiceItemsString, deliveryInfoString}, function(result) {
+                            alert("Return processed")
+                            window.location = `/invoices/${result}`;
+                    })
+                })
+
             })
         </script>
     </body>
