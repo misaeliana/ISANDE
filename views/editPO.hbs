@@ -488,29 +488,83 @@
                         
                 });
 
+                function supplierFilled() {
+                    var supplierName = $('#supplierName').val();
+                    var contactPerson = $('#contactPerson').val();
+                    var contactNumber = $('#contactNumber').val();
+                    var address = $('#address').val();
+
+                    if (supplierName!="" && contactPerson!="" && contactNumber!="" && address!="" ) {
+                        $('#supplierName').css("border", "1px solid #DDDDDD");
+                        $('#contactPerson').css("border", "1px solid #DDDDDD");
+                        $('#contactNumber').css("border", "1px solid #DDDDDD");
+                        $('#address').css("border", "1px solid #DDDDDD");
+                        return true;
+                    }
+
+                    else {
+                        if (supplierName == "")
+                            $('#supplierName').css("border", "2px solid #B00000");
+                        else
+                            $('#supplierName').css("border", "1px solid #DDDDDD");
+
+                        if (contactPerson == "")
+                            $('#contactPerson').css("border", "2px solid #B00000");
+                        else
+                            $('#contactPerson').css("border", "1px solid #DDDDDD");
+
+                        if (contactNumber == "")
+                            $('#contactNumber').css("border", "2px solid #B00000");
+                        else
+                            $('#contactNumber').css("border", "1px solid #DDDDDD");
+
+                        if (address == "")
+                            $('#address').css("border", "2px solid #B00000");
+                        else
+                            $('#address').css("border", "1px solid #DDDDDD");
+
+                        return false;
+                    }
+                }
+
+                function itemFilled() {
+                    var allFilled = true 
+                    $("#table-poItem-body > tr").each(function () {
+                        if ($(this).find('.classQty').val() == "") {
+                            $(this).find('.classQty').css("border", "2px solid #B00000");
+                            allFilled = false
+                        }
+                        else
+                            $(this).find('.classQty').css("border", "1px solid #DDDDDD");
+                    })
+                    return allFilled
+                }
+
                 //---------UPDATE FOR NEW PO----------- change supplier, add items, delete items
                 $('#btn-update-new-po').click(function(){
                     var address = window.location.pathname.split('/');
                     var poID = address[address.length -1]
                     var poItems = []
 
+                    if (supplierFilled() && itemFilled()) {
+                        $("#table-poItem-body > tr").each(function () {
+                            var poItem= {
+                                itemDesc: $(this).children('.classItemDescription').text(), 
+                                quantity: $(this).find('.classQty').val(),
+                                unit: $(this).children('.classUnit').text()
+                            }
+                            poItems.push(poItem);
+                        });
 
-                    $("#table-poItem-body > tr").each(function () {
-                        var poItem= {
-                            itemDesc: $(this).children('.classItemDescription').text(), 
-                            quantity: $(this).find('.classQty').val(),
-                            unit: $(this).children('.classUnit').text()
-                        }
-                        poItems.push(poItem);
-                    });
-
-                    var itemsString = JSON.stringify(poItems);  
-                    var supplierName = $('#supplierName').val()
-                    $.post('/updatePOItems', {poID, itemsString, supplierName}, function(result) {
-                        alert("PO updated");
-                        window.location = `/purchaseOrder/${poID}`;
-                    });
-                    
+                        var itemsString = JSON.stringify(poItems);  
+                        var supplierName = $('#supplierName').val()
+                        $.post('/updatePOItems', {poID, itemsString, supplierName}, function(result) {
+                            alert("PO updated");
+                            window.location = `/purchaseOrder/${poID}`;
+                        });
+                    }
+                    else
+                        alert("Please fill out the necessary information");
                 })
 
                 $('.unitPrice').keyup(function() {

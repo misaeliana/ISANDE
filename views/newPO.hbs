@@ -170,10 +170,10 @@
 
                 $('#itemDescription').focus(function() {
                     if ($("#supplierName").val() == ""){
-                        alert("Please select a supplier first")
-                        $('#itemDescription').blur()
+                        alert("Please select a supplier first");
+                        $('#itemDescription').blur();
                     }
-                })
+                });
 
                 $("#itemDescription" ).autocomplete({
                     source: function(request, response) {
@@ -186,28 +186,28 @@
                                     supplier: $('#supplierName').val()
                                 },
                                 success: function (data) {
-                                    $('#text-warning-new-PO').css('display', 'none')
+                                    $('#text-warning-new-PO').css('display', 'none');
                                     $("#itemDescription").css("border", "1px solid #DDDDDD");
                                     response(data);
                                 }
                          });
                     }, response: function (event, ui) {
                         if (ui.content.length === 0) {
-                            $('#btn-new-item').css('display', 'block')
-                            $('#text-warning-new-PO').css('display', 'block')
-                            $('#addItem').prop('disabled', true)
+                            $('#btn-new-item').css('display', 'block');
+                            $('#text-warning-new-PO').css('display', 'block');
+                            $('#addItem').prop('disabled', true);
                         }
 
                         else {
-                            $('#text-warning-new-PO').css('display','none')
+                            $('#text-warning-new-PO').css('display','none');
                             $('#btn-new-item').css('display', 'none');
-                            $('#addItem').prop('disabled', false)
+                            $('#addItem').prop('disabled', false);
                         }
                     }
                 });
-            })
+            });
 
-            $("#supplierName" ).autocomplete({
+            $("#supplierName").autocomplete({
                 source: function(request, response) {
                 $.ajax({
                             url: `/getSupplierName?query=${request.term}`,
@@ -217,42 +217,39 @@
                                 term: request.term,
                             },
                             success: function (data) {
-                                $('#supplier-error').css('display', 'none')
+                                $('#supplier-error').css('display', 'none');
                                 $("#supplierName").css("border", "1px solid #DDDDDD");
                                 response(data);
                             }
                      });
                 }, response: function (event, ui) {
                     if (ui.content.length === 0) {
-                        $('#supplier-error').css('display', 'block')
-                        $('#btn-update-new-po').prop('disabled', true)
+                        $('#supplier-error').css('display', 'block');
+                        $('#btn-update-new-po').prop('disabled', true);
                         $('#btn-update-new-po').css("background-color", "#b3b3b3");
                     }
                     else {
-                        $('#supplier-error').css('display', 'none')
-                        $('#btn-update-new-po').prop('disabled', false)
-                        $('#btn-update-new-po').css("background-color", "#0F84D9")  
+                        $('#supplier-error').css('display', 'none');
+                        $('#btn-update-new-po').prop('disabled', false);
+                        $('#btn-update-new-po').css("background-color", "#0F84D9");  
                     }
                 }, select: function(event, ui) {
                     var supplierName = ui.item.label;
                     $.get('/getSupplierInformation', {supplierName}, function(result) {
                         $('#contactPerson').val(result.contactPerson);
                         $('#contactNumber').val(result.number);
-                        $('#address').val(result.address)
-                    })
+                        $('#address').val(result.address);
+                    });
                 }
             });
 
             function filled(itemDesc, qty) {
-                var itemDesc = $('#itemDescription').val();
-                var qty = $('#qty').val();
-
                 if (itemDesc!="" && qty!="")
-                    return 0
+                    return 0;
                 else if ((itemDesc == "" && qty != "") || (itemDesc == "" && qty == ""))
-                    return 1
+                    return 1;
                 else if (qty == "" && itemDesc !="")
-                    return 2
+                    return 2;
             }
 
 
@@ -274,7 +271,7 @@
                         $('#itemDescription').val('');
                         $('#qty').val('');
                         $('#text-warning-new-PO').text("");
-                    })
+                    });
                 }
                 //item description is left blank
                 else if (filled(itemDesc, qty) == 1) {
@@ -284,28 +281,66 @@
                 //quantity is blank
                 else if (filled(itemDesc, qty) == 2) {
                     $("#quantity").css("border", "1px solid #B00000");
-                    $('#text-warning-new-PO').text("Input quantity")
+                    $('#text-warning-new-PO').text("Input quantity");
                 }
-
-                
-            })
+            });
 
             $("#table-poItem").on('click','.add-stock-delete-btn',function() {
                     $(this).closest('tr').remove();
                 });
 
+            function allFilled() {
+                var supplierName = $('#supplierName').val();
+                var contactPerson = $('#contactPerson').val();
+                var contactNumber = $('#contactNumber').val();
+                var address = $('#address').val();
+
+                if (supplierName!="" && contactPerson!="" && contactNumber!="" && address!="" ) {
+                    $('#supplierName').css("border", "1px solid #DDDDDD");
+                    $('#contactPerson').css("border", "1px solid #DDDDDD");
+                    $('#contactNumber').css("border", "1px solid #DDDDDD");
+                    $('#address').css("border", "1px solid #DDDDDD");
+                    return true;
+                }
+
+                else {
+                    if (supplierName == "")
+                        $('#supplierName').css("border", "2px solid #B00000");
+                    else
+                        $('#supplierName').css("border", "1px solid #DDDDDD");
+
+                    if (contactPerson == "")
+                        $('#contactPerson').css("border", "2px solid #B00000");
+                    else
+                        $('#contactPerson').css("border", "1px solid #DDDDDD");
+
+                    if (contactNumber == "")
+                        $('#contactNumber').css("border", "2px solid #B00000");
+                    else
+                        $('#contactNumber').css("border", "1px solid #DDDDDD");
+
+                    if (address == "")
+                        $('#address').css("border", "2px solid #B00000");
+                    else
+                        $('#address').css("border", "1px solid #DDDDDD");
+
+                    return false;
+                }
+            }
+
             $('#btn-save-PO').click(function() {
-                var poItems = []
+                var poItems = [];
                 var date = $('#dateToday').text();
                 var poNumber;
 
-                $.get('/previousPONumber', function(result) {
-                    if (result == "none")
-                        poNumber = 1;
-                    else
-                        poNumber = parseInt(result)+1
+                if (allFilled()) {
+                    $.get('/previousPONumber', function(result) {
+                        if (result == "none")
+                            poNumber = 1;
+                        else
+                            poNumber = parseInt(result)+1;
 
-                    $("#table-poItem-body > tr").each(function () {
+                        $("#table-poItem-body > tr").each(function () {
                             var poItem= {
                                 itemDesc: $(this).children('.classItemDescription').text(), 
                                 quantity: $(this).children('.classQty').text(),
@@ -313,217 +348,220 @@
                             }
                             poItems.push(poItem);
                         });
-                    var itemsString = JSON.stringify(poItems);  
-                    $.post('/saveNewPO', {itemsString, date, poNumber});
-                    $("#table-poItem tbody tr").remove();
-                    alert("PO saved");
-                    window.location = "/purchaseOrderList"
-                })
-
-
-
-                //STUFF FOR ADDING NEW ITEM FROM PO
-                function capitalize(string){
-                    var words = string.toLowerCase().split(' ');
-                    for (i=0; i<words.length; i++)
-                        words[i] = words[i].charAt(0).toUpperCase() + words[i].substring(1);
-                    return words.join(' ');
-                }
-
-                // INPUT VALIDATION
-
-                function descriptionValidation(description) {
-                    if (description == null || description == "") {
-                        errorMessage("description");
-                        return 1;
-                    }
-                    else 
-                        return 0;
-                }
-
-                function typeValidation(type) {
-                    if (type == "no-selected") {
-                        errorMessage("type");
-                        return 1;
-                    }
-                    else 
-                        return 0;
-                }
-
-                function unitValidation(unit) {
-                    if (unit == "no-selected") {
-                        errorMessage("unit");
-                        return 1;
-                    }
-                    else 
-                        return 0;
-                }
-
-                function reorderLevelValidation(reorderLevel) { 
-                    if (reorderLevel == null || reorderLevel == "") {
-                        errorMessage("reorderLevel");
-                        return 1;
-                    } else if (parseFloat(reorderLevel) <= 0) {
-                        errorMessage("reorderLevelInvalidNum");
-                        return 1;
-                    }
-                    else 
-                        return 0;
-                }
-
-                function EOQValidation(EOQ) { 
-                    if (EOQ == null || EOQ == "") {
-                        errorMessage("EOQ");
-                        return 1;
-                    } else if (parseFloat(EOQ) <= 0) {
-                        errorMessage("EOQInvalidNum");
-                        return 1;
-                    }
-                    else 
-                        return 0;
-                }
-
-                function sellingPriceValidation(price) {
-                    if (price == null || price == "") {
-                        errorMessage("sellingPrice");
-                        return 1;
-                    }
-                    else 
-                        return 0;
-                }
-
-                function errorMessage(type) {
-                    if (type == "description") {
-                        $("#description").css("border", "1px solid #B00000");
-                        $("#error-description").text("Please enter an Item Description.");
-                    } else if (type == "type") {
-                        $("#dropdown-category").css("border", "1px solid #B00000");
-                        $("#error-category").text("Please select a Type.");
-                    } else if (type == "unit") {
-                        $("#dropdown-unit").css("border", "1px solid #B00000");
-                        $("#error-unit").text("Please select a Unit.");
-                    } else if (type == "reorderLevel") {
-                        $("#reorder-level").css("border", "1px solid #B00000");
-                        $("#error-reorder-level").text("Please enter a Reorder Level.");
-                    } else if (type == "reorderLevelInvalidNum") {
-                        $("#reorder-level").css("border", "1px solid #B00000");
-                        $("#error-reorder-level").text("Invalid Reorder Level.");
-                    } else if (type == "EOQ") {
-                        $("#EOQ").css("border", "1px solid #B00000");
-                        $("#error-EOQ").text("Please enter an EOQ.");
-                    } else if (type == "EOQInvalidNum") {
-                        $("#EOQ").css("border", "1px solid #B00000");
-                        $("#error-EOQ").text("Invalid EOQ.");
-                    } else if (type == "sellingPrice") {
-                        $("#selling-price").css("border", "1px solid #B00000");
-                        $("#error-selling-price").text("Please enter a Selling Price.");
-                    } 
-                }
-
-                function resetErrorMessage() {
-                    $("#description").css("border", "1px solid #DDDDDD");
-                    $("#error-description").text("");
-                    $("#dropdown-category").css("border", "1px solid #DDDDDD");
-                    $("#error-category").text("");
-                    $("#dropdown-unit").css("border", "1px solid #DDDDDD");
-                    $("#error-unit").text("");
-                    $("#reorder-level").css("border", "1px solid #DDDDDD");
-                    $("#error-reorder-level").text("");
-                    $("#EOQ").css("border", "1px solid #DDDDDD");
-                    $("#error-EOQ").text("");
-                    $("#selling-price").css("border", "1px solid #DDDDDD");
-                    $("#error-selling-price").text("");
-                }
-
-                 $('#description').keyup(function () { 
-                    resetErrorMessage();
-
-                    // Get value 
-                     var description = capitalize($('#description').val());
-
-                    // Check if dish name exists 
-                    $.get("/getCheckItemDescription", {itemDescription: description}, function (result) {
-                        if (result.itemDescription == description) {
-                            //alert("same");
-                            $("#description").css("border", "1px solid #B00000");
-                            $("#error-description").text("Item Description already taken.");
-                            $("#btn-add-new-item").prop("disabled", true);
-                            $("#btn-add-new-item").css("background-color", "#b3b3b3");
-                        } else {
-                            $("#description").css("border", "1px solid #DDDDDD");
-                            $("#error-description").text("");
-                            $("#btn-add-new-item").prop("disabled", false);
-                            $("#btn-add-new-item").css("background-color", "#0F84D9");
-                        }
+                        var itemsString = JSON.stringify(poItems);  
+                        $.post('/saveNewPO', {itemsString, date, poNumber}, function (result) {
+                            $("#table-poItem tbody tr").remove();
+                            alert("PO saved");
+                            window.location = "/purchaseOrderList"
+                        });
                     });
-                });
-
-                $('#dropdown-category').change(function() {
-                    resetErrorMessage();
-                })
-
-                $('#dropdown-unit').change(function() {
-                    resetErrorMessage();
-                })
-
-                $('#reorder-level').keyup(function () { 
-                    resetErrorMessage();
-                });
-
-                $('#EOQ').keyup(function () { 
-                    resetErrorMessage();
-                });
-
-                $('#selling-price').keyup(function () { 
-                    resetErrorMessage();
-                });
-
-
-                function checkAll(description, category, unit, reorderLevel, EOQ, sellingPrice) {
-                    descriptionValidation(description);
-                    typeValidation(category);
-                    unitValidation(unit);
-                    reorderLevelValidation(reorderLevel);
-                    EOQValidation(EOQ);
-                    sellingPriceValidation(sellingPrice);
                 }
+                else
+                    alert("Please fill out the necessary information");
+            })
 
-                $('#btn-add-new-item').click(function() {
-                    var description = capitalize($('#description').val());
-                    var category = $('#dropdown-category').val();
-                    var categoryText = $('#dropdown-category option:selected').text();
-                    var unit = $('#dropdown-unit').val();
-                    var unitText = $('#dropdown-unit option:selected').text();
-                    var reorderLevel = $('#reorder-level').val();
-                    var EOQ = $('#EOQ').val();
-                    var sellingPrice = $('#selling-price').val();
 
-                    checkAll(description, category, unit, reorderLevel, EOQ, sellingPrice);
+            //STUFF FOR ADDING NEW ITEM FROM PO
+            function capitalize(string){
+                var words = string.toLowerCase().split(' ');
+                for (i=0; i<words.length; i++)
+                    words[i] = words[i].charAt(0).toUpperCase() + words[i].substring(1);
+                return words.join(' ');
+            }
 
-                    if (!descriptionValidation(description) && !typeValidation(category) && !unitValidation(unit) && !reorderLevelValidation(reorderLevel) && !EOQValidation(EOQ)  && !sellingPriceValidation(sellingPrice)) {
+            // INPUT VALIDATION
 
-                        // remove texts and red borders
-                        resetErrorMessage();
+            function descriptionValidation(description) {
+                if (description == null || description == "") {
+                    errorMessage("description");
+                    return 1;
+                }
+                else 
+                    return 0;
+            }
 
-                        $.post('/postNewItem', {description, category, categoryText, unit, unitText, reorderLevel, EOQ, sellingPrice}, function (updatedItem) {
-                            var sellingPrice = parseFloat(updatedItem.sellingPrice).toFixed(2)
+            function typeValidation(type) {
+                if (type == "no-selected") {
+                    errorMessage("type");
+                    return 1;
+                }
+                else 
+                    return 0;
+            }
 
-                            $('#table-inventory').find('tbody').append(
-                                `  <tr class="link" style="cursor: pointer" data-href="/inventory/${updatedItem._id}"> 
-                                        <td>${updatedItem.itemDescription}</td> 
-                                        <td value="${updatedItem.categoryID}" class="category-id">${updatedItem.category}</td>
-                                        <td style="text-align: right;">${updatedItem.quantityAvailable}</td> 
-                                        <td class="unit-id">${updatedItem.unit}</td> 
-                                        <td style="text-align: right;">₱ ${sellingPrice}</td> 
-                                        <td><button class="btn-status btn-low status-id" value="${updatedItem.statusID}">Low Stock</button></td>
-                                    </tr>`
-                            );
-                        })
+            function unitValidation(unit) {
+                if (unit == "no-selected") {
+                    errorMessage("unit");
+                    return 1;
+                }
+                else 
+                    return 0;
+            }
 
-                        $('#modal-new-item').modal('hide');
-                        $('#add-new-item').trigger('reset');
+            function reorderLevelValidation(reorderLevel) { 
+                if (reorderLevel == null || reorderLevel == "") {
+                    errorMessage("reorderLevel");
+                    return 1;
+                } else if (parseFloat(reorderLevel) <= 0) {
+                    errorMessage("reorderLevelInvalidNum");
+                    return 1;
+                }
+                else 
+                    return 0;
+            }
+
+            function EOQValidation(EOQ) { 
+                if (EOQ == null || EOQ == "") {
+                    errorMessage("EOQ");
+                    return 1;
+                } else if (parseFloat(EOQ) <= 0) {
+                    errorMessage("EOQInvalidNum");
+                    return 1;
+                }
+                else 
+                    return 0;
+            }
+
+            function sellingPriceValidation(price) {
+                if (price == null || price == "") {
+                    errorMessage("sellingPrice");
+                    return 1;
+                }
+                else 
+                    return 0;
+            }
+
+            function errorMessage(type) {
+                if (type == "description") {
+                    $("#description").css("border", "1px solid #B00000");
+                    $("#error-description").text("Please enter an Item Description.");
+                } else if (type == "type") {
+                    $("#dropdown-category").css("border", "1px solid #B00000");
+                    $("#error-category").text("Please select a Type.");
+                } else if (type == "unit") {
+                    $("#dropdown-unit").css("border", "1px solid #B00000");
+                    $("#error-unit").text("Please select a Unit.");
+                } else if (type == "reorderLevel") {
+                    $("#reorder-level").css("border", "1px solid #B00000");
+                    $("#error-reorder-level").text("Please enter a Reorder Level.");
+                } else if (type == "reorderLevelInvalidNum") {
+                    $("#reorder-level").css("border", "1px solid #B00000");
+                    $("#error-reorder-level").text("Invalid Reorder Level.");
+                } else if (type == "EOQ") {
+                    $("#EOQ").css("border", "1px solid #B00000");
+                    $("#error-EOQ").text("Please enter an EOQ.");
+                } else if (type == "EOQInvalidNum") {
+                    $("#EOQ").css("border", "1px solid #B00000");
+                    $("#error-EOQ").text("Invalid EOQ.");
+                } else if (type == "sellingPrice") {
+                    $("#selling-price").css("border", "1px solid #B00000");
+                    $("#error-selling-price").text("Please enter a Selling Price.");
+                } 
+            }
+
+            function resetErrorMessage() {
+                $("#description").css("border", "1px solid #DDDDDD");
+                $("#error-description").text("");
+                $("#dropdown-category").css("border", "1px solid #DDDDDD");
+                $("#error-category").text("");
+                $("#dropdown-unit").css("border", "1px solid #DDDDDD");
+                $("#error-unit").text("");
+                $("#reorder-level").css("border", "1px solid #DDDDDD");
+                $("#error-reorder-level").text("");
+                $("#EOQ").css("border", "1px solid #DDDDDD");
+                $("#error-EOQ").text("");
+                $("#selling-price").css("border", "1px solid #DDDDDD");
+                $("#error-selling-price").text("");
+            }
+
+             $('#description').keyup(function () { 
+                resetErrorMessage();
+
+                // Get value 
+                 var description = capitalize($('#description').val());
+
+                // Check if dish name exists 
+                $.get("/getCheckItemDescription", {itemDescription: description}, function (result) {
+                    if (result.itemDescription == description) {
+                        //alert("same");
+                        $("#description").css("border", "1px solid #B00000");
+                        $("#error-description").text("Item Description already taken.");
+                        $("#btn-add-new-item").prop("disabled", true);
+                        $("#btn-add-new-item").css("background-color", "#b3b3b3");
+                    } else {
+                        $("#description").css("border", "1px solid #DDDDDD");
+                        $("#error-description").text("");
+                        $("#btn-add-new-item").prop("disabled", false);
+                        $("#btn-add-new-item").css("background-color", "#0F84D9");
                     }
-                })
+                });
+            });
+
+            $('#dropdown-category').change(function() {
+                resetErrorMessage();
+            })
+
+            $('#dropdown-unit').change(function() {
+                resetErrorMessage();
+            })
+
+            $('#reorder-level').keyup(function () { 
+                resetErrorMessage();
+            });
+
+            $('#EOQ').keyup(function () { 
+                resetErrorMessage();
+            });
+
+            $('#selling-price').keyup(function () { 
+                resetErrorMessage();
+            });
+
+
+            function checkAll(description, category, unit, reorderLevel, EOQ, sellingPrice) {
+                descriptionValidation(description);
+                typeValidation(category);
+                unitValidation(unit);
+                reorderLevelValidation(reorderLevel);
+                EOQValidation(EOQ);
+                sellingPriceValidation(sellingPrice);
+            }
+
+            $('#btn-add-new-item').click(function() {
+                var description = capitalize($('#description').val());
+                var category = $('#dropdown-category').val();
+                var categoryText = $('#dropdown-category option:selected').text();
+                var unit = $('#dropdown-unit').val();
+                var unitText = $('#dropdown-unit option:selected').text();
+                var reorderLevel = $('#reorder-level').val();
+                var EOQ = $('#EOQ').val();
+                var sellingPrice = $('#selling-price').val();
+
+                checkAll(description, category, unit, reorderLevel, EOQ, sellingPrice);
+
+                if (!descriptionValidation(description) && !typeValidation(category) && !unitValidation(unit) && !reorderLevelValidation(reorderLevel) && !EOQValidation(EOQ)  && !sellingPriceValidation(sellingPrice)) {
+
+                    // remove texts and red borders
+                    resetErrorMessage();
+
+                    $.post('/postNewItem', {description, category, categoryText, unit, unitText, reorderLevel, EOQ, sellingPrice}, function (updatedItem) {
+                        var sellingPrice = parseFloat(updatedItem.sellingPrice).toFixed(2)
+
+                        $('#table-inventory').find('tbody').append(
+                            `  <tr class="link" style="cursor: pointer" data-href="/inventory/${updatedItem._id}"> 
+                                    <td>${updatedItem.itemDescription}</td> 
+                                    <td value="${updatedItem.categoryID}" class="category-id">${updatedItem.category}</td>
+                                    <td style="text-align: right;">${updatedItem.quantityAvailable}</td> 
+                                    <td class="unit-id">${updatedItem.unit}</td> 
+                                    <td style="text-align: right;">₱ ${sellingPrice}</td> 
+                                    <td><button class="btn-status btn-low status-id" value="${updatedItem.statusID}">Low Stock</button></td>
+                                </tr>`
+                        );
+                    })
+
+                    $('#modal-new-item').modal('hide');
+                    $('#add-new-item').trigger('reset');
+                }
             })
         </script>
     </body>

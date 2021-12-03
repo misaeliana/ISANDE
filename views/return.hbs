@@ -520,9 +520,8 @@
                     var oldInvoiceID = address[address.length -1]
 
                     if (allFilled()) {
-                        alert("filled")
 
-                        /*$('#table-return-order-details > tbody > tr').each(function() {
+                        $('#table-return-order-details > tbody > tr').each(function() {
                             //item to be returned, either added to shrinkage or added back to inventory
                             if ($(this).find('.return-check').is(":checked")) {
                                 var returnItem = {
@@ -591,11 +590,11 @@
                         $.post('/saveReturn', {oldInvoiceID, invoiceInfoString, returnsString, newInvoiceItemsString, deliveryInfoString}, function(result) {
                                 alert("Return processed")
                                 window.location = `/invoices/${result}`;
-                        })    */
+                        })   
 
                     }
                     else
-                        alert("Fill out the necessary information")
+                        alert("Please fill out the necessary information")
 
                     
                 })

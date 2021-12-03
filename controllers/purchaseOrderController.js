@@ -132,7 +132,9 @@ const purchaseOrderController = {
 			}
 
 			db.insertMany(PurchasedItems, items, function(flag) {
-				if (flag) {}
+				if (flag) {
+					res.sendStatus(200)
+				}
 			});
 		}
 
