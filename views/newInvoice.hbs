@@ -8,11 +8,11 @@
         <link rel="stylesheet" type="text/css" href="../css/information.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
         <link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
-        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
         
     </head>
     <body>
@@ -75,14 +75,14 @@
             </div>
 
                 <div>
-                    <!--<input style="margin-top: 15px;" type="text" class="form-control margin-bottom-10" id="customer-Name" name="customer-Name" placeholder="Customer Name">-->
-                    <select style="margin-top: 15px;" class = "form-control margin-bottom-10" id = "dropdown-custom" style="margin-right: 10px">
+                    <input style="margin-top: 15px;" type="text" class="form-control margin-bottom-10" id="customer-Name" name="customer-Name" placeholder="Customer Name">
+                    <!--<select style="margin-top: 15px;" class = "form-control margin-bottom-10" id = "dropdown-custom" style="margin-right: 10px">
                     <option value="default" selected disabled hidden>Customer Name</option>
-                    <option value="addnew"><--Add new--></option>
+                    <option value="addnew"></option>
                       {{#each customerList}}
                         <option value={{_id}}>{{name}}</option>
                       {{/each}}
-                    </select>
+                    </select>-->
                     <textarea class="form-control margin-bottom-10" id="address" name="address" placeholder="Address"></textarea> <!--style="display:none"-->
                     <input type="text" class="form-control margin-bottom-10" id="contactNumber" name="contactNumber" placeholder="Contact Number"> <!--style="display:none"-->
                     <div>
@@ -239,14 +239,8 @@
                    
                     //alert( $(this).find(":selected").val() );
                 })
-                  $('#dropdown-custom').on('change', function() {
-                     if(this.value == 'addnew')
-                    {
-                       $('.modal').modal('show');
-                    }
-                    else{
-                    }
-                })
+
+
 
                 /*Modal functions*/
                 $('#save-cust').click(function() {
@@ -257,11 +251,10 @@
                     console.log("One of the fields is empty");
                 }
                 else{
-               
                 $.post('/createNewCustomer', {custname,custphone,custaddress}, function(result) {
-                   $(".form-control").chosen();
-                    $('.modal').modal('hide');
                 })
+                 $(".form-control").chosen();
+                 $('.modal').modal('hide');
                 }
                
                 })
@@ -278,9 +271,10 @@
                     element.parentNode.removeChild(element);
                 }
                 $("#itemDescription" ).autocomplete({
+               
                     source: function(request, response) {
                     $.ajax({
-                                url: `/getItemName?query=${request.term}`,
+                                url: `/getItemNameInvoice?query=${request.term}`,
                                 dataType: "json",
                                 data: {
                                     //request.term refers to the value currently in the text input
@@ -300,6 +294,46 @@
                             $('#text-warning-new-PO').css('display','none')
                     }   
                 });
+                
+                $.ui.autocomplete.prototype._renderItem = function (ul, item) {
+                 return $("<li></li>")
+                .data("item.autocomplete", item)
+                .append($("<a></a>").html(item.label))
+                .appendTo(ul);
+                };
+
+                 $("#customer-Name" ).autocomplete({
+                    source: function(request, response) {
+                    $.ajax({
+                                url: `/getCustomerList?query=${request.term}`,
+                                dataType: "json",
+                                data: {
+                                    //request.term refers to the value currently in the text input
+                                    term: request.term,
+                                },
+                                success: function (data) {
+                                    $('#text-warning-new-PO').css('display', 'none')
+                                    $("#customer-Name").css("border", "1px solid #DDDDDD");
+                                
+                                    response(data);
+                              }
+                         });
+                    }, 
+                    response: function (event, ui) {
+                       if (ui.content.length === 0) 
+                            {
+                                ui.content.push({
+                                label: '<button id = "addnew" class="custbutton">Add New Customer</button>',
+                                button: true
+                                 })  
+                            }
+                        else 
+                            {
+                            }
+                    }
+                });
+                function addNew(){
+                }
                 let amount = 0;
                 let discountTotal = 0;
                 $('#addItem').click(function() {
@@ -352,6 +386,10 @@
 
                     
                 }) 
+             $(document).on("click", ".custbutton", function () {
+                $('.modal').modal('show');
+                //alert('clicked!');
+            }); 
                // let i = 0;
                 $('#btn-save-invoice').click(function() {
                     var orderedItems = [];

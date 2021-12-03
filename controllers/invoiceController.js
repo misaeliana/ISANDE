@@ -567,6 +567,23 @@ const invoiceController = {
             res.send(formattedResults)
         })
     },
+    getCustom: function(req, res) {
+        db.findMany (Customer, {name:{$regex:req.query.query, $options:'i'}}, '', function (result) {
+            var formatResults = [];
+            //reason for the for loop: https://stackoverflow.com/questions/5077409/what-does-autocomplete-request-server-response-look-like
+            for (var i=0; i<result.length; i++) {
+                var formattedResult = {
+                    label: result[i].name,
+                    value: result[i].value,
+                };
+
+                formatResults.push(formattedResult);
+              
+                
+            }
+            res.send(formatResults)
+        })
+    },
 
     returns: function(req, res) {
         async function getInfo() {
