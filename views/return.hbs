@@ -81,6 +81,7 @@
 
             <div>
                  <input style="margin-top: 15px;" type="text" class="form-control margin-bottom-10" id="customerName" name="customerName" placeholder="Customer Name" value="{{customerInfo.name}}">
+                 <p class="error" id="error-customer-name" style="margin-bottom: 5px;"></p>
                  <div class="delivery-info" style="display: none;">
                     <textarea class="form-control margin-bottom-10" id="address" name="address" placeholder="Address">{{customerInfo.address}}</textarea> <!--style="display:none"-->
                     <input type="text" class="form-control margin-bottom-10" id="contactNumber" name="contactNumber" placeholder="Contact Number" value="{{customerInfo.number}}"> <!--style="display:none"-->
@@ -238,7 +239,7 @@
                 })
 
                 //should be for delivery only
-                $("#customerName" ).autocomplete({
+                $("#customerName").autocomplete({
                     source: function(request, response) {
                     $.ajax({
                                 url: `/getCustomerName?query=${request.term}`,
@@ -253,16 +254,27 @@
                          });
                     }, response: function (event, ui) {
                         if (ui.content.length === 0) {
-
+                            $("#customerName").css("border", "1px solid #B00000");
+                            $("#error-customer-name").text("Customer does not exist")
+                            $("#btn-save-return").prop("disabled", true);
+                            $("#btn-save-return").css("background-color", "#b3b3b3");
                         }
                         else {
-
+                            $("#customerName").css("border", "1px solid #DDDDDD");
+                            $('#error-customer-name').text('')
+                            $("#btn-save-return").prop("disabled", false);
+                            $("#btn-save-return").css("background-color", "#0F84D9");
                         }
                     }, select: function(event, ui) {
                         var customerName = ui.item.label;
                         $.get('/getCustomerInformation', {customerName}, function(result) {
                             $('#contactNumber').val(result.number);
                             $('#address').val(result.address)
+                            $("#customerName").css("border", "1px solid #DDDDDD");
+                            $('#error-customer-name').text("")
+                            $("#error-customer-name").css("display", "none");
+                            $("#btn-save-return").prop("disabled", false);
+                            $("#btn-save-return").css("background-color", "#0F84D9");
                         })
                     }
                 });
@@ -277,7 +289,6 @@
                                     term: request.term
                                 },
                                 success: function (data) {
-                                    
                                     response(data);
                                 }
                          });
@@ -309,6 +320,109 @@
                     computeTotal();
                 });
 
+                function customerNameFilled() {
+                    var customerName = $('#customerName').val();
+                    if (customerName == '') {
+                            $("#customerName").css("border", "1px solid #B00000");
+                            $("#error-customer-name").text("Customer name cannot be empty")
+                            $("#btn-save-return").prop("disabled", true);
+                            $("#btn-save-return").css("background-color", "#b3b3b3");
+                            $('#contactNumber').val('')
+                            $('#address').val('')
+                            return false
+                        }
+                        else {
+                            $("#customerName").css("border", "1px solid #DDDDDD");
+                            $('#error-customer-name').text('')
+                            $("#btn-save-return").prop("disabled", false);
+                            $("#btn-save-return").css("background-color", "#0F84D9");
+                            return true
+                        }
+                }
+
+                function deliveryInfoFilled() {
+                    var deliveryDate = $('#delivery-date').val()
+                    var paymentType = $('#dropdown-payment-type').val()
+                    var deliveryPersonnel = $('#dropdown-delivery-personnel').val()
+
+                    var address = $('#address').val()
+                    var contactNumber = $('#contactNumber').val()
+
+                    //inputs are complete
+                    if (deliveryDate && paymentType!="no-selected" && deliveryPersonnel!="no-selected" && address!="" && contactNumber!="") {
+                        $('#delivery-date').css("border", "1px solid #DDDDDD")
+                        $('#dropdown-payment-type').css("border", "1px solid #DDDDDD")
+                        $('#dropdown-delivery-personnel').css("border", "1px solid #DDDDDD")
+                        $('#address').css("border", "1px solid #DDDDDD")
+                        $('#contactNumber').css("border", "1px solid #DDDDDD")
+                        return true
+                    }
+                    else {
+                        if (!deliveryDate) //delivery date is blank
+                            $('#delivery-date').css("border", "2px solid #B00000");
+                        else
+                            $('#delivery-date').css("border", "1px solid #DDDDDD")
+
+                        if (paymentType == "no-selected")
+                            $('#dropdown-payment-type').css("border", "2px solid #B00000");
+                        else
+                            $('#dropdown-payment-type').css("border", "1px solid #DDDDDD")
+
+                        if (deliveryPersonnel == "no-selected")
+                            $('#dropdown-delivery-personnel').css("border", "2px solid #B00000")
+                        else
+                            $('#dropdown-delivery-personnel').css("border", "1px solid #DDDDDD")
+
+                        if (address == "")
+                            $('#address').css("border", "2px solid #B00000");
+                        else
+                            $('#address').css("border", "1px solid #DDDDDD")
+
+                        if (contactNumber == "")
+                            $('#contactNumber').css("border", "2px solid #B00000");
+                        else
+                            $('#contactNumber').css("border", "1px solid #DDDDDD")
+
+                        return false
+                    }
+                }
+
+
+                function allFilled() {
+                    var invoiceType = $('#dropdown-return-type option:selected').text()
+                    var noReason = false
+
+                    $('#table-return-order-details > tbody > tr').each(function() {
+                        if ($(this).find('.return-check').is(":checked")) {
+                            //no selected return reason
+                            if ($(this).find('.return-reason').val() == "no-selected") {
+                                noReason = true
+                                $(this).find('.return-reason').css("border", "2px solid #B00000")
+                            }
+                            else {
+                                $(this).find('.return-reason').css("border", "1px solid #DDDDDD")
+                            }
+                        }
+                    })
+                    if (noReason)
+                        alert("Select return reason for items");
+
+
+                    if (invoiceType == "In-Store") {
+                        if (customerNameFilled()) 
+                            return true
+                        else
+                            return false
+                    }
+
+                    else if (invoiceType == "Delivery") {
+                        if (customerNameFilled() && deliveryInfoFilled())
+                            return true
+                        else
+                            return false
+                    }
+
+                }
 
                 function computeTotal() {
                     var refund = 0;
@@ -405,76 +519,85 @@
                     var address = window.location.pathname.split('/');
                     var oldInvoiceID = address[address.length -1]
 
-                    $('#table-return-order-details > tbody > tr').each(function() {
-                        //item to be returned, either added to shrinkage or added back to inventory
-                        if ($(this).find('.return-check').is(":checked")) {
-                            var returnItem = {
-                                itemDesc: $(this).children('.return-item-desc').text(),
-                                quantity: $(this).children('.return-quantity').text(),
-                                reason: $(this).find('.return-reason').val()
+                    if (allFilled()) {
+                        alert("filled")
+
+                        /*$('#table-return-order-details > tbody > tr').each(function() {
+                            //item to be returned, either added to shrinkage or added back to inventory
+                            if ($(this).find('.return-check').is(":checked")) {
+                                var returnItem = {
+                                    itemDesc: $(this).children('.return-item-desc').text(),
+                                    quantity: $(this).children('.return-quantity').text(),
+                                    reason: $(this).find('.return-reason').val()
+                                }
+                                returns.push(returnItem)
+                            } 
+                            else {
+                                var invoiceItem = {
+                                    itemDesc: $(this).children('.return-item-desc').text(),
+                                    quantity: $(this).children('.return-quantity').text(),
+                                    discount: $(this).children('.discount').text().slice(1)
+                                }
+                                newInvoiceItems.push(invoiceItem);
                             }
-                            returns.push(returnItem)
-                        } 
-                        else {
+                        })
+
+                        $('#table-return-new-item-body > tr').each(function() {
                             var invoiceItem = {
-                                itemDesc: $(this).children('.return-item-desc').text(),
-                                quantity: $(this).children('.return-quantity').text(),
+                                itemDesc: $(this).children('.itemDesc').text(),
+                                quantity: $(this).children('.quantity').text(),
                                 discount: $(this).children('.discount').text().slice(1)
                             }
                             newInvoiceItems.push(invoiceItem);
-                        }
-                    })
+                        })
 
-                    $('#table-return-new-item-body > tr').each(function() {
-                        var invoiceItem = {
-                            itemDesc: $(this).children('.itemDesc').text(),
-                            quantity: $(this).children('.quantity').text(),
-                            discount: $(this).children('.discount').text().slice(1)
-                        }
-                        newInvoiceItems.push(invoiceItem);
-                    })
+                        var invoiceType = $('#dropdown-return-type').val()
+                        var deliveryInfo
+                        //order is a delivery
+                        if (invoiceType == "61a591c1233fa7f9abcd5726") {
+                            var invoiceInfo = {
+                                customerName: $('#customerName').val(),
+                                invoiceType: invoiceType,
+                                statusID: $('#dropdown-payment-type').val(),
+                                subtotal: parseFloat($('#subtotal').text().slice(1)),
+                                vat: parseFloat($('#vat').text().slice(1)),
+                                discount: 0,
+                                total: parseFloat($('#total').text().slice(1))
+                            }
 
-                    var invoiceType = $('#dropdown-return-type').val()
-                    var deliveryInfo
-                    //order is a delivery
-                    if (invoiceType == "61a591c1233fa7f9abcd5726") {
-                        var invoiceInfo = {
-                            customerName: $('#customerName').val(),
-                            invoiceType: invoiceType,
-                            statusID: $('#dropdown-payment-type').val(),
-                            subtotal: parseFloat($('#subtotal').text().slice(1)),
-                            vat: parseFloat($('#vat').text().slice(1)),
-                            discount: 0,
-                            total: parseFloat($('#total').text().slice(1))
+                            deliveryInfo = {
+                                deliveryDate: new Date($('#delivery-date').val()),
+                                deliveryPersonnel: $('#dropdown-delivery-personnel').val(),
+                                deliveryNotes: $('#delivery-notes').val()
+                            }
+                        }
+                        else {
+                            var invoiceInfo = {
+                                customerName: $('#customerName').val(),
+                                invoiceType: invoiceType,
+                                statusID: "619785b0d9a967328c1e8fa6",
+                                subtotal: parseFloat($('#subtotal').text().slice(1)),
+                                vat: parseFloat($('#vat').text().slice(1)),
+                                discount: 0,
+                                total: parseFloat($('#total').text().slice(1))
+                            }
+                            deliveryInfo= {}
                         }
 
-                        deliveryInfo = {
-                            deliveryDate: new Date($('#delivery-date').val()),
-                            deliveryPersonnel: $('#dropdown-delivery-personnel').val(),
-                            deliveryNotes: $('#delivery-notes').val()
-                        }
+                        var invoiceInfoString = JSON.stringify(invoiceInfo)
+                        var returnsString = JSON.stringify(returns)
+                        var newInvoiceItemsString = JSON.stringify(newInvoiceItems)
+                        var deliveryInfoString = JSON.stringify(deliveryInfo)
+                        $.post('/saveReturn', {oldInvoiceID, invoiceInfoString, returnsString, newInvoiceItemsString, deliveryInfoString}, function(result) {
+                                alert("Return processed")
+                                window.location = `/invoices/${result}`;
+                        })    */
+
                     }
-                    else {
-                        var invoiceInfo = {
-                            customerName: $('#customerName').val(),
-                            invoiceType: invoiceType,
-                            statusID: "619785b0d9a967328c1e8fa6",
-                            subtotal: parseFloat($('#subtotal').text().slice(1)),
-                            vat: parseFloat($('#vat').text().slice(1)),
-                            discount: 0,
-                            total: parseFloat($('#total').text().slice(1))
-                        }
-                        deliveryInfo= {}
-                    }
+                    else
+                        alert("Fill out the necessary information")
 
-                    var invoiceInfoString = JSON.stringify(invoiceInfo)
-                    var returnsString = JSON.stringify(returns)
-                    var newInvoiceItemsString = JSON.stringify(newInvoiceItems)
-                    var deliveryInfoString = JSON.stringify(deliveryInfo)
-                    $.post('/saveReturn', {oldInvoiceID, invoiceInfoString, returnsString, newInvoiceItemsString, deliveryInfoString}, function(result) {
-                            alert("Return processed")
-                            window.location = `/invoices/${result}`;
-                    })
+                    
                 })
 
             })

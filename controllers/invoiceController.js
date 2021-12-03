@@ -126,6 +126,9 @@ const invoiceController = {
                 employeeName = await getEmployeeInfo(delivery.deliveryPersonnel);
 
                 delivery.deliveryPersonnel = employeeName.name; 
+                delivery.fdeliveryDate = delivery.deliveryDate.toLocaleString('en-US')
+                if (delivery.dateDelivered != undefined )
+                    delivery.fdateDelivered = delivery.dateDelivered.toLocaleString('en-US')
 
                 // get customer info
                 var customer = await getCustomerInfo(invoice.customerID);
