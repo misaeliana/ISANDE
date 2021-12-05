@@ -17,6 +17,17 @@ const PurchasedItems = require('../models/PurchasedItemsModel.js');
 
 const ItemSuppliers = require('../models/ItemSuppliersModel.js')
 
+const path = require('path');
+
+const fs = require('fs');
+
+const PizZip = require("pizzip");
+
+const Docxtemplater = require("docxtemplater");
+
+const unoconv = require('awesome-unoconv');
+
+
 const purchaseOrderController = {
 
 	getPurchaseOrderList: function(req, res) {
@@ -102,7 +113,7 @@ const purchaseOrderController = {
 	},
 
 	getItemUnit: function(req, res) {
-		db.findOne (Items, {itemDesc:req.body.itemDesc, informationStatusID:"6n18a7830c8067bf46fbfd4e4"}, 'unitID', function(result) {
+		db.findOne (Items, {itemDescription:req.query.itemDesc, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'unitID', function(result) {
 			db.findOne(Units, {_id: result.unitID}, 'unit', function (result2) {
 				res.send(result2.unit);
 			});
@@ -703,6 +714,59 @@ const purchaseOrderController = {
 				res.sendStatus(200)
 			}
 		})
+	},
+
+	generatePDF: function(req, res) {
+
+		var supplierInfo = JSON.parse(req.query.supplierString)
+		var items = JSON.parse(req.query.poItemsString)
+
+		// Load the docx file as binary content
+		const content = fs.readFileSync(
+		    path.resolve("files", "po_template.docx"), "binary"
+		);
+
+		const zip = new PizZip(content);
+
+		const doc = new Docxtemplater(zip, {
+		    paragraphLoop: true,
+		    linebreaks: true,
+		});
+
+		var fsupplierName
+
+		for (var i=0; i<supplierInfo.name.length; i++)
+			fsupplierName = supplierInfo.name.replace(" ", "_")
+
+		var temp_fDate0 = req.query.date.split(",");
+		var temp_fDate = temp_fDate0[0].split("/")
+		var fDate = ""	
+		for (var i=0; i<temp_fDate.length; i++)
+			fDate += temp_fDate[i] + "_"
+
+		// render the document
+		doc.render({
+			poNumber: req.query.poNumber,
+			date: temp_fDate0[0],
+		   	supplier_name: supplierInfo.name,
+		    contact_person: supplierInfo.contactPerson,
+		    address: supplierInfo.address,
+		    contact_number: supplierInfo.number,
+		    items:items
+		});
+
+		const buf = doc.getZip().generate({ type: "nodebuffer" });
+
+		var fileName = fDate + fsupplierName
+
+		fs.writeFileSync(path.resolve("documents", fileName+".docx"), buf);
+
+		var input = path.resolve("documents", fileName+".docx")
+		var output = path.resolve("documents", fileName+".pdf")
+		
+		/*unoconv.convert(input, 'pdf', function(err, result) {
+			fs.writeFile(output, result)
+		})*/
 	}
 
 }

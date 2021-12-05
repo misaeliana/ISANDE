@@ -118,6 +118,8 @@ router.post('/deletePO', purchaseOrderController.deletePO)
 
 router.post('/cancelPO', purchaseOrderController.cancelPO)
 
+router.get('/exportPO', purchaseOrderController.generatePDF);
+
 //--INVOICE--
 router.get('/invoices', invoiceController.getInvoiceList);
 

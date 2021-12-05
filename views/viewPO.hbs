@@ -35,7 +35,7 @@
         <div class="content">
             <div> <!-- ADD FIXED -->
                 <div style="display: flex;">
-                    <div style="width: 50%"><h1 class="bold"> Purchase Order #{{poInfo.purchaseOrderNumber}} </h1></div>
+                    <div style="width: 50%"><h1 class="bold" id="poNumber"> Purchase Order #{{poInfo.purchaseOrderNumber}} </h1></div>
                     <div class="btn-status">
                         {{#if newPO}}
                             <div><button id="btn-status" style="background-color: #0F84D9;">New</button></div>
@@ -105,12 +105,12 @@
                             </tr>
                         </thead>
                         <!-- right align qty, received, unit price, amount-->
-                        <tbody> 
+                        <tbody id="table-poItem-body"> 
                             {{#each items}}
                                 <tr>
-                                    <td>{{itemDescription}}</td>
-                                    <td>{{quantity}}</td>
-                                    <td>{{unitName}}</td>
+                                    <td class="classItemDescription">{{itemDescription}}</td>
+                                    <td class="classQty">{{quantity}}</td>
+                                    <td class="classUnit">{{unitName}}</td>
                                     <td>{{unitPrice}}</td>
                                     <td>{{amount}}</td>
                                     <td>{{quantityReceived}}</td>
@@ -164,9 +164,36 @@
                     if (confirm("Once the PO has been exported, it cannot be edited anymore. Do you wish to proceed?")) {
                         var address = window.location.pathname.split('/');
                         var poID = address[address.length -1]
-                        $.post('/updatePOStatus', {poID}, function (result) {
-                            window.location.reload()
+
+                        var supplier = {
+                            name: $('#view-PO-name-content').text(),
+                            contactPerson: $('#view-PO-contact-person-content').text(),
+                            number: $('#view-PO-contact-number').text(),
+                            address: $('#view-PO-address-content').text()
+                        }
+                        var date = $("#view-PO-date-made").text()
+
+                        var supplierString = JSON.stringify(supplier)
+
+                        var poItems = []
+
+                         $("#table-poItem-body > tr").each(function () {
+                            var poItem= {
+                                itemDesc: $(this).children('.classItemDescription').text(), 
+                                quantity: $(this).find('.classQty').text(),
+                                unit: $(this).children('.classUnit').text()
+                            }
+                            poItems.push(poItem);
                         });
+
+                         var poItemsString = JSON.stringify(poItems)
+                         var poNumber  = $('#poNumber').text()
+   
+                        //$.post('/updatePOStatus', {poID}, function (result) {
+                            $.get('/exportPO', {supplierString, poItemsString, poNumber, date}, function(result) {
+                                window.location.reload()
+                            })
+                        //});
                     }
                 })
 
