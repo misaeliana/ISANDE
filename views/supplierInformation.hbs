@@ -63,11 +63,15 @@
                     </div>
                 </div>
 
-                <div style="height: 10px"></div>
                    
                 <div class="btn-edit-details"><button id="btn-edit-details" data-toggle="modal" data-target="#modal-edit-supplier">Edit Supplier Details</button></div>
+                <div style="height: 30px"></div>
 
-                 <!-- Modal -->
+                <div class="label-container">
+                        <div class="override-label"> Notes </div>
+                    </div>
+                    
+                 <!-- Modal Supplier Info-->
                 <div class="modal fade" id="modal-edit-supplier" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
@@ -77,6 +81,7 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
+
                         <div class="modal-body">
                             <form id="edit-supplier">
                                 {{!-- <label for="Supplier-name">Supplier Name</label> <input id="supplier-name" type="text" value="{{name}}"><br>
@@ -104,28 +109,9 @@
                 </div>
 
                 <div style="height: 20px"></div>
-
             <hr>
 
-            <div style="margin-top: 30px;">
-                <div class="display-flex" style="width: 50%; float: left;">
-                    <h3 class ="bold h3-left">Items</h3>
-                </div>
-                <div style="display: flex; float: left; width: 50%; justify-content: flex-end"><button class="btn-light-blue" id="btn-supplier-add-item">+ Add Item</button></div>
-            </div>
-
-      *    <table class="table" style="margin-top: 80px;">
-                <thead class="table-head">
-                    <tr>
-                        <th>Description</th>
-                        <th>Unit</th>
-                    </tr>
-                </thead>
-              
-            </table>          
-            </div>
-        </div>
-  <script>
+           <script>
             $(document).ready(function() {
 
                 function capitalize(string){
@@ -268,6 +254,226 @@
                     else { }
                 })
             })
+        </script> 
+        
+            <div style="margin-top: 30px;">
+                <div class="display-flex" style="width: 90%; float: left;">
+                    <h3 class ="bold h3-left">Items</h3>
+                </div>
+                   <div class= "div-button-end">
+                        <div class="new-item"><button id="btn-new-item" class="btn btn-primary" data-toggle="modal" data-target="#modal-add-item">+ New Item</button></div>
+                    </div>
+            </div>
+
+                    <!-- Modal Items -->
+            <div class="modal fade" id="modal-add-item" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="exampleModalLongTitle">Add Item</h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="add-new-item">
+                            <label for="item-code">Item Code</label> <input id="item-code" type="text"><br>
+                            <p class="error" id="error-new-item-code" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <label for="item-description">Description</label> <input id="item-description" type="text"><br>
+                            <label for="roler">Category</label> 
+                            <select class="dropdown" id="dropdown-item-category">
+                                <option value="no-selected">--Select Category--</option>
+                                {{#each categories}}
+                                    <option value="{{_id}}">{{category}}</option>
+                                {{/each}}
+                            </select>
+                            <p class="error" id="error-item-category" style="margin-top: 3px; margin-bottom: 3px;"></p>   
+
+                            <label for="item-unit">Unit</label> <input id="item-unit" type="text"><br>  
+                              <p class="error" id="error-item-unit" style="margin-top: 3px; margin-bottom: 3px;"></p>                          
+                            <label for="item-EOQ">EOQ</label> <input id="item-EOQ" type="number"><br>  
+                            <p class="error" id="error-item-EOQ" style="margin-top: 3px; margin-bottom: 3px;"></p> 
+                            <label for="item-reorder-level">Reorder Level</label> <input id="item-reorder-level" type="number"><br> 
+                            <p class="error" id="error-item-reorder-level" style="margin-top: 3px; margin-bottom: 3px;"></p> 
+                          
+                            <br>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="btn-add-new-item">Save</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+                
+
+
+          <table class="table" style="margin-top: 80px;">
+                <thead class="table-head">
+                    <tr>
+                        <th>Item Code</th>
+                        <th>Description</th>
+                        <th>Category</th>
+                        <th>Unit</th>
+                        <th>EOQ</th>
+                        <th>Reorder Level</th>
+                    </tr>
+                </thead>
+               <tbody> 
+                        {{#each items}}
+                            <tr class="link" style="cursor: pointer" data-href="/item/{{itemID}}">
+                                <td>{{Item Code}}</td>
+                                <td>{{Description}}</td>
+                                <td>{{Category}}</td>
+                                <td>{{Unit}}</td>
+                                <td>{{EOQ}}</td>
+                                <td>{{Reorder Level}}</td>
+                            </tr>
+                        {{/each}}
+                      </tbody>
+            </table>          
+            </div>
+        </div>
+
+
+
+  
+
+        <script>
+                function capitalize(string){
+                    var words = string.toLowerCase().split(' ');
+                    for (i=0; i<words.length; i++)
+                        words[i] = words[i].charAt(0).toUpperCase() + words[i].substring(1);
+                    return words.join(' ');
+                }
+
+                $('#item-code').keyup(function() {
+                    var name = capitalize($('#item-code').val())
+                    $.get('/getCheckItemcode', {item:item}, function(result) {
+                        if (result.item == item) {
+                            $('#item-code').css("border", "1px solid #B00000");
+                            $('#error-new-item-code').text("Item Code already exists");
+                            $('#btn-add-new-item').prop('disasbled', true);
+                            $('#btn-add-new-item').css("background-color", "#b3b3b3");
+                        }
+                    
+                    })
+                })
+
+
+                function errorMessage(type) {
+                    if (type == "noItemCode") {
+                        $('#item-code').css("border", "1px solid #B00000");
+                        $('#error-new-item-code').text("Please input item code");
+                    } 
+                    else if (type == "noCategory") {
+                        $('#error-item-category').text("Choose a Category");
+                    }
+                    else if (type == "noUnit") {
+                        $('#item-unit').css("border", "1px solid #B00000");
+                        $('#error-item-unit').text("Please Input Unit");
+                    }
+                     else if (type == "noEOQ") {
+                        $('#item-EOQ').css("border", "1px solid #B00000");
+                        $('#error-item-EOQ').text("Please Input EOQ");
+                    }
+                       else if (type == "noReorderLevel") {
+                        $('#item-reorder-level').css("border", "1px solid #B00000");
+                        $('#error-item-reorderlevel').text("Please Input Reorder Level");
+                    }
+                 } 
+                
+
+                function itemCodeValidation(itemCode) {
+                    if (itemCode == null || itemCode == "") {
+                        errorMessage("noItemCode")
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }   
+
+                function categoryValidation(category) {
+                    if (category == "no-selected") {
+                        errorMessage("noCategory")
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }
+
+                function unitValidation(unit) {
+                 if (unit == null || unit == "") {
+                        errorMessage("noUnit")
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }     
+
+                function eoqValidation(eoq) {
+                  if (eoq == 0 || eoq < 0) {
+                        errorMessage("noEOQ")
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }
+
+                    function reorderLevelValidation(reorderLevel) {
+                   if (reorderLevel == 0 || reorderLevel < 0) {
+                        errorMessage("noReorderLevel")
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }
+
+
+                $('#btn-add-new-item').click(function() {
+                    var itemCode = capitalize($('#item-code').val());
+
+                    var category = $('#dropdown-item-category').val()
+
+                    var unit = $('#item-unit').val();
+                    var eoq = $('#item-EOQ').val();
+                   var reorderLevel = $('#item-reorder-level').val();
+
+                    if (!itemCodeValidation(itemCode) && !categoryValidation(category) && !unitValidation(unit) && !eoqValidation(eoq)&& !reorderLevelValidation(reorderLevel)) {
+
+                            $('#item-code').css("border", "1px solid #DDDDDD");
+                            $('#item-description').css("border", "1px solid #DDDDDD");
+                            $('#item-category').css("border", "1px solid #DDDDDD");
+                            $('#item-unit').css("border", "1px solid #DDDDDD");
+                            $('#item-EOQ').css("border", "1px solid #DDDDDD");
+                            $('#item-reorder-level').css("border", "1px solid #DDDDDD");
+
+                            $('#error-new-item-code').text("");
+                            $('#error-new-item-category').text("");
+                            $('#error-item-unit').text("");
+                            $('#error-item-EOQ').text("");
+                            $('#error-item-reorder-level').text("");
+
+                            $.post('/postItemInformation', {itemCode, description, category, unit, eoq, reorderLevel})
+                                $('#modal-add-item').modal('hide');
+                                $('#add-new-item').trigger('reset');
+                                location.reload()
+
+                    }
+                })
+
+
+                    $('#btn-delete-item').click(function() {
+                    var itemID = $('#itemID').text();
+                    if (confirm("Are you sure you want to delete this item?")) {
+                        $.post('/deleteItem', {itemID});
+                        alert("The Item was deleted");
+                        window.location.replace("/supplierInformation")
+                    }
+                    else { }
+                })
+
         </script>
     </body>
 </html>

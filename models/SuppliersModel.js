@@ -29,6 +29,10 @@ var SuppliersSchema = new mongoose.Schema({
 		required: true
 	},
 
+	notes: {
+		type: String
+	},
+
 	informationStatusID: {
 		type: String,
 		required: true

@@ -76,7 +76,6 @@
                             <label for="email">Email Address</label> <input id="email" type="text"><br>
                               <p class="error" id="error-email" style="margin-top: 3px; margin-bottom: 3px;"></p>
                             <label for="address">Address</label> <input id="address" type="text"><br>
-                            
                              <p class="error" id="error-address" style="margin-top: 3px; margin-bottom: 3px;"></p>
                         </form>
                     </div>
@@ -87,29 +86,30 @@
                     </div>
                 </div>
                 </div>
-            </div>
 
-            <table class="table" id="table-supplier">
-                <thead class="table-head">
-                    <tr>
-                        <th>Name</th>
-                        <th>Contact Number</th>
-                        <th>Email</th>
-                    </tr>
-                </thead>
-                <tbody> 
-                    {{#each suppliers}}
+            </div>
+                <table class="table" id="table-supplier">
+                    <thead class="table-head">
+                        <tr>
+                            <th>Name</th>
+                            <th>Contact Number</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody> 
+                        {{#each suppliers}}
                             <tr class="link" style="cursor: pointer" data-href="/supplier/{{supplierID}}">
                                 <td>{{name}}</td>
                                 <td>{{number}}</td>
                                 <td>{{email}}</td>
                             </tr>
-                            
                         {{/each}}
-                </tbody>
-            </table>
+                      </tbody>
+                </table>
+            </div>
         </div>
 
+          
   <script>
 
             $(document).ready(function() {
@@ -130,7 +130,7 @@
                     $.get('/getCheckSupplierName', {name:name}, function(result) {
                         if (result.name == name) {
                             $('#supplier-name').css("border", "1px solid #B00000");
-                            $('#error-new-supplier-name').text("Supplierinformation already exists");
+                            $('#error-new-supplier-name').text("Supplier information already exists");
                             $('#btn-add-new-supplier').prop('disasbled', true);
                             $('#btn-add-new-supplier').css("background-color", "#b3b3b3");
                         }

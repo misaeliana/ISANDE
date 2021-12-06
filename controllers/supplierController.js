@@ -29,7 +29,7 @@ const supplierController = {
 			name: req.body.name,
             contactPerson: req.body.name,
 			number: req.body.number,
-            email: req.body.number,
+            email: req.body.email,
 			address: req.body.address,
 			informationStatusID: "618a7830c8067bf46fbfd4e4"
 		};
@@ -49,7 +49,7 @@ const supplierController = {
 
 	getViewSupplier: function(req, res) {
 		db.findOne(Suppliers, {_id: req.params.supplierID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name contactPerson number email address', function(result) {
-			res.render('SupplierInformation', result);
+			res.render('supplierInformation', result);
 		});
 	},
 
