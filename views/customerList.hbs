@@ -200,12 +200,12 @@
                 })
 
                 $('#search-field').keyup(function() {
-                     $('#table-employee tr').show();
+                     $('#table-customer tr').show();
                     var searchItem = $(this).val().toLowerCase();
                  
-                    $('#table-employee > tbody > tr').each(function(index) {
-                        var employeeName = $(this).children('td:first').text().toLowerCase();
-                        if (!employeeName.includes(searchItem))
+                    $('#table-customer > tbody > tr').each(function(index) {
+                        var customerName = $(this).children('td:first').text().toLowerCase();
+                        if (!customerName.includes(searchItem))
                             $(this).toggle();
                     })
                 })

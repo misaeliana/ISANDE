@@ -231,14 +231,17 @@
                             $('#supplier-name').css("border", "1px solid #DDDDDD");
                             $('#contact-person').css("border", "1px solid #DDDDDD");
                             $('#contact-number').css("border", "1px solid #DDDDDD");
-                            $('#address').css("border", "1px solid #DDDDDD");
                             $('#email').css("border", "1px solid #DDDDDD");
+                            $('#address').css("border", "1px solid #DDDDDD"); 
+                           
 
                             $('#error-new-supplier-name').text(""); 
                             $('#error-contact-person').text("");
                             $('#error-contact-number').text("");
-                            $('#error-email').text("");
+                            $('#error-email').text(""); 
                             $('#error-address').text(""); 
+                            
+                           
 
                             $.post('/postSupplierInformation', {name, contactPerson, number, email, address})
                                 $('#modal-add-supplier').modal('hide');
@@ -249,12 +252,12 @@
                 })
 
                 $('#search-field').keyup(function() {
-                     $('#table-employee tr').show();
+                     $('#table-supplier tr').show();
                     var searchItem = $(this).val().toLowerCase();
                  
-                    $('#table-employee > tbody > tr').each(function(index) {
-                        var employeeName = $(this).children('td:first').text().toLowerCase();
-                        if (!employeeName.includes(searchItem))
+                    $('#table-supplier > tbody > tr').each(function(index) {
+                        var supplierName = $(this).children('td:first').text().toLowerCase();
+                        if (!supplierName.includes(searchItem))
                             $(this).toggle();
                     })
                 })

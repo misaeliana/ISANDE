@@ -70,9 +70,9 @@ const customerController = {
 	deleteCustomer: function(req, res) {
 		var customerID = req.body.customerID;
 
-		db.updateOne(Customer, {_id: customerID}, {$set: {informationStatusID:"618a783cc8067bf46fbfd4e5"}}, function(flag){
+		db.updateOne(Customers, {_id: customerID}, {$set: {informationStatusID:"618a783cc8067bf46fbfd4e5"}}, function(flag){
 			if (flag) { }
-		})
+		});
 	}
 }
 
