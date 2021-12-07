@@ -250,7 +250,7 @@ const invoiceController = {
 			var itype = await getAllInvoiceTypes();
             var delperson = await getDeliveryPersonnel();
             var customerList = await getCustomers();
-            res.render('newInvoice', {itype,delperson,customerList});
+            res.render('newInvoice', {itype,delperson});
 		}	//res.sendFile( dir+"/newInvoice.html");
         getInvoiceTypes();
     },
@@ -306,10 +306,11 @@ const invoiceController = {
 
 
         async function saveInvoice() {
-            var invoiceID = await getInvoiceNumber()
+            var invoiceID = await getInvoiceNumber();
+            var custID = await getCustomerID(req.body.custID);
              var invoice = {
                 invoiceID: invoiceID,
-                customerID: req.body.custID,
+                customerID: custID,
                 date: req.body.date,
                 typeID: req.body.typeID,
                 statusID:req.body.statusID,
@@ -347,7 +348,7 @@ const invoiceController = {
     },
 
     getItemPrice: function(req, res) {
-        db.findOne (Items, {itemDescription:req.query.itemDesc},'itemDescription sellingPrice', function (result) {
+        db.findOne (Items, {itemDescription:req.query.itemDesc},'itemDescription sellingPrice quantityAvailable', function (result) {
                 res.send(result);
            
             //reason for the for loop: https://stackoverflow.com/questions/5077409/what-does-autocomplete-request-server-response-look-like
@@ -355,7 +356,7 @@ const invoiceController = {
     },
 
     addNewCustomer: function(req,res){
-        var newCustomer ={
+        var newCustomer = {
             name: req.body.custname,
             number: req.body.custphone,
             address: req.body.custaddress,
@@ -757,7 +758,6 @@ const invoiceController = {
         }
 
         //------------MAIN FUNCTION FOR NEW INVOICE-------------
-
         async function newInvoice(invoiceInfo, invoiceItems, deliveryInfo) {
             var invoiceNumber = await getInvoiceNumber()
             var customerID =  await getCustomerID(invoiceInfo.customerName)

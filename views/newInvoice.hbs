@@ -37,8 +37,8 @@
 
         <div class="content">
             <div> <!-- ADD FIXED -->
-                <div style="display: flex;">
-                    <div style="width: 50%"><h1 class="bold"> Invoice #"Number" </h1></div>
+                <div style="display: flex">
+                    <div style="width: 50%"><h1 class="bold">New Invoice</h1></div>
                     <div class="btn-status">
                         <h3 id="dateToday"></h3>
                     </div>
@@ -62,7 +62,7 @@
                 <option value="{{_id}}">{{ingredientType}}</option>
             </select>
 
-            <label for="dropdown-delivery-personnel" style="margin-right: 10px">Delivery Personnel</label>
+            <label  id = "label-delivery" for="dropdown-delivery-personnel" style="margin-right: 10px">Delivery Personnel</label>
             <select class="dropdown" id="dropdown-delivery-personnel" style="margin-right: 10px">
                     <option value="all-type" selected>All</option>
                      {{#each delperson}}
@@ -106,7 +106,7 @@
                 <div style="height: 45px"></div>
 
                 <div id="div-warning-new-invoice">
-                    <p id="text-warning-new-invoice" style="color: red;">Warning text here</p>
+                    <p id="text-warning-new-invoice" style="color: red;"></p>
                 </div>
 
                     <table class="table">
@@ -173,6 +173,9 @@
                 <label for="name">Name: <input type="text" id="custname" name="name"><br></label><br>
                 <label for="phone">Phone: <input type="text" id="custphone" name="phone"></label><br>
                 <label for="address">Address: <input type="text" id="custaddress" name="address"></label><br>
+                 <div id="div-warning-new-invoice">
+                    <p id="text-warning-customer" style="color: red;"></p>
+                </div>
 
                
                 </div>
@@ -210,6 +213,7 @@
                     else if (qty == "" && itemDesc !="")
                         return 2
                 }
+                 
 
                  function custfilled(customerName) {
                     var custField = $('#customerName').val();
@@ -230,15 +234,21 @@
                     {
                     $('#address').css('display', 'none');
                     $('#contactNumber').css('display', 'none');
+                    //$('#dropdown-delivery-personnel').css('display', 'none');
+                    //$('#label-delivery').css('display', 'none');
                     //alert("in-store")
                     }
                     else if(this.value == '61a591c1233fa7f9abcd5726'){
                     $('#address').css('display', 'block');
                     $('#contactNumber').css('display', 'block');
-                    }
+                    /*$('#dropdown-delivery-personnel').css('visibility', 'visible');
+                    $('#label-delivery').css('display', 'block');
+                    }*/
                    
                     //alert( $(this).find(":selected").val() );
-                })
+                }
+                }
+                )
 
 
 
@@ -248,13 +258,12 @@
                     var custphone = $('#custphone').val();
                     var custaddress = $('#custaddress').val();
                 if( custname == ""|| custphone == ""||custaddress == ""){
-                    console.log("One of the fields is empty");
+                    $('#text-warning-customer').text("Some fields are empty!");
                 }
                 else{
-                $.post('/createNewCustomer', {custname,custphone,custaddress}, function(result) {
-                })
-                 $(".form-control").chosen();
-                 $('.modal').modal('hide');
+                $.post('/createNewCustomer', {custname,custphone,custaddress}, function(result) {})
+                 $('#customerModal').modal('hide');
+                 
                 }
                
                 })
@@ -332,22 +341,25 @@
                             }
                     }
                 });
-                function addNew(){
-                }
+             
                 let amount = 0;
                 let discountTotal = 0;
                 $('#addItem').click(function() {
                    var itemDesc = $('#itemDescription').val();
                    var quantity = $('#qty').val();
+                   var qRemaining = 0;
                    var discount = $('#discount').val();
                    
                     
                     if(filled(itemDesc, qty) == 0) {
                     $.get('/getItemPrice', {itemDesc}, function (result) {
+                        if(quantity > result.quantityAvailable){
+                            $('#text-warning-new-invoice').text("Requested amount exceeds available!");
+                        }
+                        else{
                         var sellingPrice = result.sellingPrice;
                         var dis = discount/100;
                         var discountAmount = sellingPrice * dis;
-
                         var totalPrice = (sellingPrice*quantity)- discountAmount;
 
                         amount += totalPrice;
@@ -357,6 +369,7 @@
                         var sub = (amount - vat);
                        
                         $('#table-body-item-list').append(
+                            
                         `<tr>
                             <td class="itemDescription">${itemDesc}</td>
                             <td class="qty">${quantity}</td>
@@ -367,6 +380,25 @@
                             <td><button class="delete-button add-stock-delete-btn" id="btn-delete-item"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
                         </tr>`);
                         //console.log(amount);
+                        }
+                        updateData();
+                    })
+
+                }
+                function updateData() {
+                    var sub = 0;
+                    var vat = 0;
+                    var discountTotal = 0;
+                    var amount = 0;
+                         $("#table-body-item-list > tr").each(function () {
+                            amount += $(this).children('.amount').text() ,
+                            discountTotal +=$(this).children('.discount').text()
+                    }); 
+                       var vat = (amount *.12);
+                       var sub = (amount - vat);
+
+
+
                         $('#subtotalbox').val(sub);
                         $('#subtotalbox').text(parseFloat(sub).toFixed(2)); 
 
@@ -378,10 +410,17 @@
 
                         $('#totbox').val(amount);
                         $('#totbox').text(parseFloat(amount).toFixed(2));
-                    })
-
                 }
-                    
+                function DeleteRow(item) {
+                 // event.target will be the input element.
+                var parent = item.parentNode.parentNode;
+                parent.parentNode.removeChild(parent);
+                
+                }
+                $(document).on("click", "#btn-delete-item", function () {
+                    DeleteRow(this);
+                    updateData();
+                })
                     //statement to get item info from db*/
 
                     
@@ -394,7 +433,7 @@
                 $('#btn-save-invoice').click(function() {
                     var orderedItems = [];
                     $("#table-body-item-list > tr").each(function () {
-                        var item= {
+                        var item = {
                             invoice_id: '',
                             itemDescription: $(this).children('.itemDescription').text(),
                             quantity: $(this).children('.qty').text(),
@@ -406,10 +445,8 @@
                     var itemString = JSON.stringify(orderedItems);  
                    
                     
-                    var custname = capitalize($('#customerName').val());
+                    var custID = $('#customer-Name').val();
                     var statusID = '0';
-
-                    var custID = $('#dropdown-custom').val;
                     var address = '';
                     var date =  $('#dateToday').text();
                     var ddate = date;
