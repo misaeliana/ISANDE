@@ -349,7 +349,7 @@
                 }
 
                 $('#item-code').keyup(function() {
-                    var name = capitalize($('#item-code').val())
+                    var item = capitalize($('#item-code').val())
                     $.get('/getCheckItemcode', {item:item}, function(result) {
                         if (result.item == item) {
                             $('#item-code').css("border", "1px solid #B00000");
@@ -421,7 +421,7 @@
                         return 0;
                 }
 
-                    function reorderLevelValidation(reorderLevel) {
+                function reorderLevelValidation(reorderLevel) {
                    if (reorderLevel == 0 || reorderLevel < 0) {
                         errorMessage("noReorderLevel")
                         return 1;
@@ -433,12 +433,11 @@
 
                 $('#btn-add-new-item').click(function() {
                     var itemCode = capitalize($('#item-code').val());
-
+                    var description = $('#item-description').val();
                     var category = $('#dropdown-item-category').val()
-
                     var unit = $('#item-unit').val();
                     var eoq = $('#item-EOQ').val();
-                   var reorderLevel = $('#item-reorder-level').val();
+                    var reorderLevel = $('#item-reorder-level').val();
 
                     if (!itemCodeValidation(itemCode) && !categoryValidation(category) && !unitValidation(unit) && !eoqValidation(eoq)&& !reorderLevelValidation(reorderLevel)) {
 

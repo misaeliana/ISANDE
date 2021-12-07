@@ -22,6 +22,7 @@ const itemsController = {
                     itemDescription:items_temp[i].itemDescription,
                     category: categoryName,
                     unitID:items_temp[i].unitID,
+					EOQ:items_temp[i].EOQ,
 					reorderLevel:items_temp[i].reorderLevel
 				};
 				items.push(item);
@@ -65,7 +66,6 @@ const itemsController = {
 
 	postUpdateInformation: function(req, res) {
 		var itemID = req.body.itemID;
-
 		db.updateOne(Items, {_id:itemID}, {$set: {informationStatusID:"618a783cc8067bf46fbfd4e5"}}, function(flag) {
 			if (flag) { }
 		});

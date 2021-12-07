@@ -27,7 +27,7 @@ const supplierController = {
 	postSupplierInformation: function(req, res) {
 		var supplier = {
 			name: req.body.name,
-            contactPerson: req.body.name,
+            contactPerson: req.body.contactPerson,
 			number: req.body.number,
             email: req.body.email,
 			address: req.body.address,
