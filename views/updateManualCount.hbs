@@ -4,8 +4,8 @@
         <title> Update Manual Count </title>
         <meta name="description" content="Update Manual Count">
         <meta name="keyword" content="Moderna, Update Manual Count">
-        <link rel="stylesheet" type="text/css" href="../public/css/general.css">
-        <link rel="stylesheet" type="text/css" href="../public/css/list.css">
+        <link rel="stylesheet" type="text/css" href="../css/general.css">
+        <link rel="stylesheet" type="text/css" href="../css/list.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -16,7 +16,7 @@
 
         <!-- PARTIALS -->
         <div id="navbar"> 
-            <div class="navbar-logo"> <img src="../public/images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
+            <div class="navbar-logo"> <img src="../images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
             <div class="navbar-logout"> <a href= "login.html">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
@@ -36,56 +36,54 @@
             <div class="fixed-div">
                 <div> 
                     <div class="search" style="width: 40%">
-                        <h1 class="bold" style="padding-bottom: 15px;"> Update Manual Count </h1>
+                        <h1 class="bold" style="padding-bottom: 10px;"> Update Manual Count </h1>
                     </div>
                    
                     <div class="btn-new-PO">
-                        <select class="dropdown" id="dropdown-inventory-status" style="margin-right: 10px; margin-top: 20px;">
+                        <select class="dropdown" id="dropdown-manual-count" style="margin-right: 10px; margin-top: 20px;">
                             <option value="all-type" selected>All</option>
-                            <option value="{{_id}}">{{ingredientType}}</option>
+                            {{#each inventoryTypes}}
+                                <option value={{_id}}>{{type}}</option>
+                            {{/each}}
                         </select>
                     </div> 
                 </div>
                 
-                <div style="height: 40px"></div>
+                <div style="height: 30px"></div>
                 <hr style="margin-top: 0px; margin-bottom: 0px;">
-                <div style="height: 40px"></div>
+                <div style="height: 20px"></div>
             </div>
 
 
                 <table class="table">
-                    <thead class="table-head">
+                    <thead class="table-head" style="top: 205px;">
                         <tr>
                             <th>Item Description</th>
                             <th>System</th>
                             <th>Manual</th> <!-- right aligned-->
                             <th>Unit</th> 
                             <th>Reason</th>
+                            <th style="display: none;"></th>
                         </tr>
                     </thead>
                     <tbody> 
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td><input value="{{EOQ}}" style="text-align:end;" class="quantity"></td>
-                            <td>John</td>
-                            <td>
-                                <select class="dropdown-manual-count">
-                                    <option value="no-selected">Select Reason</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td><input value="{{EOQ}}" style="text-align:end;" class="quantity"></td>
-                            <td>John</td>
-                            <td>
-                                <select class="dropdown-manual-count">
-                                    <option value="no-selected">Select Reason</option>
-                                </select>
-                            </td>
-                        </tr>
+                        {{#each inventoryItems}}
+                            <tr>
+                                <td>{{itemDescription}}</td>
+                                <td style="text-align:end;">{{quantityAvailable}}</td>
+                                <td><input value="{{quantityAvailable}}" style="text-align:end;" class="quantity"></td>
+                                <td>{{unitID}}</td>
+                                <td>
+                                    <select class="dropdown-shrinkage-reasons">
+                                        <option value="no-selected">Select Reason</option>
+                                        {{#each shrinkageReasons}}
+                                            <option value={{_id}}>{{reason}}</option>
+                                        {{/each}}
+                                    </select>
+                                </td>
+                                <td style="display: none;">{{categoryID}}</td>
+                            </tr>
+                        {{/each}}
                     </tbody>
                 </table>
 

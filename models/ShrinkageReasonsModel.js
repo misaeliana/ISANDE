@@ -2,7 +2,7 @@
 var mongoose = require('mongoose');
 
 // defines the schema for collection `users`
-var ShrinkageReasonSchema = new mongoose.Schema({
+var ShrinkageReasonsSchema = new mongoose.Schema({
 
 	reason: {
 		type: String,
@@ -10,4 +10,4 @@ var ShrinkageReasonSchema = new mongoose.Schema({
 	}
 });
 
-module.exports = mongoose.model('ShrinkageReason', ShrinkageReasonSchema);
+module.exports = mongoose.model('ShrinkageReasons', ShrinkageReasonsSchema);

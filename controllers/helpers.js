@@ -33,11 +33,13 @@ const Customers = require('../models/CustomersModel.js');
 
 const Deliveries = require('../models/DeliveriesModel.js');
 
-const Purchases = require('../models/PurchasesModel.js')
+const Purchases = require('../models/PurchasesModel.js');
 
-const PurchasedItems = require('../models/PurchasedItemsModel.js')
+const PurchasedItems = require('../models/PurchasedItemsModel.js');
 
-const ReturnReasons = require('../models/ReturnReasonsModel.js')
+const ReturnReasons = require('../models/ReturnReasonsModel.js');
+
+const ShrinkageReasons = require('../models/ShrinkageReasonsModel.js');
 
 module.exports = function() {
 	this.getAllPositions = function() {
@@ -550,6 +552,14 @@ module.exports = function() {
 	this.getInvoiceStatus = function() {
 		return new Promise((resolve, reject) => {
 			db.findMany(InvoiceStatus, {$or: [{status:"Paid"}, {status:"COD"}]}, '', function(result) {
+				resolve(result)
+			})
+		})
+	},
+
+	this.getshrinkageReasons = function() {
+		return new Promise((resolve, reject) => {
+			db.findMany(ShrinkageReasons, {}, '', function(result) {
 				resolve(result)
 			})
 		})

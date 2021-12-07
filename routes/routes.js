@@ -12,7 +12,10 @@ const inventoryController = require('../controllers/inventoryController.js');
 const purchaseOrderController = require('../controllers/purchaseOrderController.js');
 
 const invoiceController = require('../controllers/invoiceController.js');
+
 const supplierController = require('../controllers/supplierController.js');
+
+const manualCountController = require('../controllers/manualCountController.js');
 
 //--CUSTOMER--
 
@@ -112,11 +115,11 @@ router.post('/updatePOStatus', purchaseOrderController.updatePOStatus);
 
 router.post('/updatePOWithPrice', purchaseOrderController.updatePOWithPrice);
 
-router.get('/getItemSuppliers', purchaseOrderController.getItemSuppliers)
+router.get('/getItemSuppliers', purchaseOrderController.getItemSuppliers);
 
-router.post('/deletePO', purchaseOrderController.deletePO)
+router.post('/deletePO', purchaseOrderController.deletePO);
 
-router.post('/cancelPO', purchaseOrderController.cancelPO)
+router.post('/cancelPO', purchaseOrderController.cancelPO);
 
 router.get('/exportPO', purchaseOrderController.generatePDF);
 
@@ -137,7 +140,7 @@ router.get('/getSearchInvoice', invoiceController.getSearchInvoice);
 
 router.get('/getCustomerName', invoiceController.getCustomerName);
 
-router.get('/getCustomerInformation', invoiceController.getCustomerInformation)
+router.get('/getCustomerInformation', invoiceController.getCustomerInformation);
 
 router.get('/getItemNameInvoice', invoiceController.getItems);
 
@@ -149,7 +152,7 @@ router.post('/createNewCustomer', invoiceController.addNewCustomer);
 
 router.get('/checkQuantity', invoiceController.checkQuantity);
 
-router.get('/getItemInfo', invoiceController.getItemInfo)
+router.get('/getItemInfo', invoiceController.getItemInfo);
 
 router.post('/saveReturn', invoiceController.saveReturn);
 
@@ -162,5 +165,8 @@ router.get('/deliveries/:deliveryID', invoiceController.getDeliveryInfo);
 router.get('/getSearchDeliveryList', invoiceController.getSearchDeliveryList);
 
 router.post('/postUpdateDelivery', invoiceController.postUpdateDelivery);
+
+//--MANULA COUNT--
+router.get('/manualCount', manualCountController.getManualCount);
 
 module.exports = router;
