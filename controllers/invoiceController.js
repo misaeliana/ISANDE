@@ -605,16 +605,16 @@ const invoiceController = {
                 var unitPrice = await getItemPrice(temp_invoiceItems[i].itemID)
                 var amount = quantity * parseFloat(unitPrice)
 
-                var invoiceItem = {
-                    itemDescription: await getItemDescription(temp_invoiceItems[i].itemID),
-                    quantity: quantity,
-                    unit: await getSpecificUnit(unitID),
-                    unitPrice: "P " + parseFloat(unitPrice).toFixed(2),
-                    discount: "P " + temp_invoiceItems[i].discount,
-                    amount: "P " + parseFloat(amount).toFixed(2),
-                    returnReasons: returnReasons
-                }
-                invoiceItems.push(invoiceItem)
+                var invoiceItem = { 
+                    itemDescription: await getItemDescription(temp_invoiceItems[i].itemID), 
+                    quantity: quantity, 
+                    unit: await getSpecificUnit(unitID), 
+                    unitPrice: "P " + parseFloat(unitPrice).toFixed(2), 
+                    discount: "P " + temp_invoiceItems[i].discount, 
+                    amount: "P " + parseFloat(amount).toFixed(2), 
+                    returnReasons: returnReasons 
+                } 
+                invoiceItems.push(invoiceItem) 
             }
 
             var customerInfo = await getCustomerInfo(temp_invoiceInfo.customerID)
@@ -665,6 +665,14 @@ const invoiceController = {
 
     saveReturn: function(req, res) {
 
+        function getInvoiceItemQuantity(invoiceID, itemID) {
+            return new Promise((resolve, reject) => {
+                db.findOne(InvoiceItems, {invoice_id:invoiceID, itemID:itemID}, 'quantity', function(result) {
+                    resolve (result.quantity)
+                })
+            })
+        }
+
         function getShrinkageReasonID() {
             return new Promise((resolve, reject) => {
                 db.findOne(ShrinkagesReasons, {reason:"Damaged"}, '_id', function(result) {
@@ -696,7 +704,9 @@ const invoiceController = {
             })
         }
 
-        function processReturn(oldInvoiceID, returns) {
+        async function processReturn(oldInvoiceID, returns) {
+            var notReturnedItems = []
+
             for (var i=0; i<returns.length; i++) {
 
                 //item is damaged
@@ -706,11 +716,23 @@ const invoiceController = {
                 //item was incorrect
                 else if (returns[i].reason == "61a76e7f57d8d868d3eb5b2d") 
                     incorrectItem(returns[i])
-            }
 
+                var itemID = await getItemID(returns[i].itemDesc)
+                var oldQuantity = await getInvoiceItemQuantity(oldInvoiceID, itemID)
+
+                if (returns[i].quantity !=oldQuantity) {
+                    var notReturnedItem = {
+                        itemID: itemID,
+                        quantity: returns[i].quantity
+                    }
+                    notReturnedItems.push(notReturnedItem)
+                }
+            }
             db.updateOne(Invoices, {_id:oldInvoiceID}, {statusID:"619785ceda48eab55320c0c8"}, function(flag) {
 
             })
+
+            return notReturnedItems;
         }
 
         //--------FUNCTIONS FOR NEW INVOICE---------//
@@ -757,7 +779,8 @@ const invoiceController = {
         }
 
         //------------MAIN FUNCTION FOR NEW INVOICE-------------
-        async function newInvoice(invoiceInfo, invoiceItems, deliveryInfo) {
+        async function newInvoice(invoiceInfo, notReturnedItems, invoiceItems, deliveryInfo) {
+            var finalInvoiceItems = []
             var invoiceNumber = await getInvoiceNumber()
             var customerID =  await getCustomerID(invoiceInfo.customerName)
 
@@ -768,10 +791,22 @@ const invoiceController = {
                 invoiceItems[i].invoice_id = invoiceID
                 invoiceItems[i].discount = 0
                 updateQuantity (invoiceItems[i])
+                finalInvoiceItems.push(invoiceItems[i])
             }
 
+            if (notReturnedItems.length != 0) {
+                for (var i=0; i<notReturnedItems.length; i++) {
+                    var item = {
+                        invoice_id: invoiceID,
+                        itemID: notReturnedItems[i].itemID,
+                        quantity: notReturnedItems[i].quantity,
+                        discount: 0
+                    }
+                    finalInvoiceItems.push(item)
+                }
+            }
 
-            db.insertMany(InvoiceItems, invoiceItems, function(flag) {
+            db.insertMany(InvoiceItems, finalInvoiceItems, function(flag) {
             
             })
 
@@ -789,8 +824,10 @@ const invoiceController = {
         var newInvoiceInfo = JSON.parse(req.body.invoiceInfoString)
         var deliveryInfo = JSON.parse(req.body.deliveryInfoString)
     
-        processReturn(oldInvoiceID, returns)
-        newInvoice(newInvoiceInfo, newInvoiceItems, deliveryInfo)
+        processReturn(oldInvoiceID, returns).then(notReturnedItems => {
+            newInvoice(newInvoiceInfo, notReturnedItems, newInvoiceItems, deliveryInfo)
+        })
+        
 
     }
 };

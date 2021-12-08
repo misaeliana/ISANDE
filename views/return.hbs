@@ -113,7 +113,7 @@
                             {{#each invoiceItems}}
                                 <tr class="return-row">
                                     <td class="return-item-desc">{{itemDescription}}</td>
-                                    <td class="return-quantity">{{quantity}}</td>
+                                    <td><input class="return-quantity" type="number" value="{{quantity}}" style="width:70px" disabled></td>
                                     <td>{{unit}}</td>
                                     <td class="return-unit-price">{{unitPrice}}</td>
                                     <td class="return-discount">{{discount}}</td>
@@ -308,12 +308,21 @@
                 })
 
                 $('.return-check').change(function() {
-                    if ($(this).is(":checked"))
+                    if ($(this).is(":checked")) {
+                        $(this).parents('tr').find(".return-quantity").prop('disabled', false)
                         $(this).parents('tr').find(".return-reason").prop('disabled', false)
-                    else
+                    }
+                    else {
+                        $(this).parents('tr').find(".return-quantity").prop('disabled', true)
                         $(this).parents('tr').find(".return-reason").prop('disabled', true)
+                    }
                     computeTotal();
                 });
+
+                $('.return-quantity').keyup(function () {
+                    computeTotal()
+
+                })
 
                 $("#table-return-new-item-body").on('click','.delete-item-btn',function() {
                     $(this).closest('tr').remove();
@@ -434,11 +443,19 @@
 
                     $('#table-return-order-details > tbody > tr').each(function() {
                         //item to be returned, either added to shrinkage or added back to inventory
+                        var quantity = parseInt($(this).find('.return-quantity').val())
+                        if (quantity == "")
+                            quantity = 0
+
                         if ($(this).find('.return-check').is(":checked")) 
-                            refund += parseFloat($(this).children('.return-amount').text().slice(1))
+                            refund += (quantity * parseFloat($(this).children('.return-unit-price').text().slice(1)))
 
                         else 
-                            orderTotal += parseFloat($(this).children('.return-amount').text().slice(1))         
+                            orderTotal += (quantity * parseFloat($(this).children('.return-amount').text().slice(1)))    
+
+                        if ((quantity*parseFloat($(this).children('.return-unit-price').text().slice(1))) != parseFloat($(this).children('.return-amount').text().slice(1))) {
+                            orderTotal += (parseFloat($(this).children('.return-amount').text().slice(1)) - (quantity * parseFloat($(this).children('.return-unit-price').text().slice(1))))
+                        }
                     })
 
                     $('#table-return-new-item-body > tr').each(function() {
@@ -526,7 +543,7 @@
                             if ($(this).find('.return-check').is(":checked")) {
                                 var returnItem = {
                                     itemDesc: $(this).children('.return-item-desc').text(),
-                                    quantity: $(this).children('.return-quantity').text(),
+                                    quantity: $(this).find('.return-quantity').val(),
                                     reason: $(this).find('.return-reason').val()
                                 }
                                 returns.push(returnItem)
@@ -534,7 +551,7 @@
                             else {
                                 var invoiceItem = {
                                     itemDesc: $(this).children('.return-item-desc').text(),
-                                    quantity: $(this).children('.return-quantity').text(),
+                                    quantity: $(this).find('.return-quantity').val(),
                                     discount: $(this).children('.discount').text().slice(1)
                                 }
                                 newInvoiceItems.push(invoiceItem);
@@ -560,7 +577,7 @@
                                 statusID: $('#dropdown-payment-type').val(),
                                 subtotal: parseFloat($('#subtotal').text().slice(1)),
                                 vat: parseFloat($('#vat').text().slice(1)),
-                                discount: 0,
+                                discount: parseFloat($('#discount').text().slice(1)),
                                 total: parseFloat($('#total').text().slice(1))
                             }
 
@@ -577,7 +594,7 @@
                                 statusID: "619785b0d9a967328c1e8fa6",
                                 subtotal: parseFloat($('#subtotal').text().slice(1)),
                                 vat: parseFloat($('#vat').text().slice(1)),
-                                discount: 0,
+                                discount: parseFloat($('#discount').text().slice(1)),
                                 total: parseFloat($('#total').text().slice(1))
                             }
                             deliveryInfo= {}
