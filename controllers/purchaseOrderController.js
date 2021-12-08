@@ -25,7 +25,7 @@ const PizZip = require("pizzip");
 
 const Docxtemplater = require("docxtemplater");
 
-const unoconv = require('awesome-unoconv');
+const {ILovePDFApi} = require('@ilovepdf/ilovepdf-js')
 
 
 const purchaseOrderController = {
@@ -180,7 +180,7 @@ const purchaseOrderController = {
 
 		function getPOInfo (poID) {
 			return new Promise((resolve, reject) => {
-				db.findOne(Purchases, {_id:poID}, 'date dateReceived subtotal vat total', function (result) {
+				db.findOne(Purchases, {_id:poID}, 'purchaseOrderNumber employeeID date dateReceived subtotal vat total', function (result) {
 					resolve(result);
 				});
 			});
@@ -228,6 +228,7 @@ const purchaseOrderController = {
 				var poInfo = await getPOInfo (purchaseInfo._id);
 				poInfo.fdateMade = poInfo.date.toLocaleString('en-US');
 				poInfo.fdateReceived = poInfo.dateReceived.toLocaleString('en-US');
+				poInfo.employeeName =  await getEmployeeName(poInfo.employeeID)
 
 				items = await getReceivedItems(purchaseInfo._id);
 
@@ -241,7 +242,7 @@ const purchaseOrderController = {
 				poInfo.fvat = "P " + parseFloat(poInfo.vat).toFixed(2);
 				poInfo.fsubtotal = "P " + parseFloat(poInfo.subtotal).toFixed(2);
 				poInfo.ftotal = "P " + parseFloat(poInfo.total).toFixed(2);
-				res.render('viewPO', {items, poInfo, received});
+				res.render('viewPO', {supplier, items, poInfo, received});
 			}
 		}
 
@@ -398,7 +399,7 @@ const purchaseOrderController = {
 				};
 				formattedResults.push(formattedResult);
 			}
-			res.send(formattedResults);
+			res.send(formattedResults)
 		})
 	},
 
@@ -448,7 +449,24 @@ const purchaseOrderController = {
 		}
 
 		async function updatePO(items, poID) {
-			var currentPOItems = await getCurrentPOItems(poID);
+			var temp_currentPOItems = await getCurrentPOItems(poID);
+			var currentPOItems = []
+
+			for (var i=0; i<temp_currentPOItems.length; i++) {
+				var poItem = {
+					itemID: temp_currentPOItems[i].itemID,
+					unitID: temp_currentPOItems[i].unitID,
+					quantity: temp_currentPOItems[i].quantity
+				}
+				currentPOItems.push(poItem);
+			}
+
+			
+			console.log("BEFORE PROCESSING")
+			console.log("ITEMS")
+			console.log(items)
+			console.log("CURRENT PO ITEMS")
+			console.log(currentPOItems)
 
 			for (var i=0; i<items.length; i++)
 				items[i].itemID = await getItemID(items[i].itemDesc)
@@ -470,6 +488,12 @@ const purchaseOrderController = {
 					} 
 				}
 			}
+
+			console.log('AFTER CHECKING')
+			console.log('ITEMS')
+			console.log(items)
+			console.log('currentPOItems')
+			console.log(currentPOItems)
 
 			for (var i=0; i<currentPOItems.length; i++) {
 				if (!currentPOItems[i].checked) {
@@ -496,7 +520,6 @@ const purchaseOrderController = {
 
 		var items = JSON.parse(req.body.itemsString);
 		var poID = req.body.poID;
-
 		updatePO(items, poID);
 	},
 
@@ -598,7 +621,6 @@ const purchaseOrderController = {
 
 
 		async function updatePO(items, poID) {
-			console.log(items)
 			var needNewPO = false;
 			var temp_newPOItems = []
 			var currentPOItems = await getCurrentPOItems(poID);
@@ -612,7 +634,7 @@ const purchaseOrderController = {
 					//add quantity to inventory
 					updateInventory (items[i].itemID, items[i].quantityReceived);
 				}
-				/*else {
+				else {
 					needNewPO = true;
 					var newPOItem = {
 						itemID: await getItemID(items[i].itemDesc),
@@ -620,7 +642,7 @@ const purchaseOrderController = {
 						quantity: currentPOItems[i].quantity
 					}
 					temp_newPOItems.push(newPOItem)
-				}*/
+				}
 			}
 
 			for (var i=0; i<currentPOItems.length; i++) {
@@ -721,18 +743,6 @@ const purchaseOrderController = {
 		var supplierInfo = JSON.parse(req.query.supplierString)
 		var items = JSON.parse(req.query.poItemsString)
 
-		// Load the docx file as binary content
-		const content = fs.readFileSync(
-		    path.resolve("files", "po_template.docx"), "binary"
-		);
-
-		const zip = new PizZip(content);
-
-		const doc = new Docxtemplater(zip, {
-		    paragraphLoop: true,
-		    linebreaks: true,
-		});
-
 		var fsupplierName
 
 		for (var i=0; i<supplierInfo.name.length; i++)
@@ -740,9 +750,29 @@ const purchaseOrderController = {
 
 		var temp_fDate0 = req.query.date.split(",");
 		var temp_fDate = temp_fDate0[0].split("/")
+		var temp_fTime = temp_fDate0[1].split(":")
 		var fDate = ""	
+		var fTime = ""
 		for (var i=0; i<temp_fDate.length; i++)
 			fDate += temp_fDate[i] + "_"
+		for (var i=0; i<temp_fTime.length-1	; i++)
+			fTime += temp_fTime[i] + "_"
+
+
+		var fileName = fDate + fTime + fsupplierName
+
+		//for creating purchase order in docx
+		// Load the docx file as binary content
+		const content = fs.readFileSync(
+		    path.resolve("files", "po_template.docx"), "binary"
+		);
+
+		const zip = new PizZip(content);
+		
+		const doc = new Docxtemplater(zip, {
+		    paragraphLoop: true,
+		    linebreaks: true,
+		});
 
 		// render the document
 		doc.render({
@@ -757,16 +787,60 @@ const purchaseOrderController = {
 
 		const buf = doc.getZip().generate({ type: "nodebuffer" });
 
-		var fileName = fDate + fsupplierName
-
 		fs.writeFileSync(path.resolve("documents", fileName+".docx"), buf);
 
-		var input = path.resolve("documents", fileName+".docx")
-		var output = path.resolve("documents", fileName+".pdf")
+		res.sendStatus(200)
+
+
+		//saving in pdf
+		/*const doc = new jsPDF('p', 'pt');
+		doc.text("Vendor", 50, 70)
+
+		doc.text(`${supplierInfo.name}`, 50, 90)
+		doc.text(`${supplierInfo.contactPerson}`, 50, 110)
+		doc.text(`${supplierInfo.address}`, 50, 130)
+		doc.text(`${supplierInfo.number}`, 50, 150)
+
 		
-		/*unoconv.convert(input, 'pdf', function(err, result) {
-			fs.writeFile(output, result)
-		})*/
+
+		var columns = [{title:'Item Description'}, {title:'Quantity'}, {title:'Unit'}]
+		var items = []
+		for (var i=0; i<temp_items.length; i++) {
+			var item = []
+			item.push(temp_items[i].itemDesc)
+			item.push(temp_items[i].quantity)
+			item.push(temp_items[i].unit)
+			items.push(item)
+		}
+		doc.autoTable(columns, items, {
+			theme:"grid",
+			startY:170
+		})
+
+		doc.save(path.resolve("documents", fileName+".pdf")); // will save the file in the current working directory*/
+
+		//var input = path.resolve("documents", fileName+".docx")
+		//var output = path.resolve("documents", fileName+".pdf")
+
+
+		
+		/*const task = ilovepdf.newTask('officepdf')
+
+		task.start()
+		.then(() => {
+		    const file = new ILovePDFFile(input);
+		    return task.addFile(file);
+		})
+		.then(() => {
+		    return task.process();
+		})
+		.then(() => {
+		    return task.download();
+		})
+		.then((data) => {
+		    fs.writeFileSync(output, data);
+		});*/
+
 	}
 
 }

@@ -558,7 +558,7 @@ const invoiceController = {
     },
 
     getItems: function(req, res) {
-        db.findMany (Items, {itemDescription:{$regex:req.query.query, $options:'i'}, informationStatusID: "618a7830c8067bf46fbfd4e4"}, 'itemDescription', function (result) {
+        db.findMany (Items, {itemDescription:{$regex:req.query.query, $options:'i'}, informationStatusID: "618a7830c8067bf46fbfd4e4", statusID:{$ne:"61b0d6751ca91f5969f166de"}}, 'itemDescription', function (result) {
             var formattedResults = [];
             //reason for the for loop: https://stackoverflow.com/questions/5077409/what-does-autocomplete-request-server-response-look-like
             for (var i=0; i<result.length; i++) {
@@ -571,8 +571,9 @@ const invoiceController = {
             res.send(formattedResults)
         })
     },
+
     getCustom: function(req, res) {
-        db.findMany (Customer, {name:{$regex:req.query.query, $options:'i'}}, '', function (result) {
+        db.findMany (Customer, {name:{$regex:req.query.query, $options:'i'}, informationStatusID:"618a7830c8067bf46fbfd4e4"}, '', function (result) {
             var formatResults = [];
             //reason for the for loop: https://stackoverflow.com/questions/5077409/what-does-autocomplete-request-server-response-look-like
             for (var i=0; i<result.length; i++) {
@@ -582,8 +583,6 @@ const invoiceController = {
                 };
 
                 formatResults.push(formattedResult);
-              
-                
             }
             res.send(formatResults)
         })

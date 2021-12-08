@@ -34,7 +34,7 @@
 
         <div class="content">
             <div> <!-- ADD FIXED -->
-                <div style="display: flex;">
+                <div style="display: flex; align-items: center;">
                     <div style="width: 50%"><h1 class="bold" id="poNumber"> Purchase Order #{{poInfo.purchaseOrderNumber}} </h1></div>
                     <div class="btn-status">
                         {{#if newPO}}
@@ -189,11 +189,11 @@
                          var poItemsString = JSON.stringify(poItems)
                          var poNumber  = $('#poNumber').text()
    
-                        //$.post('/updatePOStatus', {poID}, function (result) {
+                        $.post('/updatePOStatus', {poID}, function (result) {
                             $.get('/exportPO', {supplierString, poItemsString, poNumber, date}, function(result) {
                                 window.location.reload()
                             })
-                        //});
+                        });
                     }
                 })
 

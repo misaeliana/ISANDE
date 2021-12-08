@@ -37,7 +37,7 @@
 
         <div class="content">
             <div> <!-- ADD FIXED -->
-                <div style="display: flex;">
+                <div style="display: flex; align-items:center;">
                     <div style="width: 50%"><h1 class="bold"> Purchase Order #{{purchaseInfo.purchaseOrderNumber}}</h1></div>
                     <div class="btn-status">
                         {{#if newPO}}
@@ -86,10 +86,14 @@
                         <div style="display: flex; align-items: center; padding:10px">
                             <label for="supplierName">Supplier Name</label><input style="" type="text" class="margin-bottom-10 supplierInfoInput" id="supplierName" value="{{supplier.name}}">
                         </div>
-                        <div id="supplier-error" style="display: none;">
+                        <div id="no-supplier-error" style="display: none;">
                             <p class="error" id="no-suppler">Supplier does not exist</p>
                             <button class="btn-light-blue" id="add-new-supplier">+ Add New Supplier</button>
                         </div>
+                        <div id="change-supplier-error" style="display: none;">
+                            <p class="error" style="position: relative; left:15%">Change supplier</p>
+                        </div>
+
                         <div style="display: flex; align-items: center; padding:10px">
                             <label for="contactPerson">Contact Person</label><input type="text" class="margin-bottom-10 supplierInfoInput" id="contactPerson" name="contactPerson" value="{{supplier.contactPerson}}">
                         </div>
@@ -176,7 +180,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <table id="table-change-item-supplier">
+                        <table id="table-change-item-supplier" style="width: 100%;">
                             <thead>
                                 <tr>
                                     <th>Item Description</th>
@@ -190,7 +194,7 @@
                         </table>  
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btn-change-supplier-close">Close</button>
                         <button type="button" class="btn btn-primary" id="btn-save-change-item-supplier">Save</button>
                     </div>
                 </div>
@@ -392,22 +396,23 @@
                                 dataType: "json",
                                 data: {
                                     //request.term refers to the value currently in the text input
-                                    term: request.term,
+                                    term: request.term
                                 },
                                 success: function (data) {
-                                    $('#supplier-error').css('display', 'none')
+                                    $('#no-supplier-error').css('display', 'none')
+                                    $('#change-supplier-error').css('display', 'none')
                                     $("#supplierName").css("border", "1px solid #DDDDDD");
                                     response(data);
                                 }
                          });
                     }, response: function (event, ui) {
                         if (ui.content.length === 0) {
-                            $('#supplier-error').css('display', 'block')
+                            $('#no-supplier-error').css('display', 'block')
                             $('#btn-update-new-po').prop('disabled', true)
                             $('#btn-update-new-po').css("background-color", "#b3b3b3");
                         }
                         else {
-                            $('#supplier-error').css('display', 'none')
+                            $('#no-supplier-error').css('display', 'none')
                             $('#btn-update-new-po').prop('disabled', false)
                             $('#btn-update-new-po').css("background-color", "#0F84D9")  
                         }
@@ -463,14 +468,19 @@
                                         $('#table-change-item-supplier-body').append(
                                             `<tr>
                                                 <td class="change-supplier-itemDesc">${itemDesc}</td>
-                                                <td><input class="change-supplier-qty " value=${qty}></td>
+                                                <td><input class="change-supplier-qty " value=${qty} style="width:70px"></td>
                                                 <td class="change-supplier-unit">${unit}</td>
                                                 <td><select class="change-supplier-supplier">
                                                     <option value="no-selected">--Select Supplier--</option>
                                                 </select></td>
                                             </tr>`)
 
-                                        $.get('/getItemSuppliers', {itemDesc}, function(result) {
+                                        $.ajax({
+                                            type:"GET",
+                                            url: '/getItemSuppliers',
+                                            data: {itemDesc},
+                                            async: false
+                                        }).done(function(result) {
                                             var lastRow = $('#table-change-item-supplier-body tr:last').find('.change-supplier-supplier')
 
                                             for (var i=0; i<result.length; i++) {
@@ -485,7 +495,6 @@
                             $('#modal-change-item-supplier').modal('show')
                         }
                     }
-                        
                 });
 
                 function supplierFilled() {
@@ -626,15 +635,22 @@
                     var address = window.location.pathname.split('/');
                     var poID = address[address.length -1]
                     var poItems = []
-                    var proceed=true;
+                    var proceed=false;
+                    var asked = false
 
                     $("#table-poItem-body > tr").each(function () {
-                        if (($(this).find('.unitPrice').val() == "" || $(this).find('.quantityReceived').val() == "") && proceed) {
+                        if (($(this).find('.unitPrice').val() == "" || $(this).find('.quantityReceived').val() == "") && !proceed && !asked) {
                             if (confirm("Some items do not have a price or quantity received. A new PO will be created for these items. Do you wish to proceed.")) {
                                 proceed = true
                             }
-                            else 
+                            else {
+                                asked = true
                                 proceed = false
+                                if ($(this).find('.unitPrice').val() == "") 
+                                    $(this).find('.unitPrice').css("border", "2px solid #B00000");
+                                if ($(this).find('.quantityReceived').val() == "")
+                                    $(this).find('.quantityReceived').css("border", "2px solid #B00000");
+                            }
                         }
                     })
 
@@ -661,25 +677,68 @@
                     }
                 })
 
+                $('#btn-change-supplier-close').click(function(result) {
+                    $('#table-change-item-supplier-body').each(function() {
+                        var itemDesc = $(this).find('.change-supplier-itemDesc').text()
+                        var qty = $(this).find('.change-supplier-qty').val()
+                        var unit = $(this).find('.change-supplier-unit').text();
+                        $('#table-poItem').append(`
+                            <tr>
+                                <td class="classItemDescription">${itemDesc}</td>
+                                <td><input class="classQty" type="number" value="${qty}"</td>
+                                <td class="classUnit">${unit}</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td> <button class="delete-button delete-item-btn"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button> </td>
+                            </tr>`)
+                        $(this).remove();
+                        $('#btn-update-new-po').prop('disabled',true)
+                        $('#supplierName').css("border", "2px solid #B00000")
+                        $('#change-supplier-error').css('display', 'block')
+                        $('#btn-update-new-po').prop('disabled', true)
+                        $('#btn-update-new-po').css("background-color", "#b3b3b3");
+                    })
+                })
 
                 $('#btn-save-change-item-supplier').click(function(result){
                     var purchaseItems = []
+                    var blank = false
                     $("#table-change-item-supplier-body > tr").each(function () {
-                        var poItem= {
-                            itemDescription: $(this).children('.change-supplier-itemDesc').text(), 
-                            quantity: $(this).find('.change-supplier-qty').val(),
-                            unit: $(this).children('.change-supplier-unit').text(),
-                            supplier: $(this).find('.change-supplier-supplier').val()
+                        if ($(this).find('.change-supplier-qty').val() == "" || $(this).find('.change-supplier-supplier').val() == "no-selected") {
+                            if ($(this).find('.change-supplier-qty').val() == "") 
+                                $(this).find('.change-supplier-qty').css("border", "2px solid #B00000");
+                            else
+                                $(this).find('.change-supplier-qty').css("border", "1px solid #DDDDDD");
+                                    
+                            if ($(this).find('.change-supplier-supplier').val() == "no-selected") 
+                                 $(this).find('.change-supplier-supplier').css("border", "2px solid #B00000");
+                            else
+                                $(this).find('.change-supplier-supplier').css("border", "1px solid #DDDDDD");
+                            blank = true
+                        } 
+                        else {
+                            $(this).find('.change-supplier-qty').css("border", "1px solid #DDDDDD");
+                            $(this).find('.change-supplier-supplier').css("border", "1px solid #DDDDDD");
+                            var poItem= {
+                                itemDescription: $(this).children('.change-supplier-itemDesc').text(), 
+                                quantity: $(this).find('.change-supplier-qty').val(),
+                                unit: $(this).children('.change-supplier-unit').text(),
+                                supplier: $(this).find('.change-supplier-supplier').val()
+                            }
+                            purchaseItems.push(poItem);
                         }
-                        purchaseItems.push(poItem);
-                    });
-
-                    var purchaseString = JSON.stringify(purchaseItems);  
-                    $.post('/saveGeneratePurchaseOrder', {purchaseString}, function(result) {
-                        alert("New purchase orders have been created");
-                        $('#modal-change-item-supplier').modal('hide');
                     });
                     
+                    if (!blank) {
+                        var purchaseString = JSON.stringify(purchaseItems);  
+                        $.post('/saveGeneratePurchaseOrder', {purchaseString}, function(result) {
+                            alert("New purchase orders have been created");
+                            $('#modal-change-item-supplier').modal('hide');
+                        });
+                    }
+                    else
+                        alert("Please fill out the necessary information")
                 })
 
 

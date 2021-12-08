@@ -230,27 +230,23 @@
 
 
                 $('#drop-down-new-invoice-type').on('change', function() {
-                     if(this.value == '6197863ac4f0088e95c9bf84')
-                    {
-                    $('#address').css('display', 'none');
-                    $('#contactNumber').css('display', 'none');
-                    //$('#dropdown-delivery-personnel').css('display', 'none');
-                    //$('#label-delivery').css('display', 'none');
-                    //alert("in-store")
+                    if(this.value == '6197863ac4f0088e95c9bf84'){
+                        $('#address').css('display', 'none');
+                        $('#contactNumber').css('display', 'none');
+                        //$('#dropdown-delivery-personnel').css('display', 'none');
+                        //$('#label-delivery').css('display', 'none');
+                        //alert("in-store")
                     }
                     else if(this.value == '61a591c1233fa7f9abcd5726'){
-                    $('#address').css('display', 'block');
-                    $('#contactNumber').css('display', 'block');
-                    /*$('#dropdown-delivery-personnel').css('visibility', 'visible');
-                    $('#label-delivery').css('display', 'block');
-                    }*/
-                   
-                    //alert( $(this).find(":selected").val() );
-                }
-                }
-                )
-
-
+                        $('#address').css('display', 'block');
+                        $('#contactNumber').css('display', 'block');
+                        /*$('#dropdown-delivery-personnel').css('visibility', 'visible');
+                        $('#label-delivery').css('display', 'block');
+                        }*/
+                       
+                        //alert( $(this).find(":selected").val() );
+                    }
+                })
 
                 /*Modal functions*/
                 $('#save-cust').click(function() {
