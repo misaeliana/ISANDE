@@ -16,6 +16,7 @@ const invoiceController = require('../controllers/invoiceController.js');
 const supplierController = require('../controllers/supplierController.js');
 
 const manualCountController = require('../controllers/manualCountController.js');
+
 const itemsController = require('../controllers/itemsController.js');
 
 //--CUSTOMER--
@@ -47,6 +48,8 @@ router.post('/postUpdateSupplierInformation', supplierController. postUpdateInfo
 router.post('/deleteSupplier', supplierController.deleteSupplier);
 
 //--SUPPLIER ITEMS--
+
+router.get('/supplierInformation', itemsController.getItemList);
 
 router.post('/postItemInformation', itemsController.postItemInformation);
 

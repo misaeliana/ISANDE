@@ -323,7 +323,7 @@ module.exports = function() {
 		});
 	},
 
-	this.getItemName = function(itemID) {
+	this.getItemCode = function(itemID) {
 		return new Promise((resolve, reject) => {
 			db.findOne(Items, {_id: itemID}, 'itemcode', function(result) {
 				resolve (result.name);
