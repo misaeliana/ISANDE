@@ -2,7 +2,7 @@
 var mongoose = require('mongoose');
 
 // defines the schema for collection `users`
-var CategoriesSchema = new mongoose.Schema({
+var ItemCategoriesSchema = new mongoose.Schema({
 
 	category: {
 		type: String,
@@ -10,4 +10,4 @@ var CategoriesSchema = new mongoose.Schema({
 	}
 });
 
-module.exports = mongoose.model('Categories', CategoriesSchema);
+module.exports = mongoose.model('ItemCategories', ItemCategoriesSchema);

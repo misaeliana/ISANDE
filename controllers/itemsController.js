@@ -7,7 +7,7 @@ const ItemCategories = require('../models/ItemCategoriesModel.js');
 
 require('../controllers/helpers.js');
 
-const itemsController = {
+const itemController = {
 
 	getItemList: function(req, res) {
 
@@ -63,6 +63,18 @@ const itemsController = {
 
 	},
 
+	getViewItem: function(req, res) {
+
+		async function getInformation() {
+			var itemInfo = await getItemInfo(req.params.itemID);
+			var categories = await getAllCategories();
+			res.render('supplierInformation', {itemInfo, categories});
+		}
+
+		getInformation();
+		
+	},
+
 
 	postUpdateInformation: function(req, res) {
 		var itemID = req.body.itemID;
@@ -93,4 +105,4 @@ const itemsController = {
 	}
 };
 
-module.exports = itemsController;
+module.exports = itemController;
