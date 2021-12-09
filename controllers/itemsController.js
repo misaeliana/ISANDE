@@ -7,7 +7,7 @@ const ItemCategories = require('../models/ItemCategoriesModel.js');
 
 require('../controllers/helpers.js');
 
-const itemController = {
+const itemsController = {
 
 	getItemList: function(req, res) {
 
@@ -41,7 +41,7 @@ const itemController = {
 		var item = {
 			itemCode: req.body.itemCode,
 			itemDesciption:req.body.itemDesciption,
-            categoryID: req.body.categoryID,
+            categoryID: req.body.category,
 			unitID: req.body.unitID,
 			EOQ: req.body.EOQ,
             reorderLevel: req.body.reorderLevel,
@@ -85,7 +85,7 @@ const itemController = {
 		var item = {
             itemCode: req.body.itemCode,
 			itemDesciption:req.body.itemDesciption,
-            categoryID: req.body.categoryID,
+            categoryID: req.body.category,
 			unitID: req.body.unitID,
 			EOQ: req.body.EOQ,
             reorderLevel: req.body.reorderLevel,
@@ -97,7 +97,7 @@ const itemController = {
 		})
 	},
 
-	deleteItems: function(req, res) {
+	deleteItem: function(req, res) {
 		var itemID = req.body.itemID;
 		db.updateOne(Items, {_id: itemID}, {$set: {informationStatusID:"618a783cc8067bf46fbfd4e5"}}, function(flag){
 			if (flag) { }
@@ -105,4 +105,4 @@ const itemController = {
 	}
 };
 
-module.exports = itemController;
+module.exports = itemsController;

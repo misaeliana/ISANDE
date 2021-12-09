@@ -309,7 +309,7 @@ module.exports = function() {
 
 	this.getItems = function() {
 		return new Promise((resolve, reject) => {
-			db.findMany(Items, {informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'itemcode description category unit eoq reorderlevel ', function(result) {
+			db.findMany(Items, {informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'itemcode description categoryID unit eoq reorderlevel ', function(result) {
 				resolve (result);
 			});
 		});
