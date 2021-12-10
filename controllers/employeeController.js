@@ -26,7 +26,6 @@ const employeeController = {
 			}
 
 			var positions = await getAllPositions();
-
 			res.render('employeeList', {positions, employees});
 		}
 

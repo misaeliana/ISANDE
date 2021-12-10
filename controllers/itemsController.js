@@ -15,9 +15,10 @@ const itemsController = {
 			var items_temp = await getItems();
 			var items = [];
 			for (var i=0; i<items_temp.length; i++) {
+
+			
 				var categoryName = await getCategoryName(items_temp[i].categoryID);
 				var item = {
-                    itemID: items_temp[i]._id,
 					itemCode: items_temp[i].itemCode,
                     itemDescription:items_temp[i].itemDescription,
                     category: categoryName,
@@ -29,7 +30,6 @@ const itemsController = {
 			}
 
 			var categories = await getAllCategories();
-
 			res.render('supplierInformation', {categories, items});
 		}
 

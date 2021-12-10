@@ -43,7 +43,8 @@
             <p style="display: none" id="supplierID">{{_id}}</p>
             <h1 class="bold">{{name}}</h1> 
             <hr>
-            <div style= "margin-top: 20px;">
+             <div class="btn-edit-details"><button id="btn-edit-details" data-toggle="modal" data-target="#modal-edit-supplier">Edit Supplier Details</button></div>
+            <div style= "margin-top: 15px;">
                 <div>
                     <div class="label-container">
                         <div class="override-label"> Contact Person </div> 
@@ -65,14 +66,70 @@
                 </div>
 
                    
-                <div class="btn-edit-details"><button id="btn-edit-details" data-toggle="modal" data-target="#modal-edit-supplier">Edit Supplier Details</button></div>
+    
                 <div style="height: 30px"></div>
 
-                <div class="label-container">
+                   <div class="label-container">
+                       
                         <div class="override-label"> Notes </div>
-                        <label for="fname">First name:</label><br>
+                        {{!-- <div class="label-content">{{notes}}  </div> --}} 
+                         <div class="btn-edit-details"><button id="btn-edit-details" data-toggle="modal" data-target="#modal-edit-notes">Edit Notes</button></div>
+                       
                     </div>
+
+                    <!-- Modal Supplier Info-->
+                <div class="modal fade" id="modal-edit-notes" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="exampleModalLongTitle">Edit Notes</h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="edit-notes">
+                         <div>
+                            <textarea class="form-control" id="notes" type="text"></textarea>   
+                        </div> 
+                               
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" id="btn-save-notes">Save</button>
+                        </div>
+                    </div>
+                    </div>
+                </div>                       
                   
+  <script>
+
+
+       $(document).ready(function() {
+             
+             function capitalize(string){
+                    var words = string.toLowerCase().split(' ');
+                    for (i=0; i<words.length; i++)
+                        words[i] = words[i].charAt(0).toUpperCase() + words[i].substring(1);
+                    return words.join(' ');
+                };
+
+    //needs controller for notes
+                $('#btn-save-notes').click(function() {
+                    var notes =$('#notes').val();
+
+                         $.post('/getNotes', {notes})
+                                $('#modal-edit-notes').modal('hide');
+                                $('#btn-save-notes').trigger('reset'); 
+                            //  alert("Notes Added Successfully");
+                          // window.location.replace(`/supplierInformation/${result}`)
+                            location.reload() 
+               
+                })
+        })
+        </script> 
+
+
 
                  <!-- Modal Supplier Info-->
                 <div class="modal fade" id="modal-edit-supplier" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -124,30 +181,7 @@
                     return words.join(' ');
                 };
 
-       /*         $('#supplier-name').keyup(function() {
-                    var name = capitalize($('#supplier-name').val())
-                    $.get('/getCheckSupplierName', {name:name}, function(result) {
-                        if (result.name == name) {
-                            $('#supplier-name').css("border", "1px solid #B00000");
-                            $('#error-new-supplier-name').text("Supplier information already exists");
-                            $('#btn-add-new-supplier').prop('disasbled', true);
-                            $('#btn-add-new-supplier').css("background-color", "#b3b3b3");
-                        }
-                        else {
-                            $("#supplier-name").css("border", "1px solid #DDDDDD");
-                            $('#error-new-supplier-name').text("");
-                            $('#btn-add-new-supplier').prop('disasbled', false);
-                            $("#btn-add-new-suppler").css("background-color", "#0F84D9");
-                        }
-                    })
-                })*/
-
-
                 function errorMessage(type) {
-                /*    if (type == "noName") {
-                        $('#supplier-name').css("border", "1px solid #B00000");
-                        $('#error-new-supplier-name').text("Please input supplier name");
-                    } */
 
                     if (type == "noContactPerson") {
                         $('#contact-person').css("border", "1px solid #B00000");
@@ -167,14 +201,6 @@
                     }
                 }
 
-         /*       function supplierNameValidation(name) {
-                    if (name == null || name == "") {
-                        errorMessage("noName")
-                        return 1;
-                    }
-                    else 
-                        return 0;
-                }   */
 
                 function contactPersonValidation(contactPerson) {
                     if (contactPerson == null || contactPerson == "") {
@@ -214,24 +240,19 @@
 
                 $('#btn-update-supplier').click(function() {
                     var supplierID = $('#supplierID').text();
-
-                  //  var name = capitalize($('#supplier-name').val());
-
                     var contactPerson = $('#contact-person').val();
                     var number = $('#contact-number').val();  
                     var email = $('#email').val();
                     var address = $('#address').val();
 
-                    if (/*!supplierNameValidation(name) &&*/!contactPersonValidation(contactPerson) &&!numberValidation(number) 
+                    if (!contactPersonValidation(contactPerson) &&!numberValidation(number) 
                     && !emailValidation(email) && !addressValidation(address)) {
 
-                         //   $('#supplier-name').css("border", "1px solid #DDDDDD");
                             $('#contact-person').css("border", "1px solid #DDDDDD");
                             $('#contact-number').css("border", "1px solid #DDDDDD");
                             $('#address').css("border", "1px solid #DDDDDD");
                             $('#email').css("border", "1px solid #DDDDDD");
 
-                         //   $('#error-new-supplier-name').text(""); 
                             $('#error-contact-person').text("");
                             $('#error-contact-number').text("");
                             $('#error-email').text("");
