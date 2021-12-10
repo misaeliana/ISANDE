@@ -14,15 +14,22 @@ const manualCountController = {
             var shrinkageReasons = await getshrinkageReasons();
             var informationStatusID = await getInformationStatus("Active");
             var inventoryItems = await getInventoryItems(informationStatusID);
+            var items = [];
 
-            console.log(inventoryItems);
-            
-            // itemDescription
-            // systemCount
-            // unit
-            // reasons
+            for (var i = 0; i < inventoryItems.length; i++) {
+                var item = {
+                    itemDescription: inventoryItems[i].itemDescription,
+                    quantityAvailable: inventoryItems[i].quantityAvailable,
+                    unit: await getSpecificUnit(inventoryItems[i].unitID),
+                    category: inventoryItems[i].categoryID,
+                    reasons: shrinkageReasons,
+                };
 
-			res.render('updateManualCount', {inventoryTypes, shrinkageReasons, inventoryItems});
+                items.push(item);
+
+            }
+
+			res.render('updateManualCount', {inventoryTypes, items});
 		}
 
 		getInformation();

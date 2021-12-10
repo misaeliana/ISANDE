@@ -21,6 +21,10 @@ const Shrinkages = require('../models/ShrinkagesModel.js');
 
 const ShrinkagesReasons = require('../models/ShrinkageReasonsModel.js');
 
+const PaymentOptions = require('../models/PaymentOptionModel.js');
+
+const AccountPayments = require('../models/OnAccountPaymentModel.js')   
+
 require('../controllers/helpers.js')();
 
 const invoiceController = {
@@ -99,6 +103,14 @@ const invoiceController = {
 
     getViewSpecificInvoice: function(req, res) {
 
+        function getPaymentHistory(invoiceID) {
+            return new Promise((resolve, reject) => {
+                db.findMany(AccountPayments, {invoiceID:invoiceID}, 'datePaid amountPaid', function(result) {
+                    resolve (result)
+                })
+            })
+        }
+
 		async function getInformation() {
             var invoice_id = req.params.invoiceID;
             var invoice = await getInvoice(invoice_id);
@@ -151,7 +163,26 @@ const invoiceController = {
                 items.push(item);
             }
 
-			res.render('viewInvoice', {invoiceInfo, items, delivery, customer});
+            if (invoiceInfo.status == "Pending" || invoiceInfo.status == "Partial") {
+                var pending = true
+                var temp_paymentHistory = await getPaymentHistory(invoice_id)
+                var paymentTotal = 0
+                var paymentHistory = []
+                for (var i=0; i<temp_paymentHistory.length; i++) {
+                    var temp_date = new Date(temp_paymentHistory[i].datePaid)
+                    var payment = {
+                        date: temp_date.getMonth() + 1 + "/" + temp_date.getDate() + "/" + temp_date.getFullYear(),
+                        amountPaid: temp_paymentHistory[i].amountPaid
+                    }
+                    paymentTotal += temp_paymentHistory[i].amountPaid
+                    paymentHistory.push(payment)
+                }
+                var amountDue = invoiceInfo.total - paymentTotal
+                
+                res.render('viewInvoice', {invoiceInfo, items, delivery, pending, paymentHistory, paymentTotal, amountDue});
+            }
+            else
+			 res.render('viewInvoice', {invoiceInfo, items, delivery, customer});
 		}
 
 		getInformation();
@@ -249,8 +280,8 @@ const invoiceController = {
 		async function getInvoiceTypes () {
 			var itype = await getAllInvoiceTypes();
             var delperson = await getDeliveryPersonnel();
-            var customerList = await getCustomers();
-            res.render('newInvoice', {itype,delperson});
+            var paymentTypes = await getPaymentOptions()
+            res.render('newInvoice', {itype,delperson, paymentTypes});
 		}	//res.sendFile( dir+"/newInvoice.html");
         getInvoiceTypes();
     },
@@ -294,9 +325,9 @@ const invoiceController = {
 	},*/
     
     addNewInvoice: function(req,res){
-        async function saveItems(invoiceID, items) {
+        async function saveItems(invoiceID2, items) {
 			for (var i=0; i<items.length; i++) {
-				items[i].invoice_id = invoiceID;    
+				items[i].invoice_id = invoiceID2;
                 items[i].itemID = await getItemID(items[i].itemDescription);
 				items[i].quantity =  items[i].quantity;
                 items[i].discount = items[i].discount;
@@ -306,14 +337,15 @@ const invoiceController = {
 
 
         async function saveInvoice() {
-            var invoiceID = await getInvoiceNumber();
+            var invoiceNo = await getInvoiceNumber();
             var custID = await getCustomerID(req.body.custID);
              var invoice = {
-                invoiceID: invoiceID,
+                invoiceID: invoiceNo,
                 customerID: custID,
                 date: req.body.date,
                 typeID: req.body.typeID,
                 statusID:req.body.statusID,
+                paymentOptionID: req.body.paymentOption,
                 subtotal: req.body.subtotal,
                 VAT: req.body.VAT,
                 discount: req.body.discount,
@@ -321,14 +353,12 @@ const invoiceController = {
                 employeeID: req.body.employeeID
             };
             var items = JSON.parse(req.body.itemString);
-            var invoiceID = '';
-            console.log("deliveryDate: " + req.body.ddate);
-            console.log("deliveryNotes: "+ req.body.dnotes);
+            var invoiceID='';
             db.insertOneResult (Invoices, invoice, function(result) {
                 invoiceID = result._id;
                 if(req.body.typeID == '61a591c1233fa7f9abcd5726'){
                     var dpackage = {
-                        invoice_id: invoiceID,
+                        invoice_id: invoiceID2,
                         deliveryDate: req.body.ddate,
                         dateDelivered: null,
                         deliveryPersonnel: req.body.employeeID,
@@ -337,13 +367,12 @@ const invoiceController = {
                     db.insertOne(deliveries, dpackage, function(flag) {if (flag) {}});
                     console.log("delivery invoice added:");
                 }
+                saveItems(invoiceID,items);
                 //console.log("invoice added:")
                 //console.log('invoiceID: ' +invoiceID);
-               saveItems(invoiceID,items);
         });
-        }
        
-
+        }
         saveInvoice();
     },
 
@@ -827,8 +856,35 @@ const invoiceController = {
         processReturn(oldInvoiceID, returns).then(notReturnedItems => {
             newInvoice(newInvoiceInfo, notReturnedItems, newInvoiceItems, deliveryInfo)
         })
-        
+    },
 
+    payOneInvoice: function(req, res) {
+
+        async function pay() {
+            var amountPaid = req.body.amountPaid
+            var invoiceID = req.body.invoiceID
+
+            var invoiceTotal = await getInvoiceTotal(invoiceID);
+
+            var previousPayments = await getAmountPaid(invoiceID)
+
+            if ((parseFloat(amountPaid)+parseFloat(previousPayments)) ==  invoiceTotal)
+                db.updateOne(Invoices, {_id:invoiceID}, {statusID:"619785b0d9a967328c1e8fa6"}, function(flag){
+                    if (flag) { }
+                })
+
+            var newPayment = {
+                invoiceID: invoiceID,
+                datePaid: new Date(),
+                amountPaid: amountPaid
+            }
+
+            db.insertOne(AccountPayments, newPayment, function(flag) {
+            })
+            res.sendStatus(200)
+        }
+
+        pay()
     }
 };
 

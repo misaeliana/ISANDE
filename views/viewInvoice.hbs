@@ -144,12 +144,68 @@
                         <div class="summary-text">Total</div>
                         <div class="summary-info-container"><div class="summary-info">₱ {{invoiceInfo.total}}</div></div>
                     </div>
+                    <br>
+
+                    {{#if pending}}
+                        <hr style="margin-top: 0px;">
+                        <h3 class ="bold h3-left">Payment History</h3>
+                        <table class="table" style="margin-top: 30px">
+                            <thead style="background-color: #2F5D62; color: white">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody> 
+                                {{#each paymentHistory}}
+                                    <tr>
+                                        <td>{{date}}</td>
+                                        <td>{{amountPaid}}</td> 
+                                    </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+
+
+                        <div class="summary-container">
+                        <div class="summary-text">Amount Paid</div>
+                        <div class="summary-info-container"><div class="summary-info">₱ {{paymentTotal}}</div></div>
+                    </div>
+                    <div class="summary-container">    
+                        <div class="summary-text">Amount Due</div>
+                        <div class="summary-info-container"><div class="summary-info">₱ {{amountDue}}</div></div>
+                    </div>
+                    {{/if}}
 
                     <div style="height: 10px"></div>
 
                     <p>Temporary button -Tiffany</p>
                     <button id="return">Return</button>
 
+                     <!---PAYMENT MODAL-->
+                    <div class="modal fade" id="modal-new-payment" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="exampleModalLongTitle">New Payment</h3>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <label for="input-new-payment">Amount</label> 
+                                <input type="number" id="input-new-payment">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" id="btn-save-payment">Save</button>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    {{#if pending}}
+                        <div class="btn-export-invoice"><button class="btn-light-blue" id="btn-pay-invoice" data-toggle="modal" data-target="#modal-new-payment">New Payment</button></div>
+                    {{/if}}
                     <div class="btn-export-invoice"><button class="btn-dark-blue" id="btn-export-invoice">Export</button></div>
 
                     <div style="height: 20px"></div>
@@ -169,6 +225,16 @@
                     var invoiceID = address[address.length -1]
 
                     window.location = `/return/${invoiceID}`
+                })
+
+                $('#btn-save-payment').click(function () {
+                    var address = window.location.pathname.split('/');
+                    var invoiceID = address[address.length -1]
+                    var amountPaid = $('#input-new-payment').val()
+                    $.post('/payOneInvoice', {invoiceID, amountPaid}, function(result) {
+                        alert('Invoice has been successfully updated')
+                        window.location.reload()
+                    })
                 })
                 
             })
