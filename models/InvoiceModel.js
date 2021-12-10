@@ -28,6 +28,11 @@ var InvoicesSchema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
+
+	paymentOptionID: {
+		type: String,
+		required: true
+	},
 	
 	subtotal: {
 		type: Number,

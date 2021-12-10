@@ -33,6 +33,8 @@ router.post('/postUpdateCustomerInformation', customerController.postUpdateInfor
 
 router.post('/deleteCustomer', customerController.deleteCustomer);
 
+router.post('/payAccount', customerController.payAccount);
+
 //--SUPPLIER--
 
 router.get('/supplierList', supplierController.getSupplierList);
@@ -173,6 +175,8 @@ router.get('/checkQuantity', invoiceController.checkQuantity);
 router.get('/getItemInfo', invoiceController.getItemInfo);
 
 router.post('/saveReturn', invoiceController.saveReturn);
+
+router.post('/payOneInvoice', invoiceController.payOneInvoice)
 
 
 //--DELIVERY--

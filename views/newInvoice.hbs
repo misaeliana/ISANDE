@@ -46,29 +46,34 @@
             </div> 
             <hr>
 
+        <div style="display: flex; align-items: center;">
             <label for="dropdown-new-invoice-type" style="margin-right: 10px">Type</label>
             <select class="dropdown" id="drop-down-new-invoice-type" style="margin-right: 10px">
                      {{#each itype}}
                         <option value={{_id}}>{{type}}</option>
                      {{/each}}
             </select>
-            
-            <label class="date-label" for="deliverydate">Delivery Date</label>
-            <input style="height: 34px" type="date" id="delivery-date" name="deliverydate">
 
             <label for="dropdown-payment-type" style="margin-right: 10px">Payment Type</label>
             <select class="dropdown" id="dropdown-payment-type" style="margin-right: 10px">
-                <option value="all-type" selected>All</option>
-                <option value="{{_id}}">{{ingredientType}}</option>
+                {{#each paymentTypes}}
+                    <option value="{{_id}}">{{paymentOption}}</option>
+                {{/each}}
             </select>
 
-            <label  id = "label-delivery" for="dropdown-delivery-personnel" style="margin-right: 10px">Delivery Personnel</label>
-            <select class="dropdown" id="dropdown-delivery-personnel" style="margin-right: 10px">
-                    <option value="all-type" selected>All</option>
-                     {{#each delperson}}
-                        <option value={{_id}}>{{name}}</option>
-                    {{/each}}
-            </select>
+            <div class="delivery-info" style="display:none;">
+                <label class="date-label" for="deliverydate">Delivery Date</label>
+                <input style="height: 34px" type="date" id="delivery-date" name="deliverydate">
+
+                <label  id = "label-delivery" for="dropdown-delivery-personnel" style="margin-right: 10px">Delivery Personnel</label>
+                <select class="dropdown" id="dropdown-delivery-personnel" style="margin-right: 10px">
+                        <option value="no-selected" selected>--Select Delivery Personnel</option>
+                         {{#each delperson}}
+                            <option value={{_id}}>{{name}}</option>
+                        {{/each}}
+                </select>
+            </div>
+        </div>
 
             <div class="header-colored-bg" style="margin-top: 20px;">
                 <h3 class ="bold header-text">Customer Details</h3>
@@ -83,11 +88,11 @@
                         <option value={{_id}}>{{name}}</option>
                       {{/each}}
                     </select>-->
-                    <textarea class="form-control margin-bottom-10" id="address" name="address" placeholder="Address"></textarea> <!--style="display:none"-->
-                    <input type="text" class="form-control margin-bottom-10" id="contactNumber" name="contactNumber" placeholder="Contact Number"> <!--style="display:none"-->
+                    <textarea class="form-control margin-bottom-10 delivery-info" id="address" name="address" placeholder="Address"></textarea> <!--style="display:none"-->
+                    <input type="text" class="form-control margin-bottom-10 delivery-info" id="contactNumber" name="contactNumber" placeholder="Contact Number"> <!--style="display:none"-->
                     <div>
                         <div>
-                            <textarea class="form-control" id="notes" name="notes" placeholder="Delivery Notes"></textarea>
+                            <textarea class="form-control delivery-info" id="notes" name="notes" placeholder="Delivery Notes"></textarea>
                         </div>
                     </div>
                 </div>
@@ -132,19 +137,19 @@
                     <br> 
                     <div class="summary-container">
                         <div class="summary-text">Subtotal </div>
-                        <div class="summary-info-container"><div class="summary-info" style="text-align:right"> ₱<div id ="subtotalbox"></div></div></div>
+                        <div class="summary-info-container"><div class="summary-info" style="text-align:right">₱ 0 <div id ="subtotalbox"></div></div></div>
                     </div>
                     <div class="summary-container">
                         <div class="summary-text">VAT </div>
-                        <div class="summary-info-container" ><div class="summary-info"> ₱<div id ="vatbox"></div></div></div>
+                        <div class="summary-info-container" ><div class="summary-info">₱ 0<div id ="vatbox"></div></div></div>
                     </div>
                     <div class="summary-container">    
                         <div class="summary-text">Discount </div>
-                        <div class="summary-info-container"><div class="summary-info"> ₱<div id ="disbox"></div></div></div>
+                        <div class="summary-info-container"><div class="summary-info">₱ 0<div id ="disbox"></div></div></div>
                     </div>
                     <div class="summary-container">
                         <div class="summary-text">Total </div>
-                        <div class="summary-info-container" ><div class="summary-info"> ₱<div id ="totbox"></div></div></div>
+                        <div class="summary-info-container" ><div class="summary-info">₱ 0<div id ="totbox"></div></div></div>
                     </div>
 
                     <div style="height: 10px"></div>
@@ -191,6 +196,7 @@
 
         <script>
             $(document).ready(function() {
+
                 $('#address').css('display', 'none');
                 $('#contactNumber').css('display', 'none');
 
@@ -213,7 +219,6 @@
                     else if (qty == "" && itemDesc !="")
                         return 2
                 }
-                 
 
                  function custfilled(customerName) {
                     var custField = $('#customerName').val();
@@ -231,20 +236,10 @@
 
                 $('#drop-down-new-invoice-type').on('change', function() {
                     if(this.value == '6197863ac4f0088e95c9bf84'){
-                        $('#address').css('display', 'none');
-                        $('#contactNumber').css('display', 'none');
-                        //$('#dropdown-delivery-personnel').css('display', 'none');
-                        //$('#label-delivery').css('display', 'none');
-                        //alert("in-store")
+                        $('.delivery-info').css('display', 'none')
                     }
                     else if(this.value == '61a591c1233fa7f9abcd5726'){
-                        $('#address').css('display', 'block');
-                        $('#contactNumber').css('display', 'block');
-                        /*$('#dropdown-delivery-personnel').css('visibility', 'visible');
-                        $('#label-delivery').css('display', 'block');
-                        }*/
-                       
-                        //alert( $(this).find(":selected").val() );
+                        $('.delivery-info').css('display', 'block');
                     }
                 })
 
@@ -425,6 +420,7 @@
                 $('.modal').modal('show');
                 //alert('clicked!');
             }); 
+
                // let i = 0;
                 $('#btn-save-invoice').click(function() {
                     var orderedItems = [];
@@ -461,13 +457,14 @@
                     statusID = '619785b0d9a967328c1e8fa6'
                     break;
                     default:}
+                    var paymentOption = $('#dropdown-payment-type').val()
                     var subtotal = $('#subtotalbox').val();
                     var VAT = $('#vatbox').val();
                     var discount = $('#disbox').val();
                     var total = $('#totbox').val();
                     var employeeID = $('#dropdown-delivery-personnel').val();
 
-               $.post('/createNewInvoice', {custID,date,typeID,statusID,subtotal,VAT,discount,total,employeeID,ddate,dnotes,itemString}, function(result) {})
+               $.post('/createNewInvoice', {custID,date,typeID,statusID,paymentOption,subtotal,VAT,discount,total,employeeID,ddate,dnotes,itemString}, function(result) {})
                 })
             }) 
         </script>

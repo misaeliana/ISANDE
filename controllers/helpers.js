@@ -43,6 +43,10 @@ const ReturnReasons = require('../models/ReturnReasonsModel.js');
 
 const ShrinkageReasons = require('../models/ShrinkageReasonsModel.js');
 
+const PaymentOptions = require('../models/PaymentOptionModel.js');
+
+const AccountPayments = require('../models/OnAccountPaymentModel.js')
+
 module.exports = function() {
 	this.getAllPositions = function() {
 		return new Promise((resolve, reject) => {
@@ -601,6 +605,42 @@ module.exports = function() {
 		return new Promise((resolve, reject) => {
 			db.findMany(ShrinkageReasons, {}, '', function(result) {
 				resolve(result)
+			})
+		})
+	},
+
+	this.getPaymentOptions = function() {
+		return new Promise((resolve, reject) => {
+			db.findMany(PaymentOptions, {}, '', function(result) {
+				resolve(result)
+			})
+		})
+	},
+
+	this.getAmountPaid = function(invoiceID){
+			return new Promise((resolve, reject) => {
+				db.findMany(AccountPayments, {invoiceID:invoiceID}, 'amountPaid', function(result) {
+					var amountPaid = 0
+					for (var i=0; i<result.length; i++)
+						amountPaid +=  result[i].amountPaid
+					resolve(amountPaid)
+				})
+			})
+		}
+
+	this.getUnpaidInvoices = function(customerID) {
+		return new Promise ((resolve, reject) => {
+			db.findMany(Invoices, {$and:[{customerID:customerID}, {$or: [ {statusID:"619785d78094faf8c10d1484"}, {statusID:"61b2df709f9cd4edddf21d68"} ]} ]} , 'date invoiceID total', function(result) {
+				resolve (result)
+			})
+		})
+	},
+
+
+	this.getInvoiceTotal = function(invoiceID){
+		return new Promise((resolve, reject) => {
+			db.findOne(Invoices, {_id: invoiceID}, 'total', function(result) {
+				resolve(result.total)
 			})
 		})
 	}

@@ -35,17 +35,17 @@
         <div class="content">
             <br>
             <p style="display: none" id="customerID">{{_id}}</p>
-            <h1 class="bold">{{name}}</h1> 
+            <h1 class="bold">{{customerInfo.name}}</h1> 
             <hr>
             <div style= "margin-top: 20px;">
                 <div>
                     <div class="label-container">
                         <div class="override-label">Contact Number</div> 
-                        <div class="label-content">{{number}}</div>
+                        <div class="label-content">{{customerInfo.number}}</div>
                     </div>
                     <div class="label-container">
                         <div class="override-label">Address</div> 
-                        <div class="label-content">{{address}}</div>
+                        <div class="label-content">{{customerInfo.address}}</div>
                     </div>
                 </div>
 
@@ -53,7 +53,7 @@
                    
                 <div class="btn-edit-details"><button id="btn-edit-details" data-toggle="modal" data-target="#modal-edit-customer">Edit Details</button></div>
 
-                 <!-- Modal -->
+                 <!-- EDIT CUSTOMER INFORMATION MODAL -->
                 <div class="modal fade" id="modal-edit-customer" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
@@ -83,6 +83,84 @@
 
                 <div style="height: 50px"></div>
 
+                <div class="display-flex" style="margin-top: 30px">
+                    <h3 class ="bold h3-left">Customer Invoices</h3>
+                </div>
+                <table class="table" id="table-customer-all-invoice">
+                        <thead style="background-color: #2F5D62; color: white">
+                            <tr>
+                                <th>Date</th>
+                                <th>Invoice #</th>
+                                <th>Total</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>     
+                            {{#each customerInvoices}}
+                                <tr class="link" style="cursor: pointer" data-href="/invoices/{{invoiceID}}">
+                                    <td>{{date}}</td>
+                                    <td>{{invoiceNumber}}</td>
+                                    <td>{{total}}</td>
+                                    <td>{{type}}</td>
+                                    <td>{{status}}</td>
+                                </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+
+
+                <div style="height: 50px"></div>
+
+                <div class="display-flex" style="margin-top: 30px">
+                    <h3 class ="bold h3-left">Accounts Payable</h3>
+                    <button class="btn-light-blue" data-toggle="modal" data-target="#modal-new-payment">New Payment</button>
+                </div>
+
+                <!---PAYMENT MODAL-->
+                <div class="modal fade" id="modal-new-payment" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="exampleModalLongTitle">New Payment</h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <label for="input-new-payment">Amount</label> 
+                            <input type="number" id="input-new-payment">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" id="btn-save-payment">Save</button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                <table class="table" id="table-customer-all-invoice">
+                        <thead style="background-color: #2F5D62; color: white">
+                            <tr>
+                                <th>Date</th>
+                                <th>Invoice #</th>
+                                <th>Total</th>
+                                <th>Paid</th>
+                                <th>Due</th>
+                            </tr>
+                        </thead>
+                        <tbody>     
+                            {{#each unpaidInvoices}}
+                                <tr class="link" style="cursor: pointer" data-href="/invoices/{{invoiceID}}">
+                                    <td>{{date}}</td>
+                                    <td>{{invoiceNumber}}</td>
+                                    <td>{{total}}</td>
+                                    <td>{{paid}}</td>
+                                    <td>{{due}}</td>
+                                </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+
                <!-- <div class="label-big-container"> 
                     <div class="label-wide">
                         <div class="navbar-logo">Notes</div>
@@ -99,6 +177,10 @@
 
         <script>
             $(document).ready(function() {
+
+                $(".link").click(function() {
+                    window.location = $(this).data("href");
+                });
 
                 function capitalize(string){
                     var words = string.toLowerCase().split(' ');
@@ -202,8 +284,16 @@
                         alert("Customer information was deleted");
                         window.location.replace("/customerList")
                     }
-                    else { }
+                })
 
+                $('#btn-save-payment').click(function () {
+                    var address = window.location.pathname.split('/');
+                    var customerID = address[address.length -1]
+                    var amountPaid = $('#input-new-payment').val()
+                    $.post('/payAccount', {customerID, amountPaid}, function(result) {
+                        alert('Accounts updated')
+                        window.location.reload()
+                    })
                 })
             })
 
