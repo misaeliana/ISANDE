@@ -280,7 +280,6 @@ const invoiceController = {
 		async function getInvoiceTypes () {
 			var itype = await getAllInvoiceTypes();
             var delperson = await getDeliveryPersonnel();
-            var customerList = await getCustomers();
             var paymentTypes = await getPaymentOptions()
             res.render('newInvoice', {itype,delperson, paymentTypes});
 		}	//res.sendFile( dir+"/newInvoice.html");
@@ -326,9 +325,9 @@ const invoiceController = {
 	},*/
     
     addNewInvoice: function(req,res){
-        async function saveItems(invoiceID, items) {
+        async function saveItems(invoiceID2, items) {
 			for (var i=0; i<items.length; i++) {
-				items[i].invoice_id = invoiceID;    
+				items[i].invoice_id = invoiceID2;
                 items[i].itemID = await getItemID(items[i].itemDescription);
 				items[i].quantity =  items[i].quantity;
                 items[i].discount = items[i].discount;
@@ -338,10 +337,10 @@ const invoiceController = {
 
 
         async function saveInvoice() {
-            var invoiceID = await getInvoiceNumber();
+            var invoiceNo = await getInvoiceNumber();
             var custID = await getCustomerID(req.body.custID);
              var invoice = {
-                invoiceID: invoiceID,
+                invoiceID: invoiceNo,
                 customerID: custID,
                 date: req.body.date,
                 typeID: req.body.typeID,
@@ -351,17 +350,15 @@ const invoiceController = {
                 VAT: req.body.VAT,
                 discount: req.body.discount,
                 total:req.body.total,
-                employeeID: "619fb6910640ab1d9518d3b6"
+                employeeID: req.body.employeeID
             };
             var items = JSON.parse(req.body.itemString);
-            var invoiceID = '';
-            console.log("deliveryDate: " + req.body.ddate);
-            console.log("deliveryNotes: "+ req.body.dnotes);
+            var invoiceID='';
             db.insertOneResult (Invoices, invoice, function(result) {
                 invoiceID = result._id;
                 if(req.body.typeID == '61a591c1233fa7f9abcd5726'){
                     var dpackage = {
-                        invoice_id: invoiceID,
+                        invoice_id: invoiceID2,
                         deliveryDate: req.body.ddate,
                         dateDelivered: null,
                         deliveryPersonnel: req.body.employeeID,
@@ -370,13 +367,12 @@ const invoiceController = {
                     db.insertOne(deliveries, dpackage, function(flag) {if (flag) {}});
                     console.log("delivery invoice added:");
                 }
+                saveItems(invoiceID,items);
                 //console.log("invoice added:")
                 //console.log('invoiceID: ' +invoiceID);
-               saveItems(invoiceID,items);
         });
-        }
        
-
+        }
         saveInvoice();
     },
 

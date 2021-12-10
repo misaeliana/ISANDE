@@ -57,7 +57,7 @@
             <label for="dropdown-payment-type" style="margin-right: 10px">Payment Type</label>
             <select class="dropdown" id="dropdown-payment-type" style="margin-right: 10px">
                 {{#each paymentTypes}}
-                    <option value="{{_id}}">{{paymentOption}}</option>
+                    <option value={{_id}}>{{paymentOption}}</option>
                 {{/each}}
             </select>
 
@@ -111,7 +111,7 @@
                 <div style="height: 45px"></div>
 
                 <div id="div-warning-new-invoice">
-                    <p id="text-warning-new-invoice" style="color: red;"></p>
+                    <p id="text-warning-new-invoice" style="color: red;"> </p>
                 </div>
 
                     <table class="table">
@@ -241,6 +241,7 @@
                     else if(this.value == '61a591c1233fa7f9abcd5726'){
                         $('.delivery-info').css('display', 'block');
                     }
+                    alert(this.value)
                 })
 
                 /*Modal functions*/
@@ -338,7 +339,6 @@
                 $('#addItem').click(function() {
                    var itemDesc = $('#itemDescription').val();
                    var quantity = $('#qty').val();
-                   var qRemaining = 0;
                    var discount = $('#discount').val();
                    
                     
@@ -353,25 +353,29 @@
                         var discountAmount = sellingPrice * dis;
                         var totalPrice = (sellingPrice*quantity)- discountAmount;
 
-                        amount += totalPrice;
-                        discountTotal += discountAmount;
-
-                        var vat = (amount *.12);
-                        var sub = (amount - vat);
-                       
+                        var element = $('#table-body-item-list tr').filter(function(){
+                            return this.innerHTML.indexOf(itemDesc) !== -1;
+                        })
+                        if (element.length){
+                            //alert("element at index already inside!")
+                            //console.log(element)
+                             $('#text-warning-new-invoice').text("Item already exists in cart!");
+                        }
+                        else
+                        {
                         $('#table-body-item-list').append(
-                            
                         `<tr>
                             <td class="itemDescription">${itemDesc}</td>
                             <td class="qty">${quantity}</td>
                             <td class="unit">Piece</td>
-                            <td class="price">${sellingPrice}</td>
-                            <td class="discount" style="color:red">${discountAmount}</td>
-                            <td class = "amount">${totalPrice}</td>
+                            <td class="price">₱${sellingPrice}</td>
+                            <td class="discount" style="color:red">₱${discountAmount}</td>
+                            <td class = "amount">₱${totalPrice}</td>
                             <td><button class="delete-button add-stock-delete-btn" id="btn-delete-item"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
                         </tr>`);
                         //console.log(amount);
-                        }
+                        
+                        }}
                         updateData();
                     })
 
@@ -381,12 +385,12 @@
                     var vat = 0;
                     var discountTotal = 0;
                     var amount = 0;
-                         $("#table-body-item-list > tr").each(function () {
-                            amount += $(this).children('.amount').text() ,
-                            discountTotal +=$(this).children('.discount').text()
+                    $("#table-body-item-list > tr").each(function () {
+                            amount += parseInt($(this).children('.amount').text().replace('₱','')),
+                            discountTotal += parseInt($(this).children('.discount').text().replace('₱',''))
                     }); 
-                       var vat = (amount *.12);
-                       var sub = (amount - vat);
+                     vat = (amount *.12);
+                     sub = (amount - vat);
 
 
 
@@ -429,8 +433,7 @@
                             invoice_id: '',
                             itemDescription: $(this).children('.itemDescription').text(),
                             quantity: $(this).children('.qty').text(),
-                            discount: $(this).children('.discount').text(),
-                            salesID: 0
+                            discount: $(this).children('.discount').text().replace('₱',''),
                         }
                         orderedItems.push(item);
                     }); 
@@ -444,27 +447,42 @@
                     var ddate = date;
                     var dnotes = '';
 
-                    var typeID = $('#drop-down-new-invoice-type').val();    
-                    switch(typeID) {
-                        //delivery type
-                    case '61a591c1233fa7f9abcd5726':
-                    statusID = '619785d78094faf8c10d1484';
-                    var ddate = $('#delivery-date').val();
-                    var dnotes = $('#notes').val();
-                    break;
-                        //In-store type
-                    case '6197863ac4f0088e95c9bf84':
-                    statusID = '619785b0d9a967328c1e8fa6'
-                    break;
-                    default:}
-                    var paymentOption = $('#dropdown-payment-type').val()
+                    var typeID = $('#drop-down-new-invoice-type').val();   
+                    var paymentOption = $('#dropdown-payment-type').val();
+                    var employeeID = $('#dropdown-delivery-personnel').val();
+
+                    switch(typeID){
+                        case '61a591c1233fa7f9abcd5726':
+                        if(employeeID == 'no-selected'){
+                        $('#text-warning-new-invoice').text("Please Select a Delivery employee!")}
+                        if(paymentOption == '61b2de7f9f9cd4edddf21d65'){
+                            statusID = '619785d78094faf8c10d1484';
+                            console.log("Value: Delivery" + typeID)
+                        }
+                        if(paymentOption == '61b2de879f9cd4edddf21d66'){
+                             statusID = '619785d78094faf8c10d1484';
+                            console.log("Value: Delivery"+ typeID)
+                        }
+                        if(paymentOption == '61b2de8d9f9cd4edddf21d67'){
+                            statusID = '61b2df709f9cd4edddf21d68'
+                            console.log("Value: Delivery"+ typeID)
+                        }
+                        break;
+                        case '6197863ac4f0088e95c9bf84':
+                        if(paymentOption == '61b2de709f9cd4edddf21d64'){
+                            statusID = '619785b0d9a967328c1e8fa6'
+                            console.log("Value: In-store"+ typeID)
+                        }
+                        break;
+                    }
+
                     var subtotal = $('#subtotalbox').val();
                     var VAT = $('#vatbox').val();
                     var discount = $('#disbox').val();
                     var total = $('#totbox').val();
-                    var employeeID = $('#dropdown-delivery-personnel').val();
+                   
 
-               $.post('/createNewInvoice', {custID,date,typeID,statusID,paymentOption,subtotal,VAT,discount,total,employeeID,ddate,dnotes,itemString}, function(result) {})
+               $.post('/createNewInvoice', {custID,date,typeID,statusID,paymentOption,subtotal,VAT,discount,total,employeeID,ddate,dnotes,itemString}, function(result) {}) 
                 })
             }) 
         </script>
