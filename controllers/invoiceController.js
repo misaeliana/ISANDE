@@ -340,9 +340,9 @@ const invoiceController = {
             })
         }
 
-        async function saveItems(invoiceID2, items) {
+        async function saveItems(invoiceID, items) {
 			for (var i=0; i<items.length; i++) {
-				items[i].invoice_id = invoiceID2;
+				items[i].invoice_id = invoiceID;
                 items[i].itemID = await getItemID(items[i].itemDescription);
 				items[i].quantity =  items[i].quantity;
                 items[i].discount = items[i].discount;
@@ -377,7 +377,7 @@ const invoiceController = {
                 invoiceID = result._id;
                 if(req.body.typeID == '61a591c1233fa7f9abcd5726'){
                     var dpackage = {
-                        invoice_id: invoiceID2,
+                        invoice_id: invoiceID,
                         deliveryDate: req.body.ddate,
                         dateDelivered: null,
                         deliveryPersonnel: req.body.employeeID,

@@ -10,6 +10,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.js"></script>
 
         <link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
         <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
@@ -95,6 +96,9 @@
                             <textarea class="form-control delivery-info" id="notes" name="notes" placeholder="Delivery Notes"></textarea>
                         </div>
                     </div>
+                    <div>
+                        <p id = "text-warning-customerdetails" style="color: red;"></p>
+                    </div>
                 </div>
 
                 <div class="header-colored-bg" style="margin-top: 15px; margin-bottom: 10px">
@@ -131,25 +135,25 @@
                     </table>
 
                     <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: right; text-align: right;" type="text" class="form-control margin-bottom-10" id="total-discount" name="discount" placeholder="Discount">
-
+                
                     <br> 
                     <br> 
                     <br> 
                     <div class="summary-container">
                         <div class="summary-text">Subtotal </div>
-                        <div class="summary-info-container"><div class="summary-info" style="text-align:right">₱ 0 <div id ="subtotalbox"></div></div></div>
+                        <div class="summary-info-container"><div class="summary-info" style="text-align:right">₱{{sub}}<div id ="subtotalbox"></div></div></div>
                     </div>
                     <div class="summary-container">
                         <div class="summary-text">VAT </div>
-                        <div class="summary-info-container" ><div class="summary-info">₱ 0<div id ="vatbox"></div></div></div>
+                        <div class="summary-info-container" ><div class="summary-info">₱{{vat}}<div id ="vatbox"></div></div></div>
                     </div>
                     <div class="summary-container">    
                         <div class="summary-text">Discount </div>
-                        <div class="summary-info-container"><div class="summary-info">₱ 0<div id ="disbox"></div></div></div>
+                        <div class="summary-info-container"><div class="summary-info">₱{{discountTotal}}<div id ="disbox"></div></div></div>
                     </div>
                     <div class="summary-container">
                         <div class="summary-text">Total </div>
-                        <div class="summary-info-container" ><div class="summary-info">₱ 0<div id ="totbox"></div></div></div>
+                        <div class="summary-info-container" ><div class="summary-info">₱{{amount}}<div id ="totbox"></div></div></div>
                     </div>
 
                     <div style="height: 10px"></div>
@@ -197,8 +201,8 @@
         <script>
             $(document).ready(function() {
 
-                $('#address').css('display', 'none');
-                $('#contactNumber').css('display', 'none');
+                $('.delivery-info').css('display', 'none');
+                $('').css('display', 'none')
 
                 var today = new Date();
                 var dd = String(today.getDate()).padStart(2, '0');
@@ -220,18 +224,6 @@
                         return 2
                 }
 
-                 function custfilled(customerName) {
-                    var custField = $('#customerName').val();
-
-                    if(custField == ""){
-                        return 1
-                    }
-                    else
-                    {
-                        return 0
-                    }
-                }
-
 
 
                 $('#drop-down-new-invoice-type').on('change', function() {
@@ -241,7 +233,7 @@
                     else if(this.value == '61a591c1233fa7f9abcd5726'){
                         $('.delivery-info').css('display', 'block');
                     }
-                    alert(this.value)
+                    //alert(this.value)
                 })
 
                 /*Modal functions*/
@@ -303,7 +295,7 @@
                 .appendTo(ul);
                 };
 
-                 $("#customer-Name" ).autocomplete({
+                 $("#customer-Name").autocomplete({
                     source: function(request, response) {
                     $.ajax({
                                 url: `/getCustomerList?query=${request.term}`,
@@ -350,9 +342,8 @@
                         else{
                         var sellingPrice = result.sellingPrice;
                         var dis = discount/100;
-                        var discountAmount = sellingPrice * dis;
-                        var totalPrice = (sellingPrice*quantity)- discountAmount;
-
+                        var discountAmount = parseFloat(sellingPrice * dis).toFixed(2);
+                        var totalPrice = parseFloat((sellingPrice*quantity)- discountAmount).toFixed(2);
                         var element = $('#table-body-item-list tr').filter(function(){
                             return this.innerHTML.indexOf(itemDesc) !== -1;
                         })
@@ -393,7 +384,7 @@
                      sub = (amount - vat);
 
 
-
+                        
                         $('#subtotalbox').val(sub);
                         $('#subtotalbox').text(parseFloat(sub).toFixed(2)); 
 
@@ -424,10 +415,72 @@
                 $('.modal').modal('show');
                 //alert('clicked!');
             }); 
+            function invoicefilled(){
+                switch($('#drop-down-new-invoice-type').val()){
+                    case '61a591c1233fa7f9abcd5726':
+                      var errmsg = 'There is no input data in the hightlighted fields!!';
+                    var err = 0;
+                    if ($('#customer-Name').val()==''){
+                    $('#customer-Name').css("border","1px solid red")
+                    err +=1;
+                    }
+                    if ($('#address').val()==''){
+                    $('#address').css("border","1px solid red")
+                    err +=1;
+                    }
+                    if($('#contactNumber').val()==''){
+                    $('#contactNumber').css("border","1px solid red")
+                    err +=1;
+                    }
+                    if($('#delivery-date').val()==''){
+                    $('#delivery-date').css("border","1px solid red")
+                    err +=1;
+                    }
+                    if($('#dropdown-delivery-personnel').val()=='no-selected'){
+                    $('#dropdown-delivery-personnel').css("border","1px solid red")
+                    err +=1;
+                    }
+                    if(err >= 1){
+                         $('#text-warning-customerdetails').text(errmsg);
+                         return 0;
+                    }
+                    else{
+                        $('#text-warning-customerdetails').text('');
+                        return 1;
+                    }
+                    break;
+                    case '6197863ac4f0088e95c9bf84':
+                     if ($('#customer-Name').val()==''){
+                     $('#text-warning-customerdetails').text("Customer field is missing");
+                     return 0;
+                    }
+                    else{
+                        return 1;
+                    }
+                    
+                }
+
+            }
 
                // let i = 0;
                 $('#btn-save-invoice').click(function() {
+                    var check = invoicefilled();
+                    if(check==1){
                     var orderedItems = [];
+                     var itemString = JSON.stringify(orderedItems);  
+                   
+                    
+                    var custID = $('#customer-Name').val();
+                    var statusID = '0';
+                    var address = '';
+                    var date =  $('#dateToday').text();
+                    var ddate = $('#delivery-date').val();
+                    var dnotes = '';
+
+                    var typeID = $('#drop-down-new-invoice-type').val();   
+                    var paymentOption = $('#dropdown-payment-type').val();
+                    var employeeID = $('#dropdown-delivery-personnel').val();
+
                     $("#table-body-item-list > tr").each(function () {
                         var item = {
                             invoice_id: '',
@@ -437,41 +490,25 @@
                         }
                         orderedItems.push(item);
                     }); 
-                    var itemString = JSON.stringify(orderedItems);  
-                   
-                    
-                    var custID = $('#customer-Name').val();
-                    var statusID = '0';
-                    var address = '';
-                    var date =  $('#dateToday').text();
-                    var ddate = date;
-                    var dnotes = '';
-
-                    var typeID = $('#drop-down-new-invoice-type').val();   
-                    var paymentOption = $('#dropdown-payment-type').val();
-                    var employeeID = $('#dropdown-delivery-personnel').val();
-
-                    switch(typeID){
+                        switch(typeID){
                         case '61a591c1233fa7f9abcd5726':
-                        if(employeeID == 'no-selected'){
-                        $('#text-warning-new-invoice').text("Please Select a Delivery employee!")}
+                         $('#delivery-date').css("border","1px solid black")
+                        if(paymentOption == '61b2de709f9cd4edddf21d64'){
+                            statusID = '619785b0d9a967328c1e8fa6'
+                        }
                         if(paymentOption == '61b2de7f9f9cd4edddf21d65'){
                             statusID = '619785d78094faf8c10d1484';
-                            console.log("Value: Delivery" + typeID)
                         }
                         if(paymentOption == '61b2de879f9cd4edddf21d66'){
                              statusID = '619785d78094faf8c10d1484';
-                            console.log("Value: Delivery"+ typeID)
                         }
                         if(paymentOption == '61b2de8d9f9cd4edddf21d67'){
                             statusID = '61b2df709f9cd4edddf21d68'
-                            console.log("Value: Delivery"+ typeID)
                         }
                         break;
                         case '6197863ac4f0088e95c9bf84':
                         if(paymentOption == '61b2de709f9cd4edddf21d64'){
                             statusID = '619785b0d9a967328c1e8fa6'
-                            console.log("Value: In-store"+ typeID)
                         }
                         break;
                     }
@@ -486,6 +523,10 @@
                         alert("Tranasction successfully processed");
                         window.location = "/invoices"
                     }) 
+                    }
+                    else{
+                 
+                    }
                 })
             }) 
         </script>
