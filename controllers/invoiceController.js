@@ -180,6 +180,7 @@ const invoiceController = {
                     paymentHistory.push(payment)
                 }
                 var amountDue = invoiceInfo.total - paymentTotal
+
                 if (invoiceInfo.status == "Pending" || invoiceInfo.status == "Partial")
                     res.render('viewInvoice', {invoiceInfo, items, delivery, pending, paymentHistory, paymentTotal, amountDue});
                 else if (invoiceInfo.paymentOption == "On Account")
@@ -329,14 +330,28 @@ const invoiceController = {
 	},*/
     
     addNewInvoice: function(req,res){
+
+        function deductInventory(item) {
+            db.findOne(Items, {itemDescription:item.itemDescription}, 'quantityAvailable', function(result) {
+                var updatedQuantity = parseInt(result.quantityAvailable) - parseInt(item.quantity)
+                db.updateOne(Items, {itemDescription:item.itemDescription}, {quantityAvailable: updatedQuantity}, function(flag) {
+
+                })
+            })
+        }
+
         async function saveItems(invoiceID2, items) {
 			for (var i=0; i<items.length; i++) {
 				items[i].invoice_id = invoiceID2;
                 items[i].itemID = await getItemID(items[i].itemDescription);
 				items[i].quantity =  items[i].quantity;
                 items[i].discount = items[i].discount;
+                deductInventory(items[i])
 			}
-			db.insertMany(InvoiceItems, items, function(flag) {if (flag) {}});
+			db.insertMany(InvoiceItems, items, function(flag) {
+                if (flag)
+                    res.sendStatus(200)
+            });
 		}
 
 

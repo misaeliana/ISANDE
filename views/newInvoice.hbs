@@ -482,7 +482,10 @@
                     var total = $('#totbox').val();
                    
 
-               $.post('/createNewInvoice', {custID,date,typeID,statusID,paymentOption,subtotal,VAT,discount,total,employeeID,ddate,dnotes,itemString}, function(result) {}) 
+                    $.post('/createNewInvoice', {custID,date,typeID,statusID,paymentOption,subtotal,VAT,discount,total,employeeID,ddate,dnotes,itemString}, function(result) {
+                        alert("Tranasction successfully processed");
+                        window.location = "/invoices"
+                    }) 
                 })
             }) 
         </script>
