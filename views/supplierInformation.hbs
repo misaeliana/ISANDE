@@ -41,27 +41,27 @@
         <div class="content">
             <br>
             <p style="display: none" id="supplierID">{{_id}}</p>
-            <h1 class="bold">{{name}}</h1> 
+            <h1 class="bold">{{supplierInfo.name}}</h1> 
             <hr>
              <div class="btn-edit-details"><button id="btn-edit-details" data-toggle="modal" data-target="#modal-edit-supplier">Edit Supplier Details</button></div>
             <div style= "margin-top: 15px;">
                 <div>
                     <div class="label-container">
                         <div class="override-label"> Contact Person </div> 
-                        <div class="label-content">{{contactPerson}}  </div>
+                        <div class="label-content">{{supplierInfo.contactPerson}}  </div>
                     </div>
                     <div class="label-container">
                         <div class="override-label"> Contact Number </div> 
-                         <div class="label-content">{{number}}</div>
+                         <div class="label-content">{{supplierInfo.number}}</div>
                     </div>
                     <div class="label-container">
                         <div class="override-label"> Email Address </div> 
-                        <div class="label-content">{{email}}  </div>
+                        <div class="label-content">{{supplierInfo.email}}  </div>
                     </div>
 
                   <div class="label-container">
                         <div class="override-label"> Address </div> 
-                        <div class="label-content">{{address}}  </div>
+                        <div class="label-content">{{supplierInfo.address}}  </div>
                     </div>
                 </div>
 

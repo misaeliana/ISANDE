@@ -48,9 +48,16 @@ const supplierController = {
 	},
 
 	getViewSupplier: function(req, res) {
-		db.findOne(Suppliers, {_id: req.params.supplierID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name contactPerson number email address', function(result) {
-			res.render('supplierInformation', result);
-		});
+
+		async function getInfo() {
+			var supplierInfo = await getSpecificSupplier(req.params.supplierID)
+			var categories = await getAllCategories();
+
+			res.render('supplierInformation', {supplierInfo, categories})
+		}
+
+		getInfo();
+
 	},
 
 	postUpdateInformation: function (req, res) {
