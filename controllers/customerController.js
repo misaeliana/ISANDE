@@ -70,21 +70,24 @@ const customerController = {
 
 			var temp_unpaidInvoices = await getUnpaidInvoices(req.params.customerID);
 			var unpaidInvoices = []
+			var totalAmountDue = 0
 			for (var i=0; i<temp_unpaidInvoices.length; i++) {
 				var temp_date = new Date(temp_customerInvoices[i].date)
 				var total = temp_unpaidInvoices[i].total
 				var amountPaid = await getAmountPaid(temp_unpaidInvoices[i]._id)
 				var invoice = {
+					invoiceID: temp_unpaidInvoices[i]._id,
 					date: temp_date.getMonth() + 1 + "/" + temp_date.getDate() + "/" + temp_date.getFullYear(),
 					invoiceNumber: temp_unpaidInvoices[i].invoiceID,
 					total: total,
 					paid: amountPaid,
 					due: total-amountPaid,
 				}
+				totalAmountDue += invoice.due
 				unpaidInvoices.push(invoice)
 			}
 
-			res.render('customerInformation', {customerInfo, customerInvoices, unpaidInvoices})
+			res.render('customerInformation', {customerInfo, customerInvoices, unpaidInvoices, totalAmountDue})
 		}
 
 		getCustomerInformation()

@@ -124,6 +124,7 @@ const invoiceController = {
                 customerName: await getSpecificCustomer(invoice.customerID),
                 date: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
                 type: await getSpecificInvoiceType(invoice.typeID),
+                paymentOption: await getSpecificPaymentType(invoice.paymentOptionID),
                 status: await getSpecificInvoiceStatus(invoice.statusID),
                 subtotal: parseFloat(invoice.subtotal).toFixed(2),
                 VAT: parseFloat(invoice.VAT).toFixed(2),
@@ -163,8 +164,9 @@ const invoiceController = {
                 items.push(item);
             }
 
-            if (invoiceInfo.status == "Pending" || invoiceInfo.status == "Partial") {
+            if (invoiceInfo.status == "Pending" || invoiceInfo.status == "Partial" || invoiceInfo.paymentOption == "On Account") {
                 var pending = true
+                var onAccount = true
                 var temp_paymentHistory = await getPaymentHistory(invoice_id)
                 var paymentTotal = 0
                 var paymentHistory = []
@@ -178,8 +180,10 @@ const invoiceController = {
                     paymentHistory.push(payment)
                 }
                 var amountDue = invoiceInfo.total - paymentTotal
-                
-                res.render('viewInvoice', {invoiceInfo, items, delivery, pending, paymentHistory, paymentTotal, amountDue});
+                if (invoiceInfo.status == "Pending" || invoiceInfo.status == "Partial")
+                    res.render('viewInvoice', {invoiceInfo, items, delivery, pending, paymentHistory, paymentTotal, amountDue});
+                else if (invoiceInfo.paymentOption == "On Account")
+                    res.render('viewInvoice', {invoiceInfo, items, delivery, onAccount, paymentHistory, paymentTotal, amountDue});
             }
             else
 			 res.render('viewInvoice', {invoiceInfo, items, delivery, customer});
