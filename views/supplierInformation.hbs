@@ -304,6 +304,7 @@
                             <label for="item-code">Item Code</label> <input id="item-code" type="text"><br>
                             <p class="error" id="error-new-item-code" style="margin-top: 3px; margin-bottom: 3px;"></p>
                             <label for="item-description">Description</label> <input id="item-description" type="text"><br>
+                            <p class="error" id="error-item-description" style="margin-top: 3px; margin-bottom: 3px;"></p>
                             <label for="roler">Category</label> 
                             <select class="dropdown" id="dropdown-item-category">
                                 <option value="no-selected">--Select Category--</option>
@@ -332,8 +333,7 @@
             </div>
                 
 
-
-          <table class="table" style="margin-top: 80px;">
+            <table class="table" id="table-item" style="margin-top: 40px;">
                 <thead class="table-head">
                     <tr>
                         <th>Item Code</th>
@@ -346,13 +346,13 @@
                 </thead>
                <tbody> 
                         {{#each items}}
-                            <tr class="link" style="cursor: pointer" data-href="/item/{{itemID}}">
-                                <td>{{Item Code}}</td>
-                                <td>{{Description}}</td>
-                                <td>{{Category}}</td>
-                                <td>{{Unit}}</td>
+                            {{!-- <tr class="link" style="cursor: pointer" data-href="/item/{{itemID}}"> --}}
+                                <td>{{itemCode}}</td>
+                                <td>{{itemDescription}}</td>
+                                <td>{{category}}</td>
+                                <td>{{unitID}}</td>
                                 <td>{{EOQ}}</td>
-                                <td>{{Reorder Level}}</td>
+                                <td>{{reorderLevel}}</td>
                             </tr>
                         {{/each}}
                       </tbody>
@@ -365,23 +365,30 @@
   
 
         <script>
+
+               $(document).ready(function() {
                 function capitalize(string){
                     var words = string.toLowerCase().split(' ');
                     for (i=0; i<words.length; i++)
                         words[i] = words[i].charAt(0).toUpperCase() + words[i].substring(1);
                     return words.join(' ');
-                }
+                };
 
                 $('#item-code').keyup(function() {
-                    var item = capitalize($('#item-code').val())
-                    $.get('/getCheckItemcode', {item:item}, function(result) {
-                        if (result.item == item) {
+                    var itemCode = capitalize($('#item-code').val())
+                    $.get('/getCheckItemCode', {itemCode:itemCode, function(result) {
+                        if (result.itemCode == itemCode) {
                             $('#item-code').css("border", "1px solid #B00000");
                             $('#error-new-item-code').text("Item Code already exists");
                             $('#btn-add-new-item').prop('disasbled', true);
                             $('#btn-add-new-item').css("background-color", "#b3b3b3");
                         }
-                    
+                         else {
+                            $("#item-code").css("border", "1px solid #DDDDDD");
+                            $('#error-new-item-code').text("");
+                            $('#btn-add-new-item').prop('disasbled', false);
+                            $("#btn-add-new-item").css("background-color", "#0F84D9");
+                        }
                     })
                 })
 
@@ -391,6 +398,11 @@
                         $('#item-code').css("border", "1px solid #B00000");
                         $('#error-new-item-code').text("Please input item code");
                     } 
+                      
+                     else if (type == "noDescription") {
+                        $('#item-description').css("border", "1px solid #B00000");
+                        $('#error-item-description').text("Please Input Description");
+                    }
                     else if (type == "noCategory") {
                         $('#error-item-category').text("Choose a Category");
                     }
@@ -404,7 +416,7 @@
                     }
                        else if (type == "noReorderLevel") {
                         $('#item-reorder-level').css("border", "1px solid #B00000");
-                        $('#error-item-reorderlevel').text("Please Input Reorder Level");
+                        $('#error-item-reorder-level').text("Please Input Reorder Level");
                     }
                  } 
                 
@@ -412,6 +424,15 @@
                 function itemCodeValidation(itemCode) {
                     if (itemCode == null || itemCode == "") {
                         errorMessage("noItemCode")
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }   
+
+                  function descriptionValidation(itemDescription) {
+                    if (itemDescription == null || itemDescription == "") {
+                        errorMessage("noDescription")
                         return 1;
                     }
                     else 
@@ -427,8 +448,8 @@
                         return 0;
                 }
 
-                function unitValidation(unit) {
-                 if (unit == null || unit == "") {
+                function unitValidation(unitID) {
+                 if (unitID == null || unitID == "") {
                         errorMessage("noUnit")
                         return 1;
                     }
@@ -436,8 +457,8 @@
                         return 0;
                 }     
 
-                function eoqValidation(eoq) {
-                  if (eoq == 0 || eoq < 0) {
+                function eoqValidation(EOQ) {
+                  if (EOQ == 0 || EOQ < 0) {
                         errorMessage("noEOQ")
                         return 1;
                     }
@@ -457,13 +478,13 @@
 
                 $('#btn-add-new-item').click(function() {
                     var itemCode = capitalize($('#item-code').val());
-                    var description = $('#item-description').val();
+                    var itemDescription = $('#item-description').val();
                     var category = $('#dropdown-item-category').val()
-                    var unit = $('#item-unit').val();
-                    var eoq = $('#item-EOQ').val();
+                    var unitID = $('#item-unit').val();
+                    var EOQ = $('#item-EOQ').val();
                     var reorderLevel = $('#item-reorder-level').val();
 
-                    if (!itemCodeValidation(itemCode) && !categoryValidation(category) && !unitValidation(unit) && !eoqValidation(eoq)&& !reorderLevelValidation(reorderLevel)) {
+                    if (!itemCodeValidation(itemCode) && !descriptionValidation(itemDescription)&& !categoryValidation(category) && !unitValidation(unitID) && !eoqValidation(EOQ)&& !reorderLevelValidation(reorderLevel)) {
 
                             $('#item-code').css("border", "1px solid #DDDDDD");
                             $('#item-description').css("border", "1px solid #DDDDDD");
@@ -473,12 +494,13 @@
                             $('#item-reorder-level').css("border", "1px solid #DDDDDD");
 
                             $('#error-new-item-code').text("");
-                            $('#error-new-item-category').text("");
+                            $('#error-item-description').text("");
+                            $('#error-item-category').text("");
                             $('#error-item-unit').text("");
                             $('#error-item-EOQ').text("");
                             $('#error-item-reorder-level').text("");
 
-                            $.post('/postItemInformation', {itemCode, description, category, unit, eoq, reorderLevel})
+                            $.post('/postItemInformation', {itemCode, itemDescription, category, unitID, EOQ, reorderLevel})
                                 $('#modal-add-item').modal('hide');
                                 $('#add-new-item').trigger('reset');
                                 location.reload()
@@ -496,6 +518,7 @@
                     }
                     else { }
                 })
+               })
 
         </script>
     </body>

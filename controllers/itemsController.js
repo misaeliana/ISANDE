@@ -15,10 +15,9 @@ const itemsController = {
 			var items_temp = await getItems();
 			var items = [];
 			for (var i=0; i<items_temp.length; i++) {
-
-			
 				var categoryName = await getCategoryName(items_temp[i].categoryID);
 				var item = {
+					itemID: items_temp[i]._id,
 					itemCode: items_temp[i].itemCode,
                     itemDescription:items_temp[i].itemDescription,
                     category: categoryName,
@@ -78,6 +77,7 @@ const itemsController = {
 
 	postUpdateInformation: function(req, res) {
 		var itemID = req.body.itemID;
+
 		db.updateOne(Items, {_id:itemID}, {$set: {informationStatusID:"618a783cc8067bf46fbfd4e5"}}, function(flag) {
 			if (flag) { }
 		});
