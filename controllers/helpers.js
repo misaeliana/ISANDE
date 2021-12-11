@@ -218,10 +218,10 @@ module.exports = function() {
 
 	this.updateItemQuantity = function(_id, updatedQuantity) {
 		return new Promise((resolve, reject) => {
-			db.updateOne(Items, {_id: _id}, {$set: {availableQuantity: updatedQuantity}}, function(result) {
+			db.updateOne(Items, {_id: _id}, {$set: {quantityAvailable: updatedQuantity}}, function(result) {
 				resolve (result);
-			});
-		});
+			})
+		})
 	},
 
 	this.getItemDescription = function(itemID) {

@@ -44,11 +44,12 @@ const manualCountController = {
 
             // subtract from inventory won't subtract
             for (var i = 0; i < shrinkages.length; i++) {
-                var item = await getItemInfo(shrinikages[i].itemID);
 
-                var newQuantity = parseFloat(item.quantityAvailable) - parseFloat(shrinikages[i].quantityLost);
+                var item = await getItemInfo(shrinkages[i].itemID);
 
-                await updateItemQuantity(shrinikages[i].itemID, newQuantity);
+                var newQuantity = parseFloat(item.quantityAvailable) - parseFloat(shrinkages[i].quantityLost);
+
+                updateItemQuantity(shrinkages[i].itemID, newQuantity);
             }
 
             // won't save akhdahsdfs
