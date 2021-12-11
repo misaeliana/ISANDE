@@ -216,6 +216,14 @@ module.exports = function() {
 		});
 	},
 
+	this.updateItemQuantity = function(_id, updatedQuantity) {
+		return new Promise((resolve, reject) => {
+			db.updateOne(Items, {_id: _id}, {$set: {availableQuantity: updatedQuantity}}, function(result) {
+				resolve (result);
+			});
+		});
+	},
+
 	this.getItemDescription = function(itemID) {
 		return new Promise((resolve, reject) => {
 			db.findOne(Items, {_id:itemID}, 'itemDescription', function(result) {
@@ -321,7 +329,7 @@ module.exports = function() {
 
 	this.getItemInfo = function(itemID) {
 		return new Promise((resolve, reject) => {
-			db.findOne(Items, {_id: itemID}, '_id itemcode description category unit eoq reorderlevel', function(result) {
+			db.findOne(Items, {_id: itemID}, '_id itemcode description category unit eoq reorderlevel quantityAvailable', function(result) {
 				resolve (result);
 			});
 		});

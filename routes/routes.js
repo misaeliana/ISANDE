@@ -176,7 +176,7 @@ router.get('/getItemInfo', invoiceController.getItemInfo);
 
 router.post('/saveReturn', invoiceController.saveReturn);
 
-router.post('/payOneInvoice', invoiceController.payOneInvoice)
+router.post('/payOneInvoice', invoiceController.payOneInvoice);
 
 
 //--DELIVERY--
@@ -188,7 +188,9 @@ router.get('/getSearchDeliveryList', invoiceController.getSearchDeliveryList);
 
 router.post('/postUpdateDelivery', invoiceController.postUpdateDelivery);
 
-//--MANULA COUNT--
+//--MANUAL COUNT--
 router.get('/manualCount', manualCountController.getManualCount);
+
+router.post('/updateManualCount', manualCountController.updateManualCount);
 
 module.exports = router;

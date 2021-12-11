@@ -1,7 +1,7 @@
 // import module `database` from `../models/db.js`
 const db = require('../models/db.js');
 
-const ShrinkageReasons = require('../models/ShrinkageReasonsModel.js');
+const Shrinkages = require('../models/ShrinkagesModel.js');
 
 require('../controllers/helpers.js');
 
@@ -18,6 +18,7 @@ const manualCountController = {
 
             for (var i = 0; i < inventoryItems.length; i++) {
                 var item = {
+                    _id: inventoryItems[i]._id,
                     itemDescription: inventoryItems[i].itemDescription,
                     quantityAvailable: inventoryItems[i].quantityAvailable,
                     unit: await getSpecificUnit(inventoryItems[i].unitID),
@@ -34,6 +35,31 @@ const manualCountController = {
 
 		getInformation();
 
+    },
+    
+    updateManualCount: function(req, res) {
+        var shrinkages = JSON.parse(req.body.JSONShrinkages);
+
+        async function updateItem() {
+
+            // subtract from inventory won't subtract
+            for (var i = 0; i < shrinkages.length; i++) {
+                var item = await getItemInfo(shrinikages[i].itemID);
+
+                var newQuantity = parseFloat(item.quantityAvailable) - parseFloat(shrinikages[i].quantityLost);
+
+                await updateItemQuantity(shrinikages[i].itemID, newQuantity);
+            }
+
+            // won't save akhdahsdfs
+            db.insertMany (Shrinkages, shrinkages, function(flag) {
+                if (flag) {
+                    res.send(true);
+                } 
+            });
+        }
+
+        updateItem();
 	}
 };
 

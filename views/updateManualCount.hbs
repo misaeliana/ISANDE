@@ -59,6 +59,7 @@
                     <thead class="table-head" style="top: 205px;">
                         <tr>
                             <th>Item Description</th>
+                            <th style="display: none;"></th>
                             <th>System</th>
                             <th>Manual</th> <!-- right aligned-->
                             <th>Unit</th> 
@@ -70,6 +71,7 @@
                         {{#each items}}
                             <tr>
                                 <td>{{itemDescription}}</td>
+                                <td style="display: none;" class="itemID">{{_id}}</td>
                                 <td style="text-align:end;" class="quantity-available">{{quantityAvailable}}</td>
                                 <td class="quantity"><input type="number" value="{{quantityAvailable}}" style="text-align:end;" class="quantity-val"></td>
                                 <td>{{unit}}</td>
@@ -102,16 +104,19 @@
             $(document).ready(function() {
                 $('.quantity-val').keyup(function () { 
                     resetManualError();
+                    resetReasonError();
 
                     var manualCount = parseFloat($(this).val());
                     var quantityAvailable = parseFloat($(this).parent().parent().children('.quantity-available').text());
 
                    if (manualCount != quantityAvailable) {
                        $(this).parent().parent().children('.reason').children('.dropdown-shrinkage-reasons').prop("disabled", false);
-                   } else 
-                        // supposed to reset the selected reason dropdown 
-                        //$(this).parent().parent().children('.reason').children(".dropdown-shrinkage-reasons option[value='no-selected']").attr('selected', 'selected');
+                   } else {
+                        // supposed to reset the selected reason dropdown, DOES NOT WORK 
+                        var noSelected = "no-selected";
+                        $(this).parent().parent().children('.reason').children(".dropdown-shrinkage-reasons option[value=" + noSelected + "]").attr('selected', 'selected');
                         $(this).parent().parent().children('.reason').children('.dropdown-shrinkage-reasons').prop("disabled", true);
+                   }
                 });
 
                 $('#dropdown-manual-count').change(function () { 
@@ -125,9 +130,12 @@
                             if (filterID != categoryID && filterID!="all-type")
                                 $(this).toggle();
                         })
+                        resetManualError();
+                        resetReasonError();
                     } else {
                         // this doesn't wanna work smh
-                        $("#dropdown-manual-count option[value='all-type']").attr('selected', 'selected');
+                        var allType = "all-type";
+                        $("#dropdown-manual-count option[value=" + allType + "]").attr('selected', 'selected');
                     }
                 });
 
@@ -199,7 +207,40 @@
 
                 $('#btn-save').click(function() {
                     if (validation()) {
-                        alert("save baby");
+                        var shrinkages = [];
+                        var dateToday = new Date();
+
+                        $('#table-manual-count tr').show();
+
+                        $('#table-manual-count > tbody > tr').each(function(index) {
+                            var manualCount = $(this).children('.quantity').children('.quantity-val').val();
+                            var quantityAvailable = $(this).children('.quantity-available').text();
+
+                            if (parseFloat(manualCount) != parseFloat(quantityAvailable)) {
+                                var shrinkage = {
+                                    itemID: $(this).children('.itemID').text(),
+                                    quantityLost: parseFloat(quantityAvailable) - parseFloat(manualCount),
+                                    reasonID:  $(this).children('.reason').children('.dropdown-shrinkage-reasons').val(),
+                                    date: dateToday,
+                                    employeeID: "6187c88ffa9a0c35600c54a8"
+                                }
+                                //alert(shrinkage.itemID + ", " + shrinkage.quantityLost + ", " + shrinkage.reasonID + ", " + shrinkage.date + ", " + shrinkage.employeeID);
+
+                                shrinkages.push(shrinkages);
+                            }
+                        });
+
+                        var JSONShrinkages = JSON.stringify(shrinkages);
+
+                        $.ajax({
+                                url: "/updateManualCount",              
+                                type: "POST",
+                                data: {JSONShrinkages},
+                                async: false,
+                                success: function(result){
+                                    window.location.assign('/inventory'); // change to shrinkages list 
+                                }
+                        }); 
                     }
                 });
             })
