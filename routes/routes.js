@@ -193,4 +193,10 @@ router.get('/manualCount', manualCountController.getManualCount);
 
 router.post('/updateManualCount', manualCountController.updateManualCount);
 
+router.get('/shrinkages', manualCountController.getShrinkages);
+
+router.get('/getSearchShrinkages', manualCountController.getSearchShrinkages);
+
+router.get('/getFilteredRowsShrinkages', manualCountController.getFilteredRowsShrinkages);
+
 module.exports = router;

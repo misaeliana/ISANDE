@@ -45,7 +45,9 @@ const ShrinkageReasons = require('../models/ShrinkageReasonsModel.js');
 
 const PaymentOptions = require('../models/PaymentOptionModel.js');
 
-const AccountPayments = require('../models/OnAccountPaymentModel.js')
+const AccountPayments = require('../models/OnAccountPaymentModel.js');
+
+const Shrinkages = require('../models/ShrinkagesModel.js');
 
 module.exports = function() {
 	this.getAllPositions = function() {
@@ -321,7 +323,7 @@ module.exports = function() {
 
 	this.getItems = function() {
 		return new Promise((resolve, reject) => {
-			db.findMany(Items, {informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'itemcode description categoryID unit eoq reorderlevel ', function(result) {
+			db.findMany(Items, {informationStatusID:"618a7830c8067bf46fbfd4e4"}, '', function(result) {
 				resolve (result);
 			});
 		});
@@ -329,7 +331,7 @@ module.exports = function() {
 
 	this.getItemInfo = function(itemID) {
 		return new Promise((resolve, reject) => {
-			db.findOne(Items, {_id: itemID}, '_id itemcode description category unit eoq reorderlevel quantityAvailable', function(result) {
+			db.findOne(Items, {_id: itemID}, '', function(result) {
 				resolve (result);
 			});
 		});
@@ -369,6 +371,14 @@ module.exports = function() {
 	this.getCustomerIDs = function(customerName) {
 		return new Promise((resolve, reject) => {
 			db.findMany (Customers, {name:{$regex: customerName, $options:'i'}}, '', function (result) {
+				resolve(result);
+			});
+		});
+	},
+
+	this.getSearchItemShrinkage = function(search) {
+		return new Promise((resolve, reject) => {
+			db.findMany (Items, {itemDescription:{$regex: search, $options:'i'}}, '', function (result) {
 				resolve(result);
 			});
 		});
@@ -612,6 +622,30 @@ module.exports = function() {
 	this.getshrinkageReasons = function() {
 		return new Promise((resolve, reject) => {
 			db.findMany(ShrinkageReasons, {}, '', function(result) {
+				resolve(result)
+			})
+		})
+	},
+
+	this.getShrinkageReason = function(reasonID) {
+		return new Promise((resolve, reject) => {
+			db.findOne(ShrinkageReasons, {_id: reasonID}, '', function(result) {
+				resolve(result.reason)
+			})
+		})
+	},
+
+	this.getShrinkages = function() {
+		return new Promise((resolve, reject) => {
+			db.findMany(Shrinkages, {}, '', function(result) {
+				resolve(result)
+			})
+		})
+	},
+
+	this.getShrinkagesFromID = function(itemID) {
+		return new Promise((resolve, reject) => {
+			db.findMany(Shrinkages, {itemID: itemID}, '', function(result) {
 				resolve(result)
 			})
 		})

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title> Invoices </title>
-        <meta name="description" content="Invoice List">
+        <title> Shrinkages </title>
+        <meta name="description" content="Shrinkages List">
         <meta name="keyword" content="Moderna, Invoice List">
         <link rel="stylesheet" type="text/css" href="../css/general.css">
         <link rel="stylesheet" type="text/css" href="../css/list.css">
@@ -34,7 +34,7 @@
 
         <div class="content">        
             <div class="fixed-div">
-                <h1 class="bold" style="padding-bottom: 15px;"> Invoices </h1>
+                <h1 class="bold" style="padding-bottom: 15px;"> Shrinkages </h1>
                 <div> 
                     <div class="search">
                         <input type="text" placeholder="Search" name="search" id="search-field">
@@ -46,33 +46,33 @@
                             <input style="height: 34px" type="date" id="start-date" name="start-date">
                             <label class="date-label" style="margin-left: 10px;" for="end-date">End Date</label>
                             <input style="height: 34px" type="date" id="end-date" name="end-date">
-                            <button type="submit" style="height: 34px; margin-left: 10px" id="invoice-date-button"><i class="fa fa-search"></i></button>
+                            <button type="submit" style="height: 34px; margin-left: 10px" id="date-button"><i class="fa fa-search"></i></button>
                         </div>
                     </div>
                     <div style="height: 50px"></div>
                 </div>
             </div>
 
-                <table class="table" id="table-invoice">
+                <table class="table" id="table-shrinkages">
                     <thead class="table-head">
                         <tr>
-                            <th>Date</th>
-                            <th>Invoice</th>
-                            <th>Customer</th>
-                            <th>Amount</th> 
-                            <th>Type</th>
-                            <th>Status</th>
+                            <th>Date Reported</th>
+                            <th>Item Description</th>
+                            <th>Quantity</th> <!-- right aligned-->
+                            <th>Unit</th> 
+                            <th>Reason</th>
+                            <th>Reported By</th>
                         </tr>
                     </thead>
                     <tbody> 
-                        {{#each invoicesInfo}}
-                            <tr class="link" style="cursor: pointer" data-href="/invoices/{{_id}}">
-                                <td>{{formattedDate}}</td>
-                                <td>{{invoiceID}}</td>
-                                <td>{{customerName}}</td>
-                                <td style="text-align: right;">₱ {{total}}</td>
-                                <td>{{type}}</td>
-                                <td><button class="btn-status btn-{{status}} status-id">{{status}}</button></td>
+                        {{#each shrinkagesInfo}}
+                            <tr>
+                                <td>{{date}}</td>
+                                <td>{{description}}</td>
+                                <td style="text-align: right;">{{quantity}}</td>
+                                <td>{{unit}}</td>
+                                <td>{{reason}}</td>
+                                <td>{{employee}}</td>
                             </tr>
                         {{/each}}
                     </tbody>
@@ -80,12 +80,41 @@
             </div>
         </div>
         <script>
+
             $(document).ready(function() {
-                $(".link").click(function() {
-                    window.location = $(this).data("href");
+
+                function filter(result) {
+                    $("#table-shrinkages tbody tr").remove();
+
+                    if (result != null) {
+                        for (var i = 0; i < result.length; i++) {
+                            $("#table-shrinkages").find("tbody").append(
+                                `  <tr> 
+                                        <td>${result[i].date}</td>
+                                        <td>${result[i].description}</td>
+                                        <td style="text-align: right;">${result[i].quantity}</td>
+                                        <td>${result[i].unit}</td>
+                                        <td>${result[i].reason}</td>
+                                        <td>${result[i].employee}</td>
+                                    </tr>
+                              `
+                            );
+                        }
+                    }
+                }
+
+                $("#search-button").click(function() {
+                    var searchItem = $("#search-field").val();
+                    var startDate = $("#start-date").val(null);
+                    var endDate = $("#end-date").val(null);
+
+                    $.get("/getSearchShrinkages", {searchItem: searchItem}, function (result) {
+                        filter(result);
+                    });
+
                 });
 
-                $("#invoice-date-button").click(function() {
+                $("#date-button").click(function() {
                     var startDate = $("#start-date").val();
                     var endDate = $("#end-date").val();
                     $("#search-field").val(null);
@@ -110,26 +139,10 @@
                             $("#start-date").css("border", "1px solid #DDDDDD");
                             $("#end-date").css("border", "1px solid #DDDDDD");
 
-                            $.get("/getFilteredRowsInvoice", {startDate: convertedStartDate, endDate: convertedEndDate}, function (result) {
+                            $.get("/getFilteredRowsShrinkages", {startDate: convertedStartDate, endDate: convertedEndDate}, function (result) {
 
-                                $("#table-invoice tbody tr").remove();
+                                filter(result);
 
-                                for (var i = 0; i < result.length; i++) {
-                                    $("#table-invoice").find("tbody").append(
-                                        `  <tr class="link" style="cursor: pointer" data-href="/order/${result[i]._id}"> 
-                                                <td>${result[i].formattedDate}</td>
-                                                <td>${result[i].invoiceID}</td>
-                                                <td>${result[i].customerName}</td>
-                                                <td style="text-align: right;">₱ ${result[i].total}</td>
-                                                <td>${result[i].type}</td>
-                                                <td><button class="btn-status btn-${result[i].status} status-id">${result[i].status}</button></td>
-                                        </tr>`
-                                    );
-                                }
-
-                                $(".link").click(function() {
-                                    window.location = $(this).data("href");
-                                });
                                 
                                /* 
                                     $.get("/getDateToday", {}, function (result2) {
@@ -140,43 +153,8 @@
                         }
                     }
                 });
-
-                 $("#search-button").click(function() {
-                    var startDate = $("#start-date").val(null);
-                    var endDate = $("#end-date").val(null);
-                    //$('#table-invoice tr').show();
-                    var searchItem = $("#search-field").val();
-                 
-                    $.get("/getSearchInvoice", {searchItem: searchItem}, function (result) {
-
-                        $("#table-invoice tbody tr").remove();
-
-                        if (result != null) {
-                            for (var i = 0; i < result.length; i++) {
-                                $("#table-invoice").find("tbody").append(
-                                `  <tr class="link" style="cursor: pointer" data-href="/invoices/${result[i]._id}"> 
-                                        <td>${result[i].formattedDate}</td>
-                                        <td>${result[i].invoiceID}</td>
-                                        <td>${result[i].customerName}</td>
-                                        <td style="text-align: right;">₱ ${result[i].total}</td>
-                                        <td>${result[i].type}</td>
-                                        <td><button class="btn-status btn-${result[i].status} status-id">${result[i].status}</button></td>
-                                    </tr>`
-                            );
-                            }
-                        } else {
-                            // say no search results 
-                        }
-
-                        $(".link").click(function() {
-                            window.location = $(this).data("href");
-                        });
-
-                    });
-                });
-
-                
             })
+
         </script>
     </body>
 </html>
