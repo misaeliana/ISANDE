@@ -56,7 +56,7 @@ const itemsController = {
 	checkItemCode: function(req, res) {
 		var itemCode = req.query.itemCode;
 
-		db.findMany(Items, {itemCode:itemCode, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'itemcode', function(result) {	
+		db.findMany(Items, {itemCode:itemCode, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'itemCode', function(result) {	
 			res.send(result[0]);
 		});
 

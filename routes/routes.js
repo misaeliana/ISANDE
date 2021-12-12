@@ -57,7 +57,7 @@ router.post('/postItemInformation', itemsController.postItemInformation);
 
 router.get('/getCheckItemCode', itemsController.checkItemCode);
 
-router.get('item:itemID', itemsController.getViewItem);
+router.get('/item/:itemID', itemsController.getViewItem);
 
 router.post('/postUpdateItemInformation', itemsController.postUpdateInformation);
 
