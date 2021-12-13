@@ -9,8 +9,6 @@ const InventoryTypes = require('../models/InventoryTypeModel.js');
 
 const Items = require('../models/ItemsModel.js');
 
-const ItemCategories = require('../models/ItemCategoriesModel.js');
-
 const ItemStatuses = require('../models/ItemStatusModel.js');
 
 const Units = require('../models/UnitsModel.js');
@@ -306,44 +304,6 @@ module.exports = function() {
 		});
 	},
 
-	this.getAllCategories = function() {
-		return new Promise((resolve, reject) => {
-			db.findMany(ItemCategories, {}, '_id category', function (result) {
-				resolve (result);
-			});
-		});
-	},
-	this.getCategoryName = function(categoryID) {
-		return new Promise((resolve, reject) => {
-			db.findOne (ItemCategories, {_id:categoryID}, 'category', function(result) {
-				resolve(result.category);
-			});
-		});
-	},
-
-	this.getItems = function() {
-		return new Promise((resolve, reject) => {
-			db.findMany(Items, {informationStatusID:"618a7830c8067bf46fbfd4e4"}, '', function(result) {
-				resolve (result);
-			});
-		});
-	},
-
-	this.getItemInfo = function(itemID) {
-		return new Promise((resolve, reject) => {
-			db.findOne(Items, {_id: itemID}, '', function(result) {
-				resolve (result);
-			});
-		});
-	},
-
-	this.getItemCode = function(itemID) {
-		return new Promise((resolve, reject) => {
-			db.findOne(Items, {_id: itemID}, 'itemcode', function(result) {
-				resolve (result.itemCode);
-			});
-		});
-	},
 	this.deleteItemSuppliers = function(itemID) {
 		return new Promise((resolve, reject) => {
 			db.deleteMany(ItemSuppliers, {itemID: itemID}, function(flag) {

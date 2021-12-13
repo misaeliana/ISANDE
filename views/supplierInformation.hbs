@@ -65,71 +65,7 @@
                     </div>
                 </div>
 
-                   
-    
-                <div style="height: 30px"></div>
-
-                   <div class="label-container">
-                       
-                        <div class="override-label"> Notes </div>
-                        {{!-- <div class="label-content">{{notes}}  </div> --}} 
-                         <div class="btn-edit-details"><button id="btn-edit-details" data-toggle="modal" data-target="#modal-edit-notes">Edit Notes</button></div>
-                       
-                    </div>
-
-                    <!-- Modal Supplier Info-->
-                <div class="modal fade" id="modal-edit-notes" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3 class="modal-title" id="exampleModalLongTitle">Edit Notes</h3>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="edit-notes">
-                         <div>
-                            <textarea class="form-control" id="notes" type="text"></textarea>   
-                        </div> 
-                               
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" id="btn-save-notes">Save</button>
-                        </div>
-                    </div>
-                    </div>
-                </div>                       
                   
-  <script>
-
-
-       $(document).ready(function() {
-             
-             function capitalize(string){
-                    var words = string.toLowerCase().split(' ');
-                    for (i=0; i<words.length; i++)
-                        words[i] = words[i].charAt(0).toUpperCase() + words[i].substring(1);
-                    return words.join(' ');
-                };
-
-    //needs controller for notes
-                $('#btn-save-notes').click(function() {
-                    var notes =$('#notes').val();
-
-                         $.post('/getNotes', {notes})
-                                $('#modal-edit-notes').modal('hide');
-                                $('#btn-save-notes').trigger('reset'); 
-                            //  alert("Notes Added Successfully");
-                          // window.location.replace(`/supplierInformation/${result}`)
-                            location.reload() 
-               
-                })
-        })
-        </script> 
-
-
 
                  <!-- Modal Supplier Info-->
                 <div class="modal fade" id="modal-edit-supplier" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -147,16 +83,16 @@
                                 {{!-- <label for="Supplier-name">Supplier Name</label> <input id="supplier-name" type="text" value="{{name}}"><br>
                                 <p class="error" id="error-new-supplier-name" style="margin-top: 3px; margin-bottom: 3px;"></p> --}}
 
-                                 <label for="contact-person">Contact Person</label> <input id="contact-person" type="text" value="{{contactPerson}}"><br>
+                                 <label for="contact-person">Contact Person</label> <input id="contact-person" type="text" value="{{supplierInfo.contactPerson}}"><br>
                                 <p class="error" id="error-contact-person" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
-                                <label for="contact-number">Contact Number</label> <input id="contact-number" type="number" value="{{number}}"><br>
+                                <label for="contact-number">Contact Number</label> <input id="contact-number" type="number" value="{{supplierInfo.number}}"><br>
                                 <p class="error" id="error-contact-number" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
-                                  <label for="email">Email</label> <input id="email" type="text" value="{{email}}"><br>
+                                  <label for="email">Email</label> <input id="email" type="text" value="{{supplierInfo.email}}"><br>
                                 <p class="error" id="error-email" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
-                                <label for="address">Address</label> <input id="address" type="text" value="{{address}}"><br>
+                                <label for="address">Address</label> <input id="address" type="text" value="{{supplierInfo.address}}"><br>
                                 <p class="error" id="error-address" style="margin-top: 3px; margin-bottom: 3px;"></p>
                             </form>
                         </div>
@@ -299,60 +235,40 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
+                    
                     <div class="modal-body">
                         <form id="add-new-item">
-                            <label for="item-code">Item Code</label> <input id="item-code" type="text"><br>
-                            <p class="error" id="error-new-item-code" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                            <label for="item-description">Description</label> <input id="item-description" type="text"><br>
-                            <p class="error" id="error-item-description" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                            <label for="roler">Category</label> 
-                            <select class="dropdown" id="dropdown-item-category">
-                                <option value="no-selected">--Select Category--</option>
-                                {{#each categories}}
-                                    <option value="{{_id}}">{{category}}</option>
+                            <label for="item-description">Item Description</label> <input id="description" type="text"><br>
+                            <p class="error" id="error-description" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <label for="dropdown-unit" style="margin-right: 10px">Unit</label>
+                            <select class="dropdown" id="dropdown-unit" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
+                                <option value="no-selected" selected>Select Unit</option>
+                                {{#each units}}
+                                    <option value={{_id}}>{{unit}}</option>
                                 {{/each}}
                             </select>
-                            <p class="error" id="error-item-category" style="margin-top: 3px; margin-bottom: 3px;"></p>   
-
-                            <label for="item-unit">Unit</label> <input id="item-unit" type="text"><br>  
-                              <p class="error" id="error-item-unit" style="margin-top: 3px; margin-bottom: 3px;"></p>                          
-                            <label for="item-EOQ">EOQ</label> <input id="item-EOQ" type="number"><br>  
-                            <p class="error" id="error-item-EOQ" style="margin-top: 3px; margin-bottom: 3px;"></p> 
-                            <label for="item-reorder-level">Reorder Level</label> <input id="item-reorder-level" type="number"><br> 
-                            <p class="error" id="error-item-reorder-level" style="margin-top: 3px; margin-bottom: 3px;"></p> 
-                          
-                            <br>
-                        </form>
+                            <p class="error" id="error-unit" style="margin-top: 3px; margin-bottom: 3px;"></p>
                     </div>
+
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="btn-add-new-item">Add item</button>
+                        <button type="button" class="btn btn-primary" id="btn-add-new-item">Save</button>
                     </div>
                 </div>
                 </div>
             </div>
                 
 
-            <table class="table" id="table-item" style="margin-top: 40px;">
+            <table class="table" id="table-item" style="margin-top: 30px;">
                 <thead class="table-head">
                     <tr>
-                        <th>Item Code</th>
-                        <th>Description</th>
-                        <th>Category</th>
+                        <th>Item Description</th>
                         <th>Unit</th>
-                        <th>EOQ</th>
-                        <th>Reorder Level</th>
                     </tr>
                 </thead>
                <tbody> 
-                        {{#each items}}
-                            {{!-- <tr class="link" style="cursor: pointer" data-href="/item/{{itemID}}"> --}}
-                                <td>{{itemCode}}</td>
-                                <td>{{itemDescription}}</td>
-                                <td>{{category}}</td>
-                                <td>{{unitID}}</td>
-                                <td>{{EOQ}}</td>
-                                <td>{{reorderLevel}}</td>
+                        {{#each inventory}}
+                               <td>{{itemDescription}}</td>
+                               <td>{{unit}}</td>
                             </tr>
                         {{/each}}
                       </tbody>
@@ -361,162 +277,61 @@
         </div>
 
 
-
-  
-
         <script>
 
                $(document).ready(function() {
-                function capitalize(string){
+                  function capitalize(string){
                     var words = string.toLowerCase().split(' ');
                     for (i=0; i<words.length; i++)
                         words[i] = words[i].charAt(0).toUpperCase() + words[i].substring(1);
                     return words.join(' ');
-                };
+                }
 
-       /*         $('#item-code').keyup(function() {
-                    var itemCode = capitalize($('#item-code').val())
-                    $.get('/getCheckItemCode', {itemCode:itemCode, function(result) {
-                        if (result.itemCode == itemCode) {
-                            $('#item-code').css("border", "1px solid #B00000");
-                            $('#error-new-item-code').text("Item Code already exists");
-                            $('#btn-add-new-item').prop('disasbled', true);
-                            $('#btn-add-new-item').css("background-color", "#b3b3b3");
-                        }
-                         else {
-                            $("#item-code").css("border", "1px solid #DDDDDD");
-                            $('#error-new-item-code').text("");
-                            $('#btn-add-new-item').prop('disasbled', false);
-                            $("#btn-add-new-item").css("background-color", "#0F84D9");
-                        }
-                    })
-                })
-
-*/
-                function errorMessage(type) {
-                    if (type == "noItemCode") {
-                        $('#item-code').css("border", "1px solid #B00000");
-                        $('#error-new-item-code').text("Please input item code");
-                    } 
-                      
-                     else if (type == "noDescription") {
-                        $('#item-description').css("border", "1px solid #B00000");
-                        $('#error-item-description').text("Please Input Description");
-                    }
-                    else if (type == "noCategory") {
-                        $('#error-item-category').text("Choose a Category");
-                    }
-                    else if (type == "noUnit") {
-                        $('#item-unit').css("border", "1px solid #B00000");
-                        $('#error-item-unit').text("Please Input Unit");
-                    }
-                     else if (type == "noEOQ") {
-                        $('#item-EOQ').css("border", "1px solid #B00000");
-                        $('#error-item-EOQ').text("Please Input EOQ");
-                    }
-                       else if (type == "noReorderLevel") {
-                        $('#item-reorder-level').css("border", "1px solid #B00000");
-                        $('#error-item-reorder-level').text("Please Input Reorder Level");
-                    }
-                 } 
-                
-
-                function itemCodeValidation(itemCode) {
-                    if (itemCode == null || itemCode == "") {
-                        errorMessage("noItemCode")
-                        return 1;
-                    }
-                    else 
-                        return 0;
-                }   
-
-                  function descriptionValidation(itemDescription) {
-                    if (itemDescription == null || itemDescription == "") {
-                        errorMessage("noDescription")
-                        return 1;
-                    }
-                    else 
-                        return 0;
-                }   
-
-                function categoryValidation(category) {
-                    if (category == "no-selected") {
-                        errorMessage("noCategory")
+                function descriptionValidation(description) {
+                    if (description == null || description == "") {
+                        errorMessage("description");
                         return 1;
                     }
                     else 
                         return 0;
                 }
 
-                function unitValidation(unitID) {
-                 if (unitID == null || unitID == "") {
-                        errorMessage("noUnit")
-                        return 1;
-                    }
-                    else 
-                        return 0;
-                }     
-
-                function eoqValidation(EOQ) {
-                  if (EOQ == 0 || EOQ < 0) {
-                        errorMessage("noEOQ")
+                 function unitValidation(unit) {
+                    if (unit == "no-selected") {
+                        errorMessage("unit");
                         return 1;
                     }
                     else 
                         return 0;
                 }
 
-                function reorderLevelValidation(reorderLevel) {
-                   if (reorderLevel == 0 || reorderLevel < 0) {
-                        errorMessage("noReorderLevel")
-                        return 1;
+                 function errorMessage(type) {
+                    if (type == "description") {
+                        $("#description").css("border", "1px solid #B00000");
+                        $("#error-description").text("Please enter an Item Description.");
+                   } else if (type == "unit") {
+                        $("#dropdown-unit").css("border", "1px solid #B00000");
+                        $("#error-unit").text("Please select a Unit.");
                     }
-                    else 
-                        return 0;
-                }
-
+                 }
 
                 $('#btn-add-new-item').click(function() {
-                    var itemCode = capitalize($('#item-code').val());
-                    var itemDescription = $('#item-description').val();
-                    var category = $('#dropdown-item-category').val()
-                    var unitID = $('#item-unit').val();
-                    var EOQ = $('#item-EOQ').val();
-                    var reorderLevel = $('#item-reorder-level').val();
+                   var description = capitalize($('#description').val());
+                   var unit = $('#dropdown-unit').val();
 
-                    if (!itemCodeValidation(itemCode) && !descriptionValidation(itemDescription)&& !categoryValidation(category) && !unitValidation(unitID) && !eoqValidation(EOQ)&& !reorderLevelValidation(reorderLevel)) {
+                    if (!descriptionValidation(description) && !unitValidation(unit)) {
 
-                            $('#item-code').css("border", "1px solid #DDDDDD");
-                            $('#item-description').css("border", "1px solid #DDDDDD");
-                            $('#item-category').css("border", "1px solid #DDDDDD");
-                            $('#item-unit').css("border", "1px solid #DDDDDD");
-                            $('#item-EOQ').css("border", "1px solid #DDDDDD");
-                            $('#item-reorder-level').css("border", "1px solid #DDDDDD");
+                     $("#description").css("border", "1px solid #DDDDDD");
+                     $("#error-description").text("");
 
-                            $('#error-new-item-code').text("");
-                            $('#error-item-description').text("");
-                            $('#error-item-category').text("");
-                            $('#error-item-unit').text("");
-                            $('#error-item-EOQ').text("");
-                            $('#error-item-reorder-level').text("");
+                     $("#dropdown-unit").css("border", "1px solid #DDDDDD");
+                     $("#error-unit").text("");
                             
-                            $.post('/postItemInformation', {itemCode, itemDescription, category, unitID, EOQ, reorderLevel})
+                            $.post('/postNewItem', {description, unit,})
                                 $('#modal-add-item').modal('hide');
                                 $('#add-new-item').trigger('reset');
                                 location.reload()
-
                     }
-                })
-
-
-                    $('#btn-delete-item').click(function() {
-                    var itemID = $('#itemID').text();
-                    if (confirm("Are you sure you want to delete this item?")) {
-                        $.post('/deleteItem', {itemID});
-                        alert("The Item was deleted");
-                        window.location.replace("/supplierInformation")
-                    }
-                    else { }
                 })
                })
 
