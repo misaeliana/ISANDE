@@ -47,7 +47,7 @@
 
             <div class="display-flex">
                 <h3 class ="bold h3-left">Customer Details</h3>
-                <h3 class="h3-right">{{invoiceInfo.date}}</h3>
+                <h3 class="h3-right">{{invoice.date}}</h3>
             </div>
 
                 <div>
@@ -68,6 +68,16 @@
                 <div style="height: 20px"></div>
 
                     <h3 class ="bold">Order Details</h3>
+
+                    <div class="label-container"> 
+                        <div class="override-label"> Invoice Type </div> 
+                        <div class="label-content" id="invoice-type">{{invoice.invoiceType}}</div>
+                    </div>
+
+                     <div class="label-container"> 
+                        <div class="override-label"> Payment Type </div> 
+                        <div class="label-content" id="payment-type">{{invoice.paymentType}}</div>
+                    </div>
 
                     <div class="label-container"> 
                         <div class="override-label"> Delivery Date </div> 

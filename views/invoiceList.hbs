@@ -57,9 +57,9 @@
                     <thead class="table-head">
                         <tr>
                             <th>Date</th>
-                            <th>Invoice</th>
+                            <th style="text-align:center;">Invoice</th>
                             <th>Customer</th>
-                            <th>Amount</th> 
+                            <th style="text-align:center;">Total</th> 
                             <th>Type</th>
                             <th>Status</th>
                         </tr>
@@ -68,7 +68,7 @@
                         {{#each invoicesInfo}}
                             <tr class="link" style="cursor: pointer" data-href="/invoices/{{_id}}">
                                 <td>{{formattedDate}}</td>
-                                <td>{{invoiceID}}</td>
+                                <td style="text-align: right;">{{invoiceID}}</td>
                                 <td>{{customerName}}</td>
                                 <td style="text-align: right;">₱ {{total}}</td>
                                 <td>{{type}}</td>
@@ -118,7 +118,7 @@
                                     $("#table-invoice").find("tbody").append(
                                         `  <tr class="link" style="cursor: pointer" data-href="/order/${result[i]._id}"> 
                                                 <td>${result[i].formattedDate}</td>
-                                                <td>${result[i].invoiceID}</td>
+                                                <td style="text-align: right;">${result[i].invoiceID}</td>
                                                 <td>${result[i].customerName}</td>
                                                 <td style="text-align: right;">₱ ${result[i].total}</td>
                                                 <td>${result[i].type}</td>
@@ -156,7 +156,7 @@
                                 $("#table-invoice").find("tbody").append(
                                 `  <tr class="link" style="cursor: pointer" data-href="/invoices/${result[i]._id}"> 
                                         <td>${result[i].formattedDate}</td>
-                                        <td>${result[i].invoiceID}</td>
+                                        <td style="text-align: right;">${result[i].invoiceID}</td>
                                         <td>${result[i].customerName}</td>
                                         <td style="text-align: right;">₱ ${result[i].total}</td>
                                         <td>${result[i].type}</td>

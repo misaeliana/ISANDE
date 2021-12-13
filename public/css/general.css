@@ -125,6 +125,11 @@
     border:  #F2A154;
 }
 
+.btn-Pending {
+    background-color: #F2A154;
+    border:  #F2A154;
+}
+
 .btn-Canceled {
     background-color: #fa3b22;
     border:  #fa3b22;

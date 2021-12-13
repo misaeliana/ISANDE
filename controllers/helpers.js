@@ -667,6 +667,14 @@ module.exports = function() {
 		})
 	},
 
+	this.getSpecificPaymentTypeID = function(paymentOption) {
+		return new Promise((resolve, reject) => {
+			db.findOne(PaymentOptions, {paymentOption: paymentOption}, '_id', function (result) {
+				resolve(result._id)
+			})
+		})
+	},
+
 	this.getAmountPaid = function(invoiceID){
 			return new Promise((resolve, reject) => {
 				db.findMany(AccountPayments, {invoiceID:invoiceID}, 'amountPaid', function(result) {
