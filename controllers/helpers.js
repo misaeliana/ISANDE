@@ -220,8 +220,8 @@ module.exports = function() {
 		return new Promise((resolve, reject) => {
 			db.updateOne(Items, {_id: _id}, {$set: {quantityAvailable: updatedQuantity}}, function(result) {
 				resolve (result);
-			})
-		})
+			});
+		});
 	},
 
 	this.getItemDescription = function(itemID) {

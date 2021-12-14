@@ -42,7 +42,7 @@ const manualCountController = {
 
         async function updateItem() {
 
-            // subtract from inventory won't subtract
+            // subtract from inventory 
             for (var i = 0; i < shrinkages.length; i++) {
 
                 var item = await getItemInfo(shrinkages[i].itemID);
@@ -52,7 +52,6 @@ const manualCountController = {
                 updateItemQuantity(shrinkages[i].itemID, newQuantity);
             }
 
-            // won't save akhdahsdfs
             db.insertMany (Shrinkages, shrinkages, function(flag) {
                 if (flag) {
                     res.send(true);
