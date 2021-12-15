@@ -7,6 +7,8 @@ const ItemSuppliers = require('../models/ItemSuppliersModel.js');
 
 const PurchaseItem = require('../models/PurchasedItemsModel.js');
 
+const PurchaseOrders = require('../models/PurchasesModel.js');
+
 require('../controllers/helpers.js')();
 
 const inventoryController = {
@@ -142,6 +144,39 @@ const inventoryController = {
 
 	getViewItem: function(req, res) {
 
+		function getMatchItems(itemID) {
+			return new Promise((resolve, reject) => {
+				db.findMany(PurchaseItem, {itemID:itemID}, 'purchaseOrderID quantity', function(result) {
+					resolve(result)
+				})
+			})
+		}
+
+		function checkPOStatus(poItem) {
+			return new Promise((resolve, reject) => {
+				db.findOne(PurchaseOrders, {_id:poItem.purchaseOrderID}, 'statusID', function(result) {					//po is released
+					if (result.statusID == "618f652746c716a39100a80a")
+						resolve(true)
+					//po is of other status
+					else
+						resolve(false)
+				})
+			})
+		}
+
+		async function getToBeReceived(item) {
+			var poItems = await getMatchItems(item._id)
+			var toBeReceived = 0;
+
+			for (var i=0; i<poItems.length; i++) {
+				var result = await checkPOStatus(poItems[i])
+				if (result)
+					toBeReceived += parseInt(poItems[i].quantity)
+			}
+			return toBeReceived;
+		}
+
+
 		async function getInformation() {
 			var inventoryTypes = await getInventoryTypes();
 			var units = await getUnits();
@@ -177,7 +212,10 @@ const inventoryController = {
 				btn_status: btnStatus
 			};
 
-			res.render('viewSpecificItem', {itemInfo, inventoryTypes, units, itemSuppliers});
+			getToBeReceived(itemInfo).then((result) =>{
+				itemInfo.toBeReceived = result
+				res.render('viewSpecificItem', {itemInfo, inventoryTypes, units, itemSuppliers});
+			})
 		}
 
 		getInformation();
