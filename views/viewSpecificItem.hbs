@@ -344,7 +344,7 @@
 
                 $('#btn-edit-item').click(function() {
                     var itemID = $('#item-ID').text();
-                    var description = $('#item-description').text();
+                    var itemDescription = $('#item-description').text();
                     var category = $('#dropdown-category').val();
                     var unit = $('#dropdown-unit').val();
                     var quantity = $('#item-quantity').text();
@@ -364,17 +364,25 @@
                         resetErrorMessage();
                         
                         // update page 
-                        $.ajax({
+                        /*$.ajax({
                                 url: "/postUpdateItemInformation",              
                                 type: "POST",
-                                data: {itemID, description, category, unit, quantity, EOQ, reorderLevel, sellingPrice, itemStatusID},
+                                data: {itemID, itemDescription, category, unit, quantity, EOQ, reorderLevel, sellingPrice, itemStatusID},
                                 async: false,
                                 success: function(result){
                                     $('#modal-edit-item').modal('hide');
                                     $('#edit-item').trigger('reset');
+                                    alert("Item information has been updated")
                                     window.location.assign('/inventory/' + result._id);
                                 }
-                        }); 
+                        });*/ 
+
+                        $.post('/postUpdateItemInformation', {itemID, itemDescription, category, unit, quantity, EOQ, reorderLevel, sellingPrice, itemStatusID}, function(result){
+                                $('#modal-edit-item').modal('hide');
+                                $('#edit-item').trigger('reset');
+                                alert("Item information has been updated")
+                                window.location.assign('/inventory/' + result._id);
+                            })
                       }
                 })
             })

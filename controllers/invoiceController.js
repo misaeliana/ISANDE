@@ -187,13 +187,20 @@ const invoiceController = {
                 }
                 var amountDue = invoiceInfo.total - paymentTotal
 
-                if (invoiceInfo.status == "Pending" || invoiceInfo.status == "Partial")
-                    res.render('viewInvoice', {invoiceInfo, items, delivery, pending, paymentHistory, paymentTotal, amountDue});
-                else if (invoiceInfo.paymentOption == "On Account")
-                    res.render('viewInvoice', {invoiceInfo, items, delivery, onAccount, paymentHistory, paymentTotal, amountDue});
+                if (invoiceInfo.paymentOption == "On Account")
+                {
+                    if (invoiceInfo.status == "Paid") {
+                        var paid = true
+                        res.render('viewInvoice', {invoiceInfo, items, delivery, paid, onAccount, paymentHistory, paymentTotal, amountDue});
+                    }
+                    else {
+                        res.render('viewInvoice', {invoiceInfo, items, delivery, pending, onAccount, paymentHistory, paymentTotal, amountDue});
+                    }
+                }
+                else
+                    res.render('viewInvoice', {invoiceInfo, items, delivery, paymentHistory, paymentTotal, amountDue});
+
             }
-            else
-			 res.render('viewInvoice', {invoiceInfo, items, delivery, customer});
 		}
 
 		getInformation();

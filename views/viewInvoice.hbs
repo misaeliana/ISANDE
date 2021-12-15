@@ -182,37 +182,6 @@
                         </div>
                     {{/if}}
 
-                    {{#if pending}}
-                        <hr style="margin-top: 0px;">
-                        <h3 class ="bold h3-left">Payment History</h3>
-                        <table class="table" style="margin-top: 30px">
-                            <thead style="background-color: #2F5D62; color: white">
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody> 
-                                {{#each paymentHistory}}
-                                    <tr>
-                                        <td>{{date}}</td>
-                                        <td>{{amountPaid}}</td> 
-                                    </tr>
-                                {{/each}}
-                            </tbody>
-                        </table>
-
-
-                        <div class="summary-container">
-                            <div class="summary-text">Amount Paid</div>
-                            <div class="summary-info-container"><div class="summary-info">₱ {{paymentTotal}}</div></div>
-                        </div>
-                        <div class="summary-container">    
-                            <div class="summary-text">Amount Due</div>
-                            <div class="summary-info-container"><div class="summary-info" id="totalAmountDue">₱ {{amountDue}}</div></div>
-                        </div>
-                    {{/if}}
-
                     <div style="height: 10px"></div>
 
                      <!---PAYMENT MODAL-->
@@ -238,8 +207,10 @@
                     </div>
 
                     {{#if onAccount}}
-                    {{else}}
-                    <div class="btn-export-invoice"><button class="btn-light-blue" id="btn-pay-invoice" data-toggle="modal" data-target="#modal-new-payment">New Payment</button></div>
+                        {{#if pending}}
+                            <div class="btn-export-invoice"><button class="btn-light-blue" id="btn-pay-invoice" data-toggle="modal" data-target="#modal-new-payment">New Payment</button></div>
+                        {{else}}
+                        {{/if}}
                     {{/if}}
 
                     <hr>

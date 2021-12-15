@@ -5,6 +5,8 @@ const Items = require('../models/ItemsModel.js');
 
 const ItemSuppliers = require('../models/ItemSuppliersModel.js');
 
+const PurchaseItem = require('../models/PurchasedItemsModel.js');
+
 require('../controllers/helpers.js')();
 
 const inventoryController = {
@@ -203,7 +205,18 @@ const inventoryController = {
 
 	postUpdateItemInformation: function(req, res) {
 
+		function updatePurchaseItems(oldItemID, newItemID) {
+			db.updateMany(PurchaseItem, {itemID:oldItemID}, {itemID:newItemID}, function(result) {
+			})
+		}
+
+		function updateItemSuppliers(oldItemID, newItemID) {
+			db.updateMany(ItemSuppliers, {itemID:oldItemID}, {itemID:newItemID}, function(result) {
+			})
+		}
+
 		async function updateItemInfo() {
+			var deletedItemID = req.body.itemID
 			var deleteID = await getInformationStatus("Deleted");
 
 			// change current _id status to deleted
@@ -214,7 +227,7 @@ const inventoryController = {
 			var inStockID = await getSpecificItemStatusID("In Stock");
 
 			var updatedItem = {
-				itemDescription: req.body.description,
+				itemDescription: req.body.itemDescription,
 				categoryID: req.body.category,
 				unitID: req.body.unit,
 				quantityAvailable: parseFloat(req.body.quantity),
@@ -235,11 +248,10 @@ const inventoryController = {
 			db.insertOneResult(Items, updatedItem, function (result) {
 
 				// update itemSupplier	
-				db.updateMany(ItemSuppliers, {itemID: req.body.itemID}, {$set: {itemID: result._id}}, function(flag) {
-					if (flag) { }
-
-					res.send(result);
-				});
+				updateItemSuppliers(deletedItemID, result._id);
+				//update po items
+				updatePurchaseItems(deletedItemID, result._id);
+				res.send(result)
 			});
 		}
 
