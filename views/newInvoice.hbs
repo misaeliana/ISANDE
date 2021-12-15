@@ -398,7 +398,6 @@
                         $('#totbox').text(parseFloat(amount).toFixed(2));
                 }
                 function DeleteRow(item) {
-                 // event.target will be the input element.
                 var parent = item.parentNode.parentNode;
                 parent.parentNode.removeChild(parent);
                 
@@ -407,10 +406,7 @@
                     DeleteRow(this);
                     updateData();
                 })
-                    //statement to get item info from db*/
-
-                    
-                }) 
+    }) 
              $(document).on("click", ".custbutton", function () {
                 $('.modal').modal('show');
                 //alert('clicked!');
@@ -418,7 +414,7 @@
             function invoicefilled(){
                 switch($('#drop-down-new-invoice-type').val()){
                     case '61a591c1233fa7f9abcd5726':
-                      var errmsg = 'There is no input data in the hightlighted fields!!';
+                    var errmsg = 'There is no input data in the hightlighted fields!!';
                     var err = 0;
                     if ($('#customer-Name').val()==''){
                     $('#customer-Name').css("border","1px solid red")
@@ -451,7 +447,7 @@
                     break;
                     case '6197863ac4f0088e95c9bf84':
                      if ($('#customer-Name').val()==''){
-                     $('#text-warning-customerdetails').text("Customer field is missing");
+                     $('#text-warning-customerdetails').text("Customer field is missing!");
                      return 0;
                     }
                     else{
@@ -467,9 +463,7 @@
                     var check = invoicefilled();
                     if(check==1){
                     var orderedItems = [];
-                     var itemString = JSON.stringify(orderedItems);  
-                   
-                    
+                    var itemString = JSON.stringify(orderedItems);  
                     var custID = $('#customer-Name').val();
                     var statusID = '0';
                     var address = '';
@@ -490,28 +484,19 @@
                         }
                         orderedItems.push(item);
                     }); 
-                        switch(typeID){
-                        case '61a591c1233fa7f9abcd5726':
-                         $('#delivery-date').css("border","1px solid black")
+                       
                         if(paymentOption == '61b2de709f9cd4edddf21d64'){
                             statusID = '619785b0d9a967328c1e8fa6'
                         }
                         if(paymentOption == '61b2de7f9f9cd4edddf21d65'){
-                            statusID = '619785d78094faf8c10d1484';
+                            statusID = '619785b0d9a967328c1e8fa6';
                         }
                         if(paymentOption == '61b2de879f9cd4edddf21d66'){
-                             statusID = '619785d78094faf8c10d1484';
+                            statusID = '619785d78094faf8c10d1484';
                         }
                         if(paymentOption == '61b2de8d9f9cd4edddf21d67'){
                             statusID = '61b2df709f9cd4edddf21d68'
                         }
-                        break;
-                        case '6197863ac4f0088e95c9bf84':
-                        if(paymentOption == '61b2de709f9cd4edddf21d64'){
-                            statusID = '619785b0d9a967328c1e8fa6'
-                        }
-                        break;
-                    }
 
                     var subtotal = $('#subtotalbox').val();
                     var VAT = $('#vatbox').val();
@@ -520,7 +505,7 @@
                    
 
                     $.post('/createNewInvoice', {custID,date,typeID,statusID,paymentOption,subtotal,VAT,discount,total,employeeID,ddate,dnotes,itemString}, function(result) {
-                        alert("Tranasction successfully processed");
+                        console.log("Transaction successfully processed");
                         window.location = "/invoices"
                     }) 
                     }
