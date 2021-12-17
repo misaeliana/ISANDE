@@ -116,8 +116,8 @@
                             <label for="dropdown-category" style="margin-right: 10px">Type</label>
                             <select class="dropdown" id="dropdown-category" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
                                 <option value="no-selected" selected>Select Type</option>
-                                {{#each inventoryTypes}}
-                                        <option value={{_id}}>{{type}}</option>
+                                {{#each itemCategories}}
+                                        <option value={{_id}}>{{category}}</option>
                                 {{/each}}
                             </select>
                             <p class="error" id="error-category" style="margin-top: 3px; margin-bottom: 3px;"></p>

@@ -44,7 +44,8 @@ const employeeController = {
 		};
 
 		db.insertOne(Employees, employee, function (flag) {
-			if (flag) { }
+			if (flag)
+				res.sendStatus(200)
 		});
 
 	},
@@ -72,6 +73,8 @@ const employeeController = {
 		async function getInformation() {
 			var employeeInfo = await getEmployeeInfo(req.params.employeeID);
 			var positions = await getAllPositions();
+
+			employeeInfo.positionName = await getPositionName(employeeInfo.positionID)
 			res.render('employeeInformation', {employeeInfo, positions});
 		}
 

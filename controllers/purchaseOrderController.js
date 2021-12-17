@@ -368,17 +368,17 @@ const purchaseOrderController = {
 			var supplier = await getSpecificSupplier(purchaseInfo.supplierID);
 
 			var units = await getUnits();
-			var inventoryTypes = await getInventoryTypes();
+			var itemCategories = await getItemCategories();
 
 			if (statusID == "618f650546c716a39100a809") {
 				var newPO = statusID;
 				//renders delete button and probably cancel PO button
-				res.render('editPO', {items, purchaseInfo, supplier, units, inventoryTypes,newPO});
+				res.render('editPO', {items, purchaseInfo, supplier, units, itemCategories,newPO});
 			}
 			else if (statusID == "618f652746c716a39100a80a") {
 				var released = statusID;
 				//renders input for price 
-				res.render('editPO', {items, purchaseInfo, supplier, units, inventoryTypes, released})
+				res.render('editPO', {items, purchaseInfo, supplier, units, itemCategories, released})
 			}
 		
 		}

@@ -303,44 +303,6 @@ const invoiceController = {
 		}	//res.sendFile( dir+"/newInvoice.html");
         getInvoiceTypes();
     },
-    /*getItems: function(req, res) {
-
-		function getItems(itemDescription) {
-			return new Promise((resolve, reject) => {
-				db.findMany(Items, {itemDescription:itemDescription}, '', function(result) {
-					resolve (result)
-				})
-			})
-		}
-
-		//source for regex
-		//https://blog.sessionstack.com/how-javascript-works-regular-expressions-regexp-e187e9082913
-
-		async function getFilteredItems() {
-			var items = await getItems(itemDescription);
-			var formattedResults = [];
-			var query = new RegExp(req.query.query, 'i');
-			var itemNames = []
-
-			for (var i=0; i<items.length; i++){
-				var itemName = await getItemDescription(items[i].itemID)
-				itemNames.push(itemName);
-			}
-
-			for (var i=0; i<itemNames.length; i++) {
-				if (query.test(itemNames[i])) {
-					var formattedResult = {
-						label: await getItemDescription(items[i].itemID),
-						value: await getItemDescription(items[i].itemID)
-					}
-					formattedResults.push(formattedResult)
-				}
-			}
-			res.send(formattedResults)
-		}
-		
-		getFilteredItems();
-	},*/
     
     addNewInvoice: function(req,res){
 

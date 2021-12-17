@@ -44,6 +44,10 @@
                         <div class="label-content">{{employeeInfo.username}}</div>
                     </div>
                     <div class="label-container">
+                        <div class="override-label">Position</div> 
+                        <div class="label-content" id="employee-position">{{employeeInfo.positionName}}</div>
+                    </div>
+                    <div class="label-container">
                         <div class="override-label">Contact Number</div> 
                         <div class="label-content">{{employeeInfo.number}}</div>
                     </div>
@@ -58,7 +62,7 @@
                     <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h3 class="modal-title" id="exampleModalLongTitle">Add Customer</h3>
+                            <h3 class="modal-title" id="exampleModalLongTitle">Update Employee Information</h3>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -73,7 +77,7 @@
                                 <p class="error" id="error-employee-password" style="margin-top: 3px; margin-bottom: 3px;"></p>
                                 <label for="Contact-number">Contact Number</label> <input id="contact-number" type="number" value="{{employeeInfo.number}}"><br>                            
                                 <p class="error" id="error-contact-number" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                                <label for="roler">Position</label> 
+                                <label for="dropdown-employee-position">Position</label> 
                                 <select class="dropdown" id="dropdown-employee-position">
                                     <option value="no-selected">--Select Position--</option>
                                     {{#each positions}}
@@ -86,7 +90,7 @@
                         </div>
                         <div class="modal-footer">
                             <button id="btn-delete-employee" class="btn-red" style="float:left">Delete Employee</button>
-                            <button type="button" class="btn btn-primary" id="btn-update-employee">Update Information</button>
+                            <button type="button" class="btn btn-primary" id="btn-update-employee">Save</button>
                         </div>
                     </div>
                     </div>
@@ -110,6 +114,9 @@
 
         <script>
             $(document).ready(function() {
+
+                var position = $('#employee-position').text();
+                $("#dropdown-employee-position option:contains(" + position + ") ").attr('selected', 'selected');
 
                 function capitalize(string){
                     var words = string.toLowerCase().split(' ');

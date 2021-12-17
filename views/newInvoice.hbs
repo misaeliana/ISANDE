@@ -141,19 +141,19 @@
                     <br> 
                     <div class="summary-container">
                         <div class="summary-text">Subtotal </div>
-                        <div class="summary-info-container"><div class="summary-info" style="text-align:right">₱{{sub}}<div id ="subtotalbox"></div></div></div>
+                        <div class="summary-info-container"><div class="summary-info" style="text-align:right">₱ 0<div id ="subtotalbox"></div></div></div>
                     </div>
                     <div class="summary-container">
                         <div class="summary-text">VAT </div>
-                        <div class="summary-info-container" ><div class="summary-info">₱{{vat}}<div id ="vatbox"></div></div></div>
+                        <div class="summary-info-container" ><div class="summary-info">₱ 0<div id ="vatbox"></div></div></div>
                     </div>
                     <div class="summary-container">    
                         <div class="summary-text">Discount </div>
-                        <div class="summary-info-container"><div class="summary-info">₱{{discountTotal}}<div id ="disbox"></div></div></div>
+                        <div class="summary-info-container"><div class="summary-info">₱ 0<div id ="disbox"></div></div></div>
                     </div>
                     <div class="summary-container">
                         <div class="summary-text">Total </div>
-                        <div class="summary-info-container" ><div class="summary-info">₱{{amount}}<div id ="totbox"></div></div></div>
+                        <div class="summary-info-container" ><div class="summary-info">₱ 0<div id ="totbox"></div></div></div>
                     </div>
 
                     <div style="height: 10px"></div>
@@ -267,7 +267,7 @@
                
                     source: function(request, response) {
                     $.ajax({
-                                url: `/getItemNameInvoice?query=${request.term}`,
+                                url: `/getItemName?query=${request.term}`,
                                 dataType: "json",
                                 data: {
                                     //request.term refers to the value currently in the text input

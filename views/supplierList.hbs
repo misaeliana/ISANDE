@@ -221,10 +221,10 @@
 
                 $('#btn-add-new-supplier').click(function() {
                     var name = capitalize($('#supplier-name').val());
-                    var contactPerson =$('#contact-person').val();
+                    var contactPerson =capitalize($('#contact-person').val());
                     var number = $('#contact-number').val();  
                     var email = $('#email').val();
-                    var address = $('#address').val();
+                    var address = capitalize($('#address').val());
 
                     if (!supplierNameValidation(name) && !contactPersonValidation(contactPerson) && !numberValidation(number) && !emailValidation(email) && !addressValidation(address)) {
 
@@ -243,10 +243,13 @@
                             
                            
 
-                            $.post('/postSupplierInformation', {name, contactPerson, number, email, address})
+                            $.post('/postSupplierInformation', {name, contactPerson, number, email, address}, function(result) {
+                                alert("Supplier has been added")
                                 $('#modal-add-supplier').modal('hide');
                                 $('#add-new-supplier').trigger('reset');
-                                location.reload()
+                                window.location.reload()
+                            })
+                                
 
                    }
                 })

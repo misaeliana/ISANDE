@@ -15,46 +15,9 @@ const inventoryController = {
 
 	getInventoryList: function(req, res) {
 
-		var type = {
-			type: "Paint",
-		};
-
-		var unit = {
-			unit: "Piece"
-		};
-
-		var itemStatus = {
-			status: "Low Stock"
-		};
-
-		var supplier = {
-			name: "Supplier 1",
-			contactPerson: "Juan De La Cruz",
-			number: "09170998777",
-			email: "juan_cruz@gmail.com",
-			address: "1234 Street, Blank City",
-			informationStatusID: "618a7830c8067bf46fbfd4e4"
-		};
-
-		/*db.insertOne (Suppliers, supplier, function(flag) {
-			if (flag) { }
-		});*/
-
-
-		/*db.insertOne (ItemStatuses, itemStatus, function(flag) {
-			if (flag) { }
-		});*/
-
-		/*db.insertOne (Units, unit, function(flag) {
-			if (flag) { }
-		})*/
-	
-		/*db.insertOne (InventoryType, type, function(flag) {
-			if (flag) { }
-		})*/
 
 		async function getInformation() {
-			var inventoryTypes = await getInventoryTypes();
+			var itemCategories = await getItemCategories();
 			var units = await getUnits();
 			var itemStatuses = await getItemStatuses();
 			var inventoryItems = await getInventoryItems("618a7830c8067bf46fbfd4e4"); // change
@@ -77,7 +40,7 @@ const inventoryController = {
 					_id: inventoryItems[i]._id,
 					itemDescription: inventoryItems[i].itemDescription,
 					categoryID: inventoryItems[i].categoryID,
-					category: await getSpecificInventoryType(inventoryItems[i].categoryID),
+					category: await getSpecificItemCategory(inventoryItems[i].categoryID),
 					unit: await getSpecificUnit(inventoryItems[i].unitID),
 					quantityAvailable: inventoryItems[i].quantityAvailable,
 					sellingPrice: parseFloat(inventoryItems[i].sellingPrice).toFixed(2),
@@ -89,7 +52,7 @@ const inventoryController = {
 				inventory.push(item);
 			} 
 
-			res.render('inventory', {inventoryTypes, units, inventory, itemStatuses});
+			res.render('inventory', {itemCategories, units, inventory, itemStatuses});
 		}
 
 		getInformation();
@@ -178,7 +141,7 @@ const inventoryController = {
 
 
 		async function getInformation() {
-			var inventoryTypes = await getInventoryTypes();
+			var itemCategories = await getItemCategories();
 			var units = await getUnits();
 			var itemSuppliers = await getItemSuppliers(req.params.itemID);
 			var item = await getSpecificInventoryItems(req.params.itemID);
@@ -200,7 +163,7 @@ const inventoryController = {
 				_id: item._id,
 				itemDescription: item.itemDescription,
 				categoryID: item.categoryID,
-				category: await getSpecificInventoryType(item.categoryID),
+				category: await getSpecificItemCategory(item.categoryID),
 				unitID: item.unitID,
 				unit: await getSpecificUnit(item.unitID),
 				quantityAvailable: item.quantityAvailable,
@@ -214,7 +177,7 @@ const inventoryController = {
 
 			getToBeReceived(itemInfo).then((result) =>{
 				itemInfo.toBeReceived = result
-				res.render('viewSpecificItem', {itemInfo, inventoryTypes, units, itemSuppliers});
+				res.render('viewSpecificItem', {itemInfo, itemCategories, units, itemSuppliers});
 			})
 		}
 

@@ -128,15 +128,16 @@
                 $('#employee-name').keyup(function() {
                     var name = capitalize($('#employee-name').val())
                     $.get('/getCheckEmployeeName', {name:name}, function(result) {
+                        console.log(result)
                         if (result.name == name) {
                             $('#employee-name').css("border", "1px solid #B00000");
-                            $('#error-new-employee-name').text("Employee information already exists");
+                            $('#error-new-employee-name').text("Employee already exists");
                             $('#btn-add-new-employee').prop('disasbled', true);
                             $('#btn-add-new-employee').css("background-color", "#b3b3b3");
                         }
                         else {
                             $("#employee-name").css("border", "1px solid #DDDDDD");
-                            $('#error-new-employee-username').text("");
+                            $('#error-new-employee-name').text("");
                             $('#btn-add-new-employee').prop('disasbled', false);
                             $("#btn-add-new-employee").css("background-color", "#0F84D9");
                         }
@@ -146,15 +147,16 @@
                 $('#employee-username').keyup(function() {
                     var username = capitalize($('#employee-username').val())
                     $.get('/getCheckEmployeeUsername', {username:username}, function(result) {
+                        console.log(result)
                         if (result.username == username) {
                             $('#employee-username').css("border", "1px solid #B00000");
-                            $('#error-new-employee-name').text("Username is already taken");
+                            $('#error-new-employee-username').text("Username is already taken");
                             $('#btn-add-new-employee').prop('disasbled', true);
                             $('#btn-add-new-employee').css("background-color", "#b3b3b3");
                         }
                         else {
                             $("#employee-name").css("border", "1px solid #DDDDDD");
-                            $('#error-new-employee-name').text("");
+                            $('#error-new-employee-username').text("");
                             $('#btn-add-new-employee').prop('disasbled', false);
                             $("#btn-add-new-employee").css("background-color", "#0F84D9");
                         }
@@ -239,11 +241,13 @@
                             $('#error-contact-number').text("");
                             $('#error-employee-position').text("");
 
-                            $.post('/postEmployeeInformation', {name, username, password, number, position})
+                            $.post('/postEmployeeInformation', {name, username, password, number, position}, function(result) {
+                                alert('New employee successfully added');
                                 $('#modal-add-employee').modal('hide');
                                 $('#add-new-employee').trigger('reset');
-                                location.reload()
+                                window.location.reload()
 
+                            })
                     }
                 })
 

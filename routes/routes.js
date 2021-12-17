@@ -47,6 +47,8 @@ router.post('/postUpdateSupplierInformation', supplierController. postUpdateInfo
 
 router.post('/deleteSupplier', supplierController.deleteSupplier);
 
+router.post('/addSupplierItem', supplierController.addSupplierItem);
+
 //--EMPLOYEE--
 
 router.get('/employeeList', employeeController.getEmployeeList);
@@ -144,7 +146,7 @@ router.get('/getCustomerName', invoiceController.getCustomerName);
 
 router.get('/getCustomerInformation', invoiceController.getCustomerInformation);
 
-router.get('/getItemNameInvoice', invoiceController.getItems);
+router.get('/getItemName', invoiceController.getItems);
 
 router.get('/getCustomerList', invoiceController.getCustom);
 

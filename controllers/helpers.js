@@ -5,11 +5,11 @@ const Employees = require('../models/EmployeeModel.js');
 
 const EmployeePositions = require('../models/EmployeePositionsModel.js');
 
-const InventoryTypes = require('../models/InventoryTypeModel.js');
-
 const Items = require('../models/ItemsModel.js');
 
 const ItemStatuses = require('../models/ItemStatusModel.js');
+
+const ItemCategories = require('../models/ItemCategoriesModel.js');
 
 const Units = require('../models/UnitsModel.js');
 
@@ -74,7 +74,7 @@ module.exports = function() {
 
 	this.getEmployeeInfo = function(employeeID) {
 		return new Promise((resolve, reject) => {
-			db.findOne(Employees, {_id: employeeID}, '_id name username number position', function(result) {
+			db.findOne(Employees, {_id: employeeID}, '_id name username number positionID', function(result) {
 				resolve (result);
 			});
 		});
@@ -84,22 +84,6 @@ module.exports = function() {
 		return new Promise((resolve, reject) => {
 			db.findOne(Employees, {_id: employeeID}, 'name', function(result) {
 				resolve (result.name);
-			});
-		});
-	},
-
-	this.getInventoryTypes = function() {
-		return new Promise((resolve, reject) => {
-			db.findMany(InventoryTypes, {}, '', function(result) {
-				resolve (result);
-			});
-		});
-	},
-
-	this.getSpecificInventoryType = function(inventoryTypeID) {
-		return new Promise((resolve, reject) => {
-			db.findOne(InventoryTypes, {_id:inventoryTypeID}, 'type', function(result) {
-				resolve (result.type);
 			});
 		});
 	},
@@ -250,7 +234,7 @@ module.exports = function() {
 
 	this.getAllPurchaseOrderStatus = function() {
 		return new Promise((resolve, reject) => {
-			db.findMany(PurchaseOrderStatus, {}, 'purchaseOrderStatus', function(result) {
+			db.findMany(PurchaseOrderStatus, {purchaseOrderStatus:{$ne: "Deleted"}}, 'purchaseOrderStatus', function(result) {
 				resolve(result);
 			});
 		});
@@ -659,6 +643,22 @@ module.exports = function() {
 		return new Promise((resolve, reject) => {
 			db.findOne(Invoices, {_id: invoiceID}, 'total', function(result) {
 				resolve(result.total)
+			})
+		})
+	},
+
+	this.getItemCategories = function() {
+		return new Promise((resolve, reject) => {
+			db.findMany(ItemCategories, {}, '', function(result){
+				resolve(result)
+			})
+		})
+	},
+
+	this.getSpecificItemCategory = function(categoryID) {
+		return new Promise ((resolve, reject) => {
+			db.findOne(ItemCategories, {_id:categoryID}, 'category', function(result) {
+				resolve(result.category)
 			})
 		})
 	}

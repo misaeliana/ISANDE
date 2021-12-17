@@ -35,7 +35,8 @@ const supplierController = {
 		};
 
 		db.insertOne (Suppliers, supplier, function(flag) {
-			if (flag) { }
+			if (flag)
+				res.sendStatus(200)
 		});
 	},
 
@@ -51,9 +52,8 @@ const supplierController = {
 
 		async function getInfo() {
 			var supplierInfo = await getSpecificSupplier(req.params.supplierID)
-			var categories = await getAllCategories();
 
-			res.render('supplierInformation', {supplierInfo, categories})
+			res.render('supplierInformation', {supplierInfo})
 		}
 
 		getInfo();
@@ -87,6 +87,10 @@ const supplierController = {
 		db.updateOne(Suppliers, {_id: supplierID}, {$set: {informationStatusID:"618a783cc8067bf46fbfd4e5"}}, function(flag){
 			if (flag) { }
 		});
+	},
+
+	addSupplierItem: function(req, res) {
+
 	}
 };
 
