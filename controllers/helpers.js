@@ -331,6 +331,7 @@ module.exports = function() {
 	this.getCustomerInvocies = function(customerID) {
 		return new Promise((resolve, reject) => {
 			db.findMany (Invoices, {customerID: customerID}, '', function (result) {
+				console.log(result)
 				resolve(result);
 			});
 		});
@@ -466,7 +467,7 @@ module.exports = function() {
 	},
 	this.getDeliveryPersonnel = function() {
 		return new Promise((resolve, reject) => {
-			db.findMany(Employees, {informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name', function(result) {
+			db.findMany(Employees, {informationStatusID:"618a7830c8067bf46fbfd4e4", positionID:"6187b8d7680957078c8b52ea"}, 'name', function(result) {
 				resolve(result);
 			});
 		});
@@ -549,7 +550,7 @@ module.exports = function() {
 
 	this.getCustomerID = function(customerName) {
 		return new Promise((resolve, reject) => {
-			db.findOne(Customers, {name:customerName}, '_id', function(result){
+			db.findOne(Customers, {name:customerName, informationStatusID:"618a7830c8067bf46fbfd4e4"}, '_id', function(result){
 				resolve(result._id)
 			}) 
 		})

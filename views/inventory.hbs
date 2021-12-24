@@ -79,9 +79,9 @@
                             <label for="description">Description</label> <input id="description" type="text"><br>
                             <p class="error" id="error-description" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
-                            <label for="dropdown-category" style="margin-right: 10px">Type</label>
+                            <label for="dropdown-category" style="margin-right: 10px">Category</label>
                             <select class="dropdown" id="dropdown-category" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
-                                <option value="no-selected" selected>Select Type</option>
+                                <option value="no-selected" selected>--Select Category--</option>
                                 {{#each itemCategories}}
                                     <option value={{_id}}>{{category}}</option>
                                 {{/each}}
@@ -90,7 +90,7 @@
 
                             <label for="dropdown-unit" style="margin-right: 10px">Unit</label>
                             <select class="dropdown" id="dropdown-unit" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
-                                <option value="no-selected" selected>Select Unit</option>
+                                <option value="no-selected" selected>--Select Unit--</option>
                                 {{#each units}}
                                     <option value={{_id}}>{{unit}}</option>
                                 {{/each}}

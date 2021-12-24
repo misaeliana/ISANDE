@@ -94,20 +94,28 @@ const customerController = {
 	},
 
 	postUpdateInformation: function (req, res) {
+
+		function updateInvoices(oldID, newID) {
+			db.updateMany(Invoices, {customerID:oldID}, {customerID:newID}, function(result) {
+
+			})
+		}	
+
 		var customerID = req.body.customerID;
 
-		db.updateOne(Customers, {_id:customerID}, {$set: {informationStatusID:"618a783cc8067bf46fbfd4e5"}}, function(flag) {
+		db.updateOne(Customers, {_id:customerID}, {informationStatusID:"618a783cc8067bf46fbfd4e5"}, function(flag) {
 			if (flag) { }
 		})
 
 		var customer = {
-			//name:req.body.name,
+			name:req.body.name,
 			number:req.body.number, 
 			address:req.body.address,
 			informationStatusID: "618a7830c8067bf46fbfd4e4"
 		}
 
 		db.insertOneResult(Customers, customer, function(result) {
+			updateInvoices(customerID, result._id);
 			res.send(result._id)
 		})
 	},

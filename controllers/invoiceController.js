@@ -27,6 +27,13 @@ const AccountPayments = require('../models/OnAccountPaymentModel.js')
 
 require('../controllers/helpers.js')();
 
+const fs = require('fs');
+
+const PizZip = require("pizzip");
+
+const Docxtemplater = require("docxtemplater");
+
+
 const invoiceController = {
  
 	getInvoiceList: function(req, res) {
@@ -133,8 +140,10 @@ const invoiceController = {
                 employeeName: employee.name
             };
 
+            var delivery;
+
             if (invoiceInfo.type == "Delivery") {
-                var delivery = await getDeliveryInformation(invoice_id);
+                delivery = await getDeliveryInformation(invoice_id);
 
                 employeeName = await getEmployeeInfo(delivery.deliveryPersonnel);
 
@@ -146,8 +155,7 @@ const invoiceController = {
                 if (delivery.dateDelivered != undefined ) {
                     var dateDelivered = new Date(delivery.dateDelivered);
                     delivery.fdateDelivered = dateDelivered.getMonth() + 1 + "/" + dateDelivered.getDate() + "/" + dateDelivered.getFullYear(); 
-                }
-            
+                }         
 
                 // get customer info
                 var customer = await getCustomerInfo(invoice.customerID);
@@ -170,6 +178,7 @@ const invoiceController = {
                 items.push(item);
             }
 
+
             if (invoiceInfo.status == "Pending" || invoiceInfo.status == "Partial" || invoiceInfo.paymentOption == "On Account") {
                 var pending = true
                 var onAccount = true
@@ -191,15 +200,31 @@ const invoiceController = {
                 {
                     if (invoiceInfo.status == "Paid") {
                         var paid = true
-                        res.render('viewInvoice', {invoiceInfo, items, delivery, paid, onAccount, paymentHistory, paymentTotal, amountDue});
+                        if (delivery != "")
+                            res.render('viewInvoice', {invoiceInfo, items, delivery, paid, onAccount, paymentHistory, paymentTotal, amountDue});
+                        else
+                            res.render('viewInvoice', {invoiceInfo, items, paid, onAccount, paymentHistory, paymentTotal, amountDue});
+
                     }
                     else {
-                        res.render('viewInvoice', {invoiceInfo, items, delivery, pending, onAccount, paymentHistory, paymentTotal, amountDue});
+                        if (delivery != "")
+                            res.render('viewInvoice', {invoiceInfo, items, delivery, pending, onAccount, paymentHistory, paymentTotal, amountDue});
+                        else
+                            res.render('viewInvoice', {invoiceInfo, items, pending, onAccount, paymentHistory, paymentTotal, amountDue});
                     }
                 }
-                else
-                    res.render('viewInvoice', {invoiceInfo, items, delivery, paymentHistory, paymentTotal, amountDue});
-
+                else {
+                    if (delivery != "")
+                            res.render('viewInvoice', {invoiceInfo, items, delivery,  paymentHistory, paymentTotal, amountDue});
+                    else
+                        res.render('viewInvoice', {invoiceInfo, items, paymentHistory, paymentTotal, amountDue});
+                }
+            }
+            else {
+                if (delivery != "")
+                            res.render('viewInvoice', {invoiceInfo, items, delivery});
+                        else
+                            res.render('viewInvoice', {invoiceInfo, items});
             }
 		}
 
@@ -309,8 +334,13 @@ const invoiceController = {
         function deductInventory(item) {
             db.findOne(Items, {itemDescription:item.itemDescription}, 'quantityAvailable', function(result) {
                 var updatedQuantity = parseInt(result.quantityAvailable) - parseInt(item.quantity)
-                db.updateOne(Items, {itemDescription:item.itemDescription}, {quantityAvailable: updatedQuantity}, function(flag) {
+                db.updateOne(Items, {itemDescription:item.itemDescription}, {quantityAvailable: updatedQuantity}, function(result) {
+                    //update item info to out of stock
+                    if (updatedQuantity == 0) {
+                        db.updateOne(Items, {itemDescription:item.itemDescription}, {statusID:"61b0d6751ca91f5969f166de"}, function(result) {
 
+                        })
+                    }
                 })
             })
         }
@@ -332,7 +362,7 @@ const invoiceController = {
 
         async function saveInvoice() {
             var invoiceNo = await getInvoiceNumber();
-            var custID = await getCustomerID(req.body.custID);
+            var custID = await getCustomerID(req.body.custName);
              var invoice = {
                 invoiceID: invoiceNo,
                 customerID: custID,
@@ -340,16 +370,15 @@ const invoiceController = {
                 typeID: req.body.typeID,
                 statusID:req.body.statusID,
                 paymentOptionID: req.body.paymentOption,
-                subtotal: req.body.subtotal,
-                VAT: req.body.VAT,
-                discount: req.body.discount,
-                total:req.body.total,
-                employeeID: req.body.employeeID
+                subtotal: parseFloat(req.body.subtotal),
+                VAT: parseFloat(req.body.VAT),
+                discount: parseFloat(req.body.discount),
+                total:parseFloat(req.body.total),
+                employeeID: "61bc3ecb39b4c1027aaac14d"
             };
             var items = JSON.parse(req.body.itemString);
-            var invoiceID='';
             db.insertOneResult (Invoices, invoice, function(result) {
-                invoiceID = result._id;
+                var invoiceID = result._id;
                 if(req.body.typeID == '61a591c1233fa7f9abcd5726'){
                     var dpackage = {
                         invoice_id: invoiceID,
@@ -364,8 +393,7 @@ const invoiceController = {
                 saveItems(invoiceID,items);
                 //console.log("invoice added:")
                 //console.log('invoiceID: ' +invoiceID);
-        });
-       
+            });
         }
         saveInvoice();
     },
@@ -383,10 +411,10 @@ const invoiceController = {
             name: req.body.custname,
             number: req.body.custphone,
             address: req.body.custaddress,
-            informationStatusID: '618a783cc8067bf46fbfd4e5'
+            informationStatusID: '618a7830c8067bf46fbfd4e4'
         }
         db.insertOne(Customer, newCustomer, function(flag) {
-            console.log("customer added:")
+            
         });
     },
 
@@ -643,9 +671,9 @@ const invoiceController = {
                     itemDescription: await getItemDescription(temp_invoiceItems[i].itemID), 
                     quantity: quantity, 
                     unit: await getSpecificUnit(unitID), 
-                    unitPrice: "P " + parseFloat(unitPrice).toFixed(2), 
-                    discount: "P " + temp_invoiceItems[i].discount, 
-                    amount: "P " + parseFloat(amount).toFixed(2), 
+                    unitPrice: parseFloat(unitPrice).toFixed(2), 
+                    discount: temp_invoiceItems[i].discount, 
+                    amount: parseFloat(amount).toFixed(2), 
                     returnReasons: returnReasons 
                 } 
                 invoiceItems.push(invoiceItem) 
@@ -890,6 +918,47 @@ const invoiceController = {
         }
 
         pay()
+    },
+
+    exportInvoice: function(req, res) {
+        var customerName = req.query.customerName
+        var items = JSON.parse(req.query.itemsString)
+
+        var temp_fDate0 = req.query.date.split(",");
+        var temp_fDate = temp_fDate0[0].split("/")
+        var fDate = ""  
+        for (var i=0; i<temp_fDate.length; i++)
+            fDate += temp_fDate[i] + "_"
+
+
+        var fileName = fDate + customerName
+
+        //for creating purchase order in docx
+        // Load the docx file as binary content
+        const content = fs.readFileSync(
+            path.resolve("files", "po_template.docx"), "binary"
+        );
+
+        const zip = new PizZip(content);
+        
+        const doc = new Docxtemplater(zip, {
+            paragraphLoop: true,
+            linebreaks: true,
+        });
+
+        // render the document
+        doc.render({
+            //invoiceNumber: req.query.poNumber,
+            date: temp_fDate0[0],
+            customer_name: supplierInfo.name,
+            items:items
+        });
+
+        const buf = doc.getZip().generate({ type: "nodebuffer" });
+
+        fs.writeFileSync(path.resolve("documents", fileName+".docx"), buf);
+
+        res.sendStatus(200)
     }
 };
 

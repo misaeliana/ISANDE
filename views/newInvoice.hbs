@@ -8,13 +8,15 @@
         <link rel="stylesheet" type="text/css" href="../css/information.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.js"></script>
 
-        <link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
-        <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
-        
+
+        <!--<link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>-->
+        <link rel="stylesheet" type="text/css" href="../jquery-ui-themes-1.13.0/themes/ui-lightness/jquery-ui.css">
+        <script src="../jquery-ui/jquery-ui.min.js"></script>
     </head>
     <body>
 
@@ -62,13 +64,15 @@
                 {{/each}}
             </select>
 
+            <p id="payment-type-error" class="error"></p>
+
             <div class="delivery-info" style="display:none;">
                 <label class="date-label" for="deliverydate">Delivery Date</label>
                 <input style="height: 34px" type="date" id="delivery-date" name="deliverydate">
 
                 <label  id = "label-delivery" for="dropdown-delivery-personnel" style="margin-right: 10px">Delivery Personnel</label>
-                <select class="dropdown" id="dropdown-delivery-personnel" style="margin-right: 10px">
-                        <option value="no-selected" selected>--Select Delivery Personnel</option>
+                <select class="dropdown" id="dropdown-delivery-personnel" style="margin-right: 10px; min-width:170px">
+                        <option value="no-selected" selected>--Select--</option>
                          {{#each delperson}}
                             <option value={{_id}}>{{name}}</option>
                         {{/each}}
@@ -82,22 +86,42 @@
 
                 <div>
                     <input style="margin-top: 15px;" type="text" class="form-control margin-bottom-10" id="customer-Name" name="customer-Name" placeholder="Customer Name">
-                    <!--<select style="margin-top: 15px;" class = "form-control margin-bottom-10" id = "dropdown-custom" style="margin-right: 10px">
-                    <option value="default" selected disabled hidden>Customer Name</option>
-                    <option value="addnew"></option>
-                      {{#each customerList}}
-                        <option value={{_id}}>{{name}}</option>
-                      {{/each}}
-                    </select>-->
+                    <p class="error" id="error-customer"></p>
+                    <button class="btn-light-blue" id="add-new-customer" style="display:none; margin-bottom: 10px;" data-toggle="modal" data-target="#customerModal">Add New Customer</button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="customerModal">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                <h2 class="modal-title" id="modalTitle">Add Customer</h2>
+                                
+                                </div>
+                                <div class="modal-body">
+                                    <form id="add-new-customer">
+                                        <label for="new-customer-name">Customer Name</label> <input id="new-customer-name" type="text"><br>
+                                        <p class="error" id="error-new-customer-name" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                                        <label for="new-contact-number">Contact Number</label> <input id="new-contact-number" type="number"><br>
+                                        <p class="error" id="error-contact-number" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                                        <label for="new-address">Address</label> <input id="new-address" type="text"><br>
+                                        <p class="error" id="error-address" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="button" id = "save-cust" class="btn btn-primary">Add Customer</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <textarea class="form-control margin-bottom-10 delivery-info" id="address" name="address" placeholder="Address"></textarea> <!--style="display:none"-->
+                    <p class="error" id="error-address"></p>
                     <input type="text" class="form-control margin-bottom-10 delivery-info" id="contactNumber" name="contactNumber" placeholder="Contact Number"> <!--style="display:none"-->
+                    <p class="error" id="error-number"></p>
                     <div>
                         <div>
                             <textarea class="form-control delivery-info" id="notes" name="notes" placeholder="Delivery Notes"></textarea>
                         </div>
-                    </div>
-                    <div>
-                        <p id = "text-warning-customerdetails" style="color: red;"></p>
                     </div>
                 </div>
 
@@ -115,7 +139,7 @@
                 <div style="height: 45px"></div>
 
                 <div id="div-warning-new-invoice">
-                    <p id="text-warning-new-invoice" style="color: red;"> </p>
+                    <p id="text-warning-new-invoice" class="error"> </p>
                 </div>
 
                     <table class="table">
@@ -141,19 +165,19 @@
                     <br> 
                     <div class="summary-container">
                         <div class="summary-text">Subtotal </div>
-                        <div class="summary-info-container"><div class="summary-info" style="text-align:right">₱ 0<div id ="subtotalbox"></div></div></div>
+                        <div class="summary-info-container"><div class="summary-info" style="text-align:right" id ="subtotalbox">₱ 0</div></div>
                     </div>
                     <div class="summary-container">
                         <div class="summary-text">VAT </div>
-                        <div class="summary-info-container" ><div class="summary-info">₱ 0<div id ="vatbox"></div></div></div>
+                        <div class="summary-info-container" ><div class="summary-info" id ="vatbox">₱ 0</div></div>
                     </div>
                     <div class="summary-container">    
                         <div class="summary-text">Discount </div>
-                        <div class="summary-info-container"><div class="summary-info">₱ 0<div id ="disbox"></div></div></div>
+                        <div class="summary-info-container"><div class="summary-info" id ="disbox">₱ 0</div></div>
                     </div>
                     <div class="summary-container">
                         <div class="summary-text">Total </div>
-                        <div class="summary-info-container" ><div class="summary-info">₱ 0<div id ="totbox"></div></div></div>
+                        <div class="summary-info-container" ><div class="summary-info" id ="totbox">₱ 0</div></div>
                     </div>
 
                     <div style="height: 10px"></div>
@@ -167,42 +191,14 @@
 
                     <div class="btn-export-invoice"><button class="btn-dark-blue" id="btn-export-invoice">Export</button></div>
 
-                    <div style="height: 20px"></div>    
-
-
-                    <!-- Modal -->
-                <div class="modal fade" id="customerModal">
-                <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                <div class="modal-header">
-                <h2 class="modal-title" id="modalTitle">Customer Details</h2>
-                
-                </div>
-                <div class="modal-body">
-                <label for="name">Name: <input type="text" id="custname" name="name"><br></label><br>
-                <label for="phone">Phone: <input type="text" id="custphone" name="phone"></label><br>
-                <label for="address">Address: <input type="text" id="custaddress" name="address"></label><br>
-                 <div id="div-warning-new-invoice">
-                    <p id="text-warning-customer" style="color: red;"></p>
-                </div>
-
-               
-                </div>
-                <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" id = "save-cust" class="btn btn-primary">Save changes</button>
-                </div>
-                </div>
-                </div>
-                </div>
-                </div>
+                    <div style="height: 20px"></div>   
 
 
         <script>
             $(document).ready(function() {
 
                 $('.delivery-info').css('display', 'none');
-                $('').css('display', 'none')
+                //$('').css('display', 'none')
 
                 var today = new Date();
                 var dd = String(today.getDate()).padStart(2, '0');
@@ -224,32 +220,129 @@
                         return 2
                 }
 
-
-
                 $('#drop-down-new-invoice-type').on('change', function() {
+                    //in-store
                     if(this.value == '6197863ac4f0088e95c9bf84'){
                         $('.delivery-info').css('display', 'none')
+                        var payment = $('#dropdown-payment-type option:selected').text()
+                        if (payment == "COD") {
+                            $('#dropdown-payment-type').css("border", "2px solid #B00000")
+                            $('#payment-type-error').text('Payment method cannot be COD for in-store transactions')
+                        }
                     }
+                    //delivery
                     else if(this.value == '61a591c1233fa7f9abcd5726'){
                         $('.delivery-info').css('display', 'block');
+                        $('#dropdown-payment-type').css("border", "1px solid #DDDDDD")
+                        $('#payment-type-error').text('')
                     }
                     //alert(this.value)
                 })
 
+                $('#dropdown-payment-type').change(function() {
+                    var type = $('#drop-down-new-invoice-type option:selected').text() 
+                    var payment = $('#dropdown-payment-type option:selected').text()
+                    if (type == "In-Store" && payment == "COD") {
+                        $('#dropdown-payment-type').css("border", "2px solid #B00000")
+                        $('#payment-type-error').text('Payment method cannot be COD for in-store transactions')
+                    }
+                    else {
+                        $('#dropdown-payment-type').css("border", "1px solid #DDDDDD")
+                        $('#payment-type-error').text('')
+                    }
+                })
+
+                //---------------------VALIDATION FOR NEW CUSTOMER--------------------------
+
+                $('#new-customer-name').keyup(function() {
+                    var name = capitalize($('#new-customer-name').val())
+                    $.get('/getCheckCustomerName', {name:name}, function(result) {
+                        if (result.name == name) {
+                            $('#new-customer-name').css("border", "1px solid #B00000");
+                            $('#error-new-customer-name').text("Customer information already exists");
+                            $('#save-cust').prop('disasbled', true);
+                            $('#save-cust').css("background-color", "#b3b3b3");
+                        }
+                        else {
+                            $("#new-customer-name").css("border", "1px solid #DDDDDD");
+                            $('#error-new-customer-name').text("");
+                            $('#save-cust').prop('disasbled', false);
+                            $("#save-cust").css("background-color", "#0F84D9");
+                        }
+                    })
+                }) 
+
+
+                 function errorMessage(type) {
+                    if (type == "noName") {
+                        $('#customer-name').css("border", "1px solid #B00000");
+                        $('#error-new-customer-name').text("Input customer name");
+                    } 
+                    else if (type == "noNumber") {
+                        $('#contact-number').css("border", "1px solid #B00000");
+                        $('#error-number').text("Invalid contact number");
+                    }
+                    else if (type == "noAddress") {
+                        $('#address').css("border", "1px solid #B00000");
+                        $('#error-address').text("Input address");
+                    }
+                }
+
+                function customerNameValidation(name) {
+                    if (name == null || name == "") {
+                        errorMessage("noName")
+                        return 1;
+                    }
+                    else {
+                        $('#customer-name').css("border", "1px solid #DDDDDD");
+                        $('#error-new-customer-name').text("");
+                        return 0;
+                    }
+                }   
+
+                function numberValidation(number) {
+                    if (number == 0 || number < 0) {
+                        errorMessage("noNumber")
+                        return 1;
+                    }
+                    else {
+                        $('#contact-number').css("border", "1px solid #DDDDDD");
+                        $('#error-number').text("")
+                        return 0;
+                    }
+                }     
+
+                function addressValidation(address) {
+                    if (address == null || address == "") {
+                        errorMessage("noAddress")
+                        return 1;
+                    }
+                    else {
+                        $('#address').css("border", "1px solid #DDDDDD");
+                        $('#error-address').text("");
+                        return 0;
+                    }
+                }
+
                 /*Modal functions*/
                 $('#save-cust').click(function() {
-                    var custname = $('#custname').val();
-                    var custphone = $('#custphone').val();
-                    var custaddress = $('#custaddress').val();
-                if( custname == ""|| custphone == ""||custaddress == ""){
-                    $('#text-warning-customer').text("Some fields are empty!");
-                }
-                else{
-                $.post('/createNewCustomer', {custname,custphone,custaddress}, function(result) {})
-                 $('#customerModal').modal('hide');
-                 
-                }
-               
+                    var custname = capitalize($('#new-customer-name').val());
+                    var custphone = $('#new-contact-number').val();
+                    var custaddress = $('#new-address').val();
+                    if (!customerNameValidation(custname) && !numberValidation(custphone) && !addressValidation(custaddress)) {
+
+                        $('#customer-name').css("border", "1px solid #DDDDDD");
+                        $('#contact-number').css("border", "1px solid #DDDDDD");
+                        $('#address').css("border", "1px solid #DDDDDD");
+
+                        $('#error-new-customer-name').text("");
+                        $('#error-contact-number').text("");
+                        $('#error-address').text("");
+
+                        $.post('/createNewCustomer', {custname,custphone,custaddress}, function(result) {})
+                     $('#customerModal').modal('hide');
+                     
+                    }
                 })
 
                 function capitalize(string){
@@ -263,6 +356,7 @@
                     var element = document.getElementById(elementID);
                     element.parentNode.removeChild(element);
                 }
+
                 $("#itemDescription" ).autocomplete({
                
                     source: function(request, response) {
@@ -288,12 +382,12 @@
                     }   
                 });
                 
-                $.ui.autocomplete.prototype._renderItem = function (ul, item) {
+                /*$.ui.autocomplete.prototype._renderItem = function (ul, item) {
                  return $("<li></li>")
                 .data("item.autocomplete", item)
                 .append($("<a></a>").html(item.label))
                 .appendTo(ul);
-                };
+                };*/
 
                  $("#customer-Name").autocomplete({
                     source: function(request, response) {
@@ -307,27 +401,69 @@
                                 success: function (data) {
                                     $('#text-warning-new-PO').css('display', 'none')
                                     $("#customer-Name").css("border", "1px solid #DDDDDD");
-                                
+                                    
                                     response(data);
                               }
                          });
                     }, 
                     response: function (event, ui) {
-                       if (ui.content.length === 0) 
-                            {
-                                ui.content.push({
-                                label: '<button id = "addnew" class="custbutton">Add New Customer</button>',
-                                button: true
-                                 })  
-                            }
-                        else 
-                            {
-                            }
+                        if (ui.content.length === 0) {
+                            $('#add-new-customer').css('display', 'block')
+                            $('#error-customer').text("Customer does not exist");
+                            $('#customer-Name').css("border", "2px solid #B00000");
+                        }
+                        else {
+                            $('#add-new-customer').css('display', 'none')
+                            $('#error-customer').text("");
+                            $('#customer-Name').css("border", "1px solid #DDDDDD");
+                        }
+                    }, select: function(event, ui) {
+                        var customerName = ui.item.label;
+                        $.get('/getCustomerInformation', {customerName}, function(result) {
+                            $('#contactNumber').val(result.number);
+                            $('#address').val(result.address);
+                        });
                     }
                 });
+
+                function computeTotal() {
+                    var discountTotal = 0;
+                    var totalDiscount = 0
+                    var amount = 0;
+                    
+
+                    $("#table-body-item-list > tr").each(function () {
+                        amount += parseFloat($(this).children('.amount').text().slice(1))
+                        discountTotal += parseFloat($(this).children('.discount').text().slice(1))
+                    }); 
+
+                    var totalDiscountPercent = $('#total-discount').val();
+
+                    if (totalDiscountPercent != "")
+                        totalDiscount = amount*(totalDiscountPercent/100)
+
+                    discountTotal+= parseFloat(totalDiscount)
+                    amount -= parseFloat(totalDiscount)
+                    var vat = (amount *.12);
+                    var sub = (amount - vat);
+                    
+                    //$('#subtotalbox').val(sub);
+                    $('#subtotalbox').text("₱ " + parseFloat(sub).toFixed(2)); 
+
+                    //$('#vatbox').val(vat);
+                    $('#vatbox').text("₱ " + parseFloat(vat).toFixed(2));
+
+                    //$('#disbox').val(discountTotal);
+                    $('#disbox').text("₱ " + parseFloat(discountTotal).toFixed(2));
+
+                    //$('#totbox').val(amount);
+                    $('#totbox').text("₱ " + parseFloat(amount).toFixed(2));
+                }
              
-                let amount = 0;
-                let discountTotal = 0;
+                $('#total-discount').keyup(function() {
+                    computeTotal()
+                })
+
                 $('#addItem').click(function() {
                    var itemDesc = $('#itemDescription').val();
                    var quantity = $('#qty').val();
@@ -335,183 +471,175 @@
                    
                     
                     if(filled(itemDesc, qty) == 0) {
-                    $.get('/getItemPrice', {itemDesc}, function (result) {
-                        if(quantity > result.quantityAvailable){
-                            $('#text-warning-new-invoice').text("Requested amount exceeds available!");
+                        $.get('/getItemPrice', {itemDesc}, function (result) {
+                            if(quantity > result.quantityAvailable)
+                                $('#text-warning-new-invoice').text("Requested amount exceeds available!");
+                            
+                            else{
+                                var sellingPrice = result.sellingPrice;
+                                var dis = discount/100;
+                                var discountAmount = parseFloat(sellingPrice * dis).toFixed(2);
+                                var totalPrice = parseFloat((sellingPrice*quantity)- discountAmount).toFixed(2);
+                                var element = $('#table-body-item-list tr').filter(function(){
+                                        return this.innerHTML.indexOf(itemDesc) !== -1;
+                                })
+                                if (element.length){
+                                    //alert("element at index already inside!")
+                                    //console.log(element)
+                                     $('#text-warning-new-invoice').text("Item already exists in cart!");
+                                }
+                                else
+                                {
+                                    $('#table-body-item-list').append(
+                                    `<tr>
+                                        <td class="itemDescription">${itemDesc}</td>
+                                        <td class="qty">${quantity}</td>
+                                        <td class="unit">Piece</td>
+                                        <td class="price">₱${sellingPrice}</td>
+                                        <td class="discount" style="color:red">₱${discountAmount}</td>
+                                        <td class = "amount">₱${totalPrice}</td>
+                                        <td><button class="delete-button add-stock-delete-btn" id="btn-delete-item"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
+                                    </tr>`);
+                                    //console.log(amount);
+                                    computeTotal();
+                                    $('#itemDescription').val('');
+                                    $('#qty').val('');
+                                    $('#discount').val('');
+                                }
+                            }
+                        })  
+                    }
+                })  
+
+                $("#table-body-item-list").on('click','.delete-item-btn',function() {
+                    $(this).closest('tr').remove();
+                    computeTotal();
+                });
+
+
+                $(document).on("click", ".custbutton", function () {
+                    $('.modal').modal('show');
+                    //alert('clicked!');
+                }); 
+
+
+                function invoicefilled(){
+                    switch($('#drop-down-new-invoice-type').val()){
+                        //delivery
+                        case '61a591c1233fa7f9abcd5726':
+                        var errmsg = 'There is no input data in the hightlighted fields!!';
+                        var err = 0;
+                        if ($('#customer-Name').val()==''){
+                            $('#customer-Name').css("border","1px solid red")
+                            err +=1;
+                        }
+                        if ($('#address').val()==''){
+                            $('#address').css("border","1px solid red")
+                            err +=1;
+                        }
+                        if($('#contactNumber').val()==''){
+                            $('#contactNumber').css("border","1px solid red")
+                            err +=1;
+                        }
+                        if($('#delivery-date').val()==''){
+                        $('#delivery-date').css("border","1px solid red")
+                        err +=1;
+                        }
+                        if($('#dropdown-delivery-personnel').val()=='no-selected'){
+                            $('#dropdown-delivery-personnel').css("border","1px solid red")
+                            err +=1;
+                        }
+                        if(err >= 1){
+                             $('#text-warning-customerdetails').text(errmsg);
+                             return 0;
                         }
                         else{
-                        var sellingPrice = result.sellingPrice;
-                        var dis = discount/100;
-                        var discountAmount = parseFloat(sellingPrice * dis).toFixed(2);
-                        var totalPrice = parseFloat((sellingPrice*quantity)- discountAmount).toFixed(2);
-                        var element = $('#table-body-item-list tr').filter(function(){
-                            return this.innerHTML.indexOf(itemDesc) !== -1;
-                        })
-                        if (element.length){
-                            //alert("element at index already inside!")
-                            //console.log(element)
-                             $('#text-warning-new-invoice').text("Item already exists in cart!");
+                            $('#text-warning-customerdetails').text('');
+                            return 1;
                         }
-                        else
-                        {
-                        $('#table-body-item-list').append(
-                        `<tr>
-                            <td class="itemDescription">${itemDesc}</td>
-                            <td class="qty">${quantity}</td>
-                            <td class="unit">Piece</td>
-                            <td class="price">₱${sellingPrice}</td>
-                            <td class="discount" style="color:red">₱${discountAmount}</td>
-                            <td class = "amount">₱${totalPrice}</td>
-                            <td><button class="delete-button add-stock-delete-btn" id="btn-delete-item"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
-                        </tr>`);
-                        //console.log(amount);
-                        
-                        }}
-                        updateData();
-                    })
-
-                }
-                function updateData() {
-                    var sub = 0;
-                    var vat = 0;
-                    var discountTotal = 0;
-                    var amount = 0;
-                    $("#table-body-item-list > tr").each(function () {
-                            amount += parseInt($(this).children('.amount').text().replace('₱','')),
-                            discountTotal += parseInt($(this).children('.discount').text().replace('₱',''))
-                    }); 
-                     vat = (amount *.12);
-                     sub = (amount - vat);
-
-
-                        
-                        $('#subtotalbox').val(sub);
-                        $('#subtotalbox').text(parseFloat(sub).toFixed(2)); 
-
-                        $('#vatbox').val(vat);
-                        $('#vatbox').text(parseFloat(vat).toFixed(2));
-
-                        $('#disbox').val(discountTotal);
-                        $('#disbox').text(parseFloat(discountTotal).toFixed(2));
-
-                        $('#totbox').val(amount);
-                        $('#totbox').text(parseFloat(amount).toFixed(2));
-                }
-                function DeleteRow(item) {
-                var parent = item.parentNode.parentNode;
-                parent.parentNode.removeChild(parent);
-                
-                }
-                $(document).on("click", "#btn-delete-item", function () {
-                    DeleteRow(this);
-                    updateData();
-                })
-    }) 
-             $(document).on("click", ".custbutton", function () {
-                $('.modal').modal('show');
-                //alert('clicked!');
-            }); 
-            function invoicefilled(){
-                switch($('#drop-down-new-invoice-type').val()){
-                    case '61a591c1233fa7f9abcd5726':
-                    var errmsg = 'There is no input data in the hightlighted fields!!';
-                    var err = 0;
-                    if ($('#customer-Name').val()==''){
-                    $('#customer-Name').css("border","1px solid red")
-                    err +=1;
-                    }
-                    if ($('#address').val()==''){
-                    $('#address').css("border","1px solid red")
-                    err +=1;
-                    }
-                    if($('#contactNumber').val()==''){
-                    $('#contactNumber').css("border","1px solid red")
-                    err +=1;
-                    }
-                    if($('#delivery-date').val()==''){
-                    $('#delivery-date').css("border","1px solid red")
-                    err +=1;
-                    }
-                    if($('#dropdown-delivery-personnel').val()=='no-selected'){
-                    $('#dropdown-delivery-personnel').css("border","1px solid red")
-                    err +=1;
-                    }
-                    if(err >= 1){
-                         $('#text-warning-customerdetails').text(errmsg);
+                        break;
+                        //in-store
+                        case '6197863ac4f0088e95c9bf84':
+                         if ($('#customer-Name').val()==''){
+                         $('#text-warning-customerdetails').text("Input Customer Name");
                          return 0;
+                        }
+                        else{
+                            return 1;
+                        }
+                        
                     }
-                    else{
-                        $('#text-warning-customerdetails').text('');
-                        return 1;
-                    }
-                    break;
-                    case '6197863ac4f0088e95c9bf84':
-                     if ($('#customer-Name').val()==''){
-                     $('#text-warning-customerdetails').text("Customer field is missing!");
-                     return 0;
-                    }
-                    else{
-                        return 1;
-                    }
-                    
                 }
 
-            }
-
-               // let i = 0;
                 $('#btn-save-invoice').click(function() {
-                    var check = invoicefilled();
-                    if(check==1){
-                    var orderedItems = [];
-                    var itemString = JSON.stringify(orderedItems);  
-                    var custID = $('#customer-Name').val();
-                    var statusID = '0';
-                    var address = '';
-                    var date =  $('#dateToday').text();
-                    var ddate = $('#delivery-date').val();
-                    var dnotes = '';
+                    if(invoicefilled() == 1){
+                        var orderedItems = [];
+                        var custName = $('#customer-Name').val();
+                        var statusID = '0';
+                        var address = '';
+                        var date =  $('#dateToday').text();
+                        var ddate = $('#delivery-date').val();
+                        var dnotes = '';
 
-                    var typeID = $('#drop-down-new-invoice-type').val();   
-                    var paymentOption = $('#dropdown-payment-type').val();
-                    var employeeID = $('#dropdown-delivery-personnel').val();
+                        var typeID = $('#drop-down-new-invoice-type').val();   
+                        var paymentOption = $('#dropdown-payment-type').val();
+                        var employeeID = $('#dropdown-delivery-personnel').val();
 
-                    $("#table-body-item-list > tr").each(function () {
-                        var item = {
-                            invoice_id: '',
-                            itemDescription: $(this).children('.itemDescription').text(),
-                            quantity: $(this).children('.qty').text(),
-                            discount: $(this).children('.discount').text().replace('₱',''),
-                        }
-                        orderedItems.push(item);
-                    }); 
-                       
-                        if(paymentOption == '61b2de709f9cd4edddf21d64'){
+                        $("#table-body-item-list > tr").each(function () {
+                            var item = {
+                                itemDescription: $(this).children('.itemDescription').text(),
+                                quantity: $(this).children('.qty').text(),
+                                discount: $(this).children('.discount').text().slice(1),
+                            }
+                            orderedItems.push(item);
+                        }); 
+                           
+                       //cash or cheque
+                        if(paymentOption == '61b2de709f9cd4edddf21d64' || paymentOption == '61b2de7f9f9cd4edddf21d65'){
+                            //paid
                             statusID = '619785b0d9a967328c1e8fa6'
                         }
-                        if(paymentOption == '61b2de7f9f9cd4edddf21d65'){
-                            statusID = '619785b0d9a967328c1e8fa6';
-                        }
-                        if(paymentOption == '61b2de879f9cd4edddf21d66'){
+
+                        //cod or on account
+                        if(paymentOption == '61b2de879f9cd4edddf21d66' || paymentOption == '61b2de8d9f9cd4edddf21d67'){
+                            //pending
                             statusID = '619785d78094faf8c10d1484';
                         }
-                        if(paymentOption == '61b2de8d9f9cd4edddf21d67'){
-                            statusID = '61b2df709f9cd4edddf21d68'
-                        }
 
-                    var subtotal = $('#subtotalbox').val();
-                    var VAT = $('#vatbox').val();
-                    var discount = $('#disbox').val();
-                    var total = $('#totbox').val();
-                   
+                        var subtotal = $('#subtotalbox').text().slice(1);
+                        var VAT = $('#vatbox').text().slice(1);
+                        var discount = $('#disbox').text().slice(1);
+                        var total = $('#totbox').text().slice(1);
+                        var itemString = JSON.stringify(orderedItems);  
 
-                    $.post('/createNewInvoice', {custID,date,typeID,statusID,paymentOption,subtotal,VAT,discount,total,employeeID,ddate,dnotes,itemString}, function(result) {
-                        console.log("Transaction successfully processed");
-                        window.location = "/invoices"
-                    }) 
+                        $.post('/createNewInvoice', {custID, date, typeID, statusID, paymentOption,subtotal, VAT, discount, total, employeeID, ddate, dnotes, itemString}, function(result) {
+                            alert("Transaction successfully processed");
+                            window.location = "/invoices"
+                        }) 
                     }
                     else{
-                 
+                    
                     }
+                })
+
+                $('#btn-export-invoice').click(function() {
+                    var customerName = $('#customer-Name')
+                    var items = []
+                    $("#table-body-item-list > tr").each(function () {
+                        var item = {
+                            itemDescription: $(this).children('.itemDescription').text(),
+                            quantity: $(this).children('.quantity').text(),
+                            unit: $(this).children('.unit').text(),
+                            price: $(this).children('.price').text(),
+                            discount: $(this).children('.discount').text().replace('₱',''),
+                            amount: $(this).children('.amount').text()
+                        }
+                        items.push(item);
+                    }); 
+                    var itemsString = JSON.stringify(items)
+                    $.get('/exportInvoice',{customerName, itemsString}, function(result){
+
+                    })
                 })
             }) 
         </script>

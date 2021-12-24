@@ -41,6 +41,8 @@
                             <div><button id="btn-status" style="background-color: #0F84D9;">New</button></div>
                         {{else if released}}
                             <div><button id="btn-status" style="background-color: #F2A154;">Released</button></div>
+                        {{else if incomplete}}
+                            <div><button id="btn-status" style="background-color: #E24E3A;">Incomplete</button></div>
                         {{else if received}}
                             <div><button id="btn-status" style="background-color: #55B66A;">Received</button></div>
                         {{else if canceled}}
@@ -100,8 +102,8 @@
                                 <th>Quantity</th>
                                 <th>Unit</th>
                                 <th>Unit Price</th>
-                                <th>Amount</th>
                                 <th>Received</th>
+                                <th>Amount</th>
                             </tr>
                         </thead>
                         <!-- right align qty, received, unit price, amount-->
@@ -112,8 +114,8 @@
                                     <td class="classQty">{{quantity}}</td>
                                     <td class="classUnit">{{unitName}}</td>
                                     <td>{{unitPrice}}</td>
-                                    <td>{{amount}}</td>
                                     <td>{{quantityReceived}}</td>
+                                    <td>{{amount}}</td>  
                                 </tr>
                             {{/each}}
                         </tbody>
@@ -121,19 +123,19 @@
                     {{#if received}}
                         <div class="summary-container">
                             <div class="summary-text">Subtotal</div>
-                            <div class="summary-info-container"><div class="summary-info">{{poInfo.fsubtotal}}</div></div>
+                            <div class="summary-info-container"><div class="summary-info">₱ {{poInfo.subtotal}}</div></div>
                         </div>
                         <div class="summary-container">
                             <div class="summary-text">VAT</div>
-                            <div class="summary-info-container"><div class="summary-info">{{poInfo.fvat}}</div></div>
+                            <div class="summary-info-container"><div class="summary-info">₱ {{poInfo.vat}}</div></div>
                         </div>
                         <div class="summary-container">    
                             <div class="summary-text">Discount</div>
-                            <div class="summary-info-container"><div class="summary-info">P 200.00</div></div>
+                            <div class="summary-info-container"><div class="summary-info">₱ {{poInfo.discount}}</div></div>
                         </div>
                         <div class="summary-container">
                             <div class="summary-text">Total</div>
-                            <div class="summary-info-container"><div class="summary-info">{{poInfo.ftotal}}</div></div>
+                            <div class="summary-info-container"><div class="summary-info">₱ {{poInfo.total}}</div></div>
                         </div>
                     {{/if}}
 

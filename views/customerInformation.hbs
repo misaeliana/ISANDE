@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title> Customer Information </title>
+        <title>{{customerInfo.name}}</title>
         <meta name="description" content="Customer Information">
         <meta name="keyword" content="Moderna, Customer Information">
         <link rel="stylesheet" type="text/css" href="../css/general.css">
@@ -34,8 +34,7 @@
 
         <div class="content">
             <br>
-            <p style="display: none" id="customerID">{{_id}}</p>
-            <h1 class="bold">{{customerInfo.name}}</h1> 
+            <h1 class="bold" id="customer-name">{{customerInfo.name}}</h1> 
             <hr>
             <div style= "margin-top: 20px;">
                 <div>
@@ -75,7 +74,7 @@
                         </div>
                         <div class="modal-footer">
                             <button id="btn-delete-customer" class="btn-red" style="float:left">Delete Customer</button>
-                            <button type="button" class="btn btn-primary" id="btn-update-customer">Update Information</button>
+                            <button type="button" class="btn btn-primary" id="btn-update-customer">Save</button>
                         </div>
                     </div>
                     </div>
@@ -114,7 +113,7 @@
 
                 <div class="display-flex" style="margin-top: 30px">
                     <h3 class ="bold h3-left">Accounts Payable</h3>
-                    <button class="btn-light-blue" data-toggle="modal" data-target="#modal-new-payment">New Payment</button>
+                    <button class="btn-light-blue" data-toggle="modal" data-target="#modal-new-payment" style="position: absolute; right: 4%;">New Payment</button>
                 </div>
 
                 <!---PAYMENT MODAL-->
@@ -257,9 +256,10 @@
                 }
 
                 $('#btn-update-customer').click(function() {
-                    var customerID = $('#customerID').text();
+                    var address = window.location.pathname.split('/');
+                    var customerID = address[address.length -1]
 
-                    //var name = capitalize($('#customer-name').val());
+                    var name = $('#customer-name').text();
                     var number = $('#contact-number').val();
                     var address = $('#address').val();
 
@@ -273,7 +273,7 @@
                             $('#error-contact-number').text("");
                             $('#error-address').text("");
 
-                            $.post('/postUpdateCustomerInformation', {customerID, number, address}, function(result) {
+                            $.post('/postUpdateCustomerInformation', {customerID, name, number, address}, function(result) {
                                     $('#modal-edit-customer').modal('hide');
                                     $('#edit-customer').trigger('reset');
                                     alert("Succesfully updated customer information");

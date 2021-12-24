@@ -11,8 +11,10 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
-        <link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
-        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <!--<link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>-->
+        <link rel="stylesheet" type="text/css" href="../jquery-ui-themes-1.13.0/themes/ui-lightness/jquery-ui.css">
+        <script src="../jquery-ui/jquery-ui.min.js"></script>
     </head>
     <body>
 
@@ -45,25 +47,24 @@
             </div> 
             <hr>
 
-            <div style="display: flex; align-content: center;">
+            <div style="display: flex; align-content: center; align-items: center;">
                 <label for="dropdown-return-type" style="margin-right: 10px">Type</label>
                 <select class="dropdown" id="dropdown-return-type" style="margin-right: 10px">
                     {{#each types}}
                         <option value="{{_id}}">{{type}}</option>
                     {{/each}}
                 </select>
-                
-                <div class="delivery-info" style="display: none;">
-                    <label class="date-label" for="delivery-date">Delivery Date</label>
-                    <input style="height: 34px" type="date" id="delivery-date" name="delivery-date">
 
-                    <label for="dropdown-payment-type" style="margin-right: 10px">Payment Type</label>
-                    <select class="dropdown" id="dropdown-payment-type" style="margin-right: 10px">
-                        <option value="no-selected">--Select Payment Type--</option>
+                <label for="dropdown-payment-type" style="margin-right: 10px">Payment Type</label>
+                <select class="dropdown" id="dropdown-payment-type" style="margin-right: 10px">
                         {{#each paymentTypes}}
                             <option value="{{_id}}">{{status}}</option>
                         {{/each}}
                     </select>
+                
+                <div class="delivery-info" style="display: none;">
+                    <label class="date-label" for="delivery-date">Delivery Date</label>
+                    <input style="height: 34px" type="date" id="delivery-date" name="delivery-date">
 
                     <label for="dropdown-delivery-personnel" style="margin-right: 10px">Delivery Personnel</label>
                     <select class="dropdown" id="dropdown-delivery-personnel" style="margin-right: 10px">
@@ -115,9 +116,9 @@
                                     <td class="return-item-desc">{{itemDescription}}</td>
                                     <td><input class="return-quantity" type="number" value="{{quantity}}" style="width:70px" disabled></td>
                                     <td>{{unit}}</td>
-                                    <td class="return-unit-price">{{unitPrice}}</td>
-                                    <td class="return-discount">{{discount}}</td>
-                                    <td class="return-amount">{{amount}}</td>
+                                    <td class="return-unit-price">₱ {{unitPrice}}</td>
+                                    <td class="return-discount">₱ {{discount}}</td>
+                                    <td class="return-amount">₱ {{amount}}</td>
                                     <td>
                                         <input type="checkbox" class="return-check">
                                     </td>
@@ -177,38 +178,44 @@
                     <br> 
                     <div class="summary-container">
                         <div class="summary-text">Subtotal</div>
-                        <div class="summary-info-container"><div class="summary-info" id="subtotal">P {{invoiceInfo.subtotal}}</div></div>
+                        <div class="summary-info-container"><div class="summary-info" id="subtotal">₱ {{invoiceInfo.subtotal}}</div></div>
                     </div>
                     <div class="summary-container">
                         <div class="summary-text">VAT</div>
-                        <div class="summary-info-container"><div class="summary-info" id="vat">P {{invoiceInfo.VAT}}</div></div>
+                        <div class="summary-info-container"><div class="summary-info" id="vat">₱ {{invoiceInfo.VAT}}</div></div>
                     </div>
                     <div class="summary-container">    
                         <div class="summary-text">Discount</div>
-                        <div class="summary-info-container"><div class="summary-info" id="discount">P {{invoiceInfo.discount}}</div></div>
+                        <div class="summary-info-container"><div class="summary-info" id="discount">₱ {{invoiceInfo.discount}}</div></div>
                     </div>
                     <div class="summary-container">
                         <div class="summary-text">Order Total</div>
-                        <div class="summary-info-container"><div class="summary-info" id="orderTotal">P {{invoiceInfo.total}}</div></div>
+                        <div class="summary-info-container"><div class="summary-info" id="orderTotal">₱ {{invoiceInfo.total}}</div></div>
                     </div>
 
                     <hr style="margin-top: 0px; margin-bottom: 10px;">
 
                     <div class="summary-container">
                         <div class="summary-text">Paid by Customer</div>
-                        <div class="summary-info-container"><div class="summary-info" id="paid">P {{invoiceInfo.total}}</div></div>
+                        <div class="summary-info-container"><div class="summary-info" id="paid">₱ {{invoiceInfo.total}}</div></div>
                     </div>
+
+                    <div class="summary-container">
+                        <div class="summary-text">Refunded Amount</div>
+                        <div class="summary-info-container"><div class="summary-info" id="refund">₱ 0</div></div>
+                    </div>
+
+                    <div class="summary-container">
+                        <div class="summary-text">Balance</div>
+                        <div class="summary-info-container"><div class="summary-info" id="balance">₱ 0</div></div>
+                    </div>
+
 
                     <hr style="margin-top: 0px; margin-bottom: 10px;">
 
                     <div class="summary-container">
-                        <div class="summary-text">Refunded</div>
-                        <div class="summary-info-container"><div class="summary-info" id="refund-amount">P 0</div></div>
-                    </div>
-
-                    <div class="summary-container">
                         <div class="summary-text">Total</div>
-                        <div class="summary-info-container"><div class="summary-info" id="total">P 0</div></div>
+                        <div class="summary-info-container"><div class="summary-info" id="total">₱ 0</div></div>
                     </div>
 
                     <div style="height: 10px"></div>
@@ -282,7 +289,7 @@
                 $("#return-add-item-description").autocomplete({
                     source: function(request, response) {
                     $.ajax({
-                                url: `/getItemNameInvoice?query=${request.term}`,
+                                url: `/getItemName?query=${request.term}`,
                                 dataType: "json",
                                 data: {
                                     //request.term refers to the value currently in the text input
@@ -434,24 +441,25 @@
                 }
 
                 function computeTotal() {
-                    var refund = 0;
+                    var balance = 0;
                     var orderTotal = 0;
-                    var discount = 0
+                    var discount = 0;
+                    var refund = 0;
                     var newItemsTotal = 0
 
                     var paid = $('#paid').text().slice(1)
 
                     $('#table-return-order-details > tbody > tr').each(function() {
                         //item to be returned, either added to shrinkage or added back to inventory
-                        var quantity = parseInt($(this).find('.return-quantity').val())
-                        if (quantity == "")
+                        var quantity = $(this).find('.return-quantity').val()
+                        if (quantity == "" || quantity == NaN)
                             quantity = 0
 
                         if ($(this).find('.return-check').is(":checked")) 
                             refund += (quantity * parseFloat($(this).children('.return-unit-price').text().slice(1)))
 
                         else 
-                            orderTotal += (quantity * parseFloat($(this).children('.return-amount').text().slice(1)))    
+                            orderTotal += (quantity * parseFloat($(this).children('.return-unit-price').text().slice(1)))    
 
                         if ((quantity*parseFloat($(this).children('.return-unit-price').text().slice(1))) != parseFloat($(this).children('.return-amount').text().slice(1))) {
                             orderTotal += (parseFloat($(this).children('.return-amount').text().slice(1)) - (quantity * parseFloat($(this).children('.return-unit-price').text().slice(1))))
@@ -460,7 +468,7 @@
 
                     $('#table-return-new-item-body > tr').each(function() {
                         var amount = parseFloat($(this).find('.amount').text().slice(1))
-                        orderTotal += parseFloat(amount)
+                        //orderTotal += parseFloat(amount)
                         newItemsTotal += parseFloat(amount)
                     })
 
@@ -473,17 +481,21 @@
                     var subtotal = orderTotal/1.12
                     var vat = orderTotal - subtotal
 
-                    var balance = paid-refund
+                    balance = paid - refund
 
-                    var total = orderTotal - balance 
+                    var newOrderTotal = orderTotal + newItemsTotal
 
-                    $('#subtotal').text("P " + parseFloat(subtotal).toFixed(2))
-                    $('#vat').text("P " + parseFloat(vat).toFixed(2))
-                    $('#discount').text("P " + parseFloat(discount).toFixed(2))
-                    $('#orderTotal').text("P " + parseFloat(orderTotal).toFixed(2))
+                    var total = orderTotal + newItemsTotal - balance
+                    
 
-                    $('#refund-amount').text("P " + parseFloat(refund).toFixed(2))
-                    $('#total').text("P " + parseFloat(total).toFixed(2))
+                    $('#subtotal').text("₱ " + parseFloat(subtotal).toFixed(2))
+                    $('#vat').text("₱ " + parseFloat(vat).toFixed(2))
+                    $('#discount').text("₱ " + parseFloat(discount).toFixed(2))
+                    $('#orderTotal').text("₱ " + parseFloat(newOrderTotal).toFixed(2))
+
+                    $('#refund').text("₱ " + parseFloat(refund).toFixed(2))
+                    $('#balance').text("₱ " + parseFloat(balance).toFixed(2))
+                    $('#total').text("₱ " + parseFloat(total).toFixed(2))
                 }
 
 

@@ -72,7 +72,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="btn-add-new-customer">Add Customer</button>
+                        <button type="button" class="btn btn-primary" id="btn-add-new-customer">Save</button>
                     </div>
                 </div>
                 </div>
@@ -194,7 +194,7 @@
                          $.post('/postCustomerInformation', {name, number,address})
                                 $('#modal-add-customer').modal('hide');
                                 $('#add-new-customer').trigger('reset');
-                                location.reload()
+                                window.location.reload()
 
                    }
                 })

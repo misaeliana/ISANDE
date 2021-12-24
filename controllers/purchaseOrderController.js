@@ -25,8 +25,6 @@ const PizZip = require("pizzip");
 
 const Docxtemplater = require("docxtemplater");
 
-const {ILovePDFApi} = require('@ilovepdf/ilovepdf-js')
-
 
 const purchaseOrderController = {
 
@@ -158,6 +156,7 @@ const purchaseOrderController = {
 			date: date,
 			vat: 0,
 			subtotal: 0,
+			discount: 0,
 			total: 0,
 			statusID: "618f650546c716a39100a809"
 		};
@@ -180,7 +179,7 @@ const purchaseOrderController = {
 
 		function getPOInfo (poID) {
 			return new Promise((resolve, reject) => {
-				db.findOne(Purchases, {_id:poID}, 'purchaseOrderNumber employeeID date dateReceived subtotal vat total', function (result) {
+				db.findOne(Purchases, {_id:poID}, 'purchaseOrderNumber employeeID date dateReceived subtotal discount vat total', function (result) {
 					resolve(result);
 				});
 			});
@@ -218,13 +217,13 @@ const purchaseOrderController = {
 			}
 
 			//incomplete
-			else if (purchaseInfo.statusID == "618f653746c716a39100a80b") {
+			/*else if (purchaseInfo.statusID == "618f653746c716a39100a80b") {
 				var incomplete = purchaseInfo.statusID;
 				res.render('viewPO', {items, poInfo, incomplete, supplier});
-			}
+			}*/
 
 			//received
-			else if (purchaseInfo.statusID == "618f654646c716a39100a80c") {
+			else if (purchaseInfo.statusID == "618f654646c716a39100a80c" || purchaseInfo.statusID == "618f653746c716a39100a80b") {
 				var poInfo = await getPOInfo (purchaseInfo._id);
 				poInfo.fdateMade = poInfo.date.toLocaleString('en-US');
 				poInfo.fdateReceived = poInfo.dateReceived.toLocaleString('en-US');
@@ -237,12 +236,23 @@ const purchaseOrderController = {
 					items[i].unitName = await getSpecificUnit(items[i].unitID);
 				}
 				
-				var received = purchaseInfo.statusID;
 
-				poInfo.fvat = "P " + parseFloat(poInfo.vat).toFixed(2);
-				poInfo.fsubtotal = "P " + parseFloat(poInfo.subtotal).toFixed(2);
-				poInfo.ftotal = "P " + parseFloat(poInfo.total).toFixed(2);
-				res.render('viewPO', {supplier, items, poInfo, received});
+				poInfo.vat = parseFloat(poInfo.vat).toFixed(2);
+				poInfo.fsubtotal = parseFloat(poInfo.subtotal).toFixed(2);
+				poInfo.ftotal = parseFloat(poInfo.total).toFixed(2);
+				poInfo.discount = parseFloat(poInfo.discount).toFixed(2)
+
+				//incomplete
+				if (purchaseInfo.statusID == "618f653746c716a39100a80b") {
+					var incomplete = purchaseInfo.statusID;
+					var received = purchaseInfo.statusID;
+					res.render('viewPO', {supplier, items, poInfo, incomplete, received});
+				}
+				//received
+				else {
+					var received = purchaseInfo.statusID;
+					res.render('viewPO', {supplier, items, poInfo, received});
+				}
 			}
 		}
 
@@ -255,7 +265,7 @@ const purchaseOrderController = {
 
 		function getLowItems() {
 			return new Promise((resolve, reject) => {
-				db.findMany(Items, {statusID:"618b32205f628509c592daab", informationStatusID:"618a7830c8067bf46fbfd4e4"}, '_id itemDescription EOQ unitID', function(result) {
+				db.findMany(Items, {$and:[ {$or:[{statusID:"618b32205f628509c592daab"}, {statusID:"61b0d6751ca91f5969f166de"}]}, {informationStatusID:"618a7830c8067bf46fbfd4e4"} ]}, '_id itemDescription EOQ unitID', function(result) {
 					resolve (result);
 				});
 			});
@@ -329,10 +339,11 @@ const purchaseOrderController = {
 				var purchase = {
 					purchaseOrderNumber: await getPONumber(),
 					supplierID: uniqueSuppliers[i],
-					employeeID:"6193c0e4ea47cc5edfb484d2",
+					employeeID:"61bc3fb840c79895329ebfcf",
 					date: dateToday,
 					vat: 0,
 					subtotal: 0,
+					discount:0,
 					total: 0,
 					statusID: "618f650546c716a39100a809"
 				};
@@ -429,7 +440,7 @@ const purchaseOrderController = {
 	//update function for new PO, add new items, delete items
 	updatePOItems: function(req, res) {
 
-		function updatePurchaseItems(itemID, newQuantity, poID) {
+		/*function updatePurchaseItems(itemID, newQuantity, poID) {
 			db.updateOne(PurchasedItems, {purchaseOrderID: poID, itemID:itemID}, {quantity: newQuantity}, function(result) {
 
 			})
@@ -514,6 +525,25 @@ const purchaseOrderController = {
 			})
 
 			res.sendStatus(200)
+		}*/
+
+		function deleteItems(poID) {
+			db.deleteMany(PurchasedItems, {purchaseOrderID:poID}, function(result) {
+
+			})
+		}
+
+		async function updatePO(items, poID) {
+			deleteItems (poID)
+			for (var i=0; i<items.length; i++) {
+				items[i].purchaseOrderID = poID
+				items[i].itemID = await getItemID(items[i].itemDesc)
+				items[i].unitID = await getUnitID(items[i].unit)
+			}
+			db.insertMany(PurchasedItems, items, function(flag) {
+				if (flag)
+					res.sendStatus(200)
+			})
 		}
 
 		//-------END OF FUNCTIONS--------
@@ -605,7 +635,7 @@ const purchaseOrderController = {
 				var purchase = {
 					purchaseOrderNumber: poNumber,
 					supplierID: supplierID,
-					employeeID: "6193c0e4ea47cc5edfb484d2",
+					employeeID: "61bc3fb840c79895329ebfcf",
 					date: new Date(),
 					statusID: "618f650546c716a39100a809",
 					total: 0
@@ -634,18 +664,7 @@ const purchaseOrderController = {
 					//add quantity to inventory
 					updateInventory (items[i].itemID, items[i].quantityReceived);
 				}
-				else {
-					needNewPO = true;
-					var newPOItem = {
-						itemID: await getItemID(items[i].itemDesc),
-						unitID: await getItemUnit(items[i].itemDesc),
-						quantity: currentPOItems[i].quantity
-					}
-					temp_newPOItems.push(newPOItem)
-				}
-			}
 
-			for (var i=0; i<currentPOItems.length; i++) {
 				//quantity received is less that ordered quantity
 				if (items[i].quantityReceived < currentPOItems[i].quantity) {
 					needNewPO = true
@@ -656,13 +675,15 @@ const purchaseOrderController = {
 					}
 					temp_newPOItems.push(newPOItem)
 				}
+
 			}
 
-
-			db.updateOne(Purchases, {_id: poID}, {statusID: "618f654646c716a39100a80c"}, function (flag) {
-			})
-
 			if (needNewPO)  {
+
+				//status is received
+				db.updateOne(Purchases, {_id: poID}, {statusID: "618f654646c716a39100a80c"}, function (flag) {
+				})
+
 				
 				var supplierID = await getPOSupplier(poID) 
 				var poNumber = await getPONumber()
@@ -684,8 +705,14 @@ const purchaseOrderController = {
 						res.sendStatus(200)
 				})
 			}
-			else
+			else {
+
+				//status is received
+				db.updateOne(Purchases, {_id: poID}, {statusID: "618f654646c716a39100a80c"}, function (flag) {
+				})
+
 				res.sendStatus(200)
+			}
 		}
 
 		//-------END OF FUNCTIONS-------
@@ -695,9 +722,10 @@ const purchaseOrderController = {
 		var subtotal = parseFloat(req.body.subtotal);
 		var vat  = parseFloat(req.body.vat);
 		var total = parseFloat(req.body.total);
+		var discount = parseFloat(req.body.discount);
 		var dateReceived = new Date();
 
-		db.updateOne(Purchases, {_id:poID}, {$set: {dateReceived: dateReceived, subtotal:subtotal, vat: vat, total:total}}, function(flag) {
+		db.updateOne(Purchases, {_id:poID}, {$set: {dateReceived: dateReceived, subtotal:subtotal, vat: vat, total:total, discount:discount}}, function(flag) {
 				updatePO(items, poID);
 		})
 	},
@@ -738,7 +766,7 @@ const purchaseOrderController = {
 		})
 	},
 
-	generatePDF: function(req, res) {
+	generateDocument: function(req, res) {
 
 		var supplierInfo = JSON.parse(req.query.supplierString)
 		var items = JSON.parse(req.query.poItemsString)
@@ -790,57 +818,6 @@ const purchaseOrderController = {
 		fs.writeFileSync(path.resolve("documents", fileName+".docx"), buf);
 
 		res.sendStatus(200)
-
-
-		//saving in pdf
-		/*const doc = new jsPDF('p', 'pt');
-		doc.text("Vendor", 50, 70)
-
-		doc.text(`${supplierInfo.name}`, 50, 90)
-		doc.text(`${supplierInfo.contactPerson}`, 50, 110)
-		doc.text(`${supplierInfo.address}`, 50, 130)
-		doc.text(`${supplierInfo.number}`, 50, 150)
-
-		
-
-		var columns = [{title:'Item Description'}, {title:'Quantity'}, {title:'Unit'}]
-		var items = []
-		for (var i=0; i<temp_items.length; i++) {
-			var item = []
-			item.push(temp_items[i].itemDesc)
-			item.push(temp_items[i].quantity)
-			item.push(temp_items[i].unit)
-			items.push(item)
-		}
-		doc.autoTable(columns, items, {
-			theme:"grid",
-			startY:170
-		})
-
-		doc.save(path.resolve("documents", fileName+".pdf")); // will save the file in the current working directory*/
-
-		//var input = path.resolve("documents", fileName+".docx")
-		//var output = path.resolve("documents", fileName+".pdf")
-
-
-		
-		/*const task = ilovepdf.newTask('officepdf')
-
-		task.start()
-		.then(() => {
-		    const file = new ILovePDFFile(input);
-		    return task.addFile(file);
-		})
-		.then(() => {
-		    return task.process();
-		})
-		.then(() => {
-		    return task.download();
-		})
-		.then((data) => {
-		    fs.writeFileSync(output, data);
-		});*/
-
 	}
 
 }

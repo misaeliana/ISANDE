@@ -11,8 +11,11 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
-        <link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
-        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <!--<link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>-->
+
+        <link rel="stylesheet" type="text/css" href="../jquery-ui-themes-1.13.0/themes/ui-lightness/jquery-ui.css">
+        <script src="../jquery-ui/jquery-ui.min.js"></script>
         
     </head>
     <body>
@@ -218,8 +221,8 @@
                         <th>Quantity</th>
                         <th>Unit</th>
                         <th>Unit Price</th>
-                        <th>Amount</th>
                         <th>Received</th>
+                        <th>Amount</th>
                         {{#if newPO}}
                         <th></th>
                         {{/if}}
@@ -246,8 +249,8 @@
                                 <td class="classQty">{{quantity}}</td>
                                 <td class="classUnit">{{unitName}}</td>
                                 <td><input type="number" class="unitPrice"></td>
-                                <td class="classAmount">0</td>
                                 <td><input type="number" class="quantityReceived"></td>
+                                <td class="classAmount">0</td>
                             </tr>
                         {{/each}}
                     {{/if}}
@@ -255,6 +258,8 @@
             </table>
 
             {{#if released}}
+                <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: right; text-align: right;" type="number" class="form-control margin-bottom-10" id="total-discount" name="discount" placeholder="Discount"><br><br><br>
+
                 <div class="summary-container">
                     <div class="summary-text">Subtotal</div>
                     <div class="summary-info-container"><div class="summary-info" id="subtotal">₱ 0.00</div></div>
@@ -282,8 +287,8 @@
                         <!--<div class="btn-save-invoice btn-status"><button class="btn-light-blue" id="btn-save-invoice" style="margin-bottom: 10px;" >Receive Items</button></div>-->
                     </div>
                 {{else}}
-                    <div style="display: flex; position: absolute; right:5%">
-                        <div class="btn-save-invoice"><button class="btn-light-blue" id="btn-update-sent-po" style="margin-bottom: 10px; float:right">Save</button></div>
+                    <div style="display: flex; position: absolute; right:3%">
+                        <div class="btn-save-invoice"><button class="btn-light-blue" id="btn-update-sent-po" style="margin-bottom: 10px">Save</button></div>
                     </div>
                 {{/if}}
 
@@ -318,7 +323,6 @@
                                 success: function (data) {
                                     $('#text-warning-new-PO').css('display', 'none')
                                     $("#itemDescription").css("border", "1px solid #DDDDDD");
-                                    console.log(data)
                                     response(data);
                                 }
                          });
@@ -576,6 +580,27 @@
                         alert("Please fill out the necessary information");
                 })
 
+                function computeTotal() {
+                    var overallTotal =0
+                    $("#table-poItem-body > tr").each(function () {
+                        overallTotal += parseFloat($(this).children('.classAmount').text());
+                    });
+                    var discountPercent = $('#total-discount').val() 
+                    var discount = overallTotal*(discountPercent/100)
+                    overallTotal -= discount;
+
+                    var subtotal = overallTotal/1.12
+                    var vat = overallTotal - subtotal
+                    $('#subtotal').text("₱ " + subtotal.toFixed(2))
+                    $('#vat').text("₱ " + vat.toFixed(2))
+                    $('#discount').text("₱ " +  discount.toFixed(2))
+                    $('#total').text("₱ " + overallTotal.toFixed(2))
+                }
+
+                $('#total-discount').keyup(function() {
+                    computeTotal()
+                })
+
                 $('.unitPrice').keyup(function() {
                     var row = $(this).closest('.itemRow');
 
@@ -587,21 +612,10 @@
                     if (quantityReceived == '')
                         quantityReceived = 0
 
-
                     var amount = parseFloat(quantityReceived) * parseFloat(unitPrice)
                     row.find('.classAmount').html(amount)
-                    
 
-                    var overallTotal =0
-                    $("#table-poItem-body > tr").each(function () {
-                        overallTotal += parseFloat($(this).children('.classAmount').text());
-                    });
-
-                    var subtotal = overallTotal/1.12
-                    var vat = overallTotal - subtotal
-                    $('#subtotal').text("₱ " + subtotal.toFixed(2))
-                    $('#vat').text("₱ " + vat.toFixed(2))
-                    $('#total').text("₱ " + overallTotal.toFixed(2))
+                    computeTotal();
                 })
 
                 $('.quantityReceived').keyup(function() {
@@ -618,16 +632,7 @@
                     var amount = parseInt(quantityReceived) * parseFloat(unitPrice)
                     row.find('.classAmount').html(amount)
 
-                    var overallTotal =0
-                    $("#table-poItem-body > tr").each(function () {
-                        overallTotal += parseFloat($(this).children('.classAmount').text());
-                    });
-
-                    var subtotal = overallTotal/1.12
-                    var vat = overallTotal - subtotal
-                    $('#subtotal').text("₱ " + subtotal.toFixed(2))
-                    $('#vat').text("₱ " + vat.toFixed(2))
-                    $('#total').text("₱ " + overallTotal.toFixed(2))
+                    computeTotal()
                 })
 
                 //--=====-----UPDATE FOR SENT PO-------------------- -- update price, quantity received, total of po
@@ -635,13 +640,12 @@
                     var address = window.location.pathname.split('/');
                     var poID = address[address.length -1]
                     var poItems = []
-                    var proceed=false;
+                    var proceed=true;
                     var asked = false
 
                     $("#table-poItem-body > tr").each(function () {
                         if (($(this).find('.unitPrice').val() == "" || $(this).find('.quantityReceived').val() == "") && !proceed && !asked) {
                             if (confirm("Some items do not have a price or quantity received. A new PO will be created for these items. Do you wish to proceed.")) {
-                                proceed = true
                             }
                             else {
                                 asked = true
@@ -670,7 +674,8 @@
                         var subtotal = parseFloat($('#subtotal').text().slice(1));
                         var vat = parseFloat($('#vat').text().slice(1));
                         var total = parseFloat($('#total').text().slice(1));
-                        $.post('/updatePOWithPrice', {poID, itemsString, subtotal, vat, total}, function(result) {
+                        var discount = parseFloat($('#discount').text().slice(1))
+                        $.post('/updatePOWithPrice', {poID, itemsString, discount, subtotal, vat, total}, function(result) {
                             alert("PO updated");
                             window.location = "/purchaseOrderList";
                         });

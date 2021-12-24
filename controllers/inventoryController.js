@@ -33,6 +33,8 @@ const inventoryController = {
 					btnStatus = "low";
 				else if (textStatus == "In Stock")
 					btnStatus = "in";
+				else if (textStatus == "Out of Stock")
+					btnStatus = "out"
 	
 				// check information status
 	
@@ -83,7 +85,7 @@ const inventoryController = {
 			EOQ: parseFloat(req.body.EOQ),
 			reorderLevel: parseFloat(req.body.reorderLevel),
 			sellingPrice: parseFloat(req.body.sellingPrice),
-			statusID: "618b32205f628509c592daab",
+			statusID: "61b0d6751ca91f5969f166de",
 			informationStatusID: "618a7830c8067bf46fbfd4e4"
 		};
 
@@ -311,7 +313,7 @@ const inventoryController = {
 						_id: invoice[i]._id,
 						itemDescription: invoice[i].itemDescription,
 						categoryID: invoice[i].categoryID,
-						category: await getSpecificInventoryType(invoice[i].categoryID),
+						category: await getSpecificItemCategory(invoice[i].categoryID),
 						unit: await getSpecificUnit(invoice[i].unitID),
 						quantityAvailable: invoice[i].quantityAvailable,
 						sellingPrice: parseFloat(invoice[i].sellingPrice).toFixed(2),
@@ -398,7 +400,7 @@ const inventoryController = {
 					_id: inventoryItems[i]._id,
 					itemDescription: inventoryItems[i].itemDescription,
 					categoryID: inventoryItems[i].categoryID,
-					category: await getSpecificInventoryType(inventoryItems[i].categoryID),
+					category: await getSpecificItemCategory(inventoryItems[i].categoryID),
 					unit: await getSpecificUnit(inventoryItems[i].unitID),
 					quantityAvailable: inventoryItems[i].quantityAvailable,
 					sellingPrice: parseFloat(inventoryItems[i].sellingPrice).toFixed(2),

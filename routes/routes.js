@@ -49,6 +49,8 @@ router.post('/deleteSupplier', supplierController.deleteSupplier);
 
 router.post('/addSupplierItem', supplierController.addSupplierItem);
 
+router.get('/getAllItemName', supplierController.getItems);
+
 //--EMPLOYEE--
 
 router.get('/employeeList', employeeController.getEmployeeList);
@@ -71,7 +73,7 @@ router.get('/inventory', inventoryController.getInventoryList);
 
 router.post('/postNewItem', inventoryController.postNewItem);
 
-//router.get('/getCheckItemDescription', inventoryController.getCheckItemDescription);
+router.get('/getCheckItemDescription', inventoryController.getCheckItemDescription);
 
 router.get('/inventory/:itemID', inventoryController.getViewItem);
 
@@ -125,7 +127,7 @@ router.post('/deletePO', purchaseOrderController.deletePO);
 
 router.post('/cancelPO', purchaseOrderController.cancelPO);
 
-router.get('/exportPO', purchaseOrderController.generatePDF);
+router.get('/exportPO', purchaseOrderController.generateDocument);
 
 //--INVOICE--
 router.get('/invoices', invoiceController.getInvoiceList);
@@ -162,6 +164,8 @@ router.post('/saveReturn', invoiceController.saveReturn);
 
 router.post('/payOneInvoice', invoiceController.payOneInvoice);
 
+router.get('/exportInvoice', invoiceController.exportInvoice)
+
 
 //--DELIVERY--
 router.get('/deliveries', invoiceController.getDeliveryList);
@@ -171,6 +175,7 @@ router.get('/deliveries/:deliveryID', invoiceController.getDeliveryInfo);
 router.get('/getSearchDeliveryList', invoiceController.getSearchDeliveryList);
 
 router.post('/postUpdateDelivery', invoiceController.postUpdateDelivery);
+
 
 //--MANUAL COUNT--
 router.get('/manualCount', manualCountController.getManualCount);

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title> Supplier Information </title>
+        <title>{{supplierInfo.name}}</title>
         <meta name="description" content="Supplier Information">
         <meta name="keyword" content="Moderna, Supplier Information">
         <link rel="stylesheet" type="text/css" href="../css/general.css">
@@ -12,8 +12,10 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
-         <link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
-        <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
+         <!--<link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
+        <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>-->
+        <link rel="stylesheet" type="text/css" href="../jquery-ui-themes-1.13.0/themes/ui-lightness/jquery-ui.css">
+        <script src="../jquery-ui/jquery-ui.min.js"></script>
         
     </head>
     <body>
@@ -43,8 +45,7 @@
 
         <div class="content">
             <br>
-            <p style="display: none" id="supplierID">{{_id}}</p>
-            <h1 class="bold">{{supplierInfo.name}}</h1> 
+            <h1 class="bold" id="supplier-name">{{supplierInfo.name}}</h1> 
             <hr>
              <div class="btn-edit-details"><button id="btn-edit-details" data-toggle="modal" data-target="#modal-edit-supplier">Edit Supplier Details</button></div>
             <div style= "margin-top: 15px;">
@@ -111,17 +112,79 @@
             <hr>
 
 
-             <div style="margin-top: 30px;">
-                <div class="display-flex" style="width: 90%; float: left;">
+             <div style="margin-top: 30px; display: flex; align-items: center;">
+                <div style="width: 90%; float: left;">
                     <h3 class ="bold h3-left">Items</h3>
                 </div>
                    <div class= "div-button-end">
-                        <div class="new-item"><button id="btn-new-item" class="btn btn-primary" data-toggle="modal" data-target="#modal-add-item">+ Add Supplier Item</button></div>
+                        <div class="new-item"><button id="btn-new-item" class="btn btn-primary">+ Add Supplier Item</button></div>
                     </div>
             </div>
 
+            <div id="add-new-item" style="display: none;">
+                <div style="display: flex; align-items:center;">
+                     <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="itemDescription" name="itemDescription" placeholder="Item Description">
+                     <input style="margin-top: 5px; margin-bottom: 0px; float: left; height: 34px; width: 34px; background-color: #0F84D9; border: #0F84D9; border-radius: 7px; color: white;" type="button" id="addItem" name="addItem" value="+">
+                </div>
+                <p class="error" id="error-description"></p>
+                <button id="btn-add-new-inventory" class="btn-light-blue" style="display: none;
+                margin-top: 10px;" data-toggle="modal" data-target="#modal-new-item">Add New Item</button>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="modal-new-item" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="exampleModalLongTitle">New Item</h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="add-new-item">
+                            <label for="description">Description</label> <input id="description" type="text"><br>
+                            <p class="error" id="error-description" style="margin-top: 3px; margin-bottom: 3px;"></p>
+
+                            <label for="dropdown-category" style="margin-right: 10px">Category</label>
+                            <select class="dropdown" id="dropdown-category" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
+                                <option value="no-selected" selected>--Select Category--</option>
+                                {{#each itemCategories}}
+                                    <option value={{_id}}>{{category}}</option>
+                                {{/each}}
+                            </select>
+                            <p class="error" id="error-category" style="margin-top: 3px; margin-bottom: 3px;"></p>
+
+                            <label for="dropdown-unit" style="margin-right: 10px">Unit</label>
+                            <select class="dropdown" id="dropdown-unit" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
+                                <option value="no-selected" selected>--Select Unit--</option>
+                                {{#each units}}
+                                    <option value={{_id}}>{{unit}}</option>
+                                {{/each}}
+                            </select>
+                            <p class="error" id="error-unit" style="margin-top: 3px; margin-bottom: 3px;"></p>
+
+
+                            <label for="reorder-level">Reorder Level</label> <input id="reorder-level" type="number"><br>
+                            <p class="error" id="error-reorder-level" style="margin-top: 3px; margin-bottom: 3px;"></p>
+
+                            <label for="EOQ">EOQ</label> <input id="EOQ" type="number"><br>
+                            <p class="error" id="error-EOQ" style="margin-top: 3px; margin-bottom: 3px;"></p>
+
+                            <label for="selling-price">Selling Price</label> <input id="selling-price" type="number"><br>
+                            <p class="error" id="error-selling-price" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="btn-add-new-item">Save</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+
              <!-- Modal Items -->
-            <div class="modal fade" id="modal-add-item" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <!--<div class="modal fade" id="modal-add-item" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -133,8 +196,10 @@
                     
                     <div class="modal-body">
                         <form id="add-supplier-item">
-                            <label for="item-description">Item Description</label> <input id="item-description" type="text"><br><br><br>
+                            <label for="item-description">Item Description</label> <input id="item-description" type="text">
                             <p class="error" id="error-description" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <br><br><br>
+
                     </div>
 
                     <div class="modal-footer">
@@ -142,7 +207,7 @@
                     </div>
                 </div>
                 </div>
-            </div>
+            </div>-->
                 
 
             <table class="table" id="table-item" style="margin-top: 30px;">
@@ -152,7 +217,7 @@
                         <th>Unit</th>
                     </tr>
                 </thead>
-               <tbody> 
+               <tbody id="supplier-item"> 
                         {{#each inventory}}
                                <td>{{itemDescription}}</td>
                                <td>{{unit}}</td>
@@ -163,7 +228,7 @@
             </div>
         </div>
 
-           <script>
+        <script>
             $(document).ready(function() {
 
                 function capitalize(string){
@@ -231,7 +296,9 @@
                 }
 
                 $('#btn-update-supplier').click(function() {
-                    var supplierID = $('#supplierID').text();
+                    var address = window.location.pathname.split('/');
+                    var supplierID = address[address.length -1]
+                    var name = $('#supplier-name').text();
                     var contactPerson = $('#contact-person').val();
                     var number = $('#contact-number').val();  
                     var email = $('#email').val();
@@ -250,7 +317,7 @@
                             $('#error-email').text("");
                             $('#error-address').text(""); 
 
-                            $.post('/postUpdateSupplierInformation', {supplierID, contactPerson, number, email, address}, function(result) {
+                            $.post('/postUpdateSupplierInformation', {supplierID, name, contactPerson, number, email, address}, function(result) {
                                     $('#modal-edit-supplier').modal('hide');
                                     $('#edit-supplier').trigger('reset');
                                     alert("Succesfully updated supplier information");
@@ -289,7 +356,7 @@
                         return 0;
                 }
 
-                 function errorMessage(type) {
+                function errorMessage(type) {
                     if (type == "description") {
                         $("#item-description").css("border", "1px solid #B00000");
                         $("#error-description").text("Please enter an Item Description.");
@@ -297,51 +364,259 @@
                         $("#dropdown-unit").css("border", "1px solid #B00000");
                         $("#error-unit").text("Please select a Unit.");
                     }
-                 }
+                }
 
-                 $("#item-description").autocomplete({
+                $('#btn-new-item').click(function() {
+                    $('#add-new-item').css('display', 'block')
+                })
+
+                 $("#itemDescription").autocomplete({
                     source: function(request, response) {
                     $.ajax({
-                                url: `/getItemName?query=${request.term}`,
+                                url: `/getAllItemName?query=${request.term}`,
                                 dataType: "json",
                                 data: {
                                     //request.term refers to the value currently in the text input
                                     term: request.term
                                 },
                                 success: function (data) {
-
                                     response(data);
                                 }
                          });
                     }, response: function (event, ui) {
                         if (ui.content.length === 0) {
-                            $("#item-description").css("border", "1px solid #B00000");
+                            $("#itemDescription").css("border", "1px solid #B00000");
                             $('#error-description').text("Item does not exist");
+                            $('#btn-add-new-inventory').css('display', 'block')
                         }
                         else {
-                            $("#item-description").css("border", "1px solid #DDDDDD");
+                            $("#itemDescription").css("border", "1px solid #DDDDDD");
                             $('#error-description').text('')
+                            $('#btn-add-new-inventory').css('display', 'none')
                         }
                     }
                 })
 
-                $('#btn-add-supplier-item').click(function() {
-                    var description = capitalize($('#item-description').val());
+                $('#addItem').click(function() {
+                    var itemDesc = capitalize($('#itemDescription').val());
+
                     var address = window.location.pathname.split('/');
                     var supplierID = address[address.length -1]
 
-                    if (!descriptionValidation(description) && !unitValidation(unit)) {
+                    if (!descriptionValidation(itemDesc)) {
 
-                     $("#item-description").css("border", "1px solid #DDDDDD");
+                     $("#itemDescription").css("border", "1px solid #DDDDDD");
                      $("#error-description").text("");
 
-                     $("#dropdown-unit").css("border", "1px solid #DDDDDD");
-                     $("#error-unit").text("");
+                        $.post('/addSupplierItem', {itemDesc, supplierID}, function(result) {
+                            console.log(result)
+                            $('#supplier-item').append(`
+                                <tr>
+                                    <td>${itemDesc}</td>
+                                    <td>${result}</td>
+                                </tr`)
+                            $('#itemDescription').val('');
+                        })
                             
-                            $.post('/addSupplierItem', {description, supplierID})
-                                $('#modal-add-item').modal('hide');
-                                $('#add-supplier-item').trigger('reset');
-                                window.location.reload()
+                    }
+                })
+
+
+
+
+                //--------------------ADDING NEW INVENTORY ITEM FUNCTIONS----------------
+
+                // INPUT VALIDATION
+
+                function descriptionValidation(description) {
+                    if (description == null || description == "") {
+                        errorMessage("description");
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }
+
+                function typeValidation(type) {
+                    if (type == "no-selected") {
+                        errorMessage("type");
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }
+
+                function unitValidation(unit) {
+                    if (unit == "no-selected") {
+                        errorMessage("unit");
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }
+
+                function reorderLevelValidation(reorderLevel) { 
+                    if (reorderLevel == null || reorderLevel == "") {
+                        errorMessage("reorderLevel");
+                        return 1;
+                    } else if (parseFloat(reorderLevel) <= 0) {
+                        errorMessage("reorderLevelInvalidNum");
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }
+
+                function EOQValidation(EOQ) { 
+                    if (EOQ == null || EOQ == "") {
+                        errorMessage("EOQ");
+                        return 1;
+                    } else if (parseFloat(EOQ) <= 0) {
+                        errorMessage("EOQInvalidNum");
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }
+
+                function sellingPriceValidation(price) {
+                    if (price == null || price == "") {
+                        errorMessage("sellingPrice");
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }
+
+                function errorMessage(type) {
+                    if (type == "description") {
+                        $("#description").css("border", "1px solid #B00000");
+                        $("#error-description").text("Please enter an Item Description.");
+                    } else if (type == "type") {
+                        $("#dropdown-category").css("border", "1px solid #B00000");
+                        $("#error-category").text("Please select a Type.");
+                    } else if (type == "unit") {
+                        $("#dropdown-unit").css("border", "1px solid #B00000");
+                        $("#error-unit").text("Please select a Unit.");
+                    } else if (type == "reorderLevel") {
+                        $("#reorder-level").css("border", "1px solid #B00000");
+                        $("#error-reorder-level").text("Please enter a Reorder Level.");
+                    } else if (type == "reorderLevelInvalidNum") {
+                        $("#reorder-level").css("border", "1px solid #B00000");
+                        $("#error-reorder-level").text("Invalid Reorder Level.");
+                    } else if (type == "EOQ") {
+                        $("#EOQ").css("border", "1px solid #B00000");
+                        $("#error-EOQ").text("Please enter an EOQ.");
+                    } else if (type == "EOQInvalidNum") {
+                        $("#EOQ").css("border", "1px solid #B00000");
+                        $("#error-EOQ").text("Invalid EOQ.");
+                    } else if (type == "sellingPrice") {
+                        $("#selling-price").css("border", "1px solid #B00000");
+                        $("#error-selling-price").text("Please enter a Selling Price.");
+                    } 
+                }
+
+                function resetErrorMessage() {
+                    $("#description").css("border", "1px solid #DDDDDD");
+                    $("#error-description").text("");
+                    $("#dropdown-category").css("border", "1px solid #DDDDDD");
+                    $("#error-category").text("");
+                    $("#dropdown-unit").css("border", "1px solid #DDDDDD");
+                    $("#error-unit").text("");
+                    $("#reorder-level").css("border", "1px solid #DDDDDD");
+                    $("#error-reorder-level").text("");
+                    $("#EOQ").css("border", "1px solid #DDDDDD");
+                    $("#error-EOQ").text("");
+                    $("#selling-price").css("border", "1px solid #DDDDDD");
+                    $("#error-selling-price").text("");
+                }
+
+                $('#description').keyup(function () { 
+                    resetErrorMessage();
+
+                    // Get value 
+                     var description = capitalize($('#description').val());
+
+                    // Check if dish name exists 
+                    $.get("/getCheckItemDescription", {itemDescription: description}, function (result) {
+                        if (result.itemDescription == description) {
+                            //alert("same");
+                            $("#description").css("border", "1px solid #B00000");
+                            $("#error-description").text("Item Description already taken.");
+                            $("#btn-add-new-item").prop("disabled", true);
+                            $("#btn-add-new-item").css("background-color", "#b3b3b3");
+                        } else {
+                            $("#description").css("border", "1px solid #DDDDDD");
+                            $("#error-description").text("");
+                            $("#btn-add-new-item").prop("disabled", false);
+                            $("#btn-add-new-item").css("background-color", "#0F84D9");
+                        }
+                    });
+                });
+
+                $('#dropdown-category').change(function() {
+                    resetErrorMessage();
+                })
+
+                $('#dropdown-unit').change(function() {
+                    resetErrorMessage();
+                })
+
+                $('#reorder-level').keyup(function () { 
+                    resetErrorMessage();
+                });
+
+                $('#EOQ').keyup(function () { 
+                    resetErrorMessage();
+                });
+
+                $('#selling-price').keyup(function () { 
+                    resetErrorMessage();
+                });
+
+                function checkAll(description, category, unit, reorderLevel, EOQ, sellingPrice) {
+                    descriptionValidation(description);
+                    typeValidation(category);
+                    unitValidation(unit);
+                    reorderLevelValidation(reorderLevel);
+                    EOQValidation(EOQ);
+                    sellingPriceValidation(sellingPrice);
+                }
+
+                $('#btn-add-new-item').click(function() {
+                    var description = capitalize($('#description').val());
+                    var category = $('#dropdown-category').val();
+                    var categoryText = $('#dropdown-category option:selected').text();
+                    var unit = $('#dropdown-unit').val();
+                    var unitText = $('#dropdown-unit option:selected').text();
+                    var reorderLevel = $('#reorder-level').val();
+                    var EOQ = $('#EOQ').val();
+                    var sellingPrice = $('#selling-price').val();
+
+                    checkAll(description, category, unit, reorderLevel, EOQ, sellingPrice);
+
+                    if (!descriptionValidation(description) && !typeValidation(category) && !unitValidation(unit) && !reorderLevelValidation(reorderLevel) && !EOQValidation(EOQ)  && !sellingPriceValidation(sellingPrice)) {
+
+                        // remove texts and red borders
+                        resetErrorMessage();
+
+                        $.post('/postNewItem', {description, category, categoryText, unit, unitText, reorderLevel, EOQ, sellingPrice}, function (updatedItem) {
+                            var sellingPrice = parseFloat(updatedItem.sellingPrice).toFixed(2)
+
+                            $('#table-inventory').find('tbody').append(
+                                `  <tr class="link" style="cursor: pointer" data-href="/inventory/${updatedItem._id}"> 
+                                        <td>${updatedItem.itemDescription}</td> 
+                                        <td value="${updatedItem.categoryID}" class="category-id">${updatedItem.category}</td>
+                                        <td style="text-align: right;">${updatedItem.quantityAvailable}</td> 
+                                        <td class="unit-id">${updatedItem.unit}</td> 
+                                        <td style="text-align: right;">₱ ${sellingPrice}</td> 
+                                        <td><button class="btn-status btn-low status-id" value="${updatedItem.statusID}">Low Stock</button></td>
+                                    </tr>`
+                            );
+                        })
+
+                        $('#modal-new-item').modal('hide');
+                        $('#add-new-item').trigger('reset');
                     }
                 })
             })

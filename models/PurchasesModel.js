@@ -44,7 +44,7 @@ var PurchasesSchema = new mongoose.Schema({
 		required: false
 	},
 
-	discountPercentage: {
+	discount: {
 		type: Number,
 		required: false
 	},
