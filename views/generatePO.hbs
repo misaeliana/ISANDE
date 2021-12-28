@@ -10,7 +10,9 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-        
+
+        <link rel="stylesheet" type="text/css" href="../jquery-ui-themes-1.13.0/themes/ui-lightness/jquery-ui.css">
+        <script src="../jquery-ui/jquery-ui.min.js"></script>
     </head>
     <body>
 
@@ -45,9 +47,10 @@
                     <thead class="table-head">
                         <tr>
                             <th>Item Description</th>
-                            <th>Quantity</th>
+                            <th style="width: 100px;">Quantity</th>
                             <th>Unit</th>
                             <th>Supplier</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody id="table-purchase-stocks-body"> 
@@ -55,7 +58,7 @@
                         {{#each items}}
                             <tr>
                                 <td class="itemDescription">{{itemDescription}}</td>
-                                <td><input value="{{EOQ}}" class="quantity"></td>
+                                <td><input value="{{EOQ}}" class="quantity" style="text-align: right;"></td>
                                 <td class="unit">{{unit}}</td>
                                 <td class="supplier">
                                     <select class="dropdown-supplier">
@@ -64,6 +67,14 @@
                                             <option value="{{_id}}">{{name}}</option>
                                         {{/each}}
                                     </select>
+                                </td>
+                                <td style="width:400px">
+                                    <input style="float: left; height: 34px; width: 34px; background-color: #0F84D9; border: #0F84D9; border-radius: 7px; color: white; display: block;" type="button" class="btn-dark-blue btn-add-item-supplier" name="addSupplier" value="+">
+
+                                    <div class="div-add-item-supplier" style="display:none;">
+                                        <input type="text" class="add-item-supplier" placeholder="Supplier Name" style="margin-right: 30px;">
+                                        <button class="btn-save-item-supplier btn-dark-blue">Add Item Supplier</button>
+                                    </div>
                                 </td>
                             </tr>
                         {{/each}}
@@ -84,6 +95,55 @@
 
             <script>
                 $(document).ready(function() {
+
+                    $('.btn-add-item-supplier').click(function() {
+                        $(this).parents('tr').find('.div-add-item-supplier').css('display', 'flex')
+                        $(this).css('display', 'none')
+                        //$(this).parents('tr').find('.btn-save-item-supplier').css('display', 'block')
+                    })
+
+
+                    $(".add-item-supplier").autocomplete({
+                        source: function(request, response) {
+                        $.ajax({
+                                    url: `/getSupplierName?query=${request.term}`,
+                                    dataType: "json",
+                                    data: {
+                                        //request.term refers to the value currently in the text input
+                                        term: request.term,
+                                    },
+                                    success: function (data) {
+                                        //$('#supplier-error').css('display', 'none');
+                                        //$("#supplierName").css("border", "1px solid #DDDDDD");
+                                         $(this).parents('tr').find('.btn-save-item-supplier').prop('disabled', false);
+                                        $(this).parents('tr').find('.btn-save-item-supplier').css("background-color", "#42415B"); 
+                                        response(data);
+                                    }
+                             });
+                        }, response: function (event, ui) {
+                            if (ui.content.length === 0) {
+                                //$('.supplier-error').css('display', 'block');
+                                $(this).parents('tr').find('.btn-save-item-supplier').prop('disabled', true);
+                                $(this).parents('tr').find('.btn-save-item-supplier').css("background-color", "#b3b3b3");
+                            }
+                            else {
+                                //$('.supplier-error').css('display', 'none');
+                                $(this).parents('tr').find('.btn-save-item-supplier').prop('disabled', false);
+                                $(this).parents('tr').find('.btn-save-item-supplier').css("background-color", "#42415B"); 
+                            }
+                        }
+                    });
+
+                    $('.btn-save-item-supplier').click(function() {
+                        var itemDesc = $(this).parents('tr').find('.itemDescription').text()
+                        var supplierName = $(this).parents('tr').find('.add-item-supplier').val()
+                        $.post('/addItemSupplier', {itemDesc, supplierName}, function(result) {
+                            $(this).parents('tr').find('.div-add-item-supplier').css('display', 'none')
+                            $(this).parents('tr').find('.add-item-supplier').val('');
+                            $(this).parents('tr').find('.dropdown-supplier').append(`
+                                <option>${supplierName}</option`)
+                        }) 
+                    })
 
                     $('#btn-generate-PO').click(function() {
                         var purchaseItems = []

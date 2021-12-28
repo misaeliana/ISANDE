@@ -101,6 +101,7 @@
                         <thead style="background-color: #2F5D62; color: white">
                             <tr>
                                 <th>Item Description</th>
+                                <th style="display: none;">Qty Purchased</th>
                                 <th>Qty</th>
                                 <th>Unit</th>
                                 <th>Unit Price</th>
@@ -114,6 +115,7 @@
                             {{#each invoiceItems}}
                                 <tr class="return-row">
                                     <td class="return-item-desc">{{itemDescription}}</td>
+                                    <td style="display: none" class="quantity-purchased">{{quantity}}</td>
                                     <td><input class="return-quantity" type="number" value="{{quantity}}" style="width:70px" disabled></td>
                                     <td>{{unit}}</td>
                                     <td class="return-unit-price">₱ {{unitPrice}}</td>
@@ -327,8 +329,18 @@
                 });
 
                 $('.return-quantity').keyup(function () {
-                    computeTotal()
-
+                    if (parseInt($(this).parents('tr').find('.return-quantity').val()) > parseInt($(this).parents('tr').find('.quantity-purchased').text())){
+                        $(this).parents('tr').find(".return-quantity").css("border", "2px solid #B00000");
+                        alert("Quantity returned cannot be greater than quantity purchased");
+                        $("#btn-save-return").prop("disabled", true);
+                        $("#btn-save-return").css("background-color", "#b3b3b3");
+                    }
+                    else {
+                        $(this).parents('tr').find(".return-quantity").css("border", "1px solid #DDDDDD");
+                        $("#btn-save-return").prop("disabled", false);
+                        $("#btn-save-return").css("background-color", "#0F84D9");
+                        computeTotal()
+                    }
                 })
 
                 $("#table-return-new-item-body").on('click','.delete-item-btn',function() {
@@ -468,8 +480,8 @@
 
                     $('#table-return-new-item-body > tr').each(function() {
                         var amount = parseFloat($(this).find('.amount').text().slice(1))
-                        //orderTotal += parseFloat(amount)
-                        newItemsTotal += parseFloat(amount)
+                        orderTotal += parseFloat(amount)
+                        //newItemsTotal += parseFloat(amount)
                     })
 
                     var discountPercent = $('#total-discount').val()
@@ -481,20 +493,22 @@
                     var subtotal = orderTotal/1.12
                     var vat = orderTotal - subtotal
 
-                    balance = paid - refund
+                    /*balance = paid - refund
 
                     var newOrderTotal = orderTotal + newItemsTotal
 
-                    var total = orderTotal + newItemsTotal - balance
+                    var total = orderTotal + newItemsTotal - balance*/
+
+                    var total = orderTotal - paid
                     
 
                     $('#subtotal').text("₱ " + parseFloat(subtotal).toFixed(2))
                     $('#vat').text("₱ " + parseFloat(vat).toFixed(2))
                     $('#discount').text("₱ " + parseFloat(discount).toFixed(2))
-                    $('#orderTotal').text("₱ " + parseFloat(newOrderTotal).toFixed(2))
+                    $('#orderTotal').text("₱ " + parseFloat(orderTotal).toFixed(2))
 
                     $('#refund').text("₱ " + parseFloat(refund).toFixed(2))
-                    $('#balance').text("₱ " + parseFloat(balance).toFixed(2))
+                    //$('#balance').text("₱ " + parseFloat(balance).toFixed(2))
                     $('#total').text("₱ " + parseFloat(total).toFixed(2))
                 }
 

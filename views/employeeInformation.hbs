@@ -34,7 +34,6 @@
 
         <div class="content">
             <br>
-            <p style="display: none" id="employeeID">{{employeeInfo._id}}</p>
             <h1 class="bold">{{employeeInfo.name}}</h1> 
             <hr>
             <div style= "margin-top: 20px;">
@@ -219,7 +218,8 @@
 
 
                 $('#btn-update-employee').click(function() {
-                    var employeeID = $('#employeeID').text();
+                    var address = window.location.pathname.split('/');
+                    var employeeID = address[address.length -1]
 
                     //var name = capitalize($('#employee-name').val());
                     var username = $('#employee-username').val();
@@ -257,7 +257,7 @@
                     if (confirm("Are you sure you want to remove this employee?")) {
                         $.post('/deleteEmployee', {employeeID});
                         alert("Employee information was deleted");
-                        window.location.replace("/employeeList")
+                        window.location.replace("/employees")
                     }
                     else { }
 

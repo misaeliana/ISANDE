@@ -118,6 +118,12 @@ const purchaseOrderController = {
 		});
 	},
 
+	getEOQ: function(req, res) {
+		db.findOne (Items, {itemDescription:req.query.itemDesc, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'EOQ', function(result) {
+			res.send(result.EOQ.toString())
+		})
+	},
+
 	previousPONumber: function(req, res) {
 		db.findMany(Purchases, {}, '', function(result) {
 
@@ -147,24 +153,28 @@ const purchaseOrderController = {
 			});
 		}
 
-		var items = JSON.parse(req.body.itemsString);
-		var date = req.body.date;
-		var purchase = {
-			purchaseOrderNumber: req.body.poNumber,
-			supplierID: "6190f42e208a6e6950bd0023",
-			employeeID: "6193c08eea47cc5edfb484c5",
-			date: date,
-			vat: 0,
-			subtotal: 0,
-			discount: 0,
-			total: 0,
-			statusID: "618f650546c716a39100a809"
-		};
-		var purchaseID;
-		db.insertOneResult(Purchases, purchase, function(result) {
-			purchaseID = result._id;
-			saveItems(purchaseID, items);
-		});
+		async function savePurchase() {
+			var items = JSON.parse(req.body.itemsString);
+			var date = req.body.date;
+			var purchase = {
+				purchaseOrderNumber: req.body.poNumber,
+				supplierID: await getSupplierID(req.body.supplierName),
+				employeeID: "61bc3fb840c79895329ebfcf",
+				date: date,
+				vat: 0,
+				subtotal: 0,
+				discount: 0,
+				total: 0,
+				statusID: "618f650546c716a39100a809"
+			};
+			var purchaseID;
+			db.insertOneResult(Purchases, purchase, function(result) {
+				purchaseID = result._id;
+				saveItems(purchaseID, items);
+			});
+		}
+
+		savePurchase()
 	},
 
 	getPurchaseOrder: function(req, res) {
@@ -296,6 +306,28 @@ const purchaseOrderController = {
 
 		getItems();
 		
+	},
+
+	addItemSupplier: function(req, res) {
+
+		async function add() {
+
+			var itemID = await getItemID(req.body.itemDesc)
+			var supplierID = await getSupplierID(req.body.supplierName)
+
+			var item = {
+				itemID: itemID.toString(),
+				supplierID: supplierID.toString()
+			}
+
+			console.log(item)
+		
+			db.insertOne(ItemSuppliers, item, function(result) {
+				res.sendStatus(200)
+			})
+		}
+
+		add()
 	},
 
 	saveGeneratePurchaseOrder: function(req, res) {

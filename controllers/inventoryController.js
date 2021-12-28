@@ -52,7 +52,17 @@ const inventoryController = {
 				};
 	
 				inventory.push(item);
-			} 
+			}
+
+			//sort function 
+			// if return value is > 0 sort b before a
+			// if reutrn value is < 0 sort a before b
+			inventory.sort(function(a, b) {
+			    var textA = a.itemDescription.toUpperCase();
+			    var textB = b.itemDescription.toUpperCase();
+			    //syntax is "condition ? value if true : value if false"
+			    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+			}); 
 
 			res.render('inventory', {itemCategories, units, inventory, itemStatuses});
 		}
@@ -160,6 +170,8 @@ const inventoryController = {
 				btnStatus = "low";
 			else if (textStatus == "In Stock")
 				btnStatus = "in";
+			else if (textStatus == "Out of Stock")
+				btnStatus = "out"
 
 			var itemInfo = {
 				_id: item._id,

@@ -393,7 +393,7 @@
                         resetErrorMessage();
 
                         $.post('/postNewItem', {description, category, categoryText, unit, unitText, reorderLevel, EOQ, sellingPrice}, function (updatedItem) {
-                            var sellingPrice = parseFloat(updatedItem.sellingPrice).toFixed(2)
+                            /*var sellingPrice = parseFloat(updatedItem.sellingPrice).toFixed(2)
 
                             $('#table-inventory').find('tbody').append(
                                 `  <tr class="link" style="cursor: pointer" data-href="/inventory/${updatedItem._id}"> 
@@ -405,10 +405,13 @@
                                         <td><button class="btn-status btn-low status-id" value="${updatedItem.statusID}">Low Stock</button></td>
                                     </tr>`
                             );
-                        })
+                        })*/
 
-                        $('#modal-new-item').modal('hide');
-                        $('#add-new-item').trigger('reset');
+                            $('#modal-new-item').modal('hide');
+                            $('#add-new-item').trigger('reset');
+
+                            window.location.reload()
+                        })
                     }
                 })
             })

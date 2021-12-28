@@ -677,7 +677,7 @@
                         var discount = parseFloat($('#discount').text().slice(1))
                         $.post('/updatePOWithPrice', {poID, itemsString, discount, subtotal, vat, total}, function(result) {
                             alert("PO updated");
-                            window.location = "/purchaseOrderList";
+                            window.location = "/purchaseOrders";
                         });
                     }
                 })

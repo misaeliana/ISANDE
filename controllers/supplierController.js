@@ -19,17 +19,26 @@ const supplierController = {
 		db.findMany(Suppliers, {informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name contactPerson number email address', function (result) {
 			var suppliers = [];
 			for (var i=0; i<result.length; i++) {
-					var supplier = {
-						supplierID: result[i]._id,
-						name: result[i].name,
-                        contactPerson : result[i].contactPerson,
-						number: result[i].number,
-                        email: result[i].email,
-						address: result[i].address
-                        
-					};
-					suppliers.push(supplier);
-				}
+				var supplier = {
+					supplierID: result[i]._id,
+					name: result[i].name,
+                    contactPerson : result[i].contactPerson,
+					number: result[i].number,
+                    email: result[i].email,
+					address: result[i].address
+                    
+				};
+				suppliers.push(supplier);
+			}
+			//sort function 
+			// if return value is > 0 sort b before a
+			// if reutrn value is < 0 sort a before b
+			suppliers.sort(function(a, b) {
+			    var textA = a.name.toUpperCase();
+			    var textB = b.name.toUpperCase();
+			    //syntax is "condition ? value if true : value if false"
+			    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+			});
 			res.render('supplierList', {suppliers});
 		});
 	},
@@ -108,6 +117,12 @@ const supplierController = {
 			})
 		}
 
+		function updateItemSupplier(oldID, newID) {
+			db.updateMany(ItemSuppliers, {supplierID:oldID}, {supplierID:newID}, function(result) {
+
+			})
+		}
+
 		var supplierID = req.body.supplierID;
 
 		db.updateOne(Suppliers, {_id:supplierID}, {$set: {informationStatusID:"618a783cc8067bf46fbfd4e5"}}, function(flag) {
@@ -125,6 +140,7 @@ const supplierController = {
 
 		db.insertOneResult(Suppliers, supplier, function(result) {
 			updatePO(supplierID, result._id)
+			updateItemSupplier(supplierID, result._id)
 			res.send(result._id);
 		});
 	},
@@ -135,6 +151,12 @@ const supplierController = {
 		db.updateOne(Suppliers, {_id: supplierID}, {$set: {informationStatusID:"618a783cc8067bf46fbfd4e5"}}, function(flag){
 			if (flag) { }
 		});
+
+		db.deleteMany(ItemSuppliers, {supplierID:supplierID}, function(result) {
+
+		})
+
+		res.sendStatus(200)
 	},
 
 	addSupplierItem: function(req, res) {
@@ -175,6 +197,53 @@ const supplierController = {
             }
             res.send(formattedResults)
         })
+	},
+
+	checkPendingPO: function (req, res) {
+
+		function getPurchases (supplierID) {
+			return new Promise((resolve, reject) => {
+				db.findMany(Purchases, {supplierID:supplierID}, '', function(result) {
+					resolve(result)
+				})
+			})
+		}
+
+		async function check() {
+			var purchases = await getPurchases(req.query.supplierID)
+			var noPending = false
+			for (var i=0; i<purchases.length && !noPending; i++) {
+				//po is released or new
+				if (purchases[i].statusID == "618f652746c716a39100a80a" || purchases[i].statusID == "618f650546c716a39100a809")
+					pending = true;
+			}
+
+			if (purchases[i-1].statusID == "618f652746c716a39100a80a")
+				res.send("released")
+			else if(purchases[i-1].statusID == "618f650546c716a39100a809")
+				res.send("new")
+			else
+				res.send("can delete")
+		}
+
+		check()
+	},
+
+	deleteSupplierPO: function(req, res) {
+		//update po status to deleted
+		db.updateMany(Purchases, {supplierID:req.body.supplierID}, {statusID:"61a632b4f6780b76e175421f"}, function(result) {
+			
+		})
+
+		db.updateOne(Suppliers, {_id: req.body.supplierID}, {$set: {informationStatusID:"618a783cc8067bf46fbfd4e5"}}, function(flag){
+			if (flag) { }
+		});
+
+		db.deleteMany(ItemSuppliers, {supplierID:req.body.supplierID}, function(result) {
+
+		})
+
+		res.sendStatus(200)
 	}
 };
 

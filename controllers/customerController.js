@@ -15,14 +15,23 @@ const customerController = {
 		db.findMany(Customers, {informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name number address', function (result) {
 			var customers = [];
 			for (var i=0; i<result.length; i++) {
-					var customer = {
-						customerID: result[i]._id,
-						name: result[i].name,
-						number: result[i].number,
-						address: result[i].address
-					}
-					customers.push(customer);
+				var customer = {
+					customerID: result[i]._id,
+					name: result[i].name,
+					number: result[i].number,
+					address: result[i].address
 				}
+				customers.push(customer);
+			}
+			//sort function 
+			// if return value is > 0 sort b before a
+			// if reutrn value is < 0 sort a before b
+			customers.sort(function(a, b) {
+			    var textA = a.name.toUpperCase();
+			    var textB = b.name.toUpperCase();
+			    //syntax is "condition ? value if true : value if false"
+			    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+			});
 			res.render('customerList', {customers});
 		})
 	},
@@ -87,7 +96,11 @@ const customerController = {
 				unpaidInvoices.push(invoice)
 			}
 
-			res.render('customerInformation', {customerInfo, customerInvoices, unpaidInvoices, totalAmountDue})
+			if (unpaidInvoices.length==0) 
+				res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue})
+
+			else
+				res.render('customerInformation', {customerInfo, customerInvoices, unpaidInvoices, totalAmountDue})
 		}
 
 		getCustomerInformation()
@@ -184,6 +197,28 @@ const customerController = {
 		}
 
 		pay()
+	},
+
+	checkPendingInvoices: function (req, res) {
+
+		async function check() {
+			var invoices = await getCustomerInvocies(req.query.customerID)
+			var pending = false;
+
+			for (var i=0; i<invoices.length && !pending; i++) {
+				//status is pending or partial
+				if (invoices[i].statusID == "619785d78094faf8c10d1484" || invoices[i].statusID == "61b2df709f9cd4edddf21d68")
+					pending = true
+			}
+
+			if (pending)
+				res.send(true)
+			else
+				res.send(false)
+		}
+
+
+		check()
 	}
 }
 

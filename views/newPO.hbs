@@ -156,7 +156,7 @@
                         </div>
                     </div>
 
-                    <div class="btn-export-invoice"><button class="btn-dark-blue" id="btn-export-invoice">Export</button></div>
+                    <!--<div class="btn-export-invoice"><button class="btn-dark-blue" id="btn-export-invoice">Export</button></div>-->
 
                     
         </div>
@@ -206,6 +206,11 @@
                             $('#btn-new-item').css('display', 'none');
                             $('#addItem').prop('disabled', false);
                         }
+                    }, select: function(event, ui) {
+                        var itemDesc = ui.item.label;
+                        $.get('/getEOQ', {itemDesc}, function(result) {
+                            $('#qty').val(result)
+                        })
                     }
                 });
             });
@@ -351,11 +356,12 @@
                             }
                             poItems.push(poItem);
                         });
-                        var itemsString = JSON.stringify(poItems);  
-                        $.post('/saveNewPO', {itemsString, date, poNumber}, function (result) {
+                        var itemsString = JSON.stringify(poItems); 
+                        var supplierName = $('#supplierName').val(); 
+                        $.post('/saveNewPO', {supplierName, itemsString, date, poNumber}, function (result) {
                             $("#table-poItem tbody tr").remove();
                             alert("PO saved");
-                            window.location = "/purchaseOrderList"
+                            window.location = "/purchaseOrders"
                         });
                     });
                 }

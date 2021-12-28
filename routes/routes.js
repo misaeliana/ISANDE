@@ -19,7 +19,7 @@ const manualCountController = require('../controllers/manualCountController.js')
 
 //--CUSTOMER--
 
-router.get('/customerList', customerController.getCustomerList);
+router.get('/customers', customerController.getCustomerList);
 
 router.post('/postCustomerInformation', customerController.postCustomerInformation);
 
@@ -33,9 +33,11 @@ router.post('/deleteCustomer', customerController.deleteCustomer);
 
 router.post('/payAccount', customerController.payAccount);
 
+router.get('/checkPendingInvoices', customerController.checkPendingInvoices)
+
 //--SUPPLIER--
 
-router.get('/supplierList', supplierController.getSupplierList);
+router.get('/suppliers', supplierController.getSupplierList);
 
 router.post('/postSupplierInformation', supplierController.postSupplierInformation);
 
@@ -51,9 +53,13 @@ router.post('/addSupplierItem', supplierController.addSupplierItem);
 
 router.get('/getAllItemName', supplierController.getItems);
 
+router.get('/checkPendingPO', supplierController.checkPendingPO);
+
+router.post('/deleteSupplierPO', supplierController.deleteSupplierPO)
+
 //--EMPLOYEE--
 
-router.get('/employeeList', employeeController.getEmployeeList);
+router.get('/employees', employeeController.getEmployeeList);
 
 router.post('/postEmployeeInformation', employeeController.postEmployeeInformation);
 
@@ -89,7 +95,7 @@ router.get('/getFilterInventory', inventoryController.getFilterInventory);
 
 
 //--PURCHASE ORDER--
-router.get('/purchaseOrderList', purchaseOrderController.getPurchaseOrderList);
+router.get('/purchaseOrders', purchaseOrderController.getPurchaseOrderList);
 
 router.get('/newPurchaseOrder', purchaseOrderController.getCreateNewPurchaseOrder);
 
@@ -99,11 +105,15 @@ router.get('/getItemNamePO', purchaseOrderController.getItems);
 
 router.get('/getItemUnit', purchaseOrderController.getItemUnit);
 
+router.get('/getEOQ', purchaseOrderController.getEOQ)
+
 router.get('/previousPONumber', purchaseOrderController.previousPONumber);
 
 router.post('/saveNewPO', purchaseOrderController.saveNewPO);
 
 router.get('/purchaseOrder/:poID', purchaseOrderController.getPurchaseOrder);
+
+router.post('/addItemSupplier', purchaseOrderController.addItemSupplier)
 
 router.post('/saveGeneratePurchaseOrder', purchaseOrderController.saveGeneratePurchaseOrder);
 

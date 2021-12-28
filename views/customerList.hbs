@@ -64,7 +64,7 @@
                         <form id="add-new-customer">
                             <label for="Customer-name">Customer Name</label> <input id="customer-name" type="text"><br>
                             <p class="error" id="error-new-customer-name" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                            <label for="contact-number">Contact Number</label> <input id="contact-number" type="number"><br>
+                            <label for="contact-number">Contact Number</label> <input id="contact-number" type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;"><br>
                             <p class="error" id="error-contact-number" style="margin-top: 3px; margin-bottom: 3px;"></p>
                             <label for="address">Address</label> <input id="address" type="text"><br>
                             <p class="error" id="error-address" style="margin-top: 3px; margin-bottom: 3px;"></p>

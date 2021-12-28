@@ -71,7 +71,7 @@
                             <p class="error" id="error-new-supplier-name" style="margin-top: 3px; margin-bottom: 3px;"></p>
                             <label for="contact-person">Contact Person</label> <input id="contact-person" type="text"><br>
                               <p class="error" id="error-contact-person" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                            <label for="contact-number">Contact Number</label> <input id="contact-number" type="number"><br>
+                            <label for="contact-number">Contact Number</label> <input id="contact-number" type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;"><br>
                              <p class="error" id="error-contact-number" style="margin-top: 3px; margin-bottom: 3px;"></p>
                             <label for="email">Email Address</label> <input id="email" type="text"><br>
                               <p class="error" id="error-email" style="margin-top: 3px; margin-bottom: 3px;"></p>

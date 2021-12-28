@@ -331,7 +331,6 @@ module.exports = function() {
 	this.getCustomerInvocies = function(customerID) {
 		return new Promise((resolve, reject) => {
 			db.findMany (Invoices, {customerID: customerID}, '', function (result) {
-				console.log(result)
 				resolve(result);
 			});
 		});
