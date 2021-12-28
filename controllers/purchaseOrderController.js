@@ -310,24 +310,31 @@ const purchaseOrderController = {
 
 	addItemSupplier: function(req, res) {
 
-		async function add() {
-
-			var itemID = await getItemID(req.body.itemDesc)
-			var supplierID = await getSupplierID(req.body.supplierName)
-
+		async function add(itemID, supplierID) {
 			var item = {
 				itemID: itemID.toString(),
 				supplierID: supplierID.toString()
 			}
-
-			console.log(item)
 		
 			db.insertOne(ItemSuppliers, item, function(result) {
-				res.sendStatus(200)
+				res.send(supplierID.toString())
 			})
 		}
 
-		add()
+		async function check() {
+			var itemID = await getItemID(req.body.itemDesc)
+			var supplierID = await getSupplierID(req.body.supplierName)
+
+			db.findOne(ItemSuppliers, {itemID:itemID, supplierID:supplierID}, '', function(result) {
+				if (result.length == 0)
+					add(itemID, supplierID)
+				else
+					res.send("exists")
+			})
+			
+		}
+
+		check()
 	},
 
 	saveGeneratePurchaseOrder: function(req, res) {
