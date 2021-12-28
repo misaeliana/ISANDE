@@ -3,11 +3,11 @@ const db = require('../models/db.js');
 
 const Suppliers = require('../models/SuppliersModel.js');
 
-const Items = require('../models/ItemsModel.js')
+const Items = require('../models/ItemsModel.js');
 
 const Purchases = require('../models/PurchasesModel.js');
 
-const ItemSuppliers = require('../models/ItemSuppliersModel.js')
+const ItemSuppliers = require('../models/ItemSuppliersModel.js');
 
 const Units = require('../models/UnitsModel.js');
 

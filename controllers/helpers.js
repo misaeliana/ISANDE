@@ -368,6 +368,14 @@ module.exports = function() {
 		});
 	},
 
+	this.getSpecificInvoiceStatusID = function(status) {
+		return new Promise((resolve, reject) => {
+			db.findOne(InvoiceStatus, {status: status}, '', function(result) {
+				resolve (result._id);
+			});
+		});
+	},
+
 
 	this.getInvoice = function(_id) {
 		return new Promise((resolve, reject) => {
@@ -661,5 +669,13 @@ module.exports = function() {
 				resolve(result.category)
 			})
 		})
+	},
+
+	this.getPaidInvoices = function(paidStatusID) {
+		return new Promise((resolve, reject) => {
+			db.findMany(Invoices, {statusID: paidStatusID}, '', function(result) {
+				resolve (result);
+			});
+		});
 	}
 };
