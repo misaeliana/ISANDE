@@ -17,6 +17,8 @@ const supplierController = require('../controllers/supplierController.js');
 
 const manualCountController = require('../controllers/manualCountController.js');
 
+const reportController = require('../controllers/reportController.js');
+
 //--CUSTOMER--
 
 router.get('/customers', customerController.getCustomerList);
@@ -174,7 +176,7 @@ router.post('/saveReturn', invoiceController.saveReturn);
 
 router.post('/payOneInvoice', invoiceController.payOneInvoice);
 
-router.get('/exportInvoice', invoiceController.exportInvoice)
+router.get('/exportInvoice', invoiceController.exportInvoice);
 
 
 //--DELIVERY--
@@ -197,5 +199,12 @@ router.get('/shrinkages', manualCountController.getShrinkages);
 router.get('/getSearchShrinkages', manualCountController.getSearchShrinkages);
 
 router.get('/getFilteredRowsShrinkages', manualCountController.getFilteredRowsShrinkages);
+
+//--REPORTS--
+router.get('/salesReport', reportController.getSalesReport);
+
+router.get('/getFilteredSalesReport', reportController.getFilteredSalesReport);
+
+router.get('/getDateToday', reportController.getDateToday);
 
 module.exports = router;

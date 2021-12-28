@@ -3,7 +3,7 @@ const db = require('../models/db.js');
 
 const Items = require('../models/ItemsModel.js');
 
-const ItemStatus = require('../models/ItemStatusModel.js')
+const ItemStatus = require('../models/ItemStatusModel.js');
 
 const Suppliers = require('../models/SuppliersModel.js');
 
@@ -15,7 +15,7 @@ const Purchases = require('../models/PurchasesModel.js');
 
 const PurchasedItems = require('../models/PurchasedItemsModel.js');
 
-const ItemSuppliers = require('../models/ItemSuppliersModel.js')
+const ItemSuppliers = require('../models/ItemSuppliersModel.js');
 
 const path = require('path');
 
