@@ -88,6 +88,14 @@ module.exports = function() {
 		});
 	},
 
+	this.getAllInventoryItems = function() {
+		return new Promise((resolve, reject) => {
+			db.findMany(Items, {}, '', function(result) {
+				resolve (result);
+			});
+		});
+	},
+
 	this.getInventoryItems = function(informationStatus) {
 		return new Promise((resolve, reject) => {
 			db.findMany(Items, {informationStatusID: informationStatus}, '', function(result) {
@@ -212,6 +220,14 @@ module.exports = function() {
 		return new Promise((resolve, reject) => {
 			db.findOne(Items, {_id:itemID}, 'itemDescription', function(result) {
 				resolve(result.itemDescription);
+			});
+		});
+	},
+
+	this.getAllInvoiceItems = function() {
+		return new Promise((resolve, reject) => {
+			db.findMany(InvoiceItems, {}, '', function(result) {
+				resolve(result);
 			});
 		});
 	},
@@ -676,6 +692,26 @@ module.exports = function() {
 			db.findMany(Invoices, {statusID: paidStatusID}, '', function(result) {
 				resolve (result);
 			});
+		});
+	},
+
+	this.filterInventory = function(allInventory) {
+		return new Promise((resolve, reject) => {
+			var inventory = [];
+
+			for (var i = 0; i < allInventory.length; i++) {
+				var found = false;
+
+				for (var j = 0; j < inventory.length; j++) {
+					if (allInventory[i].itemDescription == inventory[j].itemDescription)
+						found = true;
+
+				}
+
+				if (found == false)
+					inventory.push(allInventory[i]);
+			}
+			resolve(inventory);
 		});
 	}
 };

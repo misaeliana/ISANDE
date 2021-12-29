@@ -207,4 +207,8 @@ router.get('/getFilteredSalesReport', reportController.getFilteredSalesReport);
 
 router.get('/getDateToday', reportController.getDateToday);
 
+router.get('/inventoryPerformanceReport', reportController.getInventoryPerformanceReport);
+
+router.get('/salesPerformanceReport', reportController.getSalesPerformanceReport);
+
 module.exports = router;

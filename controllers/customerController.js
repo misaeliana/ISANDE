@@ -3,9 +3,9 @@ const db = require('../models/db.js');
 
 const Customers = require('../models/CustomersModel.js');
 
-const Invoices = require('../models/InvoiceModel.js')
+const Invoices = require('../models/InvoiceModel.js');
 
-const AccountPayments = require('../models/OnAccountPaymentModel.js')
+const AccountPayments = require('../models/OnAccountPaymentModel.js');
 
 require('../controllers/helpers.js')();
 

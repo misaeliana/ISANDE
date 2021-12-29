@@ -34,7 +34,7 @@ const inventoryController = {
 				else if (textStatus == "In Stock")
 					btnStatus = "in";
 				else if (textStatus == "Out of Stock")
-					btnStatus = "out"
+					btnStatus = "out";
 	
 				// check information status
 	
