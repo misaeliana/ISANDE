@@ -35,7 +35,7 @@ router.post('/deleteCustomer', customerController.deleteCustomer);
 
 router.post('/payAccount', customerController.payAccount);
 
-router.get('/checkPendingInvoices', customerController.checkPendingInvoices)
+router.get('/checkPendingInvoices', customerController.checkPendingInvoices);
 
 //--SUPPLIER--
 
@@ -107,7 +107,7 @@ router.get('/getItemNamePO', purchaseOrderController.getItems);
 
 router.get('/getItemUnit', purchaseOrderController.getItemUnit);
 
-router.get('/getEOQ', purchaseOrderController.getEOQ)
+router.get('/getEOQ', purchaseOrderController.getEOQ);
 
 router.get('/previousPONumber', purchaseOrderController.previousPONumber);
 
@@ -115,7 +115,7 @@ router.post('/saveNewPO', purchaseOrderController.saveNewPO);
 
 router.get('/purchaseOrder/:poID', purchaseOrderController.getPurchaseOrder);
 
-router.post('/addItemSupplier', purchaseOrderController.addItemSupplier)
+router.post('/addItemSupplier', purchaseOrderController.addItemSupplier);
 
 router.post('/saveGeneratePurchaseOrder', purchaseOrderController.saveGeneratePurchaseOrder);
 
@@ -123,7 +123,7 @@ router.get('/editPO/:poID', purchaseOrderController.editPO);
 
 router.get('/getSupplierName', purchaseOrderController.getSupplierName);
 
-router.get('/getSupplierInformation', purchaseOrderController.getSupplierInformation)
+router.get('/getSupplierInformation', purchaseOrderController.getSupplierInformation);
 
 router.get('/isSold', purchaseOrderController.isSold);
 
@@ -219,6 +219,8 @@ router.get('/salesPerCustomer', reportController.getSalesPerCustomer);
 
 router.get('/getCustomerInvoices', reportController.getCustomerInvoicesReport);
 
-router.get('/getFilteredCustomerInvoices', reportController.getFilteredCustomerInvoices)
+router.get('/getFilteredCustomerInvoices', reportController.getFilteredCustomerInvoices);
+
+router.get('/getFilteredSalesPerformanceReport', reportController.getFilteredSalesPerformanceReport);
 
 module.exports = router;

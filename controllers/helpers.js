@@ -409,6 +409,22 @@ module.exports = function() {
 		});
 	},
 
+	this.getInvoiceDate = function(_id) {
+		return new Promise((resolve, reject) => {
+			db.findOne(Invoices, {_id: _id}, '', function(result) {
+				resolve (result.date);
+			});
+		});
+	},
+
+	this.checkInvoicePaid = function(_id) {
+		return new Promise((resolve, reject) => {
+			db.findOne(Invoices, {_id: _id}, '', function(result) {
+				resolve (result.statusID);
+			});
+		});
+	},
+
 	this.getInvoiceType = function(typeName) {
 		return new Promise((resolve, reject) => {
 			db.findOne(InvoiceTypes, {type: typeName}, '', function(result) {
