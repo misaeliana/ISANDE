@@ -344,7 +344,7 @@ module.exports = function() {
 		});
 	},
 
-	this.getCustomerInvocies = function(customerID) {
+	this.getCustomerInvoices = function(customerID) {
 		return new Promise((resolve, reject) => {
 			db.findMany (Invoices, {customerID: customerID}, '', function (result) {
 				resolve(result);
@@ -713,5 +713,14 @@ module.exports = function() {
 			}
 			resolve(inventory);
 		});
+	},
+
+	this.getPurchases = function () {
+		return new Promise((resolve, reject) => {
+			//received or incomplete
+			db.findMany(Purchases, {$or:[{statusID:"618f654646c716a39100a80c"}, {statusID:"618f653746c716a39100a80b"}]}, '', function(result) {
+				resolve(result)
+			})
+		})
 	}
 };

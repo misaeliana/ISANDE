@@ -211,4 +211,14 @@ router.get('/inventoryPerformanceReport', reportController.getInventoryPerforman
 
 router.get('/salesPerformanceReport', reportController.getSalesPerformanceReport);
 
+router.get('/purchaseReport', reportController.getPurchaseReports);
+
+router.get('/getFilteredPurchaseReport', reportController.getFilteredPurchaseReport);
+
+router.get('/salesPerCustomer', reportController.getSalesPerCustomer);
+
+router.get('/getCustomerInvoices', reportController.getCustomerInvoicesReport);
+
+router.get('/getFilteredCustomerInvoices', reportController.getFilteredCustomerInvoices)
+
 module.exports = router;

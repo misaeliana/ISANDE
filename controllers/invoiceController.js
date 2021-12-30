@@ -291,7 +291,7 @@ const invoiceController = {
             
             if (customerIDs != null) {
                 for (var i = 0; i < customerIDs.length; i++) {
-                    var customerInvoices = await getCustomerInvocies(customerIDs[i]._id);
+                    var customerInvoices = await getCustomerInvoices(customerIDs[i]._id);
                     //console.log("Customer invocies " + customerInvoices);
                     if (customerInvoices != null) {
                         for (var j = 0; j < customerInvoices.length; j++) {

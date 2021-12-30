@@ -5,6 +5,10 @@ const Invoices = require('../models/InvoiceModel.js');
 
 const InvoiceItems = require('../models/InvoiceItemsModel.js');
 
+const Purchases = require('../models/PurchasesModel.js');
+
+const PurchasedItems = require('../models/PurchasedItemsModel.js');
+
 require('../controllers/helpers.js')();
 
 const reportController = {
@@ -179,6 +183,128 @@ const reportController = {
         }
 
         getInformation();
+    },
+
+    getPurchaseReports: function(req, res) {
+        async function getInfo() {
+
+            var today = new Date().toLocaleString('en-US');
+            var temp_purchases = await getPurchases();
+            var purchases = []
+            var total =0
+
+            for (var i=0; i<temp_purchases.length; i++) {
+                var dateMade = new Date(temp_purchases[i].date);
+                var dateReceived = new Date(temp_purchases[i].dateReceived)
+                var purchase = {
+                    dateMade: dateMade.getMonth() + 1 + "/" + dateMade.getDate() + "/" + dateMade.getFullYear(),
+                    poNumber: temp_purchases[i].purchaseOrderNumber,
+                    supplier: await getSupplierName(temp_purchases[i].supplierID),
+                    dateReceived: dateReceived.getMonth() + 1 + "/" + dateReceived.getDate() + "/" + dateReceived.getFullYear(),
+                    amountPaid: temp_purchases[i].total.toLocaleString('en-US')
+                }
+                purchases.push(purchase)
+                total += parseFloat(temp_purchases[i].total)
+            }
+            total = total.toLocaleString('en-US')
+            
+            res.render('purchasesReport', {today, purchases, total})
+        }
+
+        getInfo();
+    },
+
+    getFilteredPurchaseReport: function(req, res) {
+        var startDate = new Date(req.query.startDate);
+        var endDate = new Date(req.query.endDate);
+        startDate.setHours(0,0,0,0);
+        endDate.setHours(0,0,0,0);
+
+        async function getInfo() {
+            var today = new Date().toLocaleString('en-US');
+            var temp_purchases = await getPurchases()
+            var purchases = []
+
+            for (var i=0; i<temp_purchases.length; i++) {
+                var dateMade = new Date(temp_purchases[i].date);
+                var dateReceived = new Date(temp_purchases[i].dateReceived)
+                dateMade.setHours(0,0,0,0);
+                
+                if (!(startDate > dateMade || dateMade > endDate)) {
+                    var purchase = {
+                        dateMade: dateMade.getMonth() + 1 + "/" + dateMade.getDate() + "/" + dateMade.getFullYear(),
+                        poNumber: temp_purchases[i].purchaseOrderNumber,
+                        supplier: await getSupplierName(temp_purchases[i].supplierID),
+                        dateReceived: dateReceived.getMonth() + 1 + "/" + dateReceived.getDate() + "/" + dateReceived.getFullYear(),
+                        amountPaid: temp_purchases[i].total
+                        };
+                    purchases.push(purchase);
+                }
+            }
+            res.send(purchases)
+        }
+
+        getInfo()
+    },
+
+    getSalesPerCustomer: function(req, res) {
+        var today = new Date().toLocaleString('en-US');
+        var total = 0
+
+        res.render('salesPerCustomerReport', {today, total});
+    },
+
+    getCustomerInvoicesReport: function(req, res) {
+
+        async function getInfo() {
+            var customer = await getCustomerIDs(req.query.customerName)
+            var invoices = []
+
+            for (var i=0; i<customer.length; i++) {
+                var invoice = await getCustomerInvoices(customer[i]._id)
+                invoices.push(invoice)
+            }
+
+            res.send(invoices[1])
+        }
+
+        getInfo();
+    },
+
+    getFilteredCustomerInvoices: function(req, res) {
+        var startDate = new Date(req.query.startDate);
+        var endDate = new Date(req.query.endDate);
+        startDate.setHours(0,0,0,0);
+        endDate.setHours(0,0,0,0);
+
+        async function getInfo() {
+            var customer = await getCustomerIDs(req.query.customerName)
+            var temp_invoices = []
+
+            for (var i=0; i<customer.length; i++) {
+                var invoice = await getCustomerInvoices(customer[i]._id)
+                temp_invoices.push(invoice)
+            }
+
+            temp_invoices = temp_invoices[1]
+            var invoices = []
+
+            for (var j=0; j<temp_invoices.length; j++) {
+                var date= new Date(temp_invoices[j].date);
+                date.setHours(0,0,0,0);
+
+                if (!(startDate > date || date > endDate)) {
+                    invoices.push(temp_invoices[j])
+                }
+            }
+ 
+            //var invoices = []
+            console.log(invoices)
+
+            res.send(invoices)
+        }
+
+        getInfo();
     }
 };
 

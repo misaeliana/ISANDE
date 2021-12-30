@@ -61,7 +61,7 @@ const customerController = {
 
 		async function getCustomerInformation() {
 			var customerInfo = await getCustomerInfo(req.params.customerID)
-			var temp_customerInvoices = await getCustomerInvocies(req.params.customerID)
+			var temp_customerInvoices = await getCustomerInvoices(req.params.customerID)
 			var customerInvoices = [] 
 			for (var i=0; i<temp_customerInvoices.length; i++) {
 				var temp_date = new Date(temp_customerInvoices[i].date)
