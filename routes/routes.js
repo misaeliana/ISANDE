@@ -19,6 +19,13 @@ const manualCountController = require('../controllers/manualCountController.js')
 
 const reportController = require('../controllers/reportController.js');
 
+const loginController = require('../controllers/loginController.js');
+
+//--ACCOUNT--
+router.get('/login', loginController.getLogin);
+
+router.post('/checkLogIn', loginController.checkLogIn);
+
 //--CUSTOMER--
 
 router.get('/customers', customerController.getCustomerList);

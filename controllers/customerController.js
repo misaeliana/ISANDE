@@ -146,19 +146,19 @@ const customerController = {
 		function getPreviousAccountPayment(invoiceID) {
 			return new Promise((resolve, reject) => {
 				db.findMany(AccountPayments,{invoiceID:invoiceID}, 'amountPaid', function(result) {
-					var totalPaid = 0
+					var totalPaid = 0;
 					for (var j=0; j<result.length; j++)
-						totalPaid += result.amountPaid
-					resolve (totalPaid)
-				})
-			})
+						totalPaid += result.amountPaid;
+					resolve (totalPaid);
+				});
+			});
 		}	
 
 		function updateInvoiceStatus(invoiceID)	{
 			//update status to paid
 			db.updateOne(Invoices, {_id:invoiceID}, {statusID:"619785b0d9a967328c1e8fa6"}, function(flag){
 				if (flag) { }
-			})
+			});
 		}
 
 		async function pay() {
@@ -173,30 +173,30 @@ const customerController = {
 
 				//can still pay for other invoices
 				if (possiblePayable <= amountPaid) {
-					amountPaid -= possiblePayable
-					amountPaidForInvoice = possiblePayable
-					updateInvoiceStatus(unpaidInvoices[i]._id)
+					amountPaid -= possiblePayable;
+					amountPaidForInvoice = possiblePayable;
+					updateInvoiceStatus(unpaidInvoices[i]._id);
 				}
 
 				//amount is already exhausted for the invoice
 				else {
-					amountPaidForInvoice = amountPaid
-					amountPaid = 0
+					amountPaidForInvoice = amountPaid;
+					amountPaid = 0;
 				}
 
 				var newPayment = {
 					invoiceID: unpaidInvoices[i]._id,
 					datePaid: new Date(),
 					amountPaid: amountPaidForInvoice
-				}
+				};
 
 				db.insertOne(AccountPayments, newPayment, function(flag) {
-				})
+				});
 			}
-			res.sendStatus(200)
+			res.sendStatus(200);
 		}
 
-		pay()
+		pay();
 	},
 
 	checkPendingInvoices: function (req, res) {
@@ -208,13 +208,13 @@ const customerController = {
 			for (var i=0; i<invoices.length && !pending; i++) {
 				//status is pending or partial
 				if (invoices[i].statusID == "619785d78094faf8c10d1484" || invoices[i].statusID == "61b2df709f9cd4edddf21d68")
-					pending = true
+					pending = true;
 			}
 
 			if (pending)
-				res.send(true)
+				res.send(true);
 			else
-				res.send(false)
+				res.send(false);
 		}
 
 

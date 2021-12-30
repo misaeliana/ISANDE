@@ -47,7 +47,17 @@ const AccountPayments = require('../models/OnAccountPaymentModel.js');
 
 const Shrinkages = require('../models/ShrinkagesModel.js');
 
+const bcrypt = require('bcrypt');
+
 module.exports = function() {
+	this.checkPassword = function(password, employeePassword) {
+		return new Promise((resolve, reject) => {
+			bcrypt.compare(password, employeePassword, function(err, equal) {
+				resolve(equal);	
+			});
+		});
+	},
+
 	this.getAllPositions = function() {
 		return new Promise((resolve, reject) => {
 			db.findMany(EmployeePositions, {}, '_id position', function (result) {
@@ -79,6 +89,15 @@ module.exports = function() {
 			});
 		});
 	},
+
+	this.getEmployeeInfoFromUsername = function(username) {
+		return new Promise((resolve, reject) => {
+			db.findOne(Employees, {username: username}, '', function(result) {
+				resolve (result);
+			});
+		});
+	},
+	
 
 	this.getEmployeeName = function(employeeID) {
 		return new Promise((resolve, reject) => {

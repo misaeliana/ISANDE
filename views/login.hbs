@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Log In </title>
+        <meta name="description" content="Log In">
+        <meta name="keyword" content="Moderna, Log In">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="../css/login.css">
+    </head>
+    <body>
+        <div class="logo"><img src="../images/Moderno.png" alt="Moderno Logo" width="300" height="120"></div>
+        <div class="container">
+            <h1> LOG IN </h1>
+            <label for="username"> Username </label> <br>
+            <input type="text" class="form-control" id="username" name="username"> <br>
+            <label for="password"> Passsword </label> <br>
+            <input type="password" class="form-control" id="password" name="password"> <br>
+            <button type="button" class="btn btn-default" id="login">Log In</button>
+        </div>
+        <script> 
+            $(document).ready(function() {
+
+                $('#login').click(function() {
+                    var username = $('#username').val();
+                    var password = $('#password').val();
+
+                    console.log(username + " " + password);
+
+                    if (username == null || username == "" || password == null || password == "" ){
+                        alert("Username or password should not be null!");
+                    }
+                    else{
+                        $.ajax({
+                            url: "/checkLogIn",              
+                            type: "POST",
+                            data: {'username': username,'password': password},
+                            async:false,
+                            success: function(result){
+                                if(result.redirect != null){
+
+                                    if(result.redirect == '/login'){
+                                        alert("Username and password do not match!");
+                                    }
+                                    window.location = result.redirect;
+                                }
+                                else{
+                                }
+                            }
+                        });           
+                    }
+                });
+            });
+        </script>    
+    </body>
+</html>
