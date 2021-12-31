@@ -17,7 +17,9 @@
             <label for="username"> Username </label> <br>
             <input type="text" class="form-control" id="username" name="username"> <br>
             <label for="password"> Passsword </label> <br>
-            <input type="password" class="form-control" id="password" name="password"> <br>
+            <input type="password" class="form-control" id="password" name="password"> 
+            <p class="error" id="error" style="margin-top: 3px; margin-bottom: 3px; color: red"></p>
+            <br>
             <button type="button" class="btn btn-default" id="login">Log In</button>
         </div>
         <script> 
@@ -27,30 +29,21 @@
                     var username = $('#username').val();
                     var password = $('#password').val();
 
-                    console.log(username + " " + password);
-
-                    if (username == null || username == "" || password == null || password == "" ){
-                        alert("Username or password should not be null!");
-                    }
-                    else{
-                        $.ajax({
-                            url: "/checkLogIn",              
-                            type: "POST",
-                            data: {'username': username,'password': password},
-                            async:false,
-                            success: function(result){
-                                if(result.redirect != null){
-
-                                    if(result.redirect == '/login'){
-                                        alert("Username and password do not match!");
-                                    }
-                                    window.location = result.redirect;
-                                }
-                                else{
-                                }
+                    $.ajax({
+                        url: "/checkLogIn",              
+                        type: "POST",
+                        data: {'username': username,'password': password},
+                        async: false,
+                        success: function(result){
+                            if(result.redirect != null){
+                                $("#error").text("");
+                                window.location = result.redirect;
                             }
-                        });           
-                    }
+                            else{
+                                $("#error").text("Incorrect username or password.");
+                            }
+                        }
+                    });           
                 });
             });
         </script>    

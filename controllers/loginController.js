@@ -62,10 +62,10 @@ const loginController = {
 				}
 				else
 				{
-					alert("ERROR");
-					//redirect to login error page
-						//res.send({redirect: '/login'});
+					res.send(null);
 				}
+			} else {
+				res.send(null);
 			}
 		}
 		redirect();
