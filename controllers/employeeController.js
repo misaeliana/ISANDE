@@ -5,6 +5,8 @@ const Employees = require('../models/EmployeeModel.js');
 
 const EmployeePositions = require('../models/EmployeePositionsModel.js');
 
+const bcrypt = require('bcrypt');
+
 require('../controllers/helpers.js');
 
 const employeeController = {
@@ -34,18 +36,23 @@ const employeeController = {
 	},
 
 	postEmployeeInformation: function(req, res) {
-		var employee = {
-			name: req.body.name,
-			username:req.body.username,
-			password: req.body.password,
-			number: req.body.number,
-			positionID: req.body.position,
-			informationStatusID: "618a7830c8067bf46fbfd4e4"
-		};
+		var saltRounds = 10;
 
-		db.insertOne(Employees, employee, function (flag) {
-			if (flag)
-				res.sendStatus(200)
+		bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
+		
+			var employee = {
+				name: req.body.name,
+				username:req.body.username,
+				password: hash,
+				number: req.body.number,
+				positionID: req.body.position,
+				informationStatusID: "618a7830c8067bf46fbfd4e4"
+			};
+
+			db.insertOne(Employees, employee, function (flag) {
+				if (flag)
+					res.sendStatus(200);
+			});
 		});
 
 	},
