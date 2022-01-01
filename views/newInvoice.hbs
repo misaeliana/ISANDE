@@ -98,17 +98,28 @@
                                 </div>
                                 <div class="modal-body">
                                     <form id="add-new-customer">
-                                        <label for="new-customer-name">Customer Name</label> <input id="new-customer-name" type="text"><br>
-                                        <p class="error" id="error-new-customer-name" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                                        <label for="new-contact-number">Contact Number</label> <input id="new-contact-number" type="number"><br>
-                                        <p class="error" id="error-contact-number" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                                        <label for="new-address">Address</label> <input id="new-address" type="text"><br>
-                                        <p class="error" id="error-address" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                                        <div class="flex-display">
+                                            <label for="new-customer-name" class="modal-label">Customer Name</label> 
+                                            <input id="new-customer-name"class="modal-input" type="text"><br>
+                                        </div>
+                                        <p class="error modal-error" id="error-new-customer-name"></p>
+                                        
+                                        <div class="flex-display">
+                                            <label for="new-contact-number" class="modal-label">Contact Number</label> 
+                                            <input id="new-contact-number" class="modal-input" type="number"><br>
+                                        </div>
+                                        <p class="error modal-error" id="error-contact-number"></p>
+                                        
+                                        <div class="flex-display">
+                                            <label for="new-address" class="modal-label">Address</label> 
+                                            <input id="new-address" class="modal-input" type="text"><br>
+                                        </div>
+                                        <p class="error modal-error" id="error-address"></p>
                                     </form>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button type="button" id = "save-cust" class="btn btn-primary">Add Customer</button>
+                                    <button type="button" class="modal-btn-grey" data-dismiss="modal">Close</button>
+                                    <button type="button" id = "save-cust" class="modal-btn-light-blue">Add</button>
                                 </div>
                             </div>
                         </div>

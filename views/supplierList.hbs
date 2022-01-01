@@ -61,27 +61,46 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h3 class="modal-title" id="exampleModalLongTitle">Add Supplier</h3>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
-                        </button>
+                        </button>-->
                     </div>
                     <div class="modal-body">
                         <form id="add-new-supplier">
-                            <label for="supplier-name">Supplier Name</label> <input id="supplier-name" type="text"><br>
-                            <p class="error" id="error-new-supplier-name" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                            <label for="contact-person">Contact Person</label> <input id="contact-person" type="text"><br>
-                              <p class="error" id="error-contact-person" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                            <label for="contact-number">Contact Number</label> <input id="contact-number" type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;"><br>
-                             <p class="error" id="error-contact-number" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                            <label for="email">Email Address</label> <input id="email" type="text"><br>
-                              <p class="error" id="error-email" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                            <label for="address">Address</label> <input id="address" type="text"><br>
-                             <p class="error" id="error-address" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <div class="flex-display">
+                                <label for="supplier-name" class="modal-label">Supplier Name</label> 
+                                <input id="supplier-name" class="modal-input" type="text"><br>
+                            </div>
+                            <p class="error modal-error" id="error-new-supplier-name" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            
+                            <div class="flex-display">
+                                <label for="contact-person" class="modal-label">Contact Person</label> 
+                                <input id="contact-person" class="modal-input" type="text"><br>
+                            </div>
+                            <p class="error modal-error" id="error-contact-person" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            
+                            <div class="flex-display">
+                                <label for="contact-number" class="modal-label">Contact Number</label> 
+                                <input id="contact-number" class="modal-input" type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;"><br>   
+                            </div>
+                            <p class="error modal-error" id="error-contact-number" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            
+                            <div class="flex-display">
+                                <label for="email" class="modal-label">Email Address</label> 
+                                <input id="email" class="modal-input" type="text"><br>
+                            </div>
+                            <p class="error modal-error" id="error-email" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            
+                            <div class="flex-display">
+                                <label for="address" class="modal-label">Address</label> 
+                                <input id="address" class="modal-input" type="text"><br>
+                            </div>
+                            <p class="error modal-error" id="error-address" style="margin-top: 3px; margin-bottom: 3px;"></p>
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="btn-add-new-supplier">Add Supplier</button>
+                        <button type="button" class="modal-btn-grey" data-dismiss="modal">Close</button>
+                        <button type="button" class="modal-btn-light-blue" id="btn-add-new-supplier">Save</button>
               
                     </div>
                 </div>

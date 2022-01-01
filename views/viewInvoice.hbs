@@ -199,17 +199,20 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h3 class="modal-title" id="exampleModalLongTitle">New Payment</h3>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
-                                </button>
+                                </button>-->
                             </div>
                             <div class="modal-body">
-                                <label for="input-new-payment">Amount</label> 
-                                <input type="number" id="input-new-payment">
-                                <p id="error-amount" class ="error" style="display:none">Amount inputted is greater than total amount due</p>
+                                <div class="flex-display">
+                                    <label for="input-new-payment" class="modal-label">Amount</label> 
+                                    <input type="number" class="modal-input" style="text-align: right;" id="input-new-payment">
+                                </div>
+                                <p id="error-amount modal-error" class ="error" style="display:none">Amount inputted is greater than total amount due</p>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-primary" id="btn-save-payment">Save</button>
+                                <button type="button" class="modal-btn-grey" data-dismiss="modal">Close</button>
+                                <button type="button" class="modal-btn-light-blue" id="btn-save-payment">Save</button>
                             </div>
                         </div>
                         </div>

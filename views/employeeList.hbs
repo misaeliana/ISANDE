@@ -62,28 +62,47 @@
                     </div>
                     <div class="modal-body">
                         <form id="add-new-employee">
-                            <label for="employee-name">Employee Name</label> <input id="employee-name" type="text"><br>
-                            <p class="error" id="error-new-employee-name" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                            <label for="employee-username">Username</label> <input id="employee-username" type="text"><br>
-                            <p class="error" id="error-new-employee-username" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                            <label for="employee-password">Password</label> <input id="employee-password" type="text"><br>                            
-                            <p class="error" id="error-employee-password" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                            <label for="Contact-number">Contact Number</label> <input id="contact-number" type="number"><br>                            
-                            <p class="error" id="error-contact-number" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                            <label for="roler">Position</label> 
-                            <select class="dropdown" id="dropdown-employee-position">
-                                <option value="no-selected">--Select Position--</option>
-                                {{#each positions}}
-                                    <option value="{{_id}}">{{position}}</option>
-                                {{/each}}
-                            </select>
-                            <p class="error" id="error-employee-position" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <div class="flex-display">
+                                <label for="employee-name" class="modal-label">Employee Name</label> 
+                                <input id="employee-name" type="text" class="modal-input"><br>
+                            </div>
+                            <p class="error modal-error" id="error-new-employee-name"></p>
+
+                            <div class="flex-display">
+                                <label for="employee-username" class="modal-label">Username</label> 
+                                <input id="employee-username" class="modal-input" type="text"><br>
+                            </div>
+                            <p class="error modal-error" id="error-new-employee-username"></p>
+
+                            <div class="flex-display">  
+                                <label for="employee-password" class="modal-label">Password</label> 
+                                <input id="employee-password" type="text" class="modal-input"><br>                            
+                            </div>
+                            <p class="error modal-error" id="error-employee-password"></p>
+                            
+                            <div class="flex-display"> 
+                                <label for="Contact-number" class="modal-label">Contact Number</label> 
+                                <input id="contact-number" type="number" class="modal-input"><br>
+                            </div>                            
+                            <p class="error modal-error" id="error-contact-number"></p>
+
+                            <div class="flex-display">
+                                <label for="roler" class="modal-label">Position</label> 
+                                <select class="dropdown modal-float modal-dropdown" id="dropdown-employee-position" style="height: 27px;">
+                                    <option value="no-selected">--Select Position--</option>
+                                    {{#each positions}}
+                                        <option value="{{_id}}">{{position}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                            <p class="error modal-error" id="error-employee-position"></p>
+
                             <br>
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="btn-add-new-employee">Save</button>
+                        <button type="button" class="modal-btn-grey" data-dismiss="modal">Close</button>
+                        <button type="button" class="modal-btn-light-blue" id="btn-add-new-employee">Save</button>
                     </div>
                 </div>
                 </div>

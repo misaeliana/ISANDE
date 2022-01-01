@@ -44,7 +44,7 @@
                         <input type="text" placeholder="Search" name="search" id="search-field">
                     </div>
                     <div class= "div-button-end">
-                        <div class="new-customer"><button id="btn-new-customer" class="btn btn-primary" data-toggle="modal" data-target="#modal-add-customer">+ New Customer</button></div>
+                        <div class="new-customer"><button id="btn-new-customer" class="btn-light-blue" data-toggle="modal" data-target="#modal-add-customer">+ New Customer</button></div>
                     </div>
                     <div style="height: 50px"></div>
                 </div>
@@ -62,17 +62,28 @@
                     </div>
                     <div class="modal-body">
                         <form id="add-new-customer">
-                            <label for="Customer-name">Customer Name</label> <input id="customer-name" type="text"><br>
-                            <p class="error" id="error-new-customer-name" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                            <label for="contact-number">Contact Number</label> <input id="contact-number" type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;"><br>
-                            <p class="error" id="error-contact-number" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                            <label for="address">Address</label> <input id="address" type="text"><br>
-                            <p class="error" id="error-address" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <div class="flex-display">
+                                <label for="Customer-name" class="modal-label">Customer Name</label> 
+                                <input id="customer-name" type="text" class="modal-input"><br>
+                            </div>
+                            <p class="error modal-error" id="error-new-customer-name"></p>
+                            
+                            <div class="flex-display">
+                                <label for="contact-number" class="modal-label">Contact Number</label> 
+                                <input id="contact-number" class="modal-input" type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;"><br>
+                            </div>
+                            <p class="error modal-error" id="error-contact-number"></p>
+                            
+                            <div class="flex-display">
+                                <label for="address" class="modal-label">Address</label> 
+                                <input id="address" class="modal-input" type="text"><br>
+                            </div>
+                            <p class="error modal-error" id="error-address"></p>
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="btn-add-new-customer">Save</button>
+                        <button type="button" class="modal-btn-grey" data-dismiss="modal">Close</button>
+                        <button type="button" class="modal-btn-light-blue" id="btn-add-new-customer">Save</button>
                     </div>
                 </div>
                 </div>
