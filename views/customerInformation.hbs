@@ -68,13 +68,13 @@
                                 <p class="error" id="error-new-customer-name" style="margin-top: 3px; margin-bottom: 3px;"></p>-->
                                 <div class="flex-display">
                                     <label for="contact-number" class="modal-label">Contact Number</label> 
-                                    <input id="contact-number" class="modal-input" type="number" value="{{customerInfo.number}}" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;"><br>
+                                    <input id="contact-number" class="modal-input form-control" type="number" value="{{customerInfo.number}}" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;"><br>
                                 </div>
                                 <p class="error modal-error" id="error-contact-number"></p>
                                 
                                 <div class="flex-display">
                                     <label for="address" class="modal-label">Address</label> 
-                                    <input id="address" class="modal-input" type="text" value="{{customerInfo.address}}"><br>
+                                    <input id="address" class="modal-input form-control" type="text" value="{{customerInfo.address}}"><br>
                                 </div>
                                 <p class="error modal-error" id="error-address"></p>
                             </form>
@@ -143,7 +143,7 @@
                             <div class="modal-body">
                                 <div class="flex-display">
                                     <label for="input-new-payment" class="modal-label">Amount</label> 
-                                    <input type="number" id="input-new-payment" class="modal-input" style="text-align: right;">
+                                    <input type="number" id="input-new-payment" class="modal-input form-control" style="text-align: right;">
                                 </div>
                                 <p id="error-amount" class ="error" style="display:none">Amount inputted cannot be greater than total amount due.</p>
                             </div>

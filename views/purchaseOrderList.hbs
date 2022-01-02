@@ -37,10 +37,8 @@
                 <h1 class="bold" style="padding-bottom: 15px;"> Purchase Orders </h1>
                 <div> 
                     <div class="search" style="width: 40%">
-                        <form> <!-- indicate action -->
-                        <input type="text" placeholder="Search" name="search" id="search-field">
-                        <!--<button type="submit" id="search-button"><i class="fa fa-search" ></i></button>-->
-                        </form>
+                            <input type="text" placeholder="Search" name="search" id="search-field">
+                            <button type="submit" id="search-button"><i class="fa fa-search" ></i></button>
                     </div>
                    
                     <div class="btn-new-PO"><button class="btn btn-primary" id="btn-new-PO" style="float: right;">+ New PO</button></div>
@@ -75,10 +73,10 @@
                         {{#each purchases}}
                             <tr class="link" style="cursor: pointer" data-href="/purchaseOrder/{{poID}}">
                                 <td>{{date}}</td>
-                                <td>{{poNumber}}</td>
+                                <td style="text-align: right">{{poNumber}}</td>
                                 <td>{{supplier}}</td>
-                                <td>{{amount}}</td>
-                                <td class="btn-status btn-{{status}} status-id">{{status}}</td>
+                                <td style="text-align: right">{{amount}}</td>
+                                <td><button class="btn-status btn-{{status}} status-id">{{status}}</button></td>
                             </tr>
                         {{/each}}
                     </tbody>
@@ -99,7 +97,8 @@
 
                 $('#dropdown-po-status').change(function() {
                     $('#table-po tr').show();
-                    var filter = $('#dropdown-po-status').val()
+                    var filter = $('#dropdown-po-status').val();
+                     $('#search-field').val(null);
                     
                     $('#table-po > tbody > tr').each(function(index) {
                         var statusID = $(this).children('.btn-status').text()
@@ -108,9 +107,22 @@
                     })
                 })
 
-                $('#search-field').keyup(function() {
+                /*$('#search-field').keyup(function() {
                      $('#table-po tr').show();
                     var searchItem = $(this).val().toLowerCase();
+                 
+                    $('#table-po > tbody > tr').each(function(index) {
+                        var poNumber = $(this).children('td:eq(1)').text();
+                        var supplierName = $(this).children('td:eq(2)').text().toLowerCase();
+
+                        if (!poNumber.includes(searchItem) && !supplierName.includes(searchItem))
+                            $(this).toggle();
+                    })
+                })*/
+
+                $('#search-button').click(function() {
+                    $('#table-po tr').show();
+                    var searchItem = $('#search-field').val().toLowerCase();
                  
                     $('#table-po > tbody > tr').each(function(index) {
                         var poNumber = $(this).children('td:eq(1)').text();

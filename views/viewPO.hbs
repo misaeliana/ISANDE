@@ -82,13 +82,10 @@
                         <div class="override-label"> Contact Number </div> 
                         <div class="label-content" id="view-PO-contact-number">{{supplier.number}}</div>
                     </div>
-                    <div class="label-big-container" style="height: 100px"> 
-                        <div class="label-wide">
-                            <div class="navbar-logo">Address</div> 
-                        </div>
-                        <div class="label-wide-content" id="view-PO-address-content"style="height: 50px">{{supplier.address}}</div>
-                    </div> 
-                    
+                    <div class="label-container">
+                        <div class="override-label"> Address </div> 
+                        <div class="label-content" id="view-PO-address-content">{{supplier.address}}</div>
+                    </div>
                 </div>
         </div> 
 
@@ -111,11 +108,11 @@
                             {{#each items}}
                                 <tr>
                                     <td class="classItemDescription">{{itemDescription}}</td>
-                                    <td class="classQty">{{quantity}}</td>
+                                    <td class="classQty" style="text-align: right;">{{quantity}}</td>
                                     <td class="classUnit">{{unitName}}</td>
-                                    <td>{{unitPrice}}</td>
-                                    <td>{{quantityReceived}}</td>
-                                    <td>{{amount}}</td>  
+                                    <td style="text-align: right;">₱ {{unitPrice}}</td>
+                                    <td style="text-align: right;">{{quantityReceived}}</td>
+                                    <td style="text-align: right;">₱ {{amount}}</td>  
                                 </tr>
                             {{/each}}
                         </tbody>

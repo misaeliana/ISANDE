@@ -88,25 +88,25 @@
 
                                 <div class="flex-display">
                                     <label for="contact-person" class="modal-label">Contact Person</label> 
-                                    <input id="contact-person" class="modal-input" type="text" value="{{supplierInfo.contactPerson}}"><br>
+                                    <input id="contact-person" class="modal-input form-control" type="text" value="{{supplierInfo.contactPerson}}"><br>
                                 </div>
                                 <p class="error modal-error" id="error-contact-person" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
                                 <div class="flex-display">
                                     <label for="contact-number" class="modal-label">Contact Number</label> 
-                                    <input id="contact-number" class="modal-input" type="number" value="{{supplierInfo.number}}" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;"><br>
+                                    <input id="contact-number" class="modal-input form-control" type="number" value="{{supplierInfo.number}}" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;"><br>
                                 </div>
                                 <p class="error modal-error" id="error-contact-number" style="margin-top: 3px; margin-bottom: 3px;"></p>
                                 
                                 <div class="flex-display">
                                     <label for="email" class="modal-label">Email</label> 
-                                    <input id="email" class="modal-input" type="text" value="{{supplierInfo.email}}"><br>
+                                    <input id="email" class="modal-input form-control" type="text" value="{{supplierInfo.email}}"><br>
                                 </div>
                                 <p class="error modal-error" id="error-email" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
                                 <div class="flex-display">
                                     <label for="address" class="modal-label">Address</label> 
-                                    <input id="address" class="modal-input" type="text" value="{{supplierInfo.address}}"><br>
+                                    <input id="address" class="modal-input form-control" type="text" value="{{supplierInfo.address}}"><br>
                                 </div>
                                 <p class="error modal-error" id="error-address" style="margin-top: 3px; margin-bottom: 3px;"></p>
                             </form>
@@ -157,13 +157,13 @@
                         <form id="add-new-item">
                             <div class="flex-display">
                                 <label for="description" class="modal-label">Description</label> 
-                                <input id="description" class="modal-input" type="text"><br>
+                                <input id="description" class="modal-input form-control" type="text"><br>
                             </div>
                             <p class="error modal-error" id="error-description"></p>
 
                             <div class="flex-display">
                                 <label for="dropdown-category" class="modal-label">Category</label>
-                                <select class="dropdown modal-dropdown" id="dropdown-category" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
+                                <select class="form-control" id="dropdown-category">
                                     <option value="no-selected" selected>--Select Category--</option>
                                     {{#each itemCategories}}
                                         <option value={{_id}}>{{category}}</option>
@@ -174,7 +174,7 @@
 
                             <div class="flex-display">
                                 <label for="dropdown-unit" class="modal-label">Unit</label>
-                                <select class="dropdown modal-dropdown" id="dropdown-unit" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
+                                <select class="form-control" id="dropdown-unit">
                                     <option value="no-selected" selected>--Select Unit--</option>
                                     {{#each units}}
                                         <option value={{_id}}>{{unit}}</option>
@@ -185,19 +185,19 @@
 
                             <div class="flex-display">
                                 <label for="reorder-level" class="modal-label">Reorder Level</label> 
-                                <input id="reorder-level" style="text-align: right;" class="modal-input" type="number"><br>
+                                <input id="reorder-level" style="text-align: right;" class="modal-input form-control" type="number"><br>
                             </div>
                             <p class="error modal-error" id="error-reorder-level"></p>
 
                             <div class="flex-display">
                                 <label for="EOQ" class="modal-label">EOQ</label> 
-                                <input id="EOQ" style="text-align: right;" class="modal-input" type="number"><br>
+                                <input id="EOQ" style="text-align: right;" class="modal-input form-control" type="number"><br>
                             </div>
                             <p class="error modal-error" id="error-EOQ"></p>
 
                             <div class="flex-display">
                                 <label for="selling-price" class="modal-label">Selling Price</label> 
-                                <input id="selling-price" style="text-align: right;" class="modal-input" type="number"><br>
+                                <input id="selling-price" style="text-align: right;" class="modal-input form-control" type="number"><br>
                             </div>
                             <p class="error modal-error" id="error-selling-price"></p>
                         </form>

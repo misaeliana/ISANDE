@@ -115,7 +115,7 @@
 
                             <div class="flex-display">
                                 <label for="dropdown-category" class="modal-label">Type</label>
-                                <select class="dropdown modal-dropdown" id="dropdown-category" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
+                                <select class="form-control" id="dropdown-category">
                                     <option value="no-selected" selected>Select Type</option>
                                     {{#each itemCategories}}
                                             <option value={{_id}}>{{category}}</option>
@@ -126,7 +126,7 @@
 
                             <div class="flex-display">
                                 <label for="dropdown-unit" class="modal-label">Unit</label>
-                                <select class="dropdown modal-dropdown" id="dropdown-unit" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
+                                <select class="form-control" id="dropdown-unit">
                                     <option value="no-selected" selected>Select Unit</option>
                                     {{#each units}}
                                         <option value={{_id}}>{{unit}}</option>
@@ -137,19 +137,19 @@
 
                             <div class="flex-display">
                                 <label for="reorder-level" class="modal-label">Reorder Level</label> 
-                                <input id="reorder-level" class="modal-input" style="text-align: right;" type="number" value="{{itemInfo.reorderLevel}}"><br>                               
+                                <input id="reorder-level" class="modal-input form-control" style="text-align: right;" type="number" value="{{itemInfo.reorderLevel}}"><br>                               
                             </div>
                             <p class="error modal-error" id="error-reorder-level"></p>
 
                             <div class="flex-display">
                                 <label for="EOQ" class="modal-label">EOQ</label> 
-                                <input id="EOQ" class="modal-input" style="text-align: right;" type="number" value="{{itemInfo.EOQ}}"><br>
+                                <input id="EOQ" class="modal-input form-control" style="text-align: right;" type="number" value="{{itemInfo.EOQ}}"><br>
                             </div>
                             <p class="error modal-error" id="error-EOQ"></p>
 
                             <div class="flex-display">
                                 <label for="selling-price" class="modal-label">Selling Price</label> 
-                                <input id="selling-price" style="text-align: right;" class="modal-input" type="number" value="{{itemInfo.sellingPrice}}"><br>
+                                <input id="selling-price" style="text-align: right;" class="modal-input form-control" type="number" value="{{itemInfo.sellingPrice}}"><br>
                             </div>
                             <p class="error modal-error" id="error-selling-price"></p>
                         </form>

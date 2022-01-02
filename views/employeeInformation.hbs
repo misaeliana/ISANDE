@@ -72,25 +72,25 @@
                                 <p class="error" id="error-employee-name" style="margin-top: 3px; margin-bottom: 3px;"></p>-->
                                 <div class="flex-display">
                                     <label for="employee-username" class="modal-label">Username</label> 
-                                    <input id="employee-username" class="modal-input" type="text" value="{{employeeInfo.username}}"><br>
+                                    <input id="employee-username" class="modal-input form-control" type="text" value="{{employeeInfo.username}}"><br>
                                 </div>
                                 <p class="error modal-error" id="error-employee-username"></p>
                                 
                                 <div class="flex-display">
                                     <label for="employee-password" class="modal-label">Password</label> 
-                                    <input id="employee-password" class="modal-input" type="text"><br>                            
+                                    <input id="employee-password" class="modal-input form-control" type="text"><br>                            
                                 </div>
                                 <p class="error modal-error" id="error-employee-password"></p>
                                 
                                 <div class="flex-display">
                                     <label for="Contact-number" class="modal-label">Contact Number</label> 
-                                    <input id="contact-number" class="modal-input" type="number" value="{{employeeInfo.number}}"><br> 
+                                    <input id="contact-number" class="modal-input form-control" type="number" value="{{employeeInfo.number}}"><br> 
                                 </div>                           
                                 <p class="error modal-error" id="error-contact-number"></p>
                                 
                                 <div class="flex-display">
                                     <label for="dropdown-employee-position" class="modal-label">Position</label> 
-                                    <select class="dropdown modal-dropdown" id="dropdown-employee-position">
+                                    <select class="form-control" id="dropdown-employee-position">
                                         <option value="no-selected">--Select Position--</option>
                                         {{#each positions}}
                                             <option value="{{_id}}">{{position}}</option>

@@ -46,7 +46,8 @@
                             <input type="text" placeholder="Search" name="search" id="search-field">
                             <button type="submit" id="search-button"><i class="fa fa-search" ></i></button>
                         </form>-->
-                         <input type="text" placeholder="Search" name="search" id="search-field">
+                        <input type="text" placeholder="Search" name="search" id="search-field">
+                        <button type="submit" id="search-button"><i class="fa fa-search" ></i></button>
                     </div>
                     <div class= "div-button-end">
                         <div class="btn-new-supplier"><button id="btn-new-supplier" data-toggle="modal" data-target="#modal-add-supplier">+ New Supplier</button></div>
@@ -69,31 +70,31 @@
                         <form id="add-new-supplier">
                             <div class="flex-display">
                                 <label for="supplier-name" class="modal-label">Supplier Name</label> 
-                                <input id="supplier-name" class="modal-input" type="text"><br>
+                                <input id="supplier-name" class="modal-input form-control" type="text"><br>
                             </div>
                             <p class="error modal-error" id="error-new-supplier-name" style="margin-top: 3px; margin-bottom: 3px;"></p>
                             
                             <div class="flex-display">
                                 <label for="contact-person" class="modal-label">Contact Person</label> 
-                                <input id="contact-person" class="modal-input" type="text"><br>
+                                <input id="contact-person" class="modal-input form-control" type="text"><br>
                             </div>
                             <p class="error modal-error" id="error-contact-person" style="margin-top: 3px; margin-bottom: 3px;"></p>
                             
                             <div class="flex-display">
                                 <label for="contact-number" class="modal-label">Contact Number</label> 
-                                <input id="contact-number" class="modal-input" type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;"><br>   
+                                <input id="contact-number" class="modal-input form-control" type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;"><br>   
                             </div>
                             <p class="error modal-error" id="error-contact-number" style="margin-top: 3px; margin-bottom: 3px;"></p>
                             
                             <div class="flex-display">
                                 <label for="email" class="modal-label">Email Address</label> 
-                                <input id="email" class="modal-input" type="text"><br>
+                                <input id="email" class="modal-input form-control" type="text"><br>
                             </div>
                             <p class="error modal-error" id="error-email" style="margin-top: 3px; margin-bottom: 3px;"></p>
                             
                             <div class="flex-display">
                                 <label for="address" class="modal-label">Address</label> 
-                                <input id="address" class="modal-input" type="text"><br>
+                                <input id="address" class="modal-input form-control" type="text"><br>
                             </div>
                             <p class="error modal-error" id="error-address" style="margin-top: 3px; margin-bottom: 3px;"></p>
                         </form>
@@ -273,9 +274,20 @@
                    }
                 })
 
-                $('#search-field').keyup(function() {
+                /*$('#search-field').keyup(function() {
                      $('#table-supplier tr').show();
                     var searchItem = $(this).val().toLowerCase();
+                 
+                    $('#table-supplier > tbody > tr').each(function(index) {
+                        var supplierName = $(this).children('td:first').text().toLowerCase();
+                        if (!supplierName.includes(searchItem))
+                            $(this).toggle();
+                    })
+                })*/
+
+                $('#search-button').click(function() {
+                     $('#table-supplier tr').show();
+                    var searchItem = $('#search-field').val().toLowerCase();
                  
                     $('#table-supplier > tbody > tr').each(function(index) {
                         var supplierName = $(this).children('td:first').text().toLowerCase();

@@ -42,6 +42,7 @@
                             <button type="submit" id="search-button"><i class="fa fa-search" ></i></button>
                         </form>-->
                         <input type="text" placeholder="Search" name="search" id="search-field">
+                         <button type="submit" style="height: 34px; margin-left: 10px" id="search-button"><i class="fa fa-search"></i></button>                   
                     </div>
                     <div class= "div-button-end">
                         <div class="new-customer"><button id="btn-new-customer" class="btn-light-blue" data-toggle="modal" data-target="#modal-add-customer">+ New Customer</button></div>
@@ -63,20 +64,20 @@
                     <div class="modal-body">
                         <form id="add-new-customer">
                             <div class="flex-display">
-                                <label for="Customer-name" class="modal-label">Customer Name</label> 
-                                <input id="customer-name" type="text" class="modal-input"><br>
+                                <label for="Customer-name" class="modal-label">Name</label> 
+                                <input id="customer-name" type="text" class="modal-input form-control"><br>
                             </div>
                             <p class="error modal-error" id="error-new-customer-name"></p>
                             
                             <div class="flex-display">
                                 <label for="contact-number" class="modal-label">Contact Number</label> 
-                                <input id="contact-number" class="modal-input" type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;"><br>
+                                <input id="contact-number" class="modal-input form-control" type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;"><br>
                             </div>
                             <p class="error modal-error" id="error-contact-number"></p>
                             
                             <div class="flex-display">
                                 <label for="address" class="modal-label">Address</label> 
-                                <input id="address" class="modal-input" type="text"><br>
+                                <input id="address" class="modal-input form-control" type="text"><br>
                             </div>
                             <p class="error modal-error" id="error-address"></p>
                         </form>
@@ -210,9 +211,20 @@
                    }
                 })
 
-                $('#search-field').keyup(function() {
-                     $('#table-customer tr').show();
+                /*$('#search-field').keyup(function() {
+                    $('#table-customer tr').show();
                     var searchItem = $(this).val().toLowerCase();
+                 
+                    $('#table-customer > tbody > tr').each(function(index) {
+                        var customerName = $(this).children('td:first').text().toLowerCase();
+                        if (!customerName.includes(searchItem))
+                            $(this).toggle();
+                    })
+                })*/
+
+                $("#search-button").click(function() {
+                    $('#table-customer tr').show();
+                    var searchItem = $("#search-field").val().toLowerCase();
                  
                     $('#table-customer > tbody > tr').each(function(index) {
                         var customerName = $(this).children('td:first').text().toLowerCase();

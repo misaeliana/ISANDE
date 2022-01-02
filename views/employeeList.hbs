@@ -42,6 +42,7 @@
                             <button type="submit" id="search-button"><i class="fa fa-search" ></i></button>
                         </form>-->
                         <input type="text" placeholder="Search" name="search" id="search-field">
+                        <button type="submit" id="search-button"><i class="fa fa-search" ></i></button>
                     </div>
                     <div class= "div-button-end">
                         <div class="new-employee"><button id="btn-new-employee" class="btn-light-blue" data-toggle="modal" data-target="#modal-add-employee">+ New Employee</button></div>
@@ -64,31 +65,31 @@
                         <form id="add-new-employee">
                             <div class="flex-display">
                                 <label for="employee-name" class="modal-label">Employee Name</label> 
-                                <input id="employee-name" type="text" class="modal-input"><br>
+                                <input id="employee-name" type="text" class="modal-input form-control"><br>
                             </div>
                             <p class="error modal-error" id="error-new-employee-name"></p>
 
                             <div class="flex-display">
                                 <label for="employee-username" class="modal-label">Username</label> 
-                                <input id="employee-username" class="modal-input" type="text"><br>
+                                <input id="employee-username" class="modal-input form-control" type="text"><br>
                             </div>
                             <p class="error modal-error" id="error-new-employee-username"></p>
 
                             <div class="flex-display">  
                                 <label for="employee-password" class="modal-label">Password</label> 
-                                <input id="employee-password" type="text" class="modal-input"><br>                            
+                                <input id="employee-password" type="text" class="modal-input form-control"><br>                            
                             </div>
                             <p class="error modal-error" id="error-employee-password"></p>
                             
                             <div class="flex-display"> 
                                 <label for="Contact-number" class="modal-label">Contact Number</label> 
-                                <input id="contact-number" type="number" class="modal-input"><br>
+                                <input id="contact-number" type="number" class="modal-input form-control"><br>
                             </div>                            
                             <p class="error modal-error" id="error-contact-number"></p>
 
                             <div class="flex-display">
                                 <label for="roler" class="modal-label">Position</label> 
-                                <select class="dropdown modal-float modal-dropdown" id="dropdown-employee-position" style="height: 27px;">
+                                <select class="form-control" id="dropdown-employee-position">
                                     <option value="no-selected">--Select Position--</option>
                                     {{#each positions}}
                                         <option value="{{_id}}">{{position}}</option>
@@ -270,9 +271,20 @@
                     }
                 })
 
-                $('#search-field').keyup(function() {
+                /*$('#search-field').keyup(function() {
                      $('#table-employee tr').show();
                     var searchItem = $(this).val().toLowerCase();
+                 
+                    $('#table-employee > tbody > tr').each(function(index) {
+                        var employeeName = $(this).children('td:first').text().toLowerCase();
+                        if (!employeeName.includes(searchItem))
+                            $(this).toggle();
+                    })
+                })*/
+
+                 $('#search-button').click(function() {
+                     $('#table-employee tr').show();
+                    var searchItem = $('#search-field').val().toLowerCase();
                  
                     $('#table-employee > tbody > tr').each(function(index) {
                         var employeeName = $(this).children('td:first').text().toLowerCase();
