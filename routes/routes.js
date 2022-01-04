@@ -105,8 +105,6 @@ router.get('/generatePurchaseOrder', purchaseOrderController.generatePurchaseOrd
 
 router.get('/getItemNamePO', purchaseOrderController.getItems);
 
-router.get('/getItemUnit', purchaseOrderController.getItemUnit);
-
 router.get('/getEOQ', purchaseOrderController.getEOQ)
 
 router.get('/previousPONumber', purchaseOrderController.previousPONumber);
@@ -220,5 +218,17 @@ router.get('/salesPerCustomer', reportController.getSalesPerCustomer);
 router.get('/getCustomerInvoices', reportController.getCustomerInvoicesReport);
 
 router.get('/getFilteredCustomerInvoices', reportController.getFilteredCustomerInvoices)
+
+
+
+
+//NEW STUFF
+
+router.post('/newSellingUnit', inventoryController.newSellingUnit);
+
+router.get('/getItemUnits', invoiceController.getItemUnits);
+
+router.get('/getItemUnitsPO', purchaseOrderController.getItemUnitsPO);
+
 
 module.exports = router;

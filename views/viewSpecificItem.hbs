@@ -80,19 +80,23 @@
                         <div class="label-content">{{itemInfo.category}}</div>
                         <p id="item-category-ID" style="display: none;">{{itemInfo.categoryID}}</p>
                     </div>
-                    <div class="label-container">
+                    <!--<div class="label-container">
                         <div class="override-label">Quantity</div> 
                         <div class="label-content" id="item-quantity">{{itemInfo.quantityAvailable}}</div>
-                    </div>
+                    </div>-->
                     <div class="label-container">
                         <div class="override-label">Unit</div> 
                         <div class="label-content">{{itemInfo.unit}}</div>
                         <p id="item-unit-ID" style="display: none;">{{itemInfo.unitID}}</p>
                     </div>
                     <div class="label-container">
+                        <div class="override-label">Retail Quantity</div> 
+                        <div class="label-content">{{itemInfo.retailQuantity}}</div>
+                    </div>
+                    <!--<div class="label-container">
                         <div class="override-label">Selling Price</div> 
                         <div class="label-content">₱ {{itemInfo.sellingPrice}}</div>
-                    </div>
+                    </div>--->
             </div> 
             <div style="height: 20px"></div>
 
@@ -137,8 +141,8 @@
                             <label for="EOQ">EOQ</label> <input id="EOQ" type="number" value="{{itemInfo.EOQ}}"><br>
                             <p class="error" id="error-EOQ" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
-                            <label for="selling-price">Selling Price</label> <input id="selling-price" type="number" value="{{itemInfo.sellingPrice}}"><br>
-                            <p class="error" id="error-selling-price" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <!--<label for="selling-price">Selling Price</label> <input id="selling-price" type="number" value="{{itemInfo.sellingPrice}}"><br>
+                            <p class="error" id="error-selling-price" style="margin-top: 3px; margin-bottom: 3px;"></p>-->
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -148,6 +152,99 @@
                 </div>
                 </div>
             </div>
+
+            <div style="margin-top: 50px;">
+                <div style="display: flex;">
+                    <div style="width: 50%"><h3 class ="bold">Item units</h3></div>
+                    <div class="btn-status"><button class="btn-light-blue" id="btn-selling-unit" style=" width: 150px" data-toggle="modal" data-target="#modal-add-selling-unit">Add selling unit</button></div>
+                </div>
+            </div>
+
+            <!-- ADD SELLING UNIT -->
+            <div class="modal fade" id="modal-add-selling-unit" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="exampleModalLongTitle">Add Selling Unit</h3>
+                        <button type="button" class="close" data-dismiss="modal" a ria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="edit-item">
+                            <label for="quatity" style="margin-right: 10px">Quantity</label>
+                            <input id="quantity" type="number"><br>
+                            <label for="dropdown-new-selling-unit" style="margin-right: 10px">Unit</label>
+                            <select class="dropdown" id="dropdown-new-selling-unit" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
+                                <option value="no-selected" selected>Select Unit</option>
+                                {{#each units}}
+                                    <option value={{_id}}>{{unit}}</option>
+                                {{/each}}
+                            </select>
+                            <p class="error" id="error-unit" style="margin-top: 3px; margin-bottom: 3px;"></p>
+
+                            <label for="selling-price">Selling Price</label> <input id="selling-price" type="number"><br>
+                            <p class="error" id="error-selling-price" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="btn-save-selling-unit">Save</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+
+            <!--EDIT SELLING PRICE-->
+            <div class="modal fade" id="modal-edit-selling-unit" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="exampleModalLongTitle">Edit Selling Price</h3>
+                        <button type="button" class="close" data-dismiss="modal" a ria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="edit-item">
+                            <label for="edit-selling-price">Selling Price</label> <input id="edit-selling-price" type="number"><br>
+                            <p class="error" id="error-edit-selling-price" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-red" id="btn-delete-selling-unit" style="float:left">Delete Selling Unit</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="btn-save-edit-selling-unit">Save</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <table class="table">
+                <thead class="table-regular-head">
+                    <tr>
+                        <td>Unit</td>
+                        <td>Quantity</td>
+                        <td>Selling Price</td>
+                        <td>Available Stock</td>
+                        <td></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each itemUnits}}
+                        <tr>
+                            <td>{{unitName}}</td>
+                            <td>{{ratio}}</td>
+                            <td class="item-unit-selling-price">₱ {{sellingPrice}}</td>
+                            <td>{{availableStock}}</td>
+                            <td><button class="edit-button"><img src="../images/edit-icon.png" height="20px" width="15x" alt="Edit"></button></td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+
+            <br>
 
             <div style="margin-top: 50px;">
                 <div style="display: flex;">
@@ -163,12 +260,14 @@
                 <thead class="table-regular-head" >
                     <tr>
                         <th>Name</th>
+                        <th>Unit</th>
                     </tr>
                 </thead>
                 <tbody> 
                     {{#each itemSuppliers}}
                         <tr>
                             <td>{{supplierID}}</td>
+                            <td>{{unit}}</td>
                         </tr>
                     {{/each}}
                 </tbody>
@@ -235,14 +334,14 @@
                         return 0;
                 }
 
-                function sellingPriceValidation(price) {
+                /*function sellingPriceValidation(price) {
                     if (price == null || price == "") {
                         errorMessage("sellingPrice");
                         return 1;
                     }
                     else 
                         return 0;
-                }
+                }*/
 
                 function errorMessage(type) {
                     if (type == "type") {
@@ -306,12 +405,12 @@
                     resetErrorMessage();
                 });
 
-                function checkAll(category, unit, reorderLevel, EOQ, sellingPrice) {
+                function checkAll(category, unit, reorderLevel, EOQ) {
                     typeValidation(category);
                     unitValidation(unit);
                     reorderLevelValidation(reorderLevel);
                     EOQValidation(EOQ);
-                    sellingPriceValidation(sellingPrice);
+                    //sellingPriceValidation(sellingPrice);
                 }
 
                 function supplierValidation(supplier) {
@@ -350,7 +449,7 @@
                     var quantity = $('#item-quantity').text();
                     var EOQ = $('#EOQ').val();
                     var reorderLevel = $('#reorder-level').val();
-                    var sellingPrice = $('#selling-price').val();
+                    //var sellingPrice = $('#selling-price').val();
                     var itemStatusID = $('#item-status-ID').text();
 
                     var categoryText = $('#dropdown-category option:selected').text();
@@ -358,7 +457,7 @@
 
                     checkAll(category, unit, reorderLevel, EOQ, sellingPrice);
 
-                    if (!typeValidation(category) && !unitValidation(unit) && !reorderLevelValidation(reorderLevel) && !EOQValidation(EOQ)  && !sellingPriceValidation(sellingPrice)) {
+                    if (!typeValidation(category) && !unitValidation(unit) && !reorderLevelValidation(reorderLevel) && !EOQValidation(EOQ)) {
 
                         // remove texts and red borders
                         resetErrorMessage();
@@ -377,7 +476,7 @@
                                 }
                         });*/ 
 
-                        $.post('/postUpdateItemInformation', {itemID, itemDescription, category, unit, quantity, EOQ, reorderLevel, sellingPrice, itemStatusID}, function(result){
+                        $.post('/postUpdateItemInformation', {itemID, itemDescription, category, unit, quantity, EOQ, reorderLevel, itemStatusID}, function(result){
                                 $('#modal-edit-item').modal('hide');
                                 $('#edit-item').trigger('reset');
                                 alert("Item information has been updated")
@@ -385,6 +484,36 @@
                             })
                       }
                 })
+
+                $('#btn-save-selling-unit').click(function() {
+                    var address = window.location.pathname.split('/');
+                    var itemID = address[address.length -1]
+
+                    var quantity = $('#quantity').val()
+                    var unit = $("#dropdown-new-selling-unit").val()
+                    var sellingPrice = $('#selling-price').val();
+
+                    $.post('/newSellingUnit', {itemID, quantity, unit, sellingPrice}, function(result) {
+                        window.location.reload();
+                    })
+                })
+
+                $('.edit-button').click(function() {
+                    var currentSellingPrice = $(this).parents('tr').find('.item-unit-selling-price').text();
+                    $('#edit-selling-price').val(currentSellingPrice.slice(2));
+                    $('#modal-edit-selling-unit').modal('show');
+                })
+
+                //delete selling unit
+                $('#btn-delete-selling-unit').click(function() {
+
+                })
+
+                //change informationstatus of the current selling unit and create a new one
+                $('#btn-save-edit-selling-unit').click(function () {
+                    
+                })
+
             })
         </script>
     </body>

@@ -36,8 +36,8 @@ var ItemsSchema = new mongoose.Schema({
 		required: true
 	},
 
-	sellingPrice: {
-		type: Number,
+	retailQuantity: {
+		type: Number, 
 		required: true
 	},
 

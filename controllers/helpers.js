@@ -47,6 +47,8 @@ const AccountPayments = require('../models/OnAccountPaymentModel.js');
 
 const Shrinkages = require('../models/ShrinkagesModel.js');
 
+const ItemUnits = require('../models/ItemUnitsModel.js');
+
 module.exports = function() {
 	this.getAllPositions = function() {
 		return new Promise((resolve, reject) => {
@@ -723,4 +725,48 @@ module.exports = function() {
 			})
 		})
 	}
+
+
+
+	//NEW STUFF
+
+	this.getItemUnits = function(itemID) {
+    	return new Promise((resolve, reject) => {
+            db.findMany(ItemUnits, {itemID:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, '', function (result) {
+            	resolve(result)
+            })
+        })
+    },
+
+    this.getItemUnitID = function(itemID, unitID) {
+    	return new Promise((resolve, reject) => {
+    		db.findOne(ItemUnits, {itemID:itemID, unitID:unitID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, '', function(result) {
+    			resolve(result)
+    		})
+    	})
+    },
+
+    this.getItemUnitInfo = function(itemUnitID) {
+    	return new Promise((resolve, reject) => {
+    		db.findOne(ItemUnits, {_id:itemUnitID}, '', function(result) {
+    			resolve(result)
+    		})
+    	})
+    },
+
+    this.getSellingPrice = function(itemID, unitID) {
+    	return new Promise((resolve, reject) => {
+    		db.findOne(ItemUnits, {itemID:itemID, unitID:unitID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'sellingPrice', function(result) {
+    			resolve(result.sellingPrice)
+    		})
+    	})
+    },
+
+    this.getSupplierItems = function(itemID, supplierID) {
+    	return new Promise((resolve, reject) => {
+    		db.findMany(ItemSuppliers, {itemID:itemID, supplierID:supplierID}, '', function(result) {
+    			resolve(result)
+    		})
+    	})
+    }
 };

@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 // defines the schema for collection `users`
 var ShrinkageSchema = new mongoose.Schema({
 
-	itemID: {
+	itemUnitID: {
 		type: String,
 		required: true
 	},

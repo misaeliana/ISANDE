@@ -91,10 +91,9 @@ const supplierController = {
 
 			var inventory = []
 			for (var i=0; i<temp_inventory.length; i++) {
-				var itemInfo = await getItem(temp_inventory[i].itemID)
 				var item = {
-					itemDescription: itemInfo.itemDescription,
-					unit: await getSpecificUnit(itemInfo.unitID)
+					itemDescription: await getItemDescription(temp_inventory[i].itemID),
+					unit: await getSpecificUnit(temp_inventory[i].unitID)
 				}
 				inventory.push(item)
 			}

@@ -70,6 +70,9 @@
             <form>
                 <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="itemDescription" name="itemDescription" placeholder="Item Description">
                 <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px; text-align: right;" type="number" class="form-control" id="qty" name="qty" placeholder="Qty">
+                <select class="dropdown" id="dropdown-item-unit" style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px">
+                    <option value="no-selected">--Unit--</option>
+                </select>
                 <input style="margin-top: 5px; margin-bottom: 0px; float: left; height: 34px; width: 34px; background-color: #0F84D9; border: #0F84D9; border-radius: 7px; color: white;" type="button" id="addItem" name="addItem" value="+">
             </form>
             
@@ -211,9 +214,23 @@
                         $.get('/getEOQ', {itemDesc}, function(result) {
                             $('#qty').val(result)
                         })
+
+                        var supplierName = $("#supplierName").val()
+                        $.get('/getItemUnitsPO', {itemDesc, supplierName}, function(result) {
+                            for (var i=0; i<result.length; i++) {
+                                $('#dropdown-item-unit').append(`
+                                    <option value="${result[i].id}">${result[i].unit}</option>
+                                `)
+                            }
+                            $('#dropdown-item-unit').prop("selectedIndex", 1)
+                        }); 
                     }
                 });
             });
+
+            $('#dropdown-item-unit').change(function () {
+                $("#qty").val("");
+            })
 
             $("#supplierName").autocomplete({
                 source: function(request, response) {
@@ -263,23 +280,23 @@
 
             $('#addItem').click(function(){
                 var itemDesc = $('#itemDescription').val();
+                var unit = $('#dropdown-item-unit option:selected').text();
                 var qty = $('#qty').val();
 
                 //all blanks are filled up
                 if (filled(itemDesc, qty) == 0) {
-                    $.get('/getItemUnit', {itemDesc}, function (result) {
                         $('#table-poItem').append(
                         `<tr>
                             <td class="classItemDescription">${itemDesc}</td>
                             <td class="classQty">${qty}</td>
-                            <td class="unit">${result}</td>
+                            <td class="unit">${unit}</td>
                             <td><button class="delete-button add-stock-delete-btn"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
                         </tr>`);
 
                         $('#itemDescription').val('');
                         $('#qty').val('');
                         $('#text-warning-new-PO').text("");
-                    });
+                        $('#dropdown-item-unit option:not(:first)').remove();
                 }
                 //item description is left blank
                 else if (filled(itemDesc, qty) == 1) {

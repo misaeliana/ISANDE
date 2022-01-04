@@ -9,28 +9,67 @@ const manualCountController = {
 
 	getManualCount: function(req, res) {
 
+        async function getFIxedItemUnits(inventoryItem) {
+            return new Promise((resolve, reject) => {
+                var units = []
+                units.push(inventoryItem.unitID)
+
+                getItemUnits(inventoryItem._id).then((result) => {
+                    for (var i=0; i<result.length; i++) {
+                        if (result[i].unitID != inventoryItem.unitID) {
+                            units.push(result[i].unitID)
+                        }
+                    }
+                    resolve (units);
+                })               
+            })    
+        }
+
+        async function getUnitNames (unitIDs) {
+            console.log("unit ids")
+            console.log(unitIDs)
+            var units = []
+            for (var i=0; i<unitIDs.length; i++){
+                var unit = await getSpecificUnit(unitIDs[i])
+                units.push(unit)
+            }
+            
+            return units;
+        }
+
 		async function getInformation() {
-            var inventoryTypes = await getInventoryTypes();
+            var itemCategories = await getItemCategories();
             var shrinkageReasons = await getshrinkageReasons();
             var informationStatusID = await getInformationStatus("Active");
             var inventoryItems = await getInventoryItems(informationStatusID);
             var items = [];
+
 
             for (var i = 0; i < inventoryItems.length; i++) {
                 var item = {
                     _id: inventoryItems[i]._id,
                     itemDescription: inventoryItems[i].itemDescription,
                     quantityAvailable: inventoryItems[i].quantityAvailable,
-                    unit: await getSpecificUnit(inventoryItems[i].unitID),
                     category: inventoryItems[i].categoryID,
                     reasons: shrinkageReasons,
                 };
 
-                items.push(item);
+                getFIxedItemUnits(inventoryItems[i]).then((result) => {
+                    item.temp_itemUnits = result
+                    getUnitNames(item.temp_itemUnits).then((unitNames) => {
+                        console.log("unit names")
+                        console.log(unitNames)
+                        item.units = unitNames
+                    })
+                })
 
+                items.push(item);
+                item.temp_itemUnits = []
+                item.units = []
             }
 
-			res.render('updateManualCount', {inventoryTypes, items});
+            console.log(items)
+			res.render('updateManualCount', {itemCategories, items});
 		}
 
 		getInformation();
@@ -69,13 +108,13 @@ const manualCountController = {
 
             for (var i = 0; i < shrinkages.length; i++) {
                 var date = new Date(shrinkages[i].date);
-                var item = await getItemInfo(shrinkages[i].itemID);
+                var itemUnit = await getItemUnitInfo(shrinkages[i].itemUnitID);
 
                 var shrinkage = {
                     date: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
-                    description: item.itemDescription,
+                    description: await getItemDescription(itemUnit.itemID),
                     quantity: shrinkages[i].quantityLost,
-                    unit: await getSpecificUnit(item.unitID),
+                    unit: await getSpecificUnit(itemUnit.unitID),
                     reason: await getShrinkageReason(shrinkages[i].reasonID),
                     employee: await getEmployeeName(shrinkages[i].employeeID)
                 };

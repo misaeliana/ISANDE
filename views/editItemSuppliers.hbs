@@ -55,6 +55,12 @@
                             <option value={{_id}}>{{name}}</option>
                     {{/each}}
                 </select>
+                <select class="dropdown" id="dropdown-unit" style="margin-top: 5px; margin-bottom: 0px; width: 200px; float: left; margin-right: 10px">
+                    <option value="no-selected">Select Unit</option>
+                    {{#each units}}
+                        <option value={{_id}}>{{unit}}</option>
+                    {{/each}}
+                </select>
                 <input style="margin-top: 5px; margin-bottom: 0px; float: left; height: 34px; width: 34px; background-color: #0F84D9; border: #0F84D9; border-radius: 7px; color: white;" type="button" id="add-supplier" name="add-supplier" value="+">
             </form>
             
@@ -66,6 +72,7 @@
                 <thead class="table-regular-head">
                     <tr>
                         <th>Name</th>
+                        <th>Unit</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -73,6 +80,7 @@
                     {{#each itemSuppliers}}
                         <tr>
                             <td class="supplierName">{{supplierID}}</td>
+                            <td class="unit">{{unit}}</td>
                             <td><button class="delete-button"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
                         </tr>
                     {{/each}}
@@ -137,37 +145,42 @@
                 $('#add-supplier').click(function() {
                     var supplierName = $('#dropdown-supplier option:selected').text();
                     var supplierVal = $('#dropdown-supplier').val();
+                    var unit = $("#dropdown-unit option:selected").text();
 
-                    if (!supplierValidation(supplierVal, supplierName)) {
-                        resetErrorMessage();
+                    //if (!supplierValidation(supplierVal, supplierName)) {
+                        //resetErrorMessage();
 
                         $('#table-suppliers').find('tbody').append(
                             `  <tr> 
-                                    <td class="supplierName">${supplierName}</td> 
+                                    <td class="supplierName">${supplierName}</td>
+                                    <td class="unit">${unit}</td>
                                     <td><button class="delete-button"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
                                 </tr>`
                         );
 
                         $('#new-supplier').trigger('reset');
-                    }
+                    //}
                 });
 
                 $('#btn-save-edit-item-suppliers').click(function() {
                     var itemID = $('#item-ID').text();
-                    var supplierNames = [];
+                    var supplierInfos = [];
 
                       $("#table-suppliers-body > tr").each(function () {
-                        supplierNames.push($(this).children('.supplierName').text());
+                        var supplierInfo = {
+                            supplierName: $(this).children('.supplierName').text(),
+                            unit: $(this).children('.unit').text()
+                        }
+                        supplierInfos.push(supplierInfo);
                     });
 
                     $('#new-supplier').trigger('reset');
 
-                     var JSONsupplierNames = JSON.stringify(supplierNames);
-
+                     var JSONsupplierInfos = JSON.stringify(supplierInfos);
                      $.ajax({
                             url: "/updateItemSuppliers",              
                             type: "POST",
-                            data: {JSONsupplierNames, itemID},
+                            data: {JSONsupplierInfos, itemID},
                             async: false,
                             success: function(result){
                                 if(result.redirect != null){

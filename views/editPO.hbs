@@ -338,9 +338,27 @@
                             $('#btn-new-item').css('display', 'none');
                             $('#addItem').prop('disabled', false)
                         }
+                    }, select: function(event, ui) {
+                        var itemDesc = ui.item.label;
+                        $.get('/getEOQ', {itemDesc}, function(result) {
+                            $('#qty').val(result)
+                        })
+
+                        $.get('/getItemUnitsPO', {itemDesc}, function(result) {
+                            for (var i=0; i<result.length; i++) {
+                                $('#dropdown-item-unit').append(`
+                                    <option value="${result[i].id}">${result[i].unit}</option>
+                                `)
+                            }
+                            $('#dropdown-item-unit').prop("selectedIndex", 1)
+                        }); 
                     }
                         
                 });
+
+                $('#dropdown-item-unit').change(function () {
+                    $("#qty").val("");
+                })
 
                  function filled(itemDesc, qty) {
                     var itemDesc = $('#itemDescription').val();

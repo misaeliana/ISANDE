@@ -299,7 +299,7 @@ const reportController = {
             }
  
             //var invoices = []
-            console.log(invoices)
+            //console.log(invoices)
 
             res.send(invoices)
         }

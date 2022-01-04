@@ -74,8 +74,13 @@ const purchaseOrderController = {
 
 		function getItems(supplierID) {
 			return new Promise((resolve, reject) => {
+				var items = []
 				db.findMany(ItemSuppliers, {supplierID:supplierID}, 'itemID', function(result) {
-					resolve (result)
+					for (var i=0; i<result.length; i++) {
+						if (!items.includes(result[i].itemID))
+							items.push(result[i].itemID)
+					}
+					resolve (items)
 				})
 			})
 		}
@@ -91,15 +96,15 @@ const purchaseOrderController = {
 			var itemNames = []
 
 			for (var i=0; i<items.length; i++){
-				var itemName = await getItemDescription(items[i].itemID)
+				var itemName = await getItemDescription(items[i])
 				itemNames.push(itemName);
 			}
 
 			for (var i=0; i<itemNames.length; i++) {
 				if (query.test(itemNames[i])) {
 					var formattedResult = {
-						label: await getItemDescription(items[i].itemID),
-						value: await getItemDescription(items[i].itemID)
+						label: await getItemDescription(items[i]),
+						value: await getItemDescription(items[i])
 					}
 					formattedResults.push(formattedResult)
 				}
@@ -110,13 +115,6 @@ const purchaseOrderController = {
 		getFilteredItems();
 	},
 
-	getItemUnit: function(req, res) {
-		db.findOne (Items, {itemDescription:req.query.itemDesc, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'unitID', function(result) {
-			db.findOne(Units, {_id: result.unitID}, 'unit', function (result2) {
-				res.send(result2.unit);
-			});
-		});
-	},
 
 	getEOQ: function(req, res) {
 		db.findOne (Items, {itemDescription:req.query.itemDesc, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'EOQ', function(result) {
@@ -295,7 +293,8 @@ const purchaseOrderController = {
 						_id: temp_suppliers[j].supplierID,
 						name: await getSupplierName(temp_suppliers[j].supplierID)
 					}
-					suppliers.push(supplier)
+					if (!suppliers.includes(supplier))
+						suppliers.push(supplier)
 				}
 
 				items[i].suppliers = suppliers
@@ -857,6 +856,39 @@ const purchaseOrderController = {
 		fs.writeFileSync(path.resolve("documents", fileName+".docx"), buf);
 
 		res.sendStatus(200)
+	},
+
+	getItemUnitsPO: function(req, res) {
+		 async function getInfo() {
+            var itemID = await getItemID(req.query.itemDesc)
+            var supplierID = await getSupplierID(req.query.supplierName);
+
+            var temp_itemUnits = await getSupplierItems(itemID, supplierID)
+
+            var itemUnits = []
+
+            /*var item = await getSpecificInventoryItems(itemID)
+            var itemUnit = {
+            	id: item.unitID,
+            	unit: await getSpecificUnit(item.unitID)
+            }
+            itemUnits.push(itemUnit)*/
+
+            for (var i=0; i<temp_itemUnits.length; i++) {
+            	//if (temp_itemUnits[i].unitID != itemUnits[0].id)
+                //{
+                	var itemUnit = {
+                        id: temp_itemUnits[i].unitID,
+                        unit: await getSpecificUnit(temp_itemUnits[i].unitID)
+                    }
+                    itemUnits.push(itemUnit)
+                //}
+            }
+            console.log(itemUnits)
+            res.send(itemUnits)
+        }
+
+        getInfo()
 	}
 
 }
