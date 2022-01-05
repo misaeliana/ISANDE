@@ -39,7 +39,7 @@ const purchaseOrderController = {
 					date: result[i].date.toLocaleString('en-US'), 
 					poNumber: result[i].purchaseOrderNumber,
 					supplier: await getSupplierName(result[i].supplierID),
-					amount: "P " + parseFloat(result[i].total).toFixed(2), 
+					amount: parseFloat(result[i].total).toFixed(2), 
 					status: await getPurchaseOrderStatus(result[i].statusID)
 				};
 				purchases.push(purchase);
@@ -153,7 +153,7 @@ const purchaseOrderController = {
 
 		async function savePurchase() {
 			var items = JSON.parse(req.body.itemsString);
-			var date = req.body.date;
+			var date = new Date();
 			var purchase = {
 				purchaseOrderNumber: req.body.poNumber,
 				supplierID: await getSupplierID(req.body.supplierName),
@@ -478,93 +478,6 @@ const purchaseOrderController = {
 	//update function for new PO, add new items, delete items
 	updatePOItems: function(req, res) {
 
-		/*function updatePurchaseItems(itemID, newQuantity, poID) {
-			db.updateOne(PurchasedItems, {purchaseOrderID: poID, itemID:itemID}, {quantity: newQuantity}, function(result) {
-
-			})
-		}
-
-		function removeItem (itemID, poID) {
-			db.deleteOne(PurchasedItems, {purchaseOrderID: poID, itemID:itemID}, function(flag) {
-				if (flag) { }
-			})
-		}
-
-		function addItem (item, poID) {
-			item.purchaseOrderID = poID
-			db.insertOne(PurchasedItems, item, function(flag) {
-				if (flag) { }
-			})
-		}
-
-		async function updatePO(items, poID) {
-			var temp_currentPOItems = await getCurrentPOItems(poID);
-			var currentPOItems = []
-
-			for (var i=0; i<temp_currentPOItems.length; i++) {
-				var poItem = {
-					itemID: temp_currentPOItems[i].itemID,
-					unitID: temp_currentPOItems[i].unitID,
-					quantity: temp_currentPOItems[i].quantity
-				}
-				currentPOItems.push(poItem);
-			}
-
-			
-			console.log("BEFORE PROCESSING")
-			console.log("ITEMS")
-			console.log(items)
-			console.log("CURRENT PO ITEMS")
-			console.log(currentPOItems)
-
-			for (var i=0; i<items.length; i++)
-				items[i].itemID = await getItemID(items[i].itemDesc)
-
-			for (var i=0; i<currentPOItems.length; i++) {
-				currentPOItems[i].checked = false
-				
-				for (var j=0; j<items.length; j++) {
-					items[j].checked = false
-
-					if (currentPOItems[i].itemID == items[j].itemID) {
-						//items not chcked in currentPO means it was removed
-						currentPOItems[i].checked = true
-						//items not checked in items means it was added
-						items[j].checked = true
-						//quantty was updated
-						if (currentPOItems[i].quantity != items[j].quantity)
-							updatePurchaseItems(items[j].itemID, items[j].quantity, poID)
-					} 
-				}
-			}
-
-			console.log('AFTER CHECKING')
-			console.log('ITEMS')
-			console.log(items)
-			console.log('currentPOItems')
-			console.log(currentPOItems)
-
-			for (var i=0; i<currentPOItems.length; i++) {
-				if (!currentPOItems[i].checked) {
-					removeItem (currentPOItems[i].itemID, poID)
-				}
-			}
-
-			for (var i=0; i<items.length; i++) {
-				if (!items[i].checked) {
-					items[i].unitID = await getUnitID(items[i].unit)
-					addItem (items[i], poID)
-				}
-			}
-
-			var supplierID = await getSupplierID(req.body.supplierName)
-			db.updateOne(Purchases, {_id:poID}, {supplierID:supplierID}, function(result) {
-
-			})
-
-			res.sendStatus(200)
-		}*/
-
 		function deleteItems(poID) {
 			db.deleteMany(PurchasedItems, {purchaseOrderID:poID}, function(result) {
 
@@ -583,8 +496,6 @@ const purchaseOrderController = {
 					res.sendStatus(200)
 			})
 		}
-
-		//-------END OF FUNCTIONS--------
 
 		var items = JSON.parse(req.body.itemsString);
 		var poID = req.body.poID;
@@ -611,13 +522,6 @@ const purchaseOrderController = {
 		}
 
 		//----FUNCTIONS FOR UPDATE INVENTORY QUANTITY
-		function getCurrentQuantity(itemID) {
-			return new Promise((resolve, reject) => {
-				db.findOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'quantityAvailable', function(result) {
-					resolve(result.quantityAvailable);
-				})
-			})
-		}
 
 		function getReorderLevel (itemID) {
 			return new Promise((resolve, reject) => {
@@ -643,17 +547,23 @@ const purchaseOrderController = {
 			})
 		}
 
-		async function updateInventory(itemID, quantityReceived) {
-			var reorderLevel = await getReorderLevel(itemID) 
+		async function updateInventory(poItem) {
+			var inventoryItem = await getSpecificInventoryItems(poItem.itemID)
 
-			var currentQuantity = await getCurrentQuantity(itemID);
-			var newQuantity = parseInt(currentQuantity) + parseInt (quantityReceived)
+			//needs conversion
+			if (poItem.unitID != inventoryItem.unitID){
+				var newQuantity = parseFloat(poItem.quantity) / inventoryItem.retailQuantity;
+				newQuantity = parseFloat(parseFloat(inventoryItem.quantityAvailable) + parseFloat(newQuantity)).toFixed(2)
+			}
+			
+			else
+				var newQuantity = parseInt(inventoryItem.quantityAvailable) + parseInt (quantityReceived)
 			
 			//item is still low in stock
-			if (reorderLevel > newQuantity)
-				updateQuantity (itemID, newQuantity)
+			if (inventoryItem.reorderLevel > newQuantity)
+				updateQuantity (poItem.itemID, newQuantity)
 			else
-				updateQuantityInStock(itemID, newQuantity)
+				updateQuantityInStock(poItem.itemID, newQuantity)
 		}
 		//------END OF FUNCTIONS FOR UPDATING INVENTORY QUANTITY------
 
@@ -686,8 +596,6 @@ const purchaseOrderController = {
 
 		//------END OF NEED NEW PO FUNCTION------
 
-
-
 		async function updatePO(items, poID) {
 			var needNewPO = false;
 			var temp_newPOItems = []
@@ -700,7 +608,7 @@ const purchaseOrderController = {
 					//update po price and quantity received
 					updatePOItemInfo(poID, items[i]);
 					//add quantity to inventory
-					updateInventory (items[i].itemID, items[i].quantityReceived);
+					updateInventory (items[i]);
 				}
 
 				//quantity received is less that ordered quantity
@@ -713,11 +621,9 @@ const purchaseOrderController = {
 					}
 					temp_newPOItems.push(newPOItem)
 				}
-
 			}
 
 			if (needNewPO)  {
-
 				//status is received
 				db.updateOne(Purchases, {_id: poID}, {statusID: "618f654646c716a39100a80c"}, function (flag) {
 				})
@@ -744,7 +650,6 @@ const purchaseOrderController = {
 				})
 			}
 			else {
-
 				//status is received
 				db.updateOne(Purchases, {_id: poID}, {statusID: "618f654646c716a39100a80c"}, function (flag) {
 				})

@@ -40,49 +40,6 @@ const invoiceController = {
  
 	getInvoiceList: function(req, res) {
        
-        // var type = {
-        //     type: "In-Store"
-        // };
-
-		// var invoice = {
-		// 	invoiceID: "1",
-		// 	customerID: "6193c28080a72f8050c2e75a",
-		// 	date: "10/11/21",
-		// 	typeID: "6197863ac4f0088e95c9bf84",
-		// 	statusID: "619785b0d9a967328c1e8fa6",
-        //     subtotal: 200,
-        //     VAT: 100,
-        //     discount: 0,
-        //     total: 300,
-        //     employeeID: "6187c88ffa9a0c35600c54a8"
-        // };
-
-        // db.insertOne (Invoices, invoice, function(flag) {
-		// 	if (flag) { }
-		// });
-        
-        // var invoiceItem = {
-		// 	invoice_id: "6198924057401a04da061a72",
-		// 	itemID: "61949d9d46d32db277601092",
-		// 	quantity: 2,
-		// 	discount: 150,
-        // };
-
-        // db.insertOne (InvoiceItems, invoiceItem, function(flag) {
-		// 	if (flag) { }
-        // });
-        
-        // var delivery = {
-		// 	invoice_id: "6198924057401a04da061a72",
-        //     deliveryDate: "10/12/21",
-        //     dateDelivered: null,
-		// 	deliveryPersonnel: "juan_cruz@gmail.com",
-		// 	deliveryNotes: null,
-        // };
-        
-        // db.insertOne (deliveries, delivery, function(flag) {
-        //     	if (flag) { }
-        //     });
 		async function getInformation() {
             
 
@@ -377,8 +334,6 @@ const invoiceController = {
             var stockItemUnit = await getItemUnit(item.itemID)   //unit they use to keep track of inventory
 
             var updatedQuantity = 0;
-
-            console.log(item)
 
             //needs conversion
             if (item.unitID != stockItemUnit.unitID) {
@@ -727,7 +682,7 @@ const invoiceController = {
             if (invoice.paymentOptionID == await getSpecificPaymentTypeID("COD")) {
                 await updateInvoiceStatus(invoice._id, await getSpecificInvoiceStatusName("Paid"));
             }
-            
+
             res.send(true);
         }
 
@@ -787,7 +742,7 @@ const invoiceController = {
 
                 var quantity = temp_invoiceItems[i].quantity
                 var unitPrice = itemUnitInfo.sellingPrice
-                var amount = quantity * parseFloat(unitPrice)
+                var amount = quantity * parseFloat(unitPrice) - temp_invoiceItems[i].discount
 
                 var invoiceItem = { 
                     itemDescription: await getItemDescription(itemUnitInfo.itemID), 
@@ -875,7 +830,7 @@ const invoiceController = {
                 quantityLost: returnItem.quantity,
                 reasonID: await getShrinkageReasonID(),
                 date: new Date(),
-                employeeID: "619fb6910640ab1d9518d3b6"
+                employeeID: "61bc3ecb39b4c1027aaac14d"
             }
 
             db.insertOne(Shrinkages, shrinkage, function(flag) {

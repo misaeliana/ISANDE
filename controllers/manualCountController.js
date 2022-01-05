@@ -3,38 +3,22 @@ const db = require('../models/db.js');
 
 const Shrinkages = require('../models/ShrinkagesModel.js');
 
+const ItemUnits = require('../models/ItemUnitsModel.js'); 
+
+const Items = require('../models/ItemsModel.js');
+
 require('../controllers/helpers.js');
 
 const manualCountController = {
 
 	getManualCount: function(req, res) {
 
-        async function getFIxedItemUnits(inventoryItem) {
+        async function getOtherUnit(inventoryItem) {
             return new Promise((resolve, reject) => {
-                var units = []
-                units.push(inventoryItem.unitID)
-
-                getItemUnits(inventoryItem._id).then((result) => {
-                    for (var i=0; i<result.length; i++) {
-                        if (result[i].unitID != inventoryItem.unitID) {
-                            units.push(result[i].unitID)
-                        }
-                    }
-                    resolve (units);
-                })               
-            })    
-        }
-
-        async function getUnitNames (unitIDs) {
-            console.log("unit ids")
-            console.log(unitIDs)
-            var units = []
-            for (var i=0; i<unitIDs.length; i++){
-                var unit = await getSpecificUnit(unitIDs[i])
-                units.push(unit)
-            }
-            
-            return units;
+                db.findOne(ItemUnits, {$and: [ {itemID:inventoryItem._id}, {unitID: {$ne:inventoryItem.unitID}}, {informationStatusID:"618a7830c8067bf46fbfd4e4"}]}, 'unitID', function(result) {
+                    resolve(result.unitID)
+                })
+            })
         }
 
 		async function getInformation() {
@@ -46,29 +30,32 @@ const manualCountController = {
 
 
             for (var i = 0; i < inventoryItems.length; i++) {
+
                 var item = {
                     _id: inventoryItems[i]._id,
                     itemDescription: inventoryItems[i].itemDescription,
-                    quantityAvailable: inventoryItems[i].quantityAvailable,
+                    quantityAvailable: Math.floor(inventoryItems[i].quantityAvailable),
+                    unit: await getSpecificUnit(inventoryItems[i].unitID),
                     category: inventoryItems[i].categoryID,
-                    reasons: shrinkageReasons,
+                    reasons: shrinkageReasons
                 };
 
-                getFIxedItemUnits(inventoryItems[i]).then((result) => {
-                    item.temp_itemUnits = result
-                    getUnitNames(item.temp_itemUnits).then((unitNames) => {
-                        console.log("unit names")
-                        console.log(unitNames)
-                        item.units = unitNames
-                    })
-                })
-
                 items.push(item);
-                item.temp_itemUnits = []
-                item.units = []
+
+                //quantity availbale has decimal
+                if (!Number.isInteger(inventoryItems[i].quantityAvailable)) {
+                    var item = {
+                        _id: inventoryItems[i]._id,
+                        itemDescription: inventoryItems[i].itemDescription,
+                        quantityAvailable: parseInt((inventoryItems[i].quantityAvailable - Math.floor(inventoryItems[i].quantityAvailable)) * inventoryItems[i].retailQuantity),
+                        unit: await getSpecificUnit(await getOtherUnit(inventoryItems[i])),
+                        category: inventoryItems[i].categoryID,
+                        reasons: shrinkageReasons
+                    }
+                    items.push(item)
+                }
             }
 
-            console.log(items)
 			res.render('updateManualCount', {itemCategories, items});
 		}
 
@@ -77,16 +64,34 @@ const manualCountController = {
     },
     
     updateManualCount: function(req, res) {
+        function getItemInfo(itemID) {
+            return new Promise((resolve, reject) => {
+                db.findOne(Items, {_id: itemID}, '', function(result) {
+                    resolve(result)
+                })
+            })
+        }
         var shrinkages = JSON.parse(req.body.JSONShrinkages);
 
         async function updateItem() {
 
             // subtract from inventory 
             for (var i = 0; i < shrinkages.length; i++) {
+                var shrinkageUnitID = await getUnitID(shrinkages[i].unit);
 
                 var item = await getItemInfo(shrinkages[i].itemID);
 
-                var newQuantity = parseFloat(item.quantityAvailable) - parseFloat(shrinkages[i].quantityLost);
+                console.log(item)
+
+                //needs conversion
+                if (item.unitID!= shrinkageUnitID) {
+                    var newQuantity = parseFloat(shrinkages[i].quantityLost / item.retailQuantity)
+                    newQuantity = parseFloat(parseFloat(item.quantityAvailable) - parseFloat(newQuantity)).toFixed(2)
+
+                }
+                
+                else
+                    var newQuantity = parseFloat(item.quantityAvailable) - parseFloat(shrinkages[i].quantityLost);
 
                 updateItemQuantity(shrinkages[i].itemID, newQuantity);
             }

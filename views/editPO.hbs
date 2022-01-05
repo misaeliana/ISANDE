@@ -220,9 +220,11 @@
                         <th>Item Description</th>
                         <th>Quantity</th>
                         <th>Unit</th>
-                        <th>Unit Price</th>
-                        <th>Received</th>
-                        <th>Amount</th>
+                        {{#if released}}
+                            <th>Unit Price</th>
+                            <th>Received</th>
+                            <th>Amount</th>
+                        {{/if}}
                         {{#if newPO}}
                         <th></th>
                         {{/if}}
@@ -236,9 +238,6 @@
                                 <td class="classItemDescription">{{itemDescription}}</td>
                                 <td><input class="classQty" type="number" value="{{quantity}}"></td>
                                 <td class="classUnit">{{unitName}}</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
                                 <td> <button class="delete-button delete-item-btn"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button> </td>
                             </tr>
                         {{/each}}
@@ -248,9 +247,9 @@
                                 <td class="classItemDescription">{{itemDescription}}</td>
                                 <td class="classQty">{{quantity}}</td>
                                 <td class="classUnit">{{unitName}}</td>
-                                <td><input type="number" class="unitPrice"></td>
-                                <td><input type="number" class="quantityReceived"></td>
-                                <td class="classAmount">0</td>
+                                <td><input type="number" class="unitPrice" style="text-align:right"></td>
+                                <td><input type="number" class="quantityReceived" style="text-align:right"></td>
+                                <td class="classAmount">₱ 0</td>
                             </tr>
                         {{/each}}
                     {{/if}}
@@ -601,7 +600,7 @@
                 function computeTotal() {
                     var overallTotal =0
                     $("#table-poItem-body > tr").each(function () {
-                        overallTotal += parseFloat($(this).children('.classAmount').text());
+                        overallTotal += parseFloat($(this).children('.classAmount').text().slice(1));
                     });
                     var discountPercent = $('#total-discount').val() 
                     var discount = overallTotal*(discountPercent/100)
@@ -631,7 +630,7 @@
                         quantityReceived = 0
 
                     var amount = parseFloat(quantityReceived) * parseFloat(unitPrice)
-                    row.find('.classAmount').html(amount)
+                    row.find('.classAmount').html("₱ " + amount)
 
                     computeTotal();
                 })
@@ -648,7 +647,7 @@
                         quantityReceived = 0
 
                     var amount = parseInt(quantityReceived) * parseFloat(unitPrice)
-                    row.find('.classAmount').html(amount)
+                    row.find('.classAmount').html("₱ " + amount)
 
                     computeTotal()
                 })
@@ -683,7 +682,7 @@
                                 quantity: $(this).children('.classQty').text(),
                                 unit: $(this).children('.classUnit').text(),
                                 price: $(this).find('.unitPrice').val(),
-                                amount: $(this).children('.classAmount').text(),
+                                amount: $(this).children('.classAmount').text().slice(1),
                                 quantityReceived: $(this).find('.quantityReceived').val()
                             }
                             poItems.push(poItem);

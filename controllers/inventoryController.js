@@ -124,7 +124,7 @@ const inventoryController = {
 
 		function getMatchItems(itemID) {
 			return new Promise((resolve, reject) => {
-				db.findMany(PurchaseItem, {itemID:itemID}, 'purchaseOrderID quantity', function(result) {
+				db.findMany(PurchaseItem, {itemID:itemID}, 'purchaseOrderID unitID quantity', function(result) {
 					resolve(result)
 				})
 			})
@@ -133,6 +133,7 @@ const inventoryController = {
 		function checkPOStatus(poItem) {
 			return new Promise((resolve, reject) => {
 				db.findOne(PurchaseOrders, {_id:poItem.purchaseOrderID}, 'statusID', function(result) {					//po is released
+					//po is released
 					if (result.statusID == "618f652746c716a39100a80a")
 						resolve(true)
 					//po is of other status
@@ -147,9 +148,16 @@ const inventoryController = {
 			var toBeReceived = 0;
 
 			for (var i=0; i<poItems.length; i++) {
-				var result = await checkPOStatus(poItems[i])
-				if (result)
-					toBeReceived += parseInt(poItems[i].quantity)
+				//po is released
+				var released = await checkPOStatus(poItems[i])
+				if (released) {
+					if (item.unitID != poItems[i].unitID) {
+						convertedAmount = poItems[i].quantity / item.retailQuantity
+						toBeReceived += parseFloat(convertedAmount)
+					}
+					else
+						toBeReceived += parseInt(poItems[i].quantity)
+				}
 			}
 			return toBeReceived;
 		}
@@ -232,7 +240,9 @@ const inventoryController = {
 				itemSuppliers[i].unit = await getSpecificUnit(itemSuppliers[i].unitID)
 			}
 
-			res.render('editItemSuppliers', {itemID, suppliers, itemSuppliers, units});
+			var itemName = await getItemDescription(itemID)
+
+			res.render('editItemSuppliers', {itemID, itemName, suppliers, itemSuppliers, units});
 		}
 
 		getInformation();
