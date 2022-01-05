@@ -95,6 +95,10 @@ router.get('/getSearchInventory', inventoryController.getSearchInventory);
 
 router.get('/getFilterInventory', inventoryController.getFilterInventory);
 
+router.post('/deleteSellingUnit', inventoryController.deleteSellingUnit);
+
+router.post('/editSellingUnit', inventoryController.editSellingUnit);
+
 
 //--PURCHASE ORDER--
 router.get('/purchaseOrders', purchaseOrderController.getPurchaseOrderList);

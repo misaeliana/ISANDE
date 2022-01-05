@@ -478,6 +478,54 @@ const inventoryController = {
 			if (flag)
 				res.sendStatus(200);
 		})
+	},
+
+	deleteSellingUnit: function(req, res) {
+		var itemID = req.body.itemID;
+		var unitName = req.body.unitName;
+		
+		async function deleteInfo() {
+			var unitID = await getUnitID(unitName);
+
+			var flag = await deleteItemUnit(itemID, unitID,  await getInformationStatus("Active"), await getInformationStatus("Deleted"));
+
+			if (flag)
+				res.sendStatus(200);
+		}
+
+		deleteInfo();
+	},
+
+	editSellingUnit: function(req, res) {
+		var itemID = req.body.itemID;
+		var unitName = req.body.unitName;
+		var newSellingPrice = req.body.newSellingPrice;
+		
+		async function editInfo() {
+			var unitID = await getUnitID(unitName);
+			var oldItemUnit = await getItemUnitID(itemID, unitID);
+
+			// change current _id status to deleted
+			await deleteItemUnit(itemID, unitID, await getInformationStatus("Active"), await getInformationStatus("Deleted"));
+
+			var updatedItemUnit = {
+				itemID: oldItemUnit.itemID,
+				unitID: oldItemUnit.unitID,
+				quantity: parseFloat(oldItemUnit.quantity),
+				sellingPrice: parseFloat(newSellingPrice),
+				informationStatusID: await getInformationStatus("Active")
+			};
+
+			console.log(updatedItemUnit);
+
+			db.insertOne(ItemUnits, updatedItemUnit, function (flag) {
+				if (flag)
+					res.sendStatus(200);
+			})
+
+		}
+
+		editInfo();
 	}
 };
 

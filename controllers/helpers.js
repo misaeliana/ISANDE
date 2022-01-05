@@ -744,6 +744,14 @@ module.exports = function() {
     			resolve(result)
     		})
     	})
+	},
+	
+	this.deleteItemUnit = function(itemID, unitID, activeID, deleteID) {
+    	return new Promise((resolve, reject) => {
+    		db.updateOne(ItemUnits, {itemID: itemID, unitID: unitID, informationStatusID: activeID}, {$set: {informationStatusID: deleteID}}, function(flag) {
+				resolve(flag);
+			})
+    	})
     },
 
     this.getItemUnitInfo = function(itemUnitID) {

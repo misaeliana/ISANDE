@@ -202,9 +202,10 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h3 class="modal-title" id="exampleModalLongTitle">Edit Selling Price</h3>
-                        <button type="button" class="close" data-dismiss="modal" a ria-label="Close">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
+                         <p id="modal-unit-name" style="display: none;"></p>
                     </div>
                     <div class="modal-body">
                         <form id="edit-item">
@@ -213,7 +214,7 @@
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn-red" id="btn-delete-selling-unit" style="float:left">Delete Selling Unit</button>
+                        <button type="button" class="btn-red" id="btn-delete-selling-unit" style="float:left">Delete</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-primary" id="btn-save-edit-selling-unit">Save</button>
                     </div>
@@ -234,7 +235,7 @@
                 <tbody>
                     {{#each itemUnits}}
                         <tr>
-                            <td>{{unitName}}</td>
+                            <td class="item-unit-name">{{unitName}}</td>
                             <td>{{ratio}}</td>
                             <td class="item-unit-selling-price">₱ {{sellingPrice}}</td>
                             <td>{{availableStock}}</td>
@@ -502,16 +503,35 @@
                     var currentSellingPrice = $(this).parents('tr').find('.item-unit-selling-price').text();
                     $('#edit-selling-price').val(currentSellingPrice.slice(2));
                     $('#modal-edit-selling-unit').modal('show');
+
+                    var unitName = $(this).parents('tr').find('.item-unit-name').text();
+                    $('#modal-unit-name').text(unitName);
                 })
 
                 //delete selling unit
                 $('#btn-delete-selling-unit').click(function() {
+                    var itemID = $("#item-ID").text();
+                    var unitName = $('#modal-unit-name').text();
+
+                    $.post('/deleteSellingUnit', {itemID, unitName}, function(result) {
+                        window.location.reload();
+                    })
 
                 })
 
                 //change informationstatus of the current selling unit and create a new one
                 $('#btn-save-edit-selling-unit').click(function () {
-                    
+                    var itemID = $("#item-ID").text();
+                    var unitName = $('#modal-unit-name').text();
+                    var newSellingPrice = $('#edit-selling-price').val();
+
+                    // add validation
+
+                    // check if different 
+
+                    $.post('/editSellingUnit', {itemID, unitName, newSellingPrice}, function(result) {
+                        window.location.reload();
+                    })
                 })
 
             })
