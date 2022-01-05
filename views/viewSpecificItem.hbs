@@ -210,6 +210,7 @@
                     <div class="modal-body">
                         <form id="edit-item">
                             <label for="edit-selling-price">Selling Price</label> <input id="edit-selling-price" type="number"><br>
+                            <p class="error" id="old-selling-price" style="display: none;"></p>
                             <p class="error" id="error-edit-selling-price" style="margin-top: 3px; margin-bottom: 3px;"></p>
                         </form>
                     </div>
@@ -502,6 +503,7 @@
                 $('.edit-button').click(function() {
                     var currentSellingPrice = $(this).parents('tr').find('.item-unit-selling-price').text();
                     $('#edit-selling-price').val(currentSellingPrice.slice(2));
+                    $('#old-selling-price').text(currentSellingPrice.slice(2));
                     $('#modal-edit-selling-unit').modal('show');
 
                     var unitName = $(this).parents('tr').find('.item-unit-name').text();
@@ -519,19 +521,38 @@
 
                 })
 
+                function resetEditSellingPriceErrorMessage (){
+                    $("#edit-selling-price").css("border", "1px solid #DDDDDD");
+                    $("#error-edit-selling-price").text("");
+                }
+
+                $('#edit-selling-price').keyup(function () { 
+                    resetEditSellingPriceErrorMessage();
+                });
+
                 //change informationstatus of the current selling unit and create a new one
                 $('#btn-save-edit-selling-unit').click(function () {
                     var itemID = $("#item-ID").text();
                     var unitName = $('#modal-unit-name').text();
                     var newSellingPrice = $('#edit-selling-price').val();
+                    var oldSellingPrice = $('#old-selling-price').text();
 
                     // add validation
+                    if (newSellingPrice == null || newSellingPrice == "" || newSellingPrice < 0) {
+                        $("#edit-selling-price").css("border", "1px solid #B00000");
+                        $("#error-edit-selling-price").text("Invalid selling price.");
+                    } else {
+                        resetEditSellingPriceErrorMessage();
 
-                    // check if different 
+                        // check if different 
+                        if (parseFloat(newSellingPrice) != parseFloat(oldSellingPrice)) {
 
-                    $.post('/editSellingUnit', {itemID, unitName, newSellingPrice}, function(result) {
-                        window.location.reload();
-                    })
+                            $.post('/editSellingUnit', {itemID, unitName, newSellingPrice}, function(result) {
+                                window.location.reload();
+                            })
+                        } else 
+                            $('#modal-edit-selling-unit').modal('hide');
+                    }
                 })
 
             })
