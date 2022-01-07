@@ -26,6 +26,8 @@ router.get('/login', loginController.getLogin);
 
 router.post('/checkLogIn', loginController.checkLogIn);
 
+router.get('/logout', loginController.logout);
+
 //--CUSTOMER--
 
 router.get('/customers', customerController.getCustomerList);

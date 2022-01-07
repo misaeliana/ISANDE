@@ -20,7 +20,7 @@ const customerController = {
 					name: result[i].name,
 					number: result[i].number,
 					address: result[i].address
-				}
+				};
 				customers.push(customer);
 			}
 			//sort function 
@@ -32,8 +32,17 @@ const customerController = {
 			    //syntax is "condition ? value if true : value if false"
 			    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
 			});
-			res.render('customerList', {customers});
-		})
+
+			if(req.session.position == "Cashier"){
+                var cashier = req.session.position;
+                res.render('customerList', {customers, cashier});	
+            }
+
+            if(req.session.position == "Manager"){
+                var manager = req.session.position;
+                res.render('customerList', {customers, manager});
+			}
+		});
 	},
 
 	postCustomerInformation: function(req, res) {
@@ -42,11 +51,11 @@ const customerController = {
 			number: req.body.number,
 			address: req.body.address,
 			informationStatusID: "618a7830c8067bf46fbfd4e4"
-		}
+		};
 
 		db.insertOne (Customers, customer, function(flag) {
 			if (flag) { }
-		})
+		});
 	},
 
 	checkCustomerName: function(req, res) {
@@ -54,7 +63,7 @@ const customerController = {
 
 		db.findMany(Customers, {name:name, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name', function(result) {	
 			res.send(result[0]);
-		})
+		});
 	},
 
 	getViewCustomer: function(req, res) {
@@ -91,19 +100,38 @@ const customerController = {
 					total: total,
 					paid: amountPaid,
 					due: total-amountPaid,
-				}
-				totalAmountDue += invoice.due
-				unpaidInvoices.push(invoice)
+				};
+
+				totalAmountDue += invoice.due;
+				unpaidInvoices.push(invoice);
 			}
 
-			if (unpaidInvoices.length==0) 
+			if (unpaidInvoices.length==0) {
+				if(req.session.position == "Cashier"){
+					var cashier = req.session.position;
+					res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue, cashier})
+				}
+	
+				if(req.session.position == "Manager"){
+					var manager = req.session.position;
+					res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue, manager})
+				}
 				res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue})
-
-			else
-				res.render('customerInformation', {customerInfo, customerInvoices, unpaidInvoices, totalAmountDue})
+			}
+			else {
+				if(req.session.position == "Cashier"){
+					var cashier = req.session.position;
+					res.render('customerInformation', {customerInfo, customerInvoices, unpaidInvoices, totalAmountDue, cashier});
+				}
+	
+				if(req.session.position == "Manager"){
+					var manager = req.session.position;
+					res.render('customerInformation', {customerInfo, customerInvoices, unpaidInvoices, totalAmountDue, manager});
+				}
+			}
 		}
 
-		getCustomerInformation()
+		getCustomerInformation();
 	},
 
 	postUpdateInformation: function (req, res) {

@@ -26,16 +26,18 @@ const loginController = {
 		res.render('login');
 	},
 
-    /*logout: function (req, res) {
+    logout: function (req, res) {
         req.session.destroy(function(err) {
-                if(err) throw err;
-                res.redirect('/login');
-            });
-    },*/
+            if(err) throw err;
+			res.send({redirect: '/login'});
+        });
+    },
 
 	checkLogIn: function(req, res){
 		var username = req.body.username;
 		var password = req.body.password;
+
+		console.log(username + " " + password);
 
 		async function redirect () {
 			var employee = await getEmployeeInfoFromUsername(username);
@@ -48,16 +50,15 @@ const loginController = {
 					req.session.name = employee.name;
 					req.session.username = employee.username;
 					req.session.positionID = employee.positionID;
-
-					var position = await getPositionName(req.session.positionID);
+					req.session.position = await getPositionName(req.session.positionID);
 						
-					if ("Assistant Manager" == position)
+					if ("Manager" == req.session.position)
 						res.send({redirect: '/invoices'}); // change manager landing page
-					else if ("Cashier" == position)
+					else if ("Cashier" == req.session.position)
 						res.send({redirect: '/invoices'});
-					else if ("Inventory and Purchasing" == position)
+					else if ("Inventory and Purchasing" == req.session.position)
 						res.send({redirect: '/inventory'});
-					else if ("Delivery" == position)
+					else if ("Delivery" == req.session.position)
 						res.send({redirect: '/deliveries'});
 				}
 				else
