@@ -67,12 +67,7 @@
                                     </select>
                                 </td>
                                 <td><input value="{{EOQ}}" class="quantity" style="text-align: right;"></td>
-                                <td class="unit">
-                                    <select class="dropdown dropdown-unit" disabled>
-                                        <option value="no-selected">--Select Unit--</option>
-                                    </select>
-                                </td>
-                                
+                                <td class="unit">{{unit}}</td>
                                 <td style="width:400px">
                                     <input style="float: left; height: 34px; width: 34px; border-radius: 7px; color: white; display: block;" type="button" class="btn-dark-blue btn-add-item-supplier" name="addSupplier" value="+">
 
@@ -170,8 +165,9 @@
                     $('.btn-save-item-supplier').click(function() {
                         var row = $(this).parents('tr')
                         var itemDesc = row.find('.itemDescription').text()
+                        var unit = row.find('.unit').text();
                         var supplierName = row.find('.add-item-supplier').val()
-                        $.post('/addItemSupplier', {itemDesc, supplierName}, function(result) {
+                        $.post('/addItemSupplier', {itemDesc, unit, supplierName}, function(result) {
                             if (result!="exists")
                                 row.find('.dropdown-supplier').append(`
                                 <option value="${result}">${supplierName}</option`)
@@ -185,7 +181,7 @@
 
                     $('#btn-generate-PO').click(function() {
                         var purchaseItems = []
-                        var proceed = false;
+                        var proceed = true;
                         var forcebreak = false
 
                         $("#table-purchase-stocks-body > tr").each(function () {
@@ -194,8 +190,10 @@
                                     proceed = true
                                     forcebreak = true
                                 }
-                                else 
+                                else {
+                                    proceed = false
                                     forcebreak = true
+                                }
                             }
                         })
 

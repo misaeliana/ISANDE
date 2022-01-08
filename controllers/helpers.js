@@ -141,6 +141,12 @@ module.exports = function() {
 	this.getUnits = function() {
 		return new Promise((resolve, reject) => {
 			db.findMany(Units, {}, '', function(result) {
+				result.sort(function(a, b) {
+				    var textA = a.unit.toUpperCase();
+				    var textB = b.unit.toUpperCase();
+				    //syntax is "condition ? value if true : value if false"
+				    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+				});
 				resolve (result);
 			});
 		});
@@ -773,6 +779,15 @@ module.exports = function() {
     this.getSupplierItems = function(itemID, supplierID) {
     	return new Promise((resolve, reject) => {
     		db.findMany(ItemSuppliers, {itemID:itemID, supplierID:supplierID}, '', function(result) {
+    			resolve(result)
+    		})
+    	})
+    },
+
+    this.getSupplierPO = function(supplierID) {
+    	return new Promise((resolve, reject) => {
+    		db.findMany(Purchases, {$and: [{supplierID:supplierID}, {$or: [{statusID:"618f650546c716a39100a809"}, {statusID:"618f652746c716a39100a80a"} ]} ]}, '', function(result) {
+    			console.log(result)
     			resolve(result)
     		})
     	})

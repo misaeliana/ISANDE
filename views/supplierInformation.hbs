@@ -123,6 +123,12 @@
             <div id="add-new-item" style="display: none;">
                 <div style="display: flex; align-items:center;">
                      <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="itemDescription" name="itemDescription" placeholder="Item Description">
+                     <select class="dropdown" id="dropdown-add-unit" style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px">
+                         <option value="no-selected">--Select Unit--</option>
+                         {{#each units}}
+                            <option value="{{_id}}">{{unit}}</option> 
+                         {{/each}}
+                     </select>
                      <input style="margin-top: 5px; margin-bottom: 0px; float: left; height: 34px; width: 34px; background-color: #0F84D9; border: #0F84D9; border-radius: 7px; color: white;" type="button" id="addItem" name="addItem" value="+">
                 </div>
                 <p class="error" id="error-description"></p>
@@ -416,6 +422,8 @@
 
                 $('#addItem').click(function() {
                     var itemDesc = capitalize($('#itemDescription').val());
+                    var unit = $('#dropdown-add-unit option:selected').text()
+                    var unitID = $("#dropdown-add-unit").val()
 
                     var address = window.location.pathname.split('/');
                     var supplierID = address[address.length -1]
@@ -425,12 +433,12 @@
                      $("#itemDescription").css("border", "1px solid #DDDDDD");
                      $("#error-description").text("");
 
-                        $.post('/addSupplierItem', {itemDesc, supplierID}, function(result) {
+                        $.post('/addSupplierItem', {itemDesc, unitID, supplierID}, function(result) {
                             console.log(result)
                             $('#supplier-item').append(`
                                 <tr>
                                     <td>${itemDesc}</td>
-                                    <td>${result}</td>
+                                    <td>${unit}</td>
                                 </tr`)
                             $('#itemDescription').val('');
                         })

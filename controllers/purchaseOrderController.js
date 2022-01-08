@@ -282,9 +282,7 @@ const purchaseOrderController = {
 		async function getItems() {
 			var items = await getLowItems();
 
-
 			for (var i=0; i<items.length; i++) {
-				items[i].unit = await getSpecificUnit(items[i].unitID);
 
 				var temp_suppliers = await getItemSuppliers(items[i]._id);
 				var suppliers = []
@@ -298,6 +296,7 @@ const purchaseOrderController = {
 				}
 
 				items[i].suppliers = suppliers
+				items[i].unit = await getSpecificUnit(items[i].unitID)
 			}
 
 			res.render('generatePO', {items});
@@ -309,9 +308,10 @@ const purchaseOrderController = {
 
 	addItemSupplier: function(req, res) {
 
-		async function add(itemID, supplierID) {
+		async function add(itemID, unitID, supplierID) {
 			var item = {
 				itemID: itemID.toString(),
+				unitID: unitID.toString(),
 				supplierID: supplierID.toString()
 			}
 		
@@ -322,11 +322,12 @@ const purchaseOrderController = {
 
 		async function check() {
 			var itemID = await getItemID(req.body.itemDesc)
+			var unitID = await getUnitID(req.body.unit)
 			var supplierID = await getSupplierID(req.body.supplierName)
 
-			db.findOne(ItemSuppliers, {itemID:itemID, supplierID:supplierID}, '', function(result) {
-				if (result.length == 0)
-					add(itemID, supplierID)
+			db.findOne(ItemSuppliers, {itemID:itemID, unitID:unitID, supplierID:supplierID}, '', function(result) {
+				if (result == null)
+					add(itemID, unitID, supplierID)
 				else
 					res.send("exists")
 			})
@@ -461,10 +462,11 @@ const purchaseOrderController = {
 	isSold: function(req, res) {
 		async function check() {
 			var itemID = await getItemID (req.query.itemDesc);
+			var unitID = await getUnitID(req.query.unit)
 			var supplierID = await getSupplierID(req.query.supplierName)
 
 
-			db.findOne (ItemSuppliers, {itemID:itemID, supplierID:supplierID}, '_id', function(result) {
+			db.findOne (ItemSuppliers, {itemID:itemID, unitID:unitID, supplierID:supplierID}, '_id', function(result) {
 				if (result == null)
 					res.send("not sold")
 				else
@@ -597,7 +599,6 @@ const purchaseOrderController = {
 		//------END OF NEED NEW PO FUNCTION------
 
 		async function updatePO(items, poID) {
-			var needNewPO = false;
 			var temp_newPOItems = []
 			var currentPOItems = await getCurrentPOItems(poID);
 
@@ -612,8 +613,7 @@ const purchaseOrderController = {
 				}
 
 				//quantity received is less that ordered quantity
-				if (items[i].quantityReceived < currentPOItems[i].quantity) {
-					needNewPO = true
+				if (req.body.needNewPo) {
 					var newPOItem = {
 						itemID: await getItemID(items[i].itemDesc),
 						unitID: await getItemUnit(items[i].itemDesc),
@@ -623,12 +623,11 @@ const purchaseOrderController = {
 				}
 			}
 
-			if (needNewPO)  {
+			if (req.body.needNewPo)  {
 				//status is received
 				db.updateOne(Purchases, {_id: poID}, {statusID: "618f654646c716a39100a80c"}, function (flag) {
 				})
-
-				
+	
 				var supplierID = await getPOSupplier(poID) 
 				var poNumber = await getPONumber()
 				var newPOID = await newPO (supplierID, poNumber)
@@ -675,9 +674,18 @@ const purchaseOrderController = {
 
 	getItemSuppliers: function(req, res) {
 
+		function getItemSuppliersWithUnit(itemID, unitID) {
+			return new Promise((resolve, reject) => {
+				db.findMany(ItemSuppliers, {itemID:itemID, unitID:unitID}, '', function(result) {
+					resolve(result)
+				})
+			})
+		}
+
 		async function getSuppliers() {
 			var itemID = await getItemID(req.query.itemDesc)
-			var temp_suppliers = await getItemSuppliers(itemID)
+			var unitID = await getUnitID(req.query.unit)
+			var temp_suppliers = await getItemSuppliersWithUnit(itemID, unitID)
 			
 			var suppliers = []		
 			for (var i=0; i<temp_suppliers.length; i++) {
@@ -772,24 +780,23 @@ const purchaseOrderController = {
 
             var itemUnits = []
 
-            /*var item = await getSpecificInventoryItems(itemID)
+            var item = await getSpecificInventoryItems(itemID)
             var itemUnit = {
             	id: item.unitID,
             	unit: await getSpecificUnit(item.unitID)
             }
-            itemUnits.push(itemUnit)*/
+            itemUnits.push(itemUnit)
 
             for (var i=0; i<temp_itemUnits.length; i++) {
-            	//if (temp_itemUnits[i].unitID != itemUnits[0].id)
-                //{
+            	if (temp_itemUnits[i].unitID != itemUnits[0].id)
+                {
                 	var itemUnit = {
                         id: temp_itemUnits[i].unitID,
                         unit: await getSpecificUnit(temp_itemUnits[i].unitID)
                     }
                     itemUnits.push(itemUnit)
-                //}
+                }
             }
-            console.log(itemUnits)
             res.send(itemUnits)
         }
 

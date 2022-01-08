@@ -88,6 +88,11 @@ const inventoryController = {
     },
 
 	postNewItem: function(req, res) {
+		if (req.body.retailQuantity == "")
+			var retailQuantity = 1
+		else
+			var retailQuantity = req.body.retailQuantity
+
 		var item = {
 			itemDescription: req.body.description,
 			categoryID: req.body.category,
@@ -95,7 +100,7 @@ const inventoryController = {
 			quantityAvailable: 0,
 			EOQ: parseFloat(req.body.EOQ),
 			reorderLevel: parseFloat(req.body.reorderLevel),
-			retailQuantity: parseFloat(req.body.retailQuantity),
+			retailQuantity: parseFloat(retailQuantity),
 			statusID: "61b0d6751ca91f5969f166de",
 			informationStatusID: "618a7830c8067bf46fbfd4e4"
 		};
@@ -215,7 +220,7 @@ const inventoryController = {
 			}
 
 			getToBeReceived(itemInfo).then((result) =>{
-				itemInfo.toBeReceived = result
+				itemInfo.toBeReceived = parseFloat(result).toFixed(2)
 				res.render('viewSpecificItem', {itemInfo, itemUnits, itemCategories, units, itemSuppliers});
 			})
 		}
@@ -234,7 +239,7 @@ const inventoryController = {
 
 			// Get supplier name 
 			for (var i = 0; i < itemSuppliers.length; i++) {
-				console.log(itemSuppliers[i])
+				//console.log(itemSuppliers[i])
 				var supplierDetails = await getSpecificSupplier(itemSuppliers[i].supplierID);
 				itemSuppliers[i].supplierID = supplierDetails.name;
 				itemSuppliers[i].unit = await getSpecificUnit(itemSuppliers[i].unitID)
@@ -248,6 +253,29 @@ const inventoryController = {
 		getInformation();
 	},
 
+	checkForPendingPO:function (req, res) {
+
+		async function check() {
+			var itemID = req.query.itemID;
+			var unitID = await getUnitID(req.query.unit);
+			var supplierID = await getSupplierID(req.query.supplierName)
+
+			var pos = await getSupplierPO(supplierID)
+			var pending = false
+			for (var i=0; i<pos.length && !pending; i++) {
+				var poItems = await getCurrentPOItems(pos[i]._id)
+
+				for (var j=0; j<poItems.length && !pending; j++) {
+					if (poItems[j].itemID == itemID && poItems[j].unitID == unitID.toString())
+						pending = true
+				}
+			}
+			res.send(pending)
+		}
+
+		check()	
+	},
+
 	postUpdateItemInformation: function(req, res) {
 
 		function updatePurchaseItems(oldItemID, newItemID) {
@@ -257,6 +285,11 @@ const inventoryController = {
 
 		function updateItemSuppliers(oldItemID, newItemID) {
 			db.updateMany(ItemSuppliers, {itemID:oldItemID}, {itemID:newItemID}, function(result) {
+			})
+		}
+
+		function updateItemUnits(oldItemID, newItemID) {
+			db.updateMany(ItemUnits, {itemID:oldItemID}, {itemID:newItemID}, function (result) {
 			})
 		}
 
@@ -279,6 +312,7 @@ const inventoryController = {
 				EOQ: parseFloat(req.body.EOQ),
 				reorderLevel: parseFloat(req.body.reorderLevel),
 				statusID: req.body.itemStatusID,
+				retailQuantity: req.body.retailQuantity,
 				informationStatusID: await getInformationStatus("Active")
 			};
 
@@ -295,6 +329,7 @@ const inventoryController = {
 				updateItemSuppliers(deletedItemID, result._id);
 				//update po items
 				updatePurchaseItems(deletedItemID, result._id);
+				updateItemUnits(deletedItemID, result._id)
 				res.send(result)
 			});
 		}

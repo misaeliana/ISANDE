@@ -89,6 +89,8 @@ router.post('/postUpdateItemInformation', inventoryController.postUpdateItemInfo
 
 router.get('/editItemSuppliers/:itemID', inventoryController.editItemSuppliers);
 
+router.get('/checkForPendingPOInventory', inventoryController.checkForPendingPO);
+
 router.post('/updateItemSuppliers', inventoryController.postUpdateItemSuppliers);
 
 router.get('/getSearchInventory', inventoryController.getSearchInventory);

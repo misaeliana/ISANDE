@@ -67,6 +67,8 @@
             <div style="height: 45px"></div>
 
             <p class="error" id="error-supplier" style="margin-bottom: 5px;"></p>
+            <p class="error" id="error-unit" style="margin-bottom: 5px;"></p>
+
 
             <table class="table" id="table-suppliers">
                 <thead class="table-regular-head">
@@ -99,10 +101,22 @@
             $(document).ready(function() {
 
                 $("#table-suppliers").on('click','.delete-button',function() {
-                    $(this).closest('tr').remove();
+                    var address = window.location.pathname.split('/');
+                    var itemID = address[address.length -1]
+
+                    var row = $(this).closest('tr');
+                    var supplierName = row.find('.supplierName').text();
+                    var unit = row.find('.unit').text();
+
+                    $.get('/checkForPendingPOInventory', {itemID, supplierName, unit}, function(result) {
+                        if (result == false)
+                            row.remove();
+                        else
+                            alert("Cannot remove supplier. There are currently pending purchase orders");
+                    })
                 });
 
-                function supplierValidation(supplierVal, supplierName) {
+                function supplierValidation(supplierVal, unit, supplierName) {
                     var found = false;
 
                     if (supplierVal == "no-selected") {
@@ -110,7 +124,7 @@
                         return 1;
                     } else {
                         $("#table-suppliers-body > tr").each(function () {
-                            if (supplierName == $(this).children('.supplierName').text())
+                            if (supplierName == $(this).children('.supplierName').text() && unit == $(this).children('.unit').text())
                                 found = true;
                         });
 
@@ -123,20 +137,38 @@
                     }
                 }
 
+                function unitValidation(unit) {
+                    if (unit == "no-selected") {
+                        errorMessage('no-unit')
+                        return 1;
+                    }
+                    else
+                        return 0;
+                }
+
                 $('#dropdown-supplier').change(function() {
                     resetErrorMessage();
+                })
+
+                $('#dropdown-unit').change(function() {
+                    resetErrorMessage()
                 })
 
                 function resetErrorMessage () {
                     $("#dropdown-supplier").css("border", "1px solid #DDDDDD");
                     $("#error-supplier").text("");
+                    $("#dropdown-unit").css("border", "1px solid #DDDDDD");
+                    $("#error-unit").text("");
                 }
 
                 function errorMessage(type) {
                     if (type == "no-selected") {
                         $("#dropdown-supplier").css("border", "1px solid #B00000");
                         $("#error-supplier").text("Please select a Supplier.");
-                    } else if (type == "in-list") {
+                    } else if (type == "no-unit") {
+                        $("#dropdown-unit").css("border", "1px solid #B00000");
+                        $("#error-unit").text("Please select a Unit.");
+                    }else if (type == "in-list") {
                         $("#dropdown-supplier").css("border", "1px solid #B00000");
                         $("#error-supplier").text("Supplier already selected.");
                     }
@@ -145,9 +177,10 @@
                 $('#add-supplier').click(function() {
                     var supplierName = $('#dropdown-supplier option:selected').text();
                     var supplierVal = $('#dropdown-supplier').val();
+                    var unitID = $('#dropdown-unit').val()
                     var unit = $("#dropdown-unit option:selected").text();
 
-                    //if (!supplierValidation(supplierVal, supplierName)) {
+                    if (!supplierValidation(supplierVal,unit, supplierName) && !unitValidation(unitID)) {
                         //resetErrorMessage();
 
                         $('#table-suppliers').find('tbody').append(
@@ -159,7 +192,7 @@
                         );
 
                         $('#new-supplier').trigger('reset');
-                    //}
+                    }
                 });
 
                 $('#btn-save-edit-item-suppliers').click(function() {

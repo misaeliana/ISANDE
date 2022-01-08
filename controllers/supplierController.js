@@ -169,15 +169,13 @@ const supplierController = {
 		async function addInfo() {
 			var itemSupplier = {
 				itemID: await getItemID(req.body.itemDesc),
+				unitID: req.body.unitID, 
 				supplierID: req.body.supplierID
 			}
 
 			insert(itemSupplier)
 
-			var unitID = await getItemUnitItemID(itemSupplier.itemID)
-			var unitName = await getSpecificUnit(unitID)
-
-			res.send(unitName)
+			res.sendStatus(200)
 		}
 
 		addInfo()
