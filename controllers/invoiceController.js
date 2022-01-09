@@ -62,6 +62,8 @@ const invoiceController = {
                 invoicesInfo.push(invoiceInfo);
            
             }
+
+            //res.render('invoiceList', {invoicesInfo});	
             //console.log(req.session.position);
 
             if(req.session.position == "Cashier"){
@@ -419,8 +421,19 @@ const invoiceController = {
 		async function getInvoiceTypes () {
 			var itype = await getAllInvoiceTypes();
             var delperson = await getDeliveryPersonnel();
-            var paymentTypes = await getPaymentOptions()
-            res.render('newInvoice', {itype,delperson, paymentTypes});
+            var paymentTypes = await getPaymentOptions();
+            //res.render('newInvoice', {itype,delperson, paymentTypes});
+
+            if(req.session.position == "Cashier"){
+                var cashier = req.session.position;
+                res.render('newInvoice', {itype, delperson, paymentTypes, cashier});	
+            }
+
+            if(req.session.position == "Manager"){
+                var manager = req.session.position;
+                res.render('newInvoice', {itype, delperson, paymentTypes, manager});
+            }
+
 		}	//res.sendFile( dir+"/newInvoice.html");
         getInvoiceTypes();
     },
@@ -430,17 +443,17 @@ const invoiceController = {
         function getItemUnit(itemID) {
             return new Promise((resolve, reject) => {
                 db.findOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'unitID', function(result) {
-                    resolve(result)
-                })
-            })
+                    resolve(result);
+                });
+            });
         }
 
         function getQuantityAvailable(itemID) {
             return new Promise((resolve, reject) => {
                 db.findOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'quantityAvailable', function(result){
-                    resolve(result.quantityAvailable)
-                })
-            })
+                    resolve(result.quantityAvailable);
+                });
+            });
         }
 
         function getQuantityAvailableInRetail(itemID) {
