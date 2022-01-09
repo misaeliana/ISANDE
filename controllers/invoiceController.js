@@ -551,7 +551,7 @@ const invoiceController = {
                 VAT: parseFloat(req.body.VAT),
                 discount: parseFloat(req.body.discount),
                 total:parseFloat(req.body.total),
-                employeeID: "61bc3ecb39b4c1027aaac14d"
+                employeeID: req.body.employeeID
             };
             var items = JSON.parse(req.body.itemString);
             db.insertOneResult (Invoices, invoice, function(result) {
