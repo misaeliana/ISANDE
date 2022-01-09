@@ -3,33 +3,60 @@ const db = require('../models/db.js');
 
 const Shrinkages = require('../models/ShrinkagesModel.js');
 
+const ItemUnits = require('../models/ItemUnitsModel.js'); 
+
+const Items = require('../models/ItemsModel.js');
+
 require('../controllers/helpers.js');
 
 const manualCountController = {
 
 	getManualCount: function(req, res) {
 
+        async function getOtherUnit(inventoryItem) {
+            return new Promise((resolve, reject) => {
+                db.findOne(ItemUnits, {$and: [ {itemID:inventoryItem._id}, {unitID: {$ne:inventoryItem.unitID}}, {informationStatusID:"618a7830c8067bf46fbfd4e4"}]}, 'unitID', function(result) {
+                    resolve(result.unitID)
+                })
+            })
+        }
+
 		async function getInformation() {
-            var inventoryTypes = await getInventoryTypes();
+            var itemCategories = await getItemCategories();
             var shrinkageReasons = await getshrinkageReasons();
             var informationStatusID = await getInformationStatus("Active");
             var inventoryItems = await getInventoryItems(informationStatusID);
             var items = [];
 
+
             for (var i = 0; i < inventoryItems.length; i++) {
+
                 var item = {
                     _id: inventoryItems[i]._id,
                     itemDescription: inventoryItems[i].itemDescription,
-                    quantityAvailable: inventoryItems[i].quantityAvailable,
+                    quantityAvailable: Math.floor(inventoryItems[i].quantityAvailable),
                     unit: await getSpecificUnit(inventoryItems[i].unitID),
                     category: inventoryItems[i].categoryID,
-                    reasons: shrinkageReasons,
+                    reasons: shrinkageReasons
                 };
 
                 items.push(item);
 
+                //quantity availbale has decimal
+                if (!Number.isInteger(inventoryItems[i].quantityAvailable)) {
+                    var item = {
+                        _id: inventoryItems[i]._id,
+                        itemDescription: inventoryItems[i].itemDescription,
+                        quantityAvailable: parseInt((inventoryItems[i].quantityAvailable - Math.floor(inventoryItems[i].quantityAvailable)) * inventoryItems[i].retailQuantity),
+                        unit: await getSpecificUnit(await getOtherUnit(inventoryItems[i])),
+                        category: inventoryItems[i].categoryID,
+                        reasons: shrinkageReasons
+                    }
+                    items.push(item)
+                }
             }
 
+			res.render('updateManualCount', {itemCategories, items});
             //res.render('updateManualCount', {inventoryTypes, items});
             
             if(req.session.position == "Inventory and Purchasing"){
@@ -48,16 +75,34 @@ const manualCountController = {
     },
     
     updateManualCount: function(req, res) {
+        function getItemInfo(itemID) {
+            return new Promise((resolve, reject) => {
+                db.findOne(Items, {_id: itemID}, '', function(result) {
+                    resolve(result)
+                })
+            })
+        }
         var shrinkages = JSON.parse(req.body.JSONShrinkages);
 
         async function updateItem() {
 
             // subtract from inventory 
             for (var i = 0; i < shrinkages.length; i++) {
+                var shrinkageUnitID = await getUnitID(shrinkages[i].unit);
 
                 var item = await getItemInfo(shrinkages[i].itemID);
 
-                var newQuantity = parseFloat(item.quantityAvailable) - parseFloat(shrinkages[i].quantityLost);
+                console.log(item)
+
+                //needs conversion
+                if (item.unitID!= shrinkageUnitID) {
+                    var newQuantity = parseFloat(shrinkages[i].quantityLost / item.retailQuantity)
+                    newQuantity = parseFloat(parseFloat(item.quantityAvailable) - parseFloat(newQuantity)).toFixed(2)
+
+                }
+                
+                else
+                    var newQuantity = parseFloat(item.quantityAvailable) - parseFloat(shrinkages[i].quantityLost);
 
                 updateItemQuantity(shrinkages[i].itemID, newQuantity);
             }
@@ -79,13 +124,13 @@ const manualCountController = {
 
             for (var i = 0; i < shrinkages.length; i++) {
                 var date = new Date(shrinkages[i].date);
-                var item = await getItemInfo(shrinkages[i].itemID);
+                var itemUnit = await getItemUnitInfo(shrinkages[i].itemUnitID);
 
                 var shrinkage = {
                     date: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
-                    description: item.itemDescription,
+                    description: await getItemDescription(itemUnit.itemID),
                     quantity: shrinkages[i].quantityLost,
-                    unit: await getSpecificUnit(item.unitID),
+                    unit: await getSpecificUnit(itemUnit.unitID),
                     reason: await getShrinkageReason(shrinkages[i].reasonID),
                     employee: await getEmployeeName(shrinkages[i].employeeID)
                 };

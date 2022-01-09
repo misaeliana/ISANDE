@@ -29,7 +29,7 @@
 
         <div class="content">
             <div style="display: flex;">
-                <h1 class="bold"> Edit Item Suppliers </h1>
+                <h1 class="bold"> Edit Item Suppliers - {{itemName}}</h1>
             </div>
 
             <hr style="margin-top: 0px;">
@@ -42,17 +42,26 @@
                             <option value={{_id}}>{{name}}</option>
                     {{/each}}
                 </select>
+                <select class="dropdown" id="dropdown-unit" style="margin-top: 5px; margin-bottom: 0px; width: 200px; float: left; margin-right: 10px">
+                    <option value="no-selected">Select Unit</option>
+                    {{#each units}}
+                        <option value={{_id}}>{{unit}}</option>
+                    {{/each}}
+                </select>
                 <input style="margin-top: 5px; margin-bottom: 0px; float: left; height: 34px; width: 34px; background-color: #0F84D9; border: #0F84D9; border-radius: 7px; color: white;" type="button" id="add-supplier" name="add-supplier" value="+">
             </form>
             
             <div style="height: 45px"></div>
 
             <p class="error" id="error-supplier" style="margin-bottom: 5px;"></p>
+            <p class="error" id="error-unit" style="margin-bottom: 5px;"></p>
+
 
             <table class="table" id="table-suppliers">
                 <thead class="table-regular-head">
                     <tr>
                         <th>Name</th>
+                        <th>Unit</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -60,6 +69,7 @@
                     {{#each itemSuppliers}}
                         <tr>
                             <td class="supplierName">{{supplierID}}</td>
+                            <td class="unit">{{unit}}</td>
                             <td><button class="delete-button"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
                         </tr>
                     {{/each}}
@@ -78,10 +88,22 @@
             $(document).ready(function() {
 
                 $("#table-suppliers").on('click','.delete-button',function() {
-                    $(this).closest('tr').remove();
+                    var address = window.location.pathname.split('/');
+                    var itemID = address[address.length -1]
+
+                    var row = $(this).closest('tr');
+                    var supplierName = row.find('.supplierName').text();
+                    var unit = row.find('.unit').text();
+
+                    $.get('/checkForPendingPOInventory', {itemID, supplierName, unit}, function(result) {
+                        if (result == false)
+                            row.remove();
+                        else
+                            alert("Cannot remove supplier. There are currently pending purchase orders");
+                    })
                 });
 
-                function supplierValidation(supplierVal, supplierName) {
+                function supplierValidation(supplierVal, unit, supplierName) {
                     var found = false;
 
                     if (supplierVal == "no-selected") {
@@ -89,7 +111,7 @@
                         return 1;
                     } else {
                         $("#table-suppliers-body > tr").each(function () {
-                            if (supplierName == $(this).children('.supplierName').text())
+                            if (supplierName == $(this).children('.supplierName').text() && unit == $(this).children('.unit').text())
                                 found = true;
                         });
 
@@ -102,20 +124,38 @@
                     }
                 }
 
+                function unitValidation(unit) {
+                    if (unit == "no-selected") {
+                        errorMessage('no-unit')
+                        return 1;
+                    }
+                    else
+                        return 0;
+                }
+
                 $('#dropdown-supplier').change(function() {
                     resetErrorMessage();
+                })
+
+                $('#dropdown-unit').change(function() {
+                    resetErrorMessage()
                 })
 
                 function resetErrorMessage () {
                     $("#dropdown-supplier").css("border", "1px solid #DDDDDD");
                     $("#error-supplier").text("");
+                    $("#dropdown-unit").css("border", "1px solid #DDDDDD");
+                    $("#error-unit").text("");
                 }
 
                 function errorMessage(type) {
                     if (type == "no-selected") {
                         $("#dropdown-supplier").css("border", "1px solid #B00000");
                         $("#error-supplier").text("Please select a Supplier.");
-                    } else if (type == "in-list") {
+                    } else if (type == "no-unit") {
+                        $("#dropdown-unit").css("border", "1px solid #B00000");
+                        $("#error-unit").text("Please select a Unit.");
+                    }else if (type == "in-list") {
                         $("#dropdown-supplier").css("border", "1px solid #B00000");
                         $("#error-supplier").text("Supplier already selected.");
                     }
@@ -124,13 +164,16 @@
                 $('#add-supplier').click(function() {
                     var supplierName = $('#dropdown-supplier option:selected').text();
                     var supplierVal = $('#dropdown-supplier').val();
+                    var unitID = $('#dropdown-unit').val()
+                    var unit = $("#dropdown-unit option:selected").text();
 
-                    if (!supplierValidation(supplierVal, supplierName)) {
-                        resetErrorMessage();
+                    if (!supplierValidation(supplierVal,unit, supplierName) && !unitValidation(unitID)) {
+                        //resetErrorMessage();
 
                         $('#table-suppliers').find('tbody').append(
                             `  <tr> 
-                                    <td class="supplierName">${supplierName}</td> 
+                                    <td class="supplierName">${supplierName}</td>
+                                    <td class="unit">${unit}</td>
                                     <td><button class="delete-button"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
                                 </tr>`
                         );
@@ -141,20 +184,23 @@
 
                 $('#btn-save-edit-item-suppliers').click(function() {
                     var itemID = $('#item-ID').text();
-                    var supplierNames = [];
+                    var supplierInfos = [];
 
                       $("#table-suppliers-body > tr").each(function () {
-                        supplierNames.push($(this).children('.supplierName').text());
+                        var supplierInfo = {
+                            supplierName: $(this).children('.supplierName').text(),
+                            unit: $(this).children('.unit').text()
+                        }
+                        supplierInfos.push(supplierInfo);
                     });
 
                     $('#new-supplier').trigger('reset');
 
-                     var JSONsupplierNames = JSON.stringify(supplierNames);
-
+                     var JSONsupplierInfos = JSON.stringify(supplierInfos);
                      $.ajax({
                             url: "/updateItemSuppliers",              
                             type: "POST",
-                            data: {JSONsupplierNames, itemID},
+                            data: {JSONsupplierInfos, itemID},
                             async: false,
                             success: function(result){
                                 if(result.redirect != null){

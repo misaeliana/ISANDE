@@ -50,7 +50,7 @@
                 <label for="dropdown-payment-type" style="margin-right: 10px">Payment Type</label>
                 <select class="dropdown" id="dropdown-payment-type" style="margin-right: 10px">
                         {{#each paymentTypes}}
-                            <option value="{{_id}}">{{status}}</option>
+                            <option value="{{_id}}">{{paymentOption}}</option>
                         {{/each}}
                     </select>
                 
@@ -109,7 +109,7 @@
                                     <td class="return-item-desc">{{itemDescription}}</td>
                                     <td style="display: none" class="quantity-purchased">{{quantity}}</td>
                                     <td><input class="return-quantity" type="number" value="{{quantity}}" style="width:70px" disabled></td>
-                                    <td>{{unit}}</td>
+                                    <td class="unit">{{unit}}</td>
                                     <td class="return-unit-price">₱ {{unitPrice}}</td>
                                     <td class="return-discount">₱ {{discount}}</td>
                                     <td class="return-amount">₱ {{amount}}</td>
@@ -137,6 +137,9 @@
 
                     <form>
                         <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="return-add-item-description" name="return-add-item-description" placeholder="Item Description">
+                         <select class="dropdown" id="dropdown-item-unit" style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px">
+                            <option value="no-selected">--Unit--</option>
+                        </select>
                         <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px; text-align: right;" type="text" class="form-control" id="return-add-item-qty" name="return-add-item-qty" placeholder="Qty">
                         <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px; text-align: right;" type="text" class="form-control" id="return-add-item-discount" name="return-add-item-discount" placeholder="Discount">
                         <input style="margin-top: 5px; margin-bottom: 0px; float: left; height: 34px; width: 34px; background-color: #0F84D9; border: #0F84D9; border-radius: 7px; color: white;" type="button" id="return-add-item" name="return-add-item-addItem" value="+">
@@ -199,10 +202,10 @@
                         <div class="summary-info-container"><div class="summary-info" id="refund">₱ 0</div></div>
                     </div>
 
-                    <div class="summary-container">
+                    <!--<div class="summary-container">
                         <div class="summary-text">Balance</div>
                         <div class="summary-info-container"><div class="summary-info" id="balance">₱ 0</div></div>
-                    </div>
+                    </div>-->
 
 
                     <hr style="margin-top: 0px; margin-bottom: 10px;">
@@ -301,6 +304,17 @@
                         else {
                             
                         }
+                    }, select: function(event, ui) {
+                        var itemDesc = ui.item.label;
+                        $.get('/getItemUnits', {itemDesc}, function(result) {
+                            $('#dropdown-item-unit option:not(:first)').remove();
+                            for (var i=0; i<result.length; i++) {
+                                $('#dropdown-item-unit').append(`
+                                    <option value="${result[i].id}">${result[i].unit}</option>
+                                `)
+                            }
+                            $('#dropdown-item-unit').prop("selectedIndex", 1)
+                        }); 
                     }
                 });
 
@@ -445,7 +459,6 @@
                 }
 
                 function computeTotal() {
-                    var balance = 0;
                     var orderTotal = 0;
                     var discount = 0;
                     var refund = 0;
@@ -460,13 +473,13 @@
                             quantity = 0
 
                         if ($(this).find('.return-check').is(":checked")) 
-                            refund += (quantity * parseFloat($(this).children('.return-unit-price').text().slice(1)))
+                            refund += (quantity * parseFloat($(this).children('.return-unit-price').text().slice(1)) - $(this).children('.return-discount').text().slice(1));
 
                         else 
-                            orderTotal += (quantity * parseFloat($(this).children('.return-unit-price').text().slice(1)))    
+                            orderTotal += (quantity * parseFloat($(this).children('.return-unit-price').text().slice(1))   
 
                         if ((quantity*parseFloat($(this).children('.return-unit-price').text().slice(1))) != parseFloat($(this).children('.return-amount').text().slice(1))) {
-                            orderTotal += (parseFloat($(this).children('.return-amount').text().slice(1)) - (quantity * parseFloat($(this).children('.return-unit-price').text().slice(1))))
+                            orderTotal += (parseFloat($(this).children('.return-amount').text().slice(1)) - (quantity * parseFloat($(this).children('.return-unit-price').text().slice(1))) 
                         }
                     })
 
@@ -476,24 +489,17 @@
                         //newItemsTotal += parseFloat(amount)
                     })
 
-                    var discountPercent = $('#total-discount').val()
+                    var discountTotal = $('#total-discount').val()
                     //there is discount
-                    if (discountPercent != "")
+                    if (discountTotal != "")
                         discount = orderTotal * (discountPercent/100)
 
                     orderTotal -= discount
                     var subtotal = orderTotal/1.12
                     var vat = orderTotal - subtotal
 
-                    /*balance = paid - refund
-
-                    var newOrderTotal = orderTotal + newItemsTotal
-
-                    var total = orderTotal + newItemsTotal - balance*/
-
                     var total = orderTotal - paid
                     
-
                     $('#subtotal').text("₱ " + parseFloat(subtotal).toFixed(2))
                     $('#vat').text("₱ " + parseFloat(vat).toFixed(2))
                     $('#discount').text("₱ " + parseFloat(discount).toFixed(2))
@@ -509,31 +515,28 @@
                     var itemDesc = $('#return-add-item-description').val()
                     var quantity = $('#return-add-item-qty').val()
                     var discount = $('#return-add-item-discount').val()
+                    if (discount == "")
+                        discount = 0
+                    var unit = $("#dropdown-item-unit option:selected").text()
+                    var unitID = $('#dropdown-item-unit').val();
 
-                    $.get('/checkQuantity', {itemDesc, quantity}, function(result) {
-                        //there is enough quantity
-                        if (result) {
-                            $.get('/getItemInfo', {itemDesc}, function(result) {
-                                var amount = quantity * result.sellingPrice
-                                if (discount != "") 
-                                    amount -= discount
-                                else   
-                                    discount = 0
-                                
+                    $.get('/getItemPrice', {itemDesc, quantity, unitID}, function (result) {
+                        if(quantity < result.quantityAvailable) {
+                            var sellingPrice = result.sellingPrice;
+                            var totalPrice = parseFloat((sellingPrice*quantity)- discount).toFixed(2);
 
-                                $('#table-return-new-item-body').append(
-                                    `<tr>
-                                        <td class="itemDesc">${itemDesc}</td>
-                                        <td class="quantity">${quantity}</td>
-                                        <td class="unit">${result.unit}</td>
-                                        <td class="unitPrice">P ${result.sellingPrice}</td>
-                                        <td class="discount">P ${discount}</td>
-                                        <td class="amount">P ${amount}</td> 
-                                        <td> <button class="delete-button delete-item-btn"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button> </td>
-                                    </tr>`)
+                            $('#table-return-new-item-body').append(
+                                `<tr>
+                                    <td class="itemDesc">${itemDesc}</td>
+                                    <td class="quantity">${quantity}</td>
+                                    <td class="unit">${unit}</td>
+                                    <td class="unitPrice">₱ ${sellingPrice}</td>
+                                    <td class="discount">₱ ${discount}</td>
+                                    <td class = "amount">₱ ${totalPrice}</td>
+                                    <td> <button class="delete-button delete-item-btn"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button> </td>
+                                </tr>`)
 
-                                computeTotal()
-                            })
+                            computeTotal()
                             $('#text-warning').css('display', 'none')
                             $('#return-add-item-description').val('')
                             $('#return-add-item-qty').val('')
@@ -561,16 +564,19 @@
                             if ($(this).find('.return-check').is(":checked")) {
                                 var returnItem = {
                                     itemDesc: $(this).children('.return-item-desc').text(),
+                                    unit:$(this).children('.unit').text(),
                                     quantity: $(this).find('.return-quantity').val(),
-                                    reason: $(this).find('.return-reason').val()
+                                    reason: $(this).find('.return-reason').val(),
+                                    discount: $(this).children('.return-discount').text().slice(1)
                                 }
                                 returns.push(returnItem)
                             } 
                             else {
                                 var invoiceItem = {
                                     itemDesc: $(this).children('.return-item-desc').text(),
+                                    unit:$(this).children('.unit').text(),
                                     quantity: $(this).find('.return-quantity').val(),
-                                    discount: $(this).children('.discount').text().slice(1)
+                                    discount: $(this).children('.return-discount').text().slice(1)
                                 }
                                 newInvoiceItems.push(invoiceItem);
                             }
@@ -579,6 +585,7 @@
                         $('#table-return-new-item-body > tr').each(function() {
                             var invoiceItem = {
                                 itemDesc: $(this).children('.itemDesc').text(),
+                                unit:$(this).children('.unit').text(),
                                 quantity: $(this).children('.quantity').text(),
                                 discount: $(this).children('.discount').text().slice(1)
                             }
@@ -592,11 +599,12 @@
                             var invoiceInfo = {
                                 customerName: $('#customerName').val(),
                                 invoiceType: invoiceType,
-                                statusID: $('#dropdown-payment-type').val(),
+                                statusID: "619785d78094faf8c10d1484",
+                                paymentOptionID:$('#dropdown-payment-type').val(),
                                 subtotal: parseFloat($('#subtotal').text().slice(1)),
                                 vat: parseFloat($('#vat').text().slice(1)),
                                 discount: parseFloat($('#discount').text().slice(1)),
-                                total: parseFloat($('#total').text().slice(1))
+                                total: parseFloat($('#orderTotal').text().slice(1))
                             }
 
                             deliveryInfo = {
@@ -610,10 +618,11 @@
                                 customerName: $('#customerName').val(),
                                 invoiceType: invoiceType,
                                 statusID: "619785b0d9a967328c1e8fa6",
+                                paymentOptionID: $('#dropdown-payment-type').val(),
                                 subtotal: parseFloat($('#subtotal').text().slice(1)),
                                 vat: parseFloat($('#vat').text().slice(1)),
                                 discount: parseFloat($('#discount').text().slice(1)),
-                                total: parseFloat($('#total').text().slice(1))
+                                total: parseFloat($('#orderTotal').text().slice(1))
                             }
                             deliveryInfo= {}
                         }

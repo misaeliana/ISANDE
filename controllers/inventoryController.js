@@ -9,6 +9,8 @@ const PurchaseItem = require('../models/PurchasedItemsModel.js');
 
 const PurchaseOrders = require('../models/PurchasesModel.js');
 
+const ItemUnits = require('../models/ItemUnitsModel.js');
+
 require('../controllers/helpers.js')();
 
 const inventoryController = {
@@ -45,7 +47,6 @@ const inventoryController = {
 					category: await getSpecificItemCategory(inventoryItems[i].categoryID),
 					unit: await getSpecificUnit(inventoryItems[i].unitID),
 					quantityAvailable: inventoryItems[i].quantityAvailable,
-					sellingPrice: parseFloat(inventoryItems[i].sellingPrice).toFixed(2),
 					statusID: inventoryItems[i].statusID,
 					status: textStatus,
 					btn_status: btnStatus
@@ -95,6 +96,11 @@ const inventoryController = {
     },
 
 	postNewItem: function(req, res) {
+		if (req.body.retailQuantity == "")
+			var retailQuantity = 1
+		else
+			var retailQuantity = req.body.retailQuantity
+
 		var item = {
 			itemDescription: req.body.description,
 			categoryID: req.body.category,
@@ -102,25 +108,27 @@ const inventoryController = {
 			quantityAvailable: 0,
 			EOQ: parseFloat(req.body.EOQ),
 			reorderLevel: parseFloat(req.body.reorderLevel),
-			sellingPrice: parseFloat(req.body.sellingPrice),
+			retailQuantity: parseFloat(retailQuantity),
 			statusID: "61b0d6751ca91f5969f166de",
 			informationStatusID: "618a7830c8067bf46fbfd4e4"
 		};
 
 		db.insertOneResult(Items, item, function (result) {
 
-			var updatedItem = {
-				_id: result._id,
-				itemDescription: result.itemDescription,
-				categoryID: result.categoryID,
-				category: req.body.categoryText,
-				unit: req.body.unitText,
-				quantityAvailable: result.quantityAvailable,
-				sellingPrice: result.sellingPrice,
-				statusID: result.statusID
-			};
+			if(req.body.sellingPrice!="") {
+				var itemUnit = {
+					itemID: result._id,
+					unitID: req.body.unit, 
+					sellingPrice: parseFloat(req.body.sellingPrice),
+					quantity: 1,
+					informationStatusID:"618a7830c8067bf46fbfd4e4"
+				}
+				db.insertOne(ItemUnits, itemUnit, function(flag) {
 
-			res.send(updatedItem);
+				})
+			}
+
+			res.sendStatus(200)
 		});
 
 	},
@@ -129,7 +137,7 @@ const inventoryController = {
 
 		function getMatchItems(itemID) {
 			return new Promise((resolve, reject) => {
-				db.findMany(PurchaseItem, {itemID:itemID}, 'purchaseOrderID quantity', function(result) {
+				db.findMany(PurchaseItem, {itemID:itemID}, 'purchaseOrderID unitID quantity', function(result) {
 					resolve(result)
 				})
 			})
@@ -138,6 +146,7 @@ const inventoryController = {
 		function checkPOStatus(poItem) {
 			return new Promise((resolve, reject) => {
 				db.findOne(PurchaseOrders, {_id:poItem.purchaseOrderID}, 'statusID', function(result) {					//po is released
+					//po is released
 					if (result.statusID == "618f652746c716a39100a80a")
 						resolve(true)
 					//po is of other status
@@ -152,9 +161,16 @@ const inventoryController = {
 			var toBeReceived = 0;
 
 			for (var i=0; i<poItems.length; i++) {
-				var result = await checkPOStatus(poItems[i])
-				if (result)
-					toBeReceived += parseInt(poItems[i].quantity)
+				//po is released
+				var released = await checkPOStatus(poItems[i])
+				if (released) {
+					if (item.unitID != poItems[i].unitID) {
+						convertedAmount = poItems[i].quantity / item.retailQuantity
+						toBeReceived += parseFloat(convertedAmount)
+					}
+					else
+						toBeReceived += parseInt(poItems[i].quantity)
+				}
 			}
 			return toBeReceived;
 		}
@@ -172,6 +188,7 @@ const inventoryController = {
 			for (var i = 0; i < itemSuppliers.length; i++) {
 				var supplierDetails = await getSpecificSupplier(itemSuppliers[i].supplierID);
 				itemSuppliers[i].supplierID = supplierDetails.name;
+				itemSuppliers[i].unit = await getSpecificUnit(itemSuppliers[i].unitID) 
 			}
 	
 			if (textStatus == "Low Stock") 
@@ -191,14 +208,29 @@ const inventoryController = {
 				quantityAvailable: item.quantityAvailable,
 				EOQ: item.EOQ,
 				reorderLevel: item.reorderLevel,
-				sellingPrice: parseFloat(item.sellingPrice).toFixed(2),
 				statusID: item.statusID,
 				status: textStatus,
+				retailQuantity: item.retailQuantity,
 				btn_status: btnStatus
 			};
 
+			var temp_itemUnits = await getItemUnits(item._id)
+			var itemUnits = []
+
+			for (var i=0; i<temp_itemUnits.length; i++) {
+				var itemUnit = {
+					unitName: await getSpecificUnit(temp_itemUnits[i].unitID),
+					ratio:temp_itemUnits[i].quantity,
+					sellingPrice: temp_itemUnits[i].sellingPrice,
+					availableStock: parseFloat(itemInfo.quantityAvailable * itemInfo.retailQuantity / temp_itemUnits[i].quantity).toFixed(2)
+				}
+				itemUnits.push(itemUnit)
+			}
+
 			getToBeReceived(itemInfo).then((result) =>{
-				itemInfo.toBeReceived = result
+				itemInfo.toBeReceived = parseFloat(result).toFixed(2)
+				res.render('viewSpecificItem', {itemInfo, itemUnits, itemCategories, units, itemSuppliers});
+			})
 
 				if(req.session.position == "Inventory and Purchasing"){
 					var inventoryAndPurchasing = req.session.position;
@@ -222,13 +254,19 @@ const inventoryController = {
 			var itemID = req.params.itemID;
 			var suppliers = await getSuppliers();
 			var itemSuppliers = await getItemSuppliers(req.params.itemID);
+			var units = await getUnits()
 
 			// Get supplier name 
 			for (var i = 0; i < itemSuppliers.length; i++) {
+				//console.log(itemSuppliers[i])
 				var supplierDetails = await getSpecificSupplier(itemSuppliers[i].supplierID);
 				itemSuppliers[i].supplierID = supplierDetails.name;
+				itemSuppliers[i].unit = await getSpecificUnit(itemSuppliers[i].unitID)
 			}
 
+			var itemName = await getItemDescription(itemID)
+
+			res.render('editItemSuppliers', {itemID, itemName, suppliers, itemSuppliers, units});
 			if(req.session.position == "Inventory and Purchasing"){
 				var inventoryAndPurchasing = req.session.position;
 				res.render('editItemSuppliers', {itemID, suppliers, itemSuppliers, inventoryAndPurchasing});	
@@ -243,6 +281,29 @@ const inventoryController = {
 		getInformation();
 	},
 
+	checkForPendingPO:function (req, res) {
+
+		async function check() {
+			var itemID = req.query.itemID;
+			var unitID = await getUnitID(req.query.unit);
+			var supplierID = await getSupplierID(req.query.supplierName)
+
+			var pos = await getSupplierPO(supplierID)
+			var pending = false
+			for (var i=0; i<pos.length && !pending; i++) {
+				var poItems = await getCurrentPOItems(pos[i]._id)
+
+				for (var j=0; j<poItems.length && !pending; j++) {
+					if (poItems[j].itemID == itemID && poItems[j].unitID == unitID.toString())
+						pending = true
+				}
+			}
+			res.send(pending)
+		}
+
+		check()	
+	},
+
 	postUpdateItemInformation: function(req, res) {
 
 		function updatePurchaseItems(oldItemID, newItemID) {
@@ -252,6 +313,11 @@ const inventoryController = {
 
 		function updateItemSuppliers(oldItemID, newItemID) {
 			db.updateMany(ItemSuppliers, {itemID:oldItemID}, {itemID:newItemID}, function(result) {
+			})
+		}
+
+		function updateItemUnits(oldItemID, newItemID) {
+			db.updateMany(ItemUnits, {itemID:oldItemID}, {itemID:newItemID}, function (result) {
 			})
 		}
 
@@ -273,8 +339,8 @@ const inventoryController = {
 				quantityAvailable: parseFloat(req.body.quantity),
 				EOQ: parseFloat(req.body.EOQ),
 				reorderLevel: parseFloat(req.body.reorderLevel),
-				sellingPrice: parseFloat(req.body.sellingPrice),
 				statusID: req.body.itemStatusID,
+				retailQuantity: req.body.retailQuantity,
 				informationStatusID: await getInformationStatus("Active")
 			};
 
@@ -291,6 +357,7 @@ const inventoryController = {
 				updateItemSuppliers(deletedItemID, result._id);
 				//update po items
 				updatePurchaseItems(deletedItemID, result._id);
+				updateItemUnits(deletedItemID, result._id)
 				res.send(result)
 			});
 		}
@@ -303,13 +370,13 @@ const inventoryController = {
 	postUpdateItemSuppliers: function(req, res) {
 
 		async function updateItemInfo() {
-			var suppliers = JSON.parse(req.body.JSONsupplierNames);
+			var supplierInfos = JSON.parse(req.body.JSONsupplierInfos);
 			var itemSuppliers = [];
-
-			for (var i = 0; i < suppliers.length; i++) {
+			for (var i = 0; i < supplierInfos.length; i++) {
 				var itemSupplier = {
 					itemID: req.body.itemID,
-					supplierID: await getSupplierID(suppliers[i])
+					unitID: await getUnitID(supplierInfos[i].unit),
+					supplierID: await getSupplierID(supplierInfos[i].supplierName)
 				};
 
 				itemSuppliers.push(itemSupplier);
@@ -353,7 +420,6 @@ const inventoryController = {
 						category: await getSpecificItemCategory(invoice[i].categoryID),
 						unit: await getSpecificUnit(invoice[i].unitID),
 						quantityAvailable: invoice[i].quantityAvailable,
-						sellingPrice: parseFloat(invoice[i].sellingPrice).toFixed(2),
 						statusID: invoice[i].statusID,
 						status: textStatus,
 						btn_status: btnStatus
@@ -413,7 +479,6 @@ const inventoryController = {
 					category: await getSpecificItemCategory(inventoryItems[i].categoryID),
 					unit: await getSpecificUnit(inventoryItems[i].unitID),
 					quantityAvailable: inventoryItems[i].quantityAvailable,
-					sellingPrice: parseFloat(inventoryItems[i].sellingPrice).toFixed(2),
 					statusID: inventoryItems[i].statusID,
 					status: textStatus,
 					btn_status: btnStatus
@@ -432,6 +497,71 @@ const inventoryController = {
 		}
 
 		filters();
+	},
+
+
+	//NEW STUFF
+	newSellingUnit: function(req, res) {
+		var itemUnit = {
+			itemID: req.body.itemID,
+			unitID: req.body.unit, 
+			quantity: parseFloat(req.body.quantity),
+			sellingPrice: parseFloat(req.body.sellingPrice),
+			informationStatusID: "618a7830c8067bf46fbfd4e4"
+		}
+
+		db.insertOne(ItemUnits, itemUnit, function (flag) {
+			if (flag)
+				res.sendStatus(200);
+		})
+	},
+
+	deleteSellingUnit: function(req, res) {
+		var itemID = req.body.itemID;
+		var unitName = req.body.unitName;
+		
+		async function deleteInfo() {
+			var unitID = await getUnitID(unitName);
+
+			var flag = await deleteItemUnit(itemID, unitID,  await getInformationStatus("Active"), await getInformationStatus("Deleted"));
+
+			if (flag)
+				res.sendStatus(200);
+		}
+
+		deleteInfo();
+	},
+
+	editSellingUnit: function(req, res) {
+		var itemID = req.body.itemID;
+		var unitName = req.body.unitName;
+		var newSellingPrice = req.body.newSellingPrice;
+		
+		async function editInfo() {
+			var unitID = await getUnitID(unitName);
+			var oldItemUnit = await getItemUnitID(itemID, unitID);
+
+			// change current _id status to deleted
+			await deleteItemUnit(itemID, unitID, await getInformationStatus("Active"), await getInformationStatus("Deleted"));
+
+			var updatedItemUnit = {
+				itemID: oldItemUnit.itemID,
+				unitID: oldItemUnit.unitID,
+				quantity: parseFloat(oldItemUnit.quantity),
+				sellingPrice: parseFloat(newSellingPrice),
+				informationStatusID: await getInformationStatus("Active")
+			};
+
+			console.log(updatedItemUnit);
+
+			db.insertOne(ItemUnits, updatedItemUnit, function (flag) {
+				if (flag)
+					res.sendStatus(200);
+			})
+
+		}
+
+		editInfo();
 	}
 };
 

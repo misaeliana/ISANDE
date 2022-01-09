@@ -98,11 +98,17 @@ router.post('/postUpdateItemInformation', inventoryController.postUpdateItemInfo
 
 router.get('/editItemSuppliers/:itemID', inventoryController.editItemSuppliers);
 
+router.get('/checkForPendingPOInventory', inventoryController.checkForPendingPO);
+
 router.post('/updateItemSuppliers', inventoryController.postUpdateItemSuppliers);
 
 router.get('/getSearchInventory', inventoryController.getSearchInventory);
 
 router.get('/getFilterInventory', inventoryController.getFilterInventory);
+
+router.post('/deleteSellingUnit', inventoryController.deleteSellingUnit);
+
+router.post('/editSellingUnit', inventoryController.editSellingUnit);
 
 
 //--PURCHASE ORDER--
@@ -231,5 +237,17 @@ router.get('/getCustomerInvoices', reportController.getCustomerInvoicesReport);
 router.get('/getFilteredCustomerInvoices', reportController.getFilteredCustomerInvoices);
 
 router.get('/getFilteredSalesPerformanceReport', reportController.getFilteredSalesPerformanceReport);
+
+
+
+
+//NEW STUFF
+
+router.post('/newSellingUnit', inventoryController.newSellingUnit);
+
+router.get('/getItemUnits', invoiceController.getItemUnits);
+
+router.get('/getItemUnitsPO', purchaseOrderController.getItemUnitsPO);
+
 
 module.exports = router;

@@ -134,6 +134,9 @@
 
                 <form>
                     <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="itemDescription" name="itemDescription" placeholder="Item Description">
+                    <select class="dropdown" id="dropdown-item-unit" style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px">
+                        <option value="no-selected">--Unit--</option>
+                    </select>
                     <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px; text-align: right;" type="number" class="form-control" id="qty" name="qty" placeholder="Qty">
                     <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px; text-align: right;" type="text" class="form-control" id="discount" name="discount" placeholder="Discount">
                     <input style="margin-top: 5px; margin-bottom: 0px; float: left; height: 34px; width: 34px; background-color: #0F84D9; border: #0F84D9; border-radius: 7px; color: white;" type="button" id="addItem" name="addItem" value="+">
@@ -192,7 +195,7 @@
                         </div>
                     </div>
 
-                    <div class="btn-export-invoice"><button class="btn-dark-blue" id="btn-export-invoice">Export</button></div>
+                    <!--<div class="btn-export-invoice"><button class="btn-dark-blue" id="btn-export-invoice">Export</button></div>-->
 
                     <div style="height: 20px"></div>   
 
@@ -382,7 +385,18 @@
 
                         else 
                             $('#text-warning-new-PO').css('display','none')
-                    }   
+                    }, select: function(event, ui) {
+                        $('#dropdown-item-unit option:not(:first)').remove();
+                        var itemDesc = ui.item.label;
+                        $.get('/getItemUnits', {itemDesc}, function(result) {
+                            for (var i=0; i<result.length; i++) {
+                                $('#dropdown-item-unit').append(`
+                                    <option value="${result[i].id}">${result[i].unit}</option>
+                                `)
+                            }
+                            $('#dropdown-item-unit').prop("selectedIndex", 1)
+                        }); 
+                    }
                 });
                 
                 /*$.ui.autocomplete.prototype._renderItem = function (ul, item) {
@@ -431,7 +445,6 @@
 
                 function computeTotal() {
                     var discountTotal = 0;
-                    var totalDiscount = 0
                     var amount = 0;
                     
 
@@ -440,12 +453,13 @@
                         discountTotal += parseFloat($(this).children('.discount').text().slice(1))
                     }); 
 
-                    var totalDiscountPercent = $('#total-discount').val();
+                    var totalDiscount = $('#total-discount').val();
 
-                    if (totalDiscountPercent != "")
-                        totalDiscount = amount*(totalDiscountPercent/100)
 
-                    discountTotal+= parseFloat(totalDiscount)
+                    if (totalDiscount == "")
+                        totalDiscount = 0
+
+                    discountTotal += parseFloat(totalDiscount)
                     amount -= parseFloat(totalDiscount)
                     var vat = (amount *.12);
                     var sub = (amount - vat);
@@ -469,20 +483,24 @@
 
                 $('#addItem').click(function() {
                    var itemDesc = $('#itemDescription').val();
+                   var unit = $("#dropdown-item-unit option:selected").text(    )
+                   var unitID = $('#dropdown-item-unit').val();
                    var quantity = $('#qty').val();
                    var discount = $('#discount').val();
+                   if (discount == "")
+                        discount = 0
                    
                     
                     if(filled(itemDesc, qty) == 0) {
-                        $.get('/getItemPrice', {itemDesc}, function (result) {
+                        $.get('/getItemPrice', {itemDesc, quantity, unitID}, function (result) {
                             if(quantity > result.quantityAvailable)
                                 $('#text-warning-new-invoice').text("Requested amount exceeds available!");
                             
                             else{
                                 var sellingPrice = result.sellingPrice;
-                                var dis = discount/100;
-                                var discountAmount = parseFloat(sellingPrice * dis).toFixed(2);
-                                var totalPrice = parseFloat((sellingPrice*quantity)- discountAmount).toFixed(2);
+                                //var dis = discount/100;
+                                //var discountAmount = parseFloat(sellingPrice * dis).toFixed(2);
+                                var totalPrice = parseFloat((sellingPrice*quantity)- discount).toFixed(2);
                                 var element = $('#table-body-item-list tr').filter(function(){
                                         return this.innerHTML.indexOf(itemDesc) !== -1;
                                 })
@@ -497,10 +515,10 @@
                                     `<tr>
                                         <td class="itemDescription">${itemDesc}</td>
                                         <td class="qty">${quantity}</td>
-                                        <td class="unit">Piece</td>
-                                        <td class="price">₱${sellingPrice}</td>
-                                        <td class="discount" style="color:red">₱${discountAmount}</td>
-                                        <td class = "amount">₱${totalPrice}</td>
+                                        <td class="unit">${unit}</td>
+                                        <td class="price">₱ ${sellingPrice}</td>
+                                        <td class="discount" style="color:red">₱${discount}</td>
+                                        <td class = "amount">₱ ${totalPrice}</td>
                                         <td><button class="delete-button add-stock-delete-btn" id="btn-delete-item"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
                                     </tr>`);
                                     //console.log(amount);
@@ -508,6 +526,8 @@
                                     $('#itemDescription').val('');
                                     $('#qty').val('');
                                     $('#discount').val('');
+                                    $('#dropdown-item-unit option:not(:first)').remove();
+                                    $('#text-warning-new-invoice').text('')
                                 }
                             }
                         })  
@@ -578,7 +598,6 @@
                     if(invoicefilled() == 1){
                         var orderedItems = [];
                         var custName = $('#customer-Name').val();
-                        var statusID = '0';
                         var address = '';
                         var date =  $('#dateToday').text();
                         var ddate = $('#delivery-date').val();
@@ -591,6 +610,7 @@
                         $("#table-body-item-list > tr").each(function () {
                             var item = {
                                 itemDescription: $(this).children('.itemDescription').text(),
+                                unit:$(this).children('.unit').text(),
                                 quantity: $(this).children('.qty').text(),
                                 discount: $(this).children('.discount').text().slice(1),
                             }
@@ -600,14 +620,17 @@
                        //cash or cheque
                         if(paymentOption == '61b2de709f9cd4edddf21d64' || paymentOption == '61b2de7f9f9cd4edddf21d65'){
                             //paid
-                            statusID = '619785b0d9a967328c1e8fa6'
+                            var statusID = '619785b0d9a967328c1e8fa6'
                         }
 
                         //cod or on account
                         if(paymentOption == '61b2de879f9cd4edddf21d66' || paymentOption == '61b2de8d9f9cd4edddf21d67'){
                             //pending
-                            statusID = '619785d78094faf8c10d1484';
+                            var statusID = '619785d78094faf8c10d1484';
                         }
+
+                        if ($('#drop-down-new-invoice-type option:selected').text() == "Delivery")
+                            var statusID = '619785d78094faf8c10d1484'
 
                         var subtotal = $('#subtotalbox').text().slice(1);
                         var VAT = $('#vatbox').text().slice(1);
@@ -615,7 +638,7 @@
                         var total = $('#totbox').text().slice(1);
                         var itemString = JSON.stringify(orderedItems);  
 
-                        $.post('/createNewInvoice', {custID, date, typeID, statusID, paymentOption,subtotal, VAT, discount, total, employeeID, ddate, dnotes, itemString}, function(result) {
+                        $.post('/createNewInvoice', {custName, date, typeID, statusID, paymentOption,subtotal, VAT, discount, total, employeeID, ddate, dnotes, itemString}, function(result) {
                             alert("Transaction successfully processed");
                             window.location = "/invoices"
                         }) 

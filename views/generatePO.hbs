@@ -39,9 +39,9 @@
                     <thead class="table-head">
                         <tr>
                             <th>Item Description</th>
-                            <th style="width: 100px;">Quantity</th>
+                            <th style="width: 100px;">Supplier</th>
+                            <th>Quantity</th>
                             <th>Unit</th>
-                            <th>Supplier</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -50,16 +50,16 @@
                         {{#each items}}
                             <tr>
                                 <td class="itemDescription">{{itemDescription}}</td>
-                                <td><input value="{{EOQ}}" class="quantity" style="text-align: right;"></td>
-                                <td class="unit">{{unit}}</td>
                                 <td class="supplier">
-                                    <select class="dropdown-supplier">
+                                    <select class="dropdown dropdown-supplier">
                                         <option value="no-selected">--Select Supplier--</option>
                                         {{#each suppliers}}
                                             <option value="{{_id}}">{{name}}</option>
                                         {{/each}}
                                     </select>
                                 </td>
+                                <td><input value="{{EOQ}}" class="quantity" style="text-align: right;"></td>
+                                <td class="unit">{{unit}}</td>
                                 <td style="width:400px">
                                     <input style="float: left; height: 34px; width: 34px; border-radius: 7px; color: white; display: block;" type="button" class="btn-dark-blue btn-add-item-supplier" name="addSupplier" value="+">
 
@@ -88,6 +88,34 @@
             <script>
                 $(document).ready(function() {
 
+                    $('.dropdown-supplier').change(function() {
+                        var supplierID = $(this).val()
+                        var itemDesc = $(this).parents('tr').find('.itemDescription').text()
+
+                        if (supplierID != "no-selected") {
+                            $.get('/getEOQ', {itemDesc}, function(result) {
+                                $('#quantity').val(parseInt(result))
+                            })
+
+                            var supplierName = $(this).find('option:selected').text()
+
+                            $.get('/getItemUnitsPO', {itemDesc, supplierName}, function(result) {
+                                console.log(result)
+                                $(this).parents('tr').find(".dropdown-unit").prop('disabled', false);
+
+                                for (var i=0; i<result.length; i++) {
+                                    $(this).parents('tr').find('.dropdown-unit').append(`
+                                        <option value="${result[i].id}">${result[i].unit}</option>
+                                    `)
+                                }
+                                $(this).parents('tr').find(".dropdown-unit").prop("selectedIndex", 1);
+                            }); 
+                        }
+                    })
+
+
+
+                    //-------ADDING NEW SUPPLIERS FUNCTIONS=-------
                     $('.btn-add-item-supplier').click(function() {
                         $(this).parents('tr').find('.div-add-item-supplier').css('display', 'flex')
                         $(this).css('display', 'none')
@@ -129,8 +157,9 @@
                     $('.btn-save-item-supplier').click(function() {
                         var row = $(this).parents('tr')
                         var itemDesc = row.find('.itemDescription').text()
+                        var unit = row.find('.unit').text();
                         var supplierName = row.find('.add-item-supplier').val()
-                        $.post('/addItemSupplier', {itemDesc, supplierName}, function(result) {
+                        $.post('/addItemSupplier', {itemDesc, unit, supplierName}, function(result) {
                             if (result!="exists")
                                 row.find('.dropdown-supplier').append(`
                                 <option value="${result}">${supplierName}</option`)
@@ -144,7 +173,7 @@
 
                     $('#btn-generate-PO').click(function() {
                         var purchaseItems = []
-                        var proceed = false;
+                        var proceed = true;
                         var forcebreak = false
 
                         $("#table-purchase-stocks-body > tr").each(function () {
@@ -153,8 +182,10 @@
                                     proceed = true
                                     forcebreak = true
                                 }
-                                else 
+                                else {
+                                    proceed = false
                                     forcebreak = true
+                                }
                             }
                         })
 

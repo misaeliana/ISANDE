@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title> View Purchase Order </title>
+        <title> Purchase Order #{{poInfo.purchaseOrderNumber}} </title>
         <meta name="description" content="View Purchase Order">
         <meta name="keyword" content="Moderna, View Purchase Order">
         <link rel="stylesheet" type="text/css" href="../css/general.css">
@@ -54,10 +54,18 @@
                     <div class="override-label"> Date Made </div> 
                     <div class="label-content" id="view-PO-date-made">{{poInfo.fdateMade}}</div>
                 </div>
-                <div class="label-container">
-                    <div class="override-label"> Date Received </div> 
-                    <div class="label-content" id="view-PO-date-received">{{poInfo.fdateReceived}}</div>
-                </div>
+                {{#if received}}
+                    <div class="label-container">
+                        <div class="override-label"> Date Received </div> 
+                        <div class="label-content" id="view-PO-date-received">{{poInfo.fdateReceived}}</div>
+                    </div>
+                {{/if}}
+                {{#if incomplete}}
+                    <div class="label-container">
+                        <div class="override-label"> Date Received </div> 
+                        <div class="label-content" id="view-PO-date-received">{{poInfo.fdateReceived}}</div>
+                    </div>
+                {{/if}}
                 <div class="display-flex" style="margin-top: 30px;">
                     <h3 class ="bold h3-left">Supplier Details</h3>
                 </div>
@@ -86,27 +94,46 @@
                 </div>           
                     <table class="table">
                         <thead style="background-color: #2F5D62; color: white">
-                            <tr>
-                                <th>Item Description</th>
-                                <th>Quantity</th>
-                                <th>Unit</th>
-                                <th>Unit Price</th>
-                                <th>Received</th>
-                                <th>Amount</th>
-                            </tr>
+                            {{#if received}}
+                                <tr>
+                                    <th>Item Description</th>
+                                    <th>Quantity Ordered</th>
+                                    <th>Unit</th>
+                                    <th>Unit Price</th>
+                                    <th>Quantity Received</th>
+                                    <th>Amount</th>
+                                </tr>
+                            {{else}}
+                                <tr>
+                                     <th>Item Description</th>
+                                    <th>Quantity Ordered</th>
+                                    <th>Unit</th>
+                                </tr>
+                            {{/if}}
+                            
                         </thead>
                         <!-- right align qty, received, unit price, amount-->
                         <tbody id="table-poItem-body"> 
-                            {{#each items}}
-                                <tr>
-                                    <td class="classItemDescription">{{itemDescription}}</td>
-                                    <td class="classQty" style="text-align: right;">{{quantity}}</td>
-                                    <td class="classUnit">{{unitName}}</td>
-                                    <td style="text-align: right;">₱ {{unitPrice}}</td>
-                                    <td style="text-align: right;">{{quantityReceived}}</td>
-                                    <td style="text-align: right;">₱ {{amount}}</td>  
-                                </tr>
-                            {{/each}}
+                            {{#if received}}
+                                {{#each items}}
+                                    <tr>
+                                        <td class="classItemDescription">{{itemDescription}}</td>
+                                        <td class="classQty">{{quantity}}</td>
+                                        <td class="classUnit">{{unitName}}</td>
+                                        <td>₱ {{unitPrice}}</td>
+                                        <td>{{quantityReceived}}</td>
+                                        <td>₱ {{amount}}</td>  
+                                    </tr>
+                                {{/each}}
+                            {{else}}
+                                {{#each items}}
+                                    <tr>
+                                        <td class="classItemDescription">{{itemDescription}}</td>
+                                        <td class="classQty">{{quantity}}</td>
+                                        <td class="classUnit">{{unitName}}</td>
+                                    </tr>
+                                {{/each}}
+                            {{/if}}
                         </tbody>
                     </table>
                     {{#if received}}

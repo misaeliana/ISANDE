@@ -100,6 +100,11 @@ const supplierController = {
 
 			var inventory = [];
 			for (var i=0; i<temp_inventory.length; i++) {
+				var item = {
+					itemDescription: await getItemDescription(temp_inventory[i].itemID),
+					unit: await getSpecificUnit(temp_inventory[i].unitID)
+				}
+				inventory.push(item)
 				var itemInfo = await getItem(temp_inventory[i].itemID);
 				var item = {
 					itemDescription: itemInfo.itemDescription,
@@ -187,15 +192,13 @@ const supplierController = {
 		async function addInfo() {
 			var itemSupplier = {
 				itemID: await getItemID(req.body.itemDesc),
+				unitID: req.body.unitID, 
 				supplierID: req.body.supplierID
 			};
 
 			insert(itemSupplier);
-
-			var unitID = await getItemUnitItemID(itemSupplier.itemID);
-			var unitName = await getSpecificUnit(unitID);
-
-			res.send(unitName);
+      
+			res.sendStatus(200)
 		}
 
 		addInfo();

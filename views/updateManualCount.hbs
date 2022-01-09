@@ -34,8 +34,8 @@
                     <div class="btn-new-PO">
                         <select class="dropdown" id="dropdown-manual-count" style="margin-right: 10px; margin-top: 20px;">
                             <option value="all-type" selected>All</option>
-                            {{#each inventoryTypes}}
-                                <option value={{_id}}>{{type}}</option>
+                            {{#each itemCategories}}
+                                <option value={{_id}}>{{category}}</option>
                             {{/each}}
                         </select>
                     </div> 
@@ -66,7 +66,7 @@
                                 <td style="display: none;" class="itemID">{{_id}}</td>
                                 <td style="text-align:end;" class="quantity-available">{{quantityAvailable}}</td>
                                 <td class="quantity"><input type="number" value="{{quantityAvailable}}" style="text-align:end;" class="quantity-val"></td>
-                                <td>{{unit}}</td>
+                                <td class="unit">{{unit}}</td>
                                 <td class="reason">
                                     <select disabled class="dropdown-shrinkage-reasons">
                                         <option value="no-selected">Select Reason</option>
@@ -211,6 +211,7 @@
                             if (parseFloat(manualCount) != parseFloat(quantityAvailable)) {
                                 var shrinkage = {
                                     itemID: $(this).children('.itemID').text(),
+                                    unit: $(this).children('.unit').text(),
                                     quantityLost: parseFloat(quantityAvailable) - parseFloat(manualCount),
                                     reasonID:  $(this).children('.reason').children('.dropdown-shrinkage-reasons').val(),
                                     date: dateToday,
@@ -230,7 +231,8 @@
                                 data: {JSONShrinkages},
                                 async: false,
                                 success: function(result){
-                                    window.location.assign('/shrinkages'); 
+                                    alert("Shrinkages updated");
+                                    window.location = "/shrinkages"; 
                                 }
                         }); 
                     }

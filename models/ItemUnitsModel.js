@@ -2,27 +2,32 @@
 var mongoose = require('mongoose');
 
 // defines the schema for collection `users`
-var InvoicesItemsSchema = new mongoose.Schema({
+var ItemUnitsSchema = new mongoose.Schema({
 
-	invoice_id: {
+	itemID: {
 		type: String,
 		required: true
 	},
-	
-	itemUnitID: {
+
+	unitID: {
 		type: String,
 		required: true
 	},
-	
+
 	quantity: {
-		type: String,
+		type: Number,
 		required: true
 	},
-	
-	discount: {
-		type: Number, 
+
+	sellingPrice: {
+		type: Number,
+		required: true
+	},
+
+	informationStatusID: {
+		type: String,
 		required: true
 	}
 });
 
-module.exports = mongoose.model('InvoiceItems', InvoicesItemsSchema);
+module.exports = mongoose.model('ItemUnits', ItemUnitsSchema);

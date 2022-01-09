@@ -108,6 +108,9 @@
                 <form>
                     <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="itemDescription" name="itemDescription" placeholder="Item Description">
                     <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px; text-align: right;" type="number" class="form-control" id="qty" name="qty" placeholder="Qty">
+                     <select class="dropdown" id="dropdown-item-unit" style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px">
+                        <option value="no-selected">--Unit--</option>
+                    </select>
                     <input style="margin-top: 5px; margin-bottom: 0px; float: left; height: 34px; width: 34px; background-color: #0F84D9; border: #0F84D9; border-radius: 7px; color: white;" type="button" id="addItem" name="addItem" value="+">
                 </form>
             </div> 
@@ -227,9 +230,11 @@
                         <th>Item Description</th>
                         <th>Quantity</th>
                         <th>Unit</th>
-                        <th>Unit Price</th>
-                        <th>Received</th>
-                        <th>Amount</th>
+                        {{#if released}}
+                            <th>Unit Price</th>
+                            <th>Received</th>
+                            <th>Amount</th>
+                        {{/if}}
                         {{#if newPO}}
                         <th></th>
                         {{/if}}
@@ -243,9 +248,6 @@
                                 <td class="classItemDescription">{{itemDescription}}</td>
                                 <td><input class="classQty" style="text-align: right;" type="number" value="{{quantity}}"></td>
                                 <td class="classUnit">{{unitName}}</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
                                 <td> <button class="delete-button delete-item-btn"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button> </td>
                             </tr>
                         {{/each}}
@@ -255,9 +257,9 @@
                                 <td class="classItemDescription">{{itemDescription}}</td>
                                 <td class="classQty">{{quantity}}</td>
                                 <td class="classUnit">{{unitName}}</td>
-                                <td><input type="number" class="unitPrice"></td>
-                                <td><input type="number" class="quantityReceived"></td>
-                                <td class="classAmount">0</td>
+                                <td><input type="number" class="unitPrice" style="text-align:right"></td>
+                                <td><input type="number" class="quantityReceived" style="text-align:right"></td>
+                                <td class="classAmount">₱ 0</td>
                             </tr>
                         {{/each}}
                     {{/if}}
@@ -345,21 +347,29 @@
                             $('#btn-new-item').css('display', 'none');
                             $('#addItem').prop('disabled', false)
                         }
+                    }, select: function(event, ui) {
+                        var itemDesc = ui.item.label;
+                        $.get('/getEOQ', {itemDesc}, function(result) {
+                            $('#qty').val(result)
+                        })
+
+                        var supplierName = $("#supplierName").val()
+                        $.get('/getItemUnitsPO', {itemDesc, supplierName}, function(result) {
+                            for (var i=0; i<result.length; i++) {
+                                $('#dropdown-item-unit').append(`
+                                    <option value="${result[i].id}">${result[i].unit}</option>
+                                `)
+                            }
+                            $('#dropdown-item-unit').prop("selectedIndex", 1)
+                        }); 
                     }
                         
                 });
 
-                 function filled(itemDesc, qty) {
-                    var itemDesc = $('#itemDescription').val();
-                    var qty = $('#qty').val();
+                $('#dropdown-item-unit').change(function () {
+                    $("#qty").val("");
+                })
 
-                    if (itemDesc!="" && qty!="")
-                        return 0
-                    else if ((itemDesc == "" && qty != "") || (itemDesc == "" && qty == ""))
-                        return 1
-                    else if (qty == "" && itemDesc !="")
-                        return 2
-                }
 
                 $("#table-poItem").on('click','.delete-item-btn',function() {
                     $(this).closest('tr').remove();
@@ -367,36 +377,23 @@
 
                 $('#addItem').click(function(){
                     var itemDesc = $('#itemDescription').val();
+                    var unit = $('#dropdown-item-unit option:selected').text();
                     var qty = $('#qty').val();
 
                     //all blanks are filled up
-                    if (filled(itemDesc, qty) == 0) {
-                        $.get('/getItemUnit', {itemDesc}, function (result) {
-                            $('#table-poItem').append(
-                            `<tr>
-                                <td class="classItemDescription">${itemDesc}</td>
-                                <td><input class="classQty" type="number" value="${qty}"</td>
-                                <td class="classUnit">${result}</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td> <button class="delete-button delete-item-btn"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button> </td>
-                            </tr>`);
+                    if (itemFilled()) {
+                        $('#table-poItem').append(
+                        `<tr>
+                            <td class="classItemDescription">${itemDesc}</td>
+                            <td><input class="classQty" type="number" value="${qty}"</td>
+                            <td class="classUnit">${unit}</td>
+                            <td> <button class="delete-button delete-item-btn"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button> </td>
+                        </tr>`);
 
-                            $('#itemDescription').val('');
-                            $('#qty').val('');
-                            $('#text-warning-new-PO').text("");
-                        })
-                    }
-                    //item description is left blank
-                    else if (filled(itemDesc, qty) == 1) {
-                        $("#itemDescription").css("border", "1px solid #B00000");
-                        $('#text-warning-new-PO').text("Input item description");
-                    }
-                    //quantity is blank
-                    else if (filled(itemDesc, qty) == 2) {
-                        $("#quantity").css("border", "1px solid #B00000");
-                        $('#text-warning-new-PO').text("Input quantity")
+                        $('#itemDescription').val('');
+                        $('#qty').val('');
+                        $('#text-warning-new-PO').text("");
+                        $('#dropdown-item-unit option:not(:first)').remove();
                     }
                 })
 
@@ -440,10 +437,11 @@
 
                         $("#table-poItem-body > tr").each(function () {
                             var itemDesc = $(this).children('.classItemDescription').text()
+                            var unit = $(this).children('.classUnit').text();
                             $.ajax({
                                 type:"GET",
                                 url: '/isSold',
-                                data: {supplierName, itemDesc},
+                                data: {supplierName, unit, itemDesc},
                                 async: false
                             }).done(function(result) {
                                 if (result == "not sold") 
@@ -472,7 +470,7 @@
                                 var unit = $(this).children('.classUnit').text()
                                 var row = $(this)
 
-                                $.get('/isSold', {supplierName, itemDesc}, function(result) {
+                                $.get('/isSold', {supplierName, unit, itemDesc}, function(result) {
                                     if (result == "not sold") {
 
                                         row.remove();
@@ -489,7 +487,7 @@
                                         $.ajax({
                                             type:"GET",
                                             url: '/getItemSuppliers',
-                                            data: {itemDesc},
+                                            data: {itemDesc, unit},
                                             async: false
                                         }).done(function(result) {
                                             var lastRow = $('#table-change-item-supplier-body tr:last').find('.change-supplier-supplier')
@@ -549,14 +547,30 @@
 
                 function itemFilled() {
                     var allFilled = true 
-                    $("#table-poItem-body > tr").each(function () {
-                        if ($(this).find('.classQty').val() == "") {
-                            $(this).find('.classQty').css("border", "2px solid #B00000");
-                            allFilled = false
-                        }
-                        else
-                            $(this).find('.classQty').css("border", "1px solid #DDDDDD");
-                    })
+                    
+                    if ($('#itemDescription').val() == "") {
+                        $('#itemDescription').css("border", "2px solid #B00000");
+                        allFilled = false
+                    }
+                     else
+                        $('#itemDescription').css("border", "1px solid #DDDDDD");
+
+
+                    if ($('#qty').val()== "") {
+                        $('#qty').css("border", "2px solid #B00000");
+                        allFilled = false
+                    }
+                    else
+                        $('#qty').css("border", "1px solid #DDDDDD");
+
+                    if ($('#dropdown-item-unit').val() == "no-selected") {
+                        $('#dropdown-item-unit').css("border", "2px solid #B00000");
+                        allFilled = false
+                    }
+                     else
+                        $('#dropdown-item-unit').css("border", "1px solid #DDDDDD");
+
+
                     return allFilled
                 }
 
@@ -566,7 +580,7 @@
                     var poID = address[address.length -1]
                     var poItems = []
 
-                    if (supplierFilled() && itemFilled()) {
+                    if (supplierFilled()) {
                         $("#table-poItem-body > tr").each(function () {
                             var poItem= {
                                 itemDesc: $(this).children('.classItemDescription').text(), 
@@ -590,18 +604,20 @@
                 function computeTotal() {
                     var overallTotal =0
                     $("#table-poItem-body > tr").each(function () {
-                        overallTotal += parseFloat($(this).children('.classAmount').text());
+                        overallTotal += parseFloat($(this).children('.classAmount').text().slice(1));
                     });
-                    var discountPercent = $('#total-discount').val() 
-                    var discount = overallTotal*(discountPercent/100)
-                    overallTotal -= discount;
+
+                    var discount = $('#total-discount').val() 
+                    if (discount == "")
+                        discount = 0
+                    overallTotal -= parseFloat(discount);
 
                     var subtotal = overallTotal/1.12
                     var vat = overallTotal - subtotal
-                    $('#subtotal').text("₱ " + subtotal.toFixed(2))
-                    $('#vat').text("₱ " + vat.toFixed(2))
-                    $('#discount').text("₱ " +  discount.toFixed(2))
-                    $('#total').text("₱ " + overallTotal.toFixed(2))
+                    $('#subtotal').text("₱ " + parseFloat(subtotal).toFixed(2))
+                    $('#vat').text("₱ " + parseFloat(vat).toFixed(2))
+                    $('#discount').text("₱ " +  parseFloat(discount).toFixed(2))
+                    $('#total').text("₱ " + parseFloat(overallTotal).toFixed(2))
                 }
 
                 $('#total-discount').keyup(function() {
@@ -620,7 +636,7 @@
                         quantityReceived = 0
 
                     var amount = parseFloat(quantityReceived) * parseFloat(unitPrice)
-                    row.find('.classAmount').html(amount)
+                    row.find('.classAmount').html("₱ " + amount)
 
                     computeTotal();
                 })
@@ -628,18 +644,30 @@
                 $('.quantityReceived').keyup(function() {
                     var row = $(this).closest('.itemRow');
 
-                    var unitPrice = row.find('.unitPrice').val()
-                    if (unitPrice == '')
-                        unitPrice = 0
+                    //quantity received input is greater than quantity ordered
+                    if (parseInt(row.find('.quantityReceived').val()) > parseInt(row.find('.classQty').text())) {
+                        row.find('.quantityReceived').css("border", "2px solid #B00000")
+                        $('#btn-update-sent-po').prop('disabled', true)
+                        $('#btn-update-sent-po').css("background-color", "#b3b3b3")
+                    } 
 
-                    var quantityReceived = row.find('.quantityReceived').val()
-                    if (quantityReceived == '')
-                        quantityReceived = 0
+                    else {
+                        var unitPrice = row.find('.unitPrice').val()
+                        if (unitPrice == '')
+                            unitPrice = 0
 
-                    var amount = parseInt(quantityReceived) * parseFloat(unitPrice)
-                    row.find('.classAmount').html(amount)
+                        var quantityReceived = row.find('.quantityReceived').val()
+                        if (quantityReceived == '')
+                            quantityReceived = 0
 
-                    computeTotal()
+                        var amount = parseInt(quantityReceived) * parseFloat(unitPrice)
+                        row.find('.classAmount').html("₱ " + amount)
+
+                        computeTotal()
+                        row.find('.quantityReceived').css("border", "1px solid #DDDDDD");
+                        $('#btn-update-sent-po').prop('disabled', false)
+                        $('#btn-update-sent-po').css("background-color", "#0F84D9")
+                    }
                 })
 
                 //--=====-----UPDATE FOR SENT PO-------------------- -- update price, quantity received, total of po
@@ -648,32 +676,57 @@
                     var poID = address[address.length -1]
                     var poItems = []
                     var proceed=true;
-                    var asked = false
+                    var asked = false;
+                    var needNewPo = false
 
                     $("#table-poItem-body > tr").each(function () {
-                        if (($(this).find('.unitPrice').val() == "" || $(this).find('.quantityReceived').val() == "") && !proceed && !asked) {
+                        //unit price and qty left blank
+                        if (($(this).find('.unitPrice').val() == "" || $(this).find('.quantityReceived').val() == "") && proceed && !asked) {
                             if (confirm("Some items do not have a price or quantity received. A new PO will be created for these items. Do you wish to proceed.")) {
+                                asked = true
+                                needNewPo = true
                             }
                             else {
-                                asked = true
                                 proceed = false
+                                asked = true
                                 if ($(this).find('.unitPrice').val() == "") 
                                     $(this).find('.unitPrice').css("border", "2px solid #B00000");
                                 if ($(this).find('.quantityReceived').val() == "")
                                     $(this).find('.quantityReceived').css("border", "2px solid #B00000");
                             }
                         }
+                        //quantity received is less than quantity ordered
+                        else if (parseInt($(this).find('.classQty').text()) > parseInt($('.quantityReceived').val()) && !asked) {
+                             if (confirm("The received quantity for some items is less than the quantity ordered. Do you want a new PO to be created for these items?")) {
+                                asked = true
+                                needNewPo = true
+                            }
+                            else
+                                asked = true
+                            
+                        }
                     })
 
                     if(proceed) {
                          $("#table-poItem-body > tr").each(function () {
+                            var amount = $(this).children('.classAmount').text().slice(1);
+                            var unitPrice = $(this).find('.unitPrice').val()
+                            if (unitPrice == "") {
+                                unitPrice = 0
+                                amount = 0
+                            }
+
+                            var quantityReceived = $(this).find('.quantityReceived').val()
+                            if (quantityReceived == "")
+                                quantityReceived = 0
+
                             var poItem= {
                                 itemDesc: $(this).children('.classItemDescription').text(), 
                                 quantity: $(this).children('.classQty').text(),
                                 unit: $(this).children('.classUnit').text(),
-                                price: $(this).find('.unitPrice').val(),
-                                amount: $(this).children('.classAmount').text(),
-                                quantityReceived: $(this).find('.quantityReceived').val()
+                                price: unitPrice,
+                                amount: amount,
+                                quantityReceived: quantityReceived
                             }
                             poItems.push(poItem);
                         });
@@ -682,7 +735,7 @@
                         var vat = parseFloat($('#vat').text().slice(1));
                         var total = parseFloat($('#total').text().slice(1));
                         var discount = parseFloat($('#discount').text().slice(1))
-                        $.post('/updatePOWithPrice', {poID, itemsString, discount, subtotal, vat, total}, function(result) {
+                        $.post('/updatePOWithPrice', {poID, itemsString, discount, subtotal, vat, total, needNewPo}, function(result) {
                             alert("PO updated");
                             window.location = "/purchaseOrders";
                         });

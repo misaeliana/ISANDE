@@ -36,7 +36,7 @@
                 </div>
 
             <div style="margin-top: 60px;">
-                <label for="dropdown-inventory-type" style="margin-right: 10px">Type</label>
+                <label for="dropdown-inventory-type" style="margin-right: 10px">Item Category</label>
                 <select class="dropdown" id="dropdown-inventory-type" style="margin-right: 10px">
                     <option value="all-type" selected>All</option>
                     {{#each itemCategories}}
@@ -68,51 +68,48 @@
                     </div>
                     <div class="modal-body">
                         <form id="add-new-item">
-                            <div class="flex-display">
-                                <label for="description" class="modal-label">Description</label> 
-                                <input id="description" type="text" class="modal-input form-control" placeholder=><br>
-                            </div>
-                            <p class="error modal-error" id="error-description"></p>
+                            <label for="description">Description</label> <input id="description" type="text"><br>
+                            <p class="error" id="error-description" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
-                            <div class="flex-display">
-                                <label for="dropdown-category" class="modal-label">Category</label>
-                                <select class="form-control" id="dropdown-category">
-                                    <option value="no-selected" selected>--Select Category--</option>
-                                    {{#each itemCategories}}
-                                        <option value={{_id}}>{{category}}</option>
-                                    {{/each}}
-                                </select>
-                            </div>
-                            <p class="error modal-error" id="error-category"></p>
+                            <label for="dropdown-category" style="margin-right: 10px">Item Category</label>
+                            <select class="dropdown" id="dropdown-category" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
+                                <option value="no-selected" selected>--Select Category--</option>
+                                {{#each itemCategories}}
+                                    <option value={{_id}}>{{category}}</option>
+                                {{/each}}
+                            </select>
+                            <p class="error" id="error-category" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
-                            <div class="flex-display">
-                                <label for="dropdown-unit" class="modal-label">Unit</label>
-                                <select class="form-control" id="dropdown-unit">
-                                    <option value="no-selected" selected>--Select Unit--</option>
-                                    {{#each units}}
-                                        <option value={{_id}}>{{unit}}</option>
-                                    {{/each}}
-                                </select>
+                            <label for="dropdown-unit" style="margin-right: 10px">Unit</label>
+                            <select class="dropdown" id="dropdown-unit" style="margin-top: 3px; margin-bottom: 5px; height: 30px; margin-right: 20px;">
+                                <option value="no-selected" selected>--Select Unit--</option>
+                                {{#each units}}
+                                    <option value={{_id}}>{{unit}}</option>
+                                {{/each}}
+                            </select>
+                            <input id="same-selling-unit"type="checkbox" style="margin-right: 5px;">
+                            <label for="same-selling-unit">Same as selling unit</label><br>
+                            <p class ="error" id="error-unit"></p>
+                            <div id="div-selling-price" style="display: none;">
+                                <label for="selling-price" style="margin-right: 10px">Selling Price</label>
+                                <input id="selling-price" type="number">
+                                <br>
+                                <p class="error" id="error-selling-price" style="margin-top: 3px; margin-bottom: 3px;"></p>
                             </div>
-                            <p class="error modal-error" id="error-unit"></p>
+                            <div id="div-quantity-in-retail">
+                                <label for="quantity-in-retail" style="margin-right: 10px;">Quantity in retail</label><input type="number" id="quantity-in-retail"><br>
+                                <p class="error" id="error-retail-quantity" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            </div>
 
-                            <div class="flex-display">
-                                <label for="reorder-level" class="modal-label">Reorder Level</label> 
-                                <input id="reorder-level" type="number" class="modal-input form-control" style="text-align: right;"><br>
-                            </div>
-                            <p class="error modal-error" id="error-reorder-level"></p>
 
-                            <div class="flex-display">
-                                <label for="EOQ" class="modal-label">EOQ</label> 
-                                <input id="EOQ" type="number" class="modal-input form-control" style="text-align: right;"><br>
-                            </div>
-                            <p class="error modal-error" id="error-EOQ"></p>
+                            <label for="reorder-level">Reorder Level</label> <input id="reorder-level" type="number"><br>
+                            <p class="error" id="error-reorder-level" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
-                            <div class="flex-display">
-                                <label for="selling-price" class="modal-label">Selling Price</label> 
-                                <input id="selling-price" class="modal-input form-control" type="number" style="text-align: right;"><br>
-                            </div>
-                            <p class="error modal-error" id="error-selling-price"></p>
+                            <label for="EOQ">EOQ</label> <input id="EOQ" type="number"><br>
+                            <p class="error" id="error-EOQ" style="margin-top: 3px; margin-bottom: 3px;"></p>
+
+                            <!--<label for="selling-price">Selling Price</label> <input id="selling-price" type="number"><br>
+                            <p class="error" id="error-selling-price" style="margin-top: 3px; margin-bottom: 3px;"></p>-->
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -130,7 +127,7 @@
                             <th>Category</th>
                             <th>Quantity</th>
                             <th>Unit</th>
-                            <th>Selling Price</th>
+                            <!--<th>Selling Price</th>-->
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -142,7 +139,7 @@
                                 <td value="{{categoryID}}" class="category-id">{{category}}</td>
                                 <td style="text-align: right;">{{quantityAvailable}}</td>
                                 <td>{{unit}}</td>
-                                <td style="text-align: right;">₱ {{sellingPrice}}</td>
+                                <!--<td style="text-align: right;">₱ {{sellingPrice}}</td>-->
                                 <td><button class="btn-status btn-{{btn_status}} status-id" value="{{statusID}}">{{status}}</button></td>
                             </tr>
                         {{/each}}
@@ -208,6 +205,33 @@
                         return 0;
                 }
 
+                function quantityInRetail(retailQuantity) {
+                    //if checked, should be left blank because it's hidden
+                    if ($('#same-selling-unit').is(":checked")) {
+                        if (retailQuantity == null || retailQuantity == "") {
+                            return 0;
+                        }
+                        else {
+                            errorMessage("retailQuantity")
+                            return 1;
+                        }
+                    }
+                    else {
+                        if (retailQuantity == null || retailQuantity == "") {
+                            errorMessage("retailQuantity")
+                            return 1;
+                        }
+                        else {
+                            if (parseInt(retailQuantity) <=0 ) {
+                                errorMessage("invalidRetailQuantity")
+                                return 1;
+                            }
+                            else
+                                return 0;
+                        }
+                    }
+                }
+
                 function EOQValidation(EOQ) { 
                     if (EOQ == null || EOQ == "") {
                         errorMessage("EOQ");
@@ -221,9 +245,17 @@
                 }
 
                 function sellingPriceValidation(price) {
-                    if (price == null || price == "") {
-                        errorMessage("sellingPrice");
-                        return 1;
+                    //if same selling unit, selling price should not be blank
+                    if ($('#same-selling-unit').is(":checked")) {
+                        if (price == null || price == "") {
+                            errorMessage("sellingPrice");
+                            return 1;
+                        }
+                        else {
+                            if (parseFloat(price) <=0) {
+                                errorMessage("invalidSellingPrice")
+                            }
+                        }
                     }
                     else 
                         return 0;
@@ -239,22 +271,38 @@
                     } else if (type == "unit") {
                         $("#dropdown-unit").css("border", "1px solid #B00000");
                         $("#error-unit").text("Please select a Unit.");
-                    } else if (type == "reorderLevel") {
+                    } 
+
+                    else if (type == "sellingPrice") {
+                        $("#selling-price").css("border", "1px solid #B00000");
+                        $("#error-selling-price").text("Please enter a Selling Price.");
+                    } else if (type == "invalidSellingPrice") {
+                        $("#selling-price").css("border", "1px solid #B00000");
+                        $("#error-selling-price").text("Invalid selling price.");
+                    }  
+
+                    else if (type == "retailQuantity") {
+                        $("#quantity-in-retail").css("border", "1px solid #B00000");
+                        $("#error-retail-quantity").text("Please enter a Retail Quantity.");
+                    } else if (type == "invalidRetailQuantity") {
+                        $("#quantity-in-retail").css("border", "1px solid #B00000");
+                        $("#error-retail-quantity").text("Invalid Retail Quantity");
+                    } 
+                    else if (type == "reorderLevel") {
                         $("#reorder-level").css("border", "1px solid #B00000");
                         $("#error-reorder-level").text("Please enter a Reorder Level.");
                     } else if (type == "reorderLevelInvalidNum") {
                         $("#reorder-level").css("border", "1px solid #B00000");
                         $("#error-reorder-level").text("Invalid Reorder Level.");
-                    } else if (type == "EOQ") {
+                    } 
+
+                    else if (type == "EOQ") {
                         $("#EOQ").css("border", "1px solid #B00000");
                         $("#error-EOQ").text("Please enter an EOQ.");
                     } else if (type == "EOQInvalidNum") {
                         $("#EOQ").css("border", "1px solid #B00000");
                         $("#error-EOQ").text("Invalid EOQ.");
-                    } else if (type == "sellingPrice") {
-                        $("#selling-price").css("border", "1px solid #B00000");
-                        $("#error-selling-price").text("Please enter a Selling Price.");
-                    } 
+                    }
                 }
 
                 function resetErrorMessage() {
@@ -264,12 +312,14 @@
                     $("#error-category").text("");
                     $("#dropdown-unit").css("border", "1px solid #DDDDDD");
                     $("#error-unit").text("");
+                    $("#quantity-in-retail").css("border", "1px solid #DDDDDD");
+                    $("#error-retail-quantity").text("");
+                    $("#selling-price").css("border", "1px solid #DDDDDD");
+                    $("#error-selling-price").text("");
                     $("#reorder-level").css("border", "1px solid #DDDDDD");
                     $("#error-reorder-level").text("");
                     $("#EOQ").css("border", "1px solid #DDDDDD");
                     $("#error-EOQ").text("");
-                    $("#selling-price").css("border", "1px solid #DDDDDD");
-                    $("#error-selling-price").text("");
                 }
 
                 function filter(result) {
@@ -372,14 +422,34 @@
                     resetErrorMessage();
                 });
 
+                $('#quantity-in-retail').keyup(function () {
+                    resetErrorMessage();
+                })
 
-                function checkAll(description, category, unit, reorderLevel, EOQ, sellingPrice) {
+                $('#same-selling-unit').change(function() {
+                    if ($(this).is(":checked")) {
+                        $('#quantity-in-retail').val('')
+                        $('#div-quantity-in-retail').css('display', 'none')
+                        $('#div-selling-price').css('display', 'block')
+                    }
+
+                    else {
+                        $('#selling-pricel').val('')
+                        $('#div-quantity-in-retail').css('display', 'block')
+                        $('#div-selling-price').css('display', 'none')
+                    }
+
+                })
+
+
+                function checkAll(description, category, unit, reorderLevel, EOQ, sellingPrice, retailQuantity) {
                     descriptionValidation(description);
                     typeValidation(category);
                     unitValidation(unit);
                     reorderLevelValidation(reorderLevel);
                     EOQValidation(EOQ);
                     sellingPriceValidation(sellingPrice);
+                    quantityInRetail(retailQuantity)
                 }
 
                 $('#btn-add-new-item').click(function() {
@@ -388,31 +458,19 @@
                     var categoryText = $('#dropdown-category option:selected').text();
                     var unit = $('#dropdown-unit').val();
                     var unitText = $('#dropdown-unit option:selected').text();
+                    var retailQuantity = $('#quantity-in-retail').val();
                     var reorderLevel = $('#reorder-level').val();
                     var EOQ = $('#EOQ').val();
+
                     var sellingPrice = $('#selling-price').val();
 
-                    checkAll(description, category, unit, reorderLevel, EOQ, sellingPrice);
+                    checkAll(description, category, unit, reorderLevel, EOQ, sellingPrice, retailQuantity);
 
-                    if (!descriptionValidation(description) && !typeValidation(category) && !unitValidation(unit) && !reorderLevelValidation(reorderLevel) && !EOQValidation(EOQ)  && !sellingPriceValidation(sellingPrice)) {
-
+                    if (!descriptionValidation(description) && !typeValidation(category) && !unitValidation(unit) && !quantityInRetail(retailQuantity) && !sellingPriceValidation(sellingPrice) && !reorderLevelValidation(reorderLevel) && !EOQValidation(EOQ)) {
                         // remove texts and red borders
                         resetErrorMessage();
 
-                        $.post('/postNewItem', {description, category, categoryText, unit, unitText, reorderLevel, EOQ, sellingPrice}, function (updatedItem) {
-                            /*var sellingPrice = parseFloat(updatedItem.sellingPrice).toFixed(2)
-
-                            $('#table-inventory').find('tbody').append(
-                                `  <tr class="link" style="cursor: pointer" data-href="/inventory/${updatedItem._id}"> 
-                                        <td>${updatedItem.itemDescription}</td> 
-                                        <td value="${updatedItem.categoryID}" class="category-id">${updatedItem.category}</td>
-                                        <td style="text-align: right;">${updatedItem.quantityAvailable}</td> 
-                                        <td class="unit-id">${updatedItem.unit}</td> 
-                                        <td style="text-align: right;">₱ ${sellingPrice}</td> 
-                                        <td><button class="btn-status btn-low status-id" value="${updatedItem.statusID}">Low Stock</button></td>
-                                    </tr>`
-                            );
-                        })*/
+                        $.post('/postNewItem', {description, category, categoryText, unit, unitText, retailQuantity, sellingPrice, reorderLevel, EOQ}, function (updatedItem) {
 
                             $('#modal-new-item').modal('hide');
                             $('#add-new-item').trigger('reset');

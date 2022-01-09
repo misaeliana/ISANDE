@@ -41,7 +41,7 @@
                 <table style="width: 100%;">
                     <th>
                         <div>
-                            <div class="div-number">{{itemInfo.quantityAvailable}}</div>
+                            <div class="div-number" id="item-quantity">{{itemInfo.quantityAvailable}}</div>
                             <div class="div-number-label">Available</div>
                         </div>
                     </th>
@@ -68,23 +68,27 @@
 
             <div style="margin-top: 20px;">
                     <div class="label-container">
-                        <div class="override-label">Category</div> 
-                        <div class="label-content">{{itemInfo.category}}</div>
-                        <p id="item-category-ID" style="display: none;">{{itemInfo.categoryID}}</p>
-                    </div>
-                    <div class="label-container">
-                        <div class="override-label">Quantity</div> 
-                        <div class="label-content" id="item-quantity">{{itemInfo.quantityAvailable}}</div>
-                    </div>
-                    <div class="label-container">
                         <div class="override-label">Unit</div> 
                         <div class="label-content">{{itemInfo.unit}}</div>
                         <p id="item-unit-ID" style="display: none;">{{itemInfo.unitID}}</p>
                     </div>
                     <div class="label-container">
+                        <div class="override-label">Category</div> 
+                        <div class="label-content">{{itemInfo.category}}</div>
+                        <p id="item-category-ID" style="display: none;">{{itemInfo.categoryID}}</p>
+                    </div>
+                    <!--<div class="label-container">
+                        <div class="override-label">Quantity</div> 
+                        <div class="label-content" id="item-quantity">{{itemInfo.quantityAvailable}}</div>
+                    </div>-->
+                    <div class="label-container">
+                        <div class="override-label">Retail Quantity</div> 
+                        <div class="label-content">{{itemInfo.retailQuantity}}</div>
+                    </div>
+                    <!--<div class="label-container">
                         <div class="override-label">Selling Price</div> 
                         <div class="label-content">₱ {{itemInfo.sellingPrice}}</div>
-                    </div>
+                    </div>--->
             </div> 
             <div style="height: 20px"></div>
 
@@ -105,45 +109,33 @@
                             {{!-- <label for="description">Description</label> <input id="description" type="text" value="{{itemInfo.itemDescription}}"><br>
                             <p class="error" id="error-description" style="margin-top: 3px; margin-bottom: 3px;"></p> --}}
 
-                            <div class="flex-display">
-                                <label for="dropdown-category" class="modal-label">Type</label>
-                                <select class="form-control" id="dropdown-category">
-                                    <option value="no-selected" selected>Select Type</option>
-                                    {{#each itemCategories}}
-                                            <option value={{_id}}>{{category}}</option>
-                                    {{/each}}
-                                </select>
-                            </div>
-                            <p class="error modal-error" id="error-category"></p>
+                            <label for="dropdown-category" style="margin-right: 10px">Item Category</label>
+                            <select class="dropdown" id="dropdown-category" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
+                                <option value="no-selected" selected>Select Type</option>
+                                {{#each itemCategories}}
+                                        <option value={{_id}}>{{category}}</option>
+                                {{/each}}
+                            </select>
+                            <p class="error" id="error-category" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
-                            <div class="flex-display">
-                                <label for="dropdown-unit" class="modal-label">Unit</label>
-                                <select class="form-control" id="dropdown-unit">
-                                    <option value="no-selected" selected>Select Unit</option>
-                                    {{#each units}}
-                                        <option value={{_id}}>{{unit}}</option>
-                                    {{/each}}
-                                </select>                               
-                            </div>
-                            <p class="error modal-error" id="error-unit"></p>
+                            <label for="dropdown-unit" style="margin-right: 10px">Unit</label>
+                            <select class="dropdown" id="dropdown-unit" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
+                                <option value="no-selected" selected>Select Unit</option>
+                                {{#each units}}
+                                    <option value={{_id}}>{{unit}}</option>
+                                {{/each}}
+                            </select>
+                            <p class="error" id="error-unit" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <label for="retail-quantity">Retail Quantity</label><input id="retail-quantity" type="number" value={{itemInfo.retailQuantity}}>
+                            <p class="error" id="error-retail-quantity" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <label for="reorder-level">Reorder Level</label> <input id="reorder-level" type="number" value="{{itemInfo.reorderLevel}}"><br>
+                            <p class="error" id="error-reorder-level" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
-                            <div class="flex-display">
-                                <label for="reorder-level" class="modal-label">Reorder Level</label> 
-                                <input id="reorder-level" class="modal-input form-control" style="text-align: right;" type="number" value="{{itemInfo.reorderLevel}}"><br>                               
-                            </div>
-                            <p class="error modal-error" id="error-reorder-level"></p>
+                            <label for="EOQ">EOQ</label> <input id="EOQ" type="number" value="{{itemInfo.EOQ}}"><br>
+                            <p class="error" id="error-EOQ" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
-                            <div class="flex-display">
-                                <label for="EOQ" class="modal-label">EOQ</label> 
-                                <input id="EOQ" class="modal-input form-control" style="text-align: right;" type="number" value="{{itemInfo.EOQ}}"><br>
-                            </div>
-                            <p class="error modal-error" id="error-EOQ"></p>
-
-                            <div class="flex-display">
-                                <label for="selling-price" class="modal-label">Selling Price</label> 
-                                <input id="selling-price" style="text-align: right;" class="modal-input form-control" type="number" value="{{itemInfo.sellingPrice}}"><br>
-                            </div>
-                            <p class="error modal-error" id="error-selling-price"></p>
+                            <!--<label for="selling-price">Selling Price</label> <input id="selling-price" type="number" value="{{itemInfo.sellingPrice}}"><br>
+                            <p class="error" id="error-selling-price" style="margin-top: 3px; margin-bottom: 3px;"></p>-->
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -153,6 +145,101 @@
                 </div>
                 </div>
             </div>
+
+            <div style="margin-top: 50px;">
+                <div style="display: flex;">
+                    <div style="width: 50%"><h3 class ="bold">Item units</h3></div>
+                    <div class="btn-status"><button class="btn-light-blue" id="btn-selling-unit" style=" width: 150px" data-toggle="modal" data-target="#modal-add-selling-unit">Add selling unit</button></div>
+                </div>
+            </div>
+
+            <!-- ADD SELLING UNIT -->
+            <div class="modal fade" id="modal-add-selling-unit" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="exampleModalLongTitle">Add Selling Unit</h3>
+                        <button type="button" class="close" data-dismiss="modal" a ria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="edit-item">
+                            <label for="quatity" style="margin-right: 10px">Quantity</label>
+                            <input id="quantity" type="number"><br>
+                            <label for="dropdown-new-selling-unit" style="margin-right: 10px">Unit</label>
+                            <select class="dropdown" id="dropdown-new-selling-unit" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
+                                <option value="no-selected" selected>Select Unit</option>
+                                {{#each units}}
+                                    <option value={{_id}}>{{unit}}</option>
+                                {{/each}}
+                            </select>
+                            <p class="error" id="error-unit" style="margin-top: 3px; margin-bottom: 3px;"></p>
+
+                            <label for="selling-price">Selling Price</label> <input id="selling-price" type="number"><br>
+                            <p class="error" id="error-selling-price" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="btn-save-selling-unit">Save</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+
+            <!--EDIT SELLING PRICE-->
+            <div class="modal fade" id="modal-edit-selling-unit" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="exampleModalLongTitle">Edit Selling Price</h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                         <p id="modal-unit-name" style="display: none;"></p>
+                    </div>
+                    <div class="modal-body">
+                        <form id="edit-item">
+                            <label for="edit-selling-price">Selling Price</label> <input id="edit-selling-price" type="number"><br>
+                            <p class="error" id="old-selling-price" style="display: none;"></p>
+                            <p class="error" id="error-edit-selling-price" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-red" id="btn-delete-selling-unit" style="float:left">Delete</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="btn-save-edit-selling-unit">Save</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <table class="table">
+                <thead class="table-regular-head">
+                    <tr>
+                        <td>Unit</td>
+                        <td>Quantity</td>
+                        <td>Selling Price</td>
+                        <td>Available Stock</td>
+                        <td></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each itemUnits}}
+                        <tr>
+                            <td class="item-unit-name">{{unitName}}</td>
+                            <td>{{ratio}}</td>
+                            <td class="item-unit-selling-price">₱ {{sellingPrice}}</td>
+                            <td>{{availableStock}}</td>
+                            <td><button class="edit-button"><img src="../images/edit-icon.png" height="20px" width="15x" alt="Edit"></button></td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+
+            <br>
 
             <div style="margin-top: 50px;">
                 <div style="display: flex;">
@@ -168,12 +255,14 @@
                 <thead class="table-regular-head" >
                     <tr>
                         <th>Name</th>
+                        <th>Unit</th>
                     </tr>
                 </thead>
                 <tbody> 
                     {{#each itemSuppliers}}
                         <tr>
                             <td>{{supplierID}}</td>
+                            <td>{{unit}}</td>
                         </tr>
                     {{/each}}
                 </tbody>
@@ -240,13 +329,27 @@
                         return 0;
                 }
 
-                function sellingPriceValidation(price) {
+                /*function sellingPriceValidation(price) {
                     if (price == null || price == "") {
                         errorMessage("sellingPrice");
                         return 1;
                     }
                     else 
                         return 0;
+                }*/
+
+                function retailQuantityValidation(retailQuantity) {
+                    if (retailQuantity == null || retailQuantity == ""){
+                        errorMessage('retailQuantity')
+                        return 1
+                    }
+                    else {
+                        if (retailQuantity <=0) {
+                            errorMessage('invalidRetailQuantity')
+                            return 1;
+                        }
+                        return 0
+                    }
                 }
 
                 function errorMessage(type) {
@@ -256,25 +359,28 @@
                     } else if (type == "unit") {
                         $("#dropdown-unit").css("border", "1px solid #B00000");
                         $("#error-unit").text("Please select a Unit.");
-                    } else if (type == "reorderLevel") {
+                    } 
+                     else if (type == "retailQuantity") {
+                        $("retail-quantity").css("border", "1px solid #B00000");
+                        $("#error-retail-quantity").text("Please enter a Retail Quantity.");
+                    } else if (type == "invalidRetailQuantity") {
+                        $("#retail-quantity").css("border", "1px solid #B00000");
+                        $("#error-retail-quantity").text("Invalid Retail Quantity");
+                    } 
+                    else if (type == "reorderLevel") {
                         $("#reorder-level").css("border", "1px solid #B00000");
                         $("#error-reorder-level").text("Please enter a Reorder Level.");
                     } else if (type == "reorderLevelInvalidNum") {
                         $("#reorder-level").css("border", "1px solid #B00000");
                         $("#error-reorder-level").text("Invalid Reorder Level.");
-                    } else if (type == "EOQ") {
+                    } 
+                    else if (type == "EOQ") {
                         $("#EOQ").css("border", "1px solid #B00000");
                         $("#error-EOQ").text("Please enter an EOQ.");
                     } else if (type == "EOQInvalidNum") {
                         $("#EOQ").css("border", "1px solid #B00000");
                         $("#error-EOQ").text("Invalid EOQ.");
-                    } else if (type == "sellingPrice") {
-                        $("#selling-price").css("border", "1px solid #B00000");
-                        $("#error-selling-price").text("Please enter a Selling Price.");
-                    } else if (type == "supplier") {
-                        $("#dropdown-supplier").css("border", "1px solid #B00000");
-                        $("#error-supplier").text("Please select a Supplier.");
-                    } 
+                    }
                     
                 }
 
@@ -283,12 +389,13 @@
                     $("#error-category").text("");
                     $("#dropdown-unit").css("border", "1px solid #DDDDDD");
                     $("#error-unit").text("");
+                    $("#retail-quantity").css("border", "1px solid #DDDDDD");
+                    $("#error-retail-quantity").text("");
                     $("#reorder-level").css("border", "1px solid #DDDDDD");
                     $("#error-reorder-level").text("");
                     $("#EOQ").css("border", "1px solid #DDDDDD");
                     $("#error-EOQ").text("");
-                    $("#selling-price").css("border", "1px solid #DDDDDD");
-                    $("#error-selling-price").text("");
+                    
                 }
 
                 $('#dropdown-category').change(function() {
@@ -296,6 +403,10 @@
                 })
 
                 $('#dropdown-unit').change(function() {
+                    resetErrorMessage();
+                })
+
+                $('#retail-quantity').keyup(function() {
                     resetErrorMessage();
                 })
 
@@ -307,16 +418,14 @@
                     resetErrorMessage();
                 });
 
-                $('#selling-price').keyup(function () { 
-                    resetErrorMessage();
-                });
 
-                function checkAll(category, unit, reorderLevel, EOQ, sellingPrice) {
+                function checkAll(category, unit, reorderLevel, EOQ, retailQuantity) {
                     typeValidation(category);
                     unitValidation(unit);
                     reorderLevelValidation(reorderLevel);
                     EOQValidation(EOQ);
-                    sellingPriceValidation(sellingPrice);
+                    retailQuantityValidation(retailQuantity)
+                    //sellingPriceValidation(sellingPrice);
                 }
 
                 function supplierValidation(supplier) {
@@ -352,19 +461,19 @@
                     var itemDescription = $('#item-description').text();
                     var category = $('#dropdown-category').val();
                     var unit = $('#dropdown-unit').val();
+                    var retailQuantity = $('#retail-quantity').val()
                     var quantity = $('#item-quantity').text();
                     var EOQ = $('#EOQ').val();
                     var reorderLevel = $('#reorder-level').val();
-                    var sellingPrice = $('#selling-price').val();
+                    //var sellingPrice = $('#selling-price').val();
                     var itemStatusID = $('#item-status-ID').text();
 
                     var categoryText = $('#dropdown-category option:selected').text();
                     var unitText = $('#dropdown-unit option:selected').text();
 
-                    checkAll(category, unit, reorderLevel, EOQ, sellingPrice);
+                    checkAll(category, unit, reorderLevel, EOQ, retailQuantity);
 
-                    if (!typeValidation(category) && !unitValidation(unit) && !reorderLevelValidation(reorderLevel) && !EOQValidation(EOQ)  && !sellingPriceValidation(sellingPrice)) {
-
+                    if (!typeValidation(category) && !unitValidation(unit) && !retailQuantityValidation(retailQuantity) && !reorderLevelValidation(reorderLevel) && !EOQValidation(EOQ)) {
                         // remove texts and red borders
                         resetErrorMessage();
                         
@@ -382,7 +491,7 @@
                                 }
                         });*/ 
 
-                        $.post('/postUpdateItemInformation', {itemID, itemDescription, category, unit, quantity, EOQ, reorderLevel, sellingPrice, itemStatusID}, function(result){
+                        $.post('/postUpdateItemInformation', {itemID, itemDescription, category, unit, quantity, retailQuantity, EOQ, reorderLevel, itemStatusID}, function(result){
                                 $('#modal-edit-item').modal('hide');
                                 $('#edit-item').trigger('reset');
                                 alert("Item information has been updated")
@@ -390,6 +499,75 @@
                             })
                       }
                 })
+
+                $('#btn-save-selling-unit').click(function() {
+                    var address = window.location.pathname.split('/');
+                    var itemID = address[address.length -1]
+
+                    var quantity = $('#quantity').val()
+                    var unit = $("#dropdown-new-selling-unit").val()
+                    var sellingPrice = $('#selling-price').val();
+
+                    $.post('/newSellingUnit', {itemID, quantity, unit, sellingPrice}, function(result) {
+                        window.location.reload();
+                    })
+                })
+
+                $('.edit-button').click(function() {
+                    var currentSellingPrice = $(this).parents('tr').find('.item-unit-selling-price').text();
+                    $('#edit-selling-price').val(currentSellingPrice.slice(2));
+                    $('#old-selling-price').text(currentSellingPrice.slice(2));
+                    $('#modal-edit-selling-unit').modal('show');
+
+                    var unitName = $(this).parents('tr').find('.item-unit-name').text();
+                    $('#modal-unit-name').text(unitName);
+                })
+
+                //delete selling unit
+                $('#btn-delete-selling-unit').click(function() {
+                    var itemID = $("#item-ID").text();
+                    var unitName = $('#modal-unit-name').text();
+
+                    $.post('/deleteSellingUnit', {itemID, unitName}, function(result) {
+                        window.location.reload();
+                    })
+
+                })
+
+                function resetEditSellingPriceErrorMessage (){
+                    $("#edit-selling-price").css("border", "1px solid #DDDDDD");
+                    $("#error-edit-selling-price").text("");
+                }
+
+                $('#edit-selling-price').keyup(function () { 
+                    resetEditSellingPriceErrorMessage();
+                });
+
+                //change informationstatus of the current selling unit and create a new one
+                $('#btn-save-edit-selling-unit').click(function () {
+                    var itemID = $("#item-ID").text();
+                    var unitName = $('#modal-unit-name').text();
+                    var newSellingPrice = $('#edit-selling-price').val();
+                    var oldSellingPrice = $('#old-selling-price').text();
+
+                    // add validation
+                    if (newSellingPrice == null || newSellingPrice == "" || newSellingPrice < 0) {
+                        $("#edit-selling-price").css("border", "1px solid #B00000");
+                        $("#error-edit-selling-price").text("Invalid selling price.");
+                    } else {
+                        resetEditSellingPriceErrorMessage();
+
+                        // check if different 
+                        if (parseFloat(newSellingPrice) != parseFloat(oldSellingPrice)) {
+
+                            $.post('/editSellingUnit', {itemID, unitName, newSellingPrice}, function(result) {
+                                window.location.reload();
+                            })
+                        } else 
+                            $('#modal-edit-selling-unit').modal('hide');
+                    }
+                })
+
             })
         </script>
     </body>

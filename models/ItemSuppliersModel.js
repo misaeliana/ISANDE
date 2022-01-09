@@ -8,6 +8,11 @@ var ItemSuppliersSchema = new mongoose.Schema({
 		type: String,
 		required: true
     },
+
+    unitID: {
+    	type:String,
+    	required:true
+    },
     
     supplierID: {
 		type: String,
