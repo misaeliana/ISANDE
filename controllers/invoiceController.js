@@ -150,7 +150,7 @@ const invoiceController = {
             }
 
 
-            if (invoiceInfo.status == "Pending" || invoiceInfo.status == "Partial" || invoiceInfo.paymentOption == "On Account") {
+            /*if (invoiceInfo.status == "Pending" || invoiceInfo.status == "Partial" || invoiceInfo.paymentOption == "On Account") {
                 var pending = true;
                 var onAccount = true;
                 var temp_paymentHistory = await getPaymentHistory(invoice_id);
@@ -187,61 +187,80 @@ const invoiceController = {
                         else {
                             //res.render('viewInvoice', {invoiceInfo, items, paid, onAccount, paymentHistory, paymentTotal, amountDue});
                             
-                            if(req.session.position == "Cashier"){
+                           if(req.session.position == "Cashier"){
                                 var cashier = req.session.position;
-                                res.render('viewInvoice', {invoiceInfo, items, paid, onAccount, paymentHistory, paymentTotal, amountDue, cashier});	
+                                res.render('viewInvoice', {invoiceInfo, items, paid, onAccount, paymentHistory, paymentTotal, amountDue, cashier});
                             }
                 
                             if(req.session.position == "Manager"){
                                 var manager = req.session.position;
                                 res.render('viewInvoice', {invoiceInfo, items, paid, onAccount, paymentHistory, paymentTotal, amountDue, manager});
+
                             }
                         }
                     }
                     else {
-                        if (delivery != "")
-                            res.render('viewInvoice', {invoiceInfo, customer, items, delivery, pending, onAccount, paymentHistory, paymentTotal, amountDue});
-                        else
-                            res.render('viewInvoice', {invoiceInfo, items, pending, onAccount, paymentHistory, paymentTotal, amountDue});
+                        if (delivery != "") {
+                             if(req.session.position == "Cashier"){
+                                var cashier = req.session.position;
+                                 res.render('viewInvoice', {invoiceInfo, customer, items, delivery, pending, onAccount, paymentHistory, paymentTotal, amountDue, cashier});
+                            }
+                
+                            if(req.session.position == "Manager"){
+                                var manager = req.session.position;
+                                 res.render('viewInvoice', {invoiceInfo, customer, items, delivery, pending, onAccount, paymentHistory, paymentTotal, amountDue, manager});
+                            }
+                        }
+                        else {
+                            if(req.session.position == "Cashier"){
+                                var cashier = req.session.position;
+                                 res.render('viewInvoice', {invoiceInfo, items, pending, onAccount, paymentHistory, paymentTotal, amountDue, cashier});
+                            }
+                
+                            if(req.session.position == "Manager"){
+                                var manager = req.session.position;
+                                 res.render('viewInvoice', {invoiceInfo, items, pending, onAccount, paymentHistory, paymentTotal, amountDue, manager});
+                            }
+                        }
                     }
                 }
                 else {
                     if (delivery != "")
-                            res.render('viewInvoice', {invoiceInfo, customer, items, delivery,  paymentHistory, paymentTotal, amountDue});
+                        res.render('viewInvoice', {invoiceInfo, customer, items, delivery,  paymentHistory, paymentTotal, amountDue});
                     else
                         res.render('viewInvoice', {invoiceInfo, items, paymentHistory, paymentTotal, amountDue});
                 }
             }
             else {
-                if (delivery != "")
-                            res.render('viewInvoice', {invoiceInfo, customer, items, delivery});
-                        else
-                            res.render('viewInvoice', {invoiceInfo, items});
-                        if (delivery != "") {
-                            //res.render('viewInvoice', {invoiceInfo, items, delivery, pending, onAccount, paymentHistory, paymentTotal, amountDue});
-                            
-                            if(req.session.position == "Cashier"){
-                                var cashier = req.session.position;
-                                res.render('viewInvoice', {invoiceInfo, items, delivery, pending, onAccount, paymentHistory, paymentTotal, amountDue, cashier});	
-                            }
-                
-                            if(req.session.position == "Manager"){
-                                var manager = req.session.position;
-                                res.render('viewInvoice', {invoiceInfo, items, delivery, pending, onAccount, paymentHistory, paymentTotal, amountDue, manager});
-                            }
+                if (delivery != "") {
+                    res.render('viewInvoice', {invoiceInfo, customer, items, delivery});
+                else {
+                    res.render('viewInvoice', {invoiceInfo, items});
+
+                    if (delivery != "") {
+                        //res.render('viewInvoice', {invoiceInfo, items, delivery, pending, onAccount, paymentHistory, paymentTotal, amountDue});
+                        
+                        if(req.session.position == "Cashier"){
+                            var cashier = req.session.position;
+                            res.render('viewInvoice', {invoiceInfo, items, delivery, pending, onAccount, paymentHistory, paymentTotal, amountDue, cashier});	
                         }
-                        else {
-                          //res.render('viewInvoice', {invoiceInfo, items, pending, onAccount, paymentHistory, paymentTotal, amountDue});
-                            
-                            if(req.session.position == "Cashier"){
-                                var cashier = req.session.position;
-                                res.render('viewInvoice', {invoiceInfo, items, pending, onAccount, paymentHistory, paymentTotal, amountDue, cashier});	
-                            }
-                
-                            if(req.session.position == "Manager"){
-                                var manager = req.session.position;
-                                res.render('viewInvoice', {invoiceInfo, items, pending, onAccount, paymentHistory, paymentTotal, amountDue, manager});
-                            }
+            
+                        if(req.session.position == "Manager"){
+                            var manager = req.session.position;
+                            res.render('viewInvoice', {invoiceInfo, items, delivery, pending, onAccount, paymentHistory, paymentTotal, amountDue, manager});
+                        }
+                    }
+                    else {
+                      //res.render('viewInvoice', {invoiceInfo, items, pending, onAccount, paymentHistory, paymentTotal, amountDue});
+                        
+                        if(req.session.position == "Cashier"){
+                            var cashier = req.session.position;
+                            res.render('viewInvoice', {invoiceInfo, items, pending, onAccount, paymentHistory, paymentTotal, amountDue, cashier});	
+                        }
+            
+                        if(req.session.position == "Manager"){
+                            var manager = req.session.position;
+                            res.render('viewInvoice', {invoiceInfo, items, pending, onAccount, paymentHistory, paymentTotal, amountDue, manager});
                         }
                     }
                 }
@@ -301,7 +320,8 @@ const invoiceController = {
                         res.render('viewInvoice', {invoiceInfo, items, manager});
                     }
                 }
-            }
+            }*/
+            res.render('viewInvoice')
 		}
 
 		getInformation();
@@ -794,7 +814,7 @@ const invoiceController = {
 
             if (deliveryInfo.length > 0)
                 res.send(deliveryInfo);
-            else 
+            else
                 res.send(null);
 		}
         getInformation();

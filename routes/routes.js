@@ -120,7 +120,7 @@ router.get('/generatePurchaseOrder', purchaseOrderController.generatePurchaseOrd
 
 router.get('/getItemNamePO', purchaseOrderController.getItems);
 
-router.get('/getItemUnit', purchaseOrderController.getItemUnit);
+//router.get('/getItemUnit', purchaseOrderController.getItemUnit);
 
 router.get('/getEOQ', purchaseOrderController.getEOQ);
 

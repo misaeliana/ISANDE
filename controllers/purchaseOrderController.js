@@ -103,9 +103,6 @@ const purchaseOrderController = {
 					resolve (items)
 				})
 			})
-					resolve (result);
-				});
-			});
 		}
 
 		//source for regex

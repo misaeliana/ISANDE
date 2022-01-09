@@ -232,16 +232,15 @@ const inventoryController = {
 				res.render('viewSpecificItem', {itemInfo, itemUnits, itemCategories, units, itemSuppliers});
 			})
 
-				if(req.session.position == "Inventory and Purchasing"){
-					var inventoryAndPurchasing = req.session.position;
-					res.render('viewSpecificItem', {itemInfo, itemCategories, units, itemSuppliers, inventoryAndPurchasing});	
-				}
-	
-				if(req.session.position == "Manager"){
-					var manager = req.session.position;
-					res.render('viewSpecificItem', {itemInfo, itemCategories, units, itemSuppliers, manager});
-				}
-			});
+			if(req.session.position == "Inventory and Purchasing"){
+				var inventoryAndPurchasing = req.session.position;
+				res.render('viewSpecificItem', {itemInfo, itemCategories, units, itemSuppliers, inventoryAndPurchasing});	
+			}
+
+			if(req.session.position == "Manager"){
+				var manager = req.session.position;
+				res.render('viewSpecificItem', {itemInfo, itemCategories, units, itemSuppliers, manager});
+			}
 		}
 
 		getInformation();
