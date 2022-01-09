@@ -33,7 +33,7 @@
                             <button type="submit" id="search-button"><i class="fa fa-search" ></i></button>
                     </div>
                    
-                    <div class="btn-new-PO"><button class="btn btn-primary" id="btn-new-PO" style="float: right;">+ New PO</button></div>
+                    <div class="btn-new-PO"><button class="btn btn-primary" id="btn-new-PO" style="float: right;" data-toggle="modal" data-target="#modal-PO-type">+ New PO</button></div>
                     
                 </div>
                 
@@ -75,6 +75,34 @@
                     </tbody>
                 </table>
             </div>
+            <!-- Modal -->
+            <div class="modal fade" id="modal-PO-type" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="exampleModalLongTitle">Choose Purchase Order Type</h3>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="PO-type" id="radio-generate" value="generate" checked>
+                                <label class="form-check-label" for="exampleRadios1">
+                                    Generate Purchase Order
+                                </label>
+                                </div>
+                                <div class="form-check">
+                                <input class="form-check-input" type="radio" name="PO-type" id="radio-manual" value="manual">
+                                <label class="form-check-label" for="exampleRadios2">
+                                    Manual Purchase Order
+                                </label>
+                                </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="modal-btn-grey" data-dismiss="modal">Cancel</button>
+                            <button type="button" class="modal-btn-light-blue" id="btn-PO-type-choice">Continue</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <script>
@@ -84,8 +112,14 @@
                     window.location = $(this).data("href");
                 });
 
-                $('#btn-new-PO').click(function() {
-                    window.location = '/newPurchaseOrder';
+                $('#btn-PO-type-choice').click(function() {
+                    var radioVal = $("input[name='PO-type']:checked").val();
+
+                    if (radioVal == "generate") {
+                        window.location = "/generatePurchaseOrder";
+                    } else if (radioVal == "manual") {
+                        window.location = "/newPurchaseOrder";
+                    }
                 })
 
                 $('#dropdown-po-status').change(function() {
