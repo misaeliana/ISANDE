@@ -14,30 +14,16 @@
     </head>
     <body>
 
-        <!-- PARTIALS -->
-        <div id="navbar"> 
-            <div class="navbar-logo"> <img src="../images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
-            <div class="navbar-logout"> <a href= "login.html">
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
-                    <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
-                </svg>
-            </a>
-            </div>
-        </div>
+        {{> logoutPartial }}
 
-        <div class="sidebar">
-            <a href="#">Home</a>
-            <a href="#">Deliveries</a>
-            <a href="#">Customers</a>
-        </div>
+        {{> managerPartial }}
 
         <div class="content">        
             <div class="fixed-div">
                 <div style="display: flex; margin-bottom: 15px;">
                     <div style="width: 50%"><h1 class="bold">Sales Performance Report</h1></div>
                     <div style="width: 50%;">
-                        <h3 style="text-align: right;">{{today}}</h3>
+                        <h3 style="text-align: right;" id="date-today">{{today}}</h3>
                     </div>
                 </div>
                 <div>
@@ -49,9 +35,12 @@
                         </select>
                         <label for="dropdown-number" style="margin-right: 10px">Number of Items</label>
                         <select class="dropdown" id="dropdown-number" style="margin-right: 10px">
-                            <option value="10" selected>10</option>
-                            <option value="15">15</option>
-                            <option value="20">20</option>
+                            <option value="50" selected>50</option>
+                            <option value="100">100</option>
+                            <option value="150">150</option>
+                            <option value="150">200</option>
+                            <option value="250">250</option>
+                            <option value="300">300</option>
                         </select>
                     </div>
                     <div class= "div-button-end">
@@ -60,14 +49,14 @@
                             <input style="height: 34px" type="date" id="start-date" name="start-date">
                             <label class="date-label" style="margin-left: 10px;" for="end-date">End Date</label>
                             <input style="height: 34px" type="date" id="end-date" name="end-date">
-                            <button type="submit" style="height: 34px; margin-left: 10px" id="invoice-date-button"><i class="fa fa-search"></i></button>
+                            <button type="submit" style="height: 34px; margin-left: 10px" id="sales-performance-date-button"><i class="fa fa-search"></i></button>
                         </div>
                     </div>
                     <div style="height: 50px"></div>
                 </div>
             </div>
 
-                <table class="table"> 
+                <table class="table" id="table-sales-performance"> 
                     <thead class="table-head">
                         <tr>
                             <th>#</th>
@@ -91,12 +80,77 @@
                 </table>
                 <div class="summary-total-container" style= "margin-top: 10px;">  
                     <div class="summary-total-text">Total Sales</div>
-                    <div class="summary-info-container"><div id="view-purchases-total" class="summary-total-info">₱ {{overallTotal}}</div></div>
+                    <div class="summary-info-container"><div id="sales-performance-total" class="summary-total-info">₱ {{overallTotal}}</div></div>
                 </div>
                 <div class="btn-new-PO">
                     <button class="btn-dark-blue" id="btn-export" style="margin-top: 10px; margin-bottom: 10px;">Export</button>
                 </div> 
             </div>
         </div>
+        <script>
+            $(document).ready(function() {
+                function filter(result) {
+                    $("#table-sales-performance tbody tr").remove();
+
+                    if (result != null) {
+                        var total = 0;
+
+                        for (var i = 0; i < result.length; i++) {
+                            $("#table-sales-performance").find("tbody").append(
+                                `  <tr> 
+                                        <td style="text-align: right;">${result[i].rank}</td>
+                                        <td>${result[i].description}</td>
+                                        <td style="text-align: right;">${result[i].unitsSold}</td>
+                                        <td>${result[i].UOM}</td>
+                                        <td style="text-align: right;">₱ ${result[i].total}</td>
+                                    </tr>`
+                            );
+
+                            total +=  parseFloat(result[i].total);
+                        }
+                        $("#sales-performance-total").text("₱ " + total.toFixed(2));
+                    }
+                }
+
+                $("#sales-performance-date-button").click(function() {
+                    var startDate = $("#start-date").val();
+                    var endDate = $("#end-date").val();
+
+                    if (startDate == null || startDate == "" || endDate == null || endDate == "") {
+                        if (startDate == null || startDate == "")
+                            $("#start-date").css("border", "1px solid #B00000")
+
+                        if (endDate == null || endDate == "")
+                            $("#end-date").css("border", "1px solid #B00000")
+                    } else {
+                        var convertedStartDate = new Date(startDate);
+                        var convertedEndDate = new Date(endDate);
+
+                        if(convertedStartDate > convertedEndDate) {
+                            // end date is before start date 
+                            $("#start-date").css("border", "1px solid #B00000");
+                            $("#end-date").css("border", "1px solid #B00000");
+                        }
+                        else {
+                            // valid dates
+                            $("#start-date").css("border", "1px solid #DDDDDD");
+                            $("#end-date").css("border", "1px solid #DDDDDD");
+
+                            var sortFilter = $('#dropdown-sort').val();
+                            var numberFilter = $('#dropdown-number').val();
+
+                            $.get("/getFilteredSalesPerformanceReport", {startDate: convertedStartDate, endDate: convertedEndDate, sortFilter: sortFilter, numberFilter: numberFilter}, function (result) {
+
+                                filter(result);
+
+                                 $.get("/getDateToday", {}, function (result2) {
+                                    $("#date-today").text(result2);
+                                });
+                            });
+                        }
+                    }
+                });
+            })
+        </script>
     </body>
 </html>

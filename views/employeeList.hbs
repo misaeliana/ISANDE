@@ -14,23 +14,9 @@
     </head>
     <body>
 
-        <!-- PARTIALS -->
-        <div id="navbar"> 
-            <div class="navbar-logo"> <img src="../images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
-            <div class="navbar-logout"> <a href= "login.html">
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
-                    <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
-                </svg>
-            </a>
-            </div>
-        </div>
+        {{> logoutPartial }}
 
-        <div class="sidebar">
-            <a href="#">Home</a>
-            <a href="#">Deliveries</a>
-            <a href="#">Customers</a>
-        </div>
+        {{> managerPartial }}
 
         <div class="content">
              <div class="fixed-div">
@@ -42,9 +28,10 @@
                             <button type="submit" id="search-button"><i class="fa fa-search" ></i></button>
                         </form>-->
                         <input type="text" placeholder="Search" name="search" id="search-field">
+                        <button type="submit" id="search-button"><i class="fa fa-search" ></i></button>
                     </div>
                     <div class= "div-button-end">
-                        <div class="new-employee"><button id="btn-new-employee" class="btn btn-primary" data-toggle="modal" data-target="#modal-add-employee">+ New Employee</button></div>
+                        <div class="new-employee"><button id="btn-new-employee" class="btn-light-blue" data-toggle="modal" data-target="#modal-add-employee">+ New Employee</button></div>
                     </div>
                     <div style="height: 50px"></div>
                 </div>
@@ -56,34 +43,53 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h3 class="modal-title" id="exampleModalLongTitle">Add Employee</h3>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
-                        </button>
+                        </button>-->
                     </div>
                     <div class="modal-body">
                         <form id="add-new-employee">
-                            <label for="employee-name">Employee Name</label> <input id="employee-name" type="text"><br>
-                            <p class="error" id="error-new-employee-name" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                            <label for="employee-username">Username</label> <input id="employee-username" type="text"><br>
-                            <p class="error" id="error-new-employee-username" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                            <label for="employee-password">Password</label> <input id="employee-password" type="text"><br>                            
-                            <p class="error" id="error-employee-password" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                            <label for="Contact-number">Contact Number</label> <input id="contact-number" type="number"><br>                            
-                            <p class="error" id="error-contact-number" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                            <label for="roler">Position</label> 
-                            <select class="dropdown" id="dropdown-employee-position">
-                                <option value="no-selected">--Select Position--</option>
-                                {{#each positions}}
-                                    <option value="{{_id}}">{{position}}</option>
-                                {{/each}}
-                            </select>
-                            <p class="error" id="error-employee-position" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <div class="flex-display">
+                                <label for="employee-name" class="modal-label">Employee Name</label> 
+                                <input id="employee-name" type="text" class="modal-input form-control"><br>
+                            </div>
+                            <p class="error modal-error" id="error-new-employee-name"></p>
+
+                            <div class="flex-display">
+                                <label for="employee-username" class="modal-label">Username</label> 
+                                <input id="employee-username" class="modal-input form-control" type="text"><br>
+                            </div>
+                            <p class="error modal-error" id="error-new-employee-username"></p>
+
+                            <div class="flex-display">  
+                                <label for="employee-password" class="modal-label">Password</label> 
+                                <input id="employee-password" type="text" class="modal-input form-control"><br>                            
+                            </div>
+                            <p class="error modal-error" id="error-employee-password"></p>
+                            
+                            <div class="flex-display"> 
+                                <label for="Contact-number" class="modal-label">Contact Number</label> 
+                                <input id="contact-number" type="number" class="modal-input form-control"><br>
+                            </div>                            
+                            <p class="error modal-error" id="error-contact-number"></p>
+
+                            <div class="flex-display">
+                                <label for="roler" class="modal-label">Position</label> 
+                                <select class="form-control" id="dropdown-employee-position">
+                                    <option value="no-selected">--Select Position--</option>
+                                    {{#each positions}}
+                                        <option value="{{_id}}">{{position}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                            <p class="error modal-error" id="error-employee-position"></p>
+
                             <br>
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="btn-add-new-employee">Save</button>
+                        <button type="button" class="modal-btn-grey" data-dismiss="modal">Close</button>
+                        <button type="button" class="modal-btn-light-blue" id="btn-add-new-employee">Save</button>
                     </div>
                 </div>
                 </div>
@@ -251,9 +257,20 @@
                     }
                 })
 
-                $('#search-field').keyup(function() {
+                /*$('#search-field').keyup(function() {
                      $('#table-employee tr').show();
                     var searchItem = $(this).val().toLowerCase();
+                 
+                    $('#table-employee > tbody > tr').each(function(index) {
+                        var employeeName = $(this).children('td:first').text().toLowerCase();
+                        if (!employeeName.includes(searchItem))
+                            $(this).toggle();
+                    })
+                })*/
+
+                 $('#search-button').click(function() {
+                     $('#table-employee tr').show();
+                    var searchItem = $('#search-field').val().toLowerCase();
                  
                     $('#table-employee > tbody > tr').each(function(index) {
                         var employeeName = $(this).children('td:first').text().toLowerCase();

@@ -20,7 +20,7 @@ const customerController = {
 					name: result[i].name,
 					number: result[i].number,
 					address: result[i].address
-				}
+				};
 				customers.push(customer);
 			}
 			//sort function 
@@ -32,8 +32,17 @@ const customerController = {
 			    //syntax is "condition ? value if true : value if false"
 			    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
 			});
-			res.render('customerList', {customers});
-		})
+
+			if(req.session.position == "Cashier"){
+                var cashier = req.session.position;
+                res.render('customerList', {customers, cashier});	
+            }
+
+            if(req.session.position == "Manager"){
+                var manager = req.session.position;
+                res.render('customerList', {customers, manager});
+			}
+		});
 	},
 
 	postCustomerInformation: function(req, res) {
@@ -42,11 +51,11 @@ const customerController = {
 			number: req.body.number,
 			address: req.body.address,
 			informationStatusID: "618a7830c8067bf46fbfd4e4"
-		}
+		};
 
 		db.insertOne (Customers, customer, function(flag) {
 			if (flag) { }
-		})
+		});
 	},
 
 	checkCustomerName: function(req, res) {
@@ -54,7 +63,7 @@ const customerController = {
 
 		db.findMany(Customers, {name:name, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name', function(result) {	
 			res.send(result[0]);
-		})
+		});
 	},
 
 	getViewCustomer: function(req, res) {
@@ -91,19 +100,38 @@ const customerController = {
 					total: total,
 					paid: amountPaid,
 					due: total-amountPaid,
-				}
-				totalAmountDue += invoice.due
-				unpaidInvoices.push(invoice)
+				};
+
+				totalAmountDue += invoice.due;
+				unpaidInvoices.push(invoice);
 			}
 
-			if (unpaidInvoices.length==0) 
+			if (unpaidInvoices.length==0) {
+				if(req.session.position == "Cashier"){
+					var cashier = req.session.position;
+					res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue, cashier})
+				}
+	
+				if(req.session.position == "Manager"){
+					var manager = req.session.position;
+					res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue, manager})
+				}
 				res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue})
-
-			else
-				res.render('customerInformation', {customerInfo, customerInvoices, unpaidInvoices, totalAmountDue})
+			}
+			else {
+				if(req.session.position == "Cashier"){
+					var cashier = req.session.position;
+					res.render('customerInformation', {customerInfo, customerInvoices, unpaidInvoices, totalAmountDue, cashier});
+				}
+	
+				if(req.session.position == "Manager"){
+					var manager = req.session.position;
+					res.render('customerInformation', {customerInfo, customerInvoices, unpaidInvoices, totalAmountDue, manager});
+				}
+			}
 		}
 
-		getCustomerInformation()
+		getCustomerInformation();
 	},
 
 	postUpdateInformation: function (req, res) {
@@ -146,19 +174,19 @@ const customerController = {
 		function getPreviousAccountPayment(invoiceID) {
 			return new Promise((resolve, reject) => {
 				db.findMany(AccountPayments,{invoiceID:invoiceID}, 'amountPaid', function(result) {
-					var totalPaid = 0
+					var totalPaid = 0;
 					for (var j=0; j<result.length; j++)
-						totalPaid += result.amountPaid
-					resolve (totalPaid)
-				})
-			})
+						totalPaid += result.amountPaid;
+					resolve (totalPaid);
+				});
+			});
 		}	
 
 		function updateInvoiceStatus(invoiceID)	{
 			//update status to paid
 			db.updateOne(Invoices, {_id:invoiceID}, {statusID:"619785b0d9a967328c1e8fa6"}, function(flag){
 				if (flag) { }
-			})
+			});
 		}
 
 		async function pay() {
@@ -173,30 +201,30 @@ const customerController = {
 
 				//can still pay for other invoices
 				if (possiblePayable <= amountPaid) {
-					amountPaid -= possiblePayable
-					amountPaidForInvoice = possiblePayable
-					updateInvoiceStatus(unpaidInvoices[i]._id)
+					amountPaid -= possiblePayable;
+					amountPaidForInvoice = possiblePayable;
+					updateInvoiceStatus(unpaidInvoices[i]._id);
 				}
 
 				//amount is already exhausted for the invoice
 				else {
-					amountPaidForInvoice = amountPaid
-					amountPaid = 0
+					amountPaidForInvoice = amountPaid;
+					amountPaid = 0;
 				}
 
 				var newPayment = {
 					invoiceID: unpaidInvoices[i]._id,
 					datePaid: new Date(),
 					amountPaid: amountPaidForInvoice
-				}
+				};
 
 				db.insertOne(AccountPayments, newPayment, function(flag) {
-				})
+				});
 			}
-			res.sendStatus(200)
+			res.sendStatus(200);
 		}
 
-		pay()
+		pay();
 	},
 
 	checkPendingInvoices: function (req, res) {
@@ -208,13 +236,13 @@ const customerController = {
 			for (var i=0; i<invoices.length && !pending; i++) {
 				//status is pending or partial
 				if (invoices[i].statusID == "619785d78094faf8c10d1484" || invoices[i].statusID == "61b2df709f9cd4edddf21d68")
-					pending = true
+					pending = true;
 			}
 
 			if (pending)
-				res.send(true)
+				res.send(true);
 			else
-				res.send(false)
+				res.send(false);
 		}
 
 

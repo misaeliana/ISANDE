@@ -14,23 +14,9 @@
     </head>
     <body>
 
-        <!-- PARTIALS -->
-        <div id="navbar"> 
-            <div class="navbar-logo"> <img src="../images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
-            <div class="navbar-logout"> <a href= "login.html">
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
-                    <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
-                </svg>
-            </a>
-            </div>
-        </div>
+        {{> logoutPartial }}
 
-        <div class="sidebar">
-            <a href="#">Home</a>
-            <a href="#">Deliveries</a>
-            <a href="#">Customers</a>
-        </div>
+        {{> managerPartial }}
 
         <div class="content">
             <br>
@@ -62,34 +48,49 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h3 class="modal-title" id="exampleModalLongTitle">Update Employee Information</h3>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
-                            </button>
+                            </button>-->
                         </div>
                         <div class="modal-body">
                             <form id="update-employee">
                                 <!--<label for="employee-name">Employee Name</label> <input id="employee-name" type="text" value="{{employeeInfo.name}}"><br>
                                 <p class="error" id="error-employee-name" style="margin-top: 3px; margin-bottom: 3px;"></p>-->
-                                <label for="employee-username">Username</label> <input id="employee-username" type="text" value="{{employeeInfo.username}}"><br>
-                                <p class="error" id="error-employee-username" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                                <label for="employee-password">Password</label> <input id="employee-password" type="text"><br>                            
-                                <p class="error" id="error-employee-password" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                                <label for="Contact-number">Contact Number</label> <input id="contact-number" type="number" value="{{employeeInfo.number}}"><br>                            
-                                <p class="error" id="error-contact-number" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                                <label for="dropdown-employee-position">Position</label> 
-                                <select class="dropdown" id="dropdown-employee-position">
-                                    <option value="no-selected">--Select Position--</option>
-                                    {{#each positions}}
-                                        <option value="{{_id}}">{{position}}</option>
-                                    {{/each}}
-                                </select>
-                                <p class="error" id="error-employee-position" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                                <div class="flex-display">
+                                    <label for="employee-username" class="modal-label">Username</label> 
+                                    <input id="employee-username" class="modal-input form-control" type="text" value="{{employeeInfo.username}}"><br>
+                                </div>
+                                <p class="error modal-error" id="error-employee-username"></p>
+                                
+                                <div class="flex-display">
+                                    <label for="employee-password" class="modal-label">Password</label> 
+                                    <input id="employee-password" class="modal-input form-control" type="text"><br>                            
+                                </div>
+                                <p class="error modal-error" id="error-employee-password"></p>
+                                
+                                <div class="flex-display">
+                                    <label for="Contact-number" class="modal-label">Contact Number</label> 
+                                    <input id="contact-number" class="modal-input form-control" type="number" value="{{employeeInfo.number}}"><br> 
+                                </div>                           
+                                <p class="error modal-error" id="error-contact-number"></p>
+                                
+                                <div class="flex-display">
+                                    <label for="dropdown-employee-position" class="modal-label">Position</label> 
+                                    <select class="form-control" id="dropdown-employee-position">
+                                        <option value="no-selected">--Select Position--</option>
+                                        {{#each positions}}
+                                            <option value="{{_id}}">{{position}}</option>
+                                        {{/each}}
+                                    </select>
+                                </div>
+                                <p class="error modal-error" id="error-employee-position"></p>
                                 <br>
                             </form>
                         </div>
                         <div class="modal-footer">
-                            <button id="btn-delete-employee" class="btn-red" style="float:left">Delete Employee</button>
-                            <button type="button" class="btn btn-primary" id="btn-update-employee">Save</button>
+                            <button id="btn-delete-employee" class="modal-btn-red" style="float:left">Delete</button>
+                             <button type="button" class="modal-btn-grey" data-dismiss="modal" id="btn-change-supplier-close">Close</button>
+                            <button type="button" class="modal-btn-light-blue" id="btn-update-employee">Save</button>
                         </div>
                     </div>
                     </div>

@@ -57,6 +57,17 @@ const manualCountController = {
             }
 
 			res.render('updateManualCount', {itemCategories, items});
+            //res.render('updateManualCount', {inventoryTypes, items});
+            
+            if(req.session.position == "Inventory and Purchasing"){
+				var inventoryAndPurchasing = req.session.position;
+				res.render('updateManualCount', {inventoryTypes, items, inventoryAndPurchasing});	
+			}
+
+			if(req.session.position == "Manager"){
+				var manager = req.session.position;
+				res.render('updateManualCount', {inventoryTypes, items, manager});
+			}
 		}
 
 		getInformation();
@@ -128,7 +139,17 @@ const manualCountController = {
             }
 
 
-			res.render('shrinkagesList', {shrinkagesInfo});
+            //res.render('shrinkagesList', {shrinkagesInfo});
+            
+            if(req.session.position == "Inventory and Purchasing"){
+				var inventoryAndPurchasing = req.session.position;
+				res.render('shrinkagesList', {shrinkagesInfo, inventoryAndPurchasing});	
+			}
+
+			if(req.session.position == "Manager"){
+				var manager = req.session.position;
+				res.render('shrinkagesList', {shrinkagesInfo, manager});
+			}
 		}
 
 		getInformation();

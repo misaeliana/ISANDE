@@ -101,6 +101,8 @@ const reportController = {
             /*for (var i = 0; i < categories.length; i++) {
                 formattedInventory.push(getItemCategories[i].category);
             }*/
+
+            // check if invoice is paid
             
             for (var j = 0; j < inventory.length; j++) {
                 var unitsSold = 0;
@@ -141,6 +143,7 @@ const reportController = {
             var formattedInventory = [];
             var invoiceItems = await getAllInvoiceItems();
             var overallTotal = 0;
+            var paidStatus = await getSpecificInvoiceStatusID("Paid");
 
             for (var i = 0; i < inventory.length; i++) {
                 var unitsSold = 0;
@@ -149,7 +152,7 @@ const reportController = {
                 // get number of units sold
                 for (var j = 0 ; j < invoiceItems.length; j++) {
                   
-                    if (await getItemDescription(invoiceItems[j].itemID) == inventory[i].itemDescription) {
+                    if ((await getItemDescription(invoiceItems[j].itemID) == inventory[i].itemDescription) && (await checkInvoicePaid(invoiceItems[j].invoice_id) == paidStatus)) {
                         unitsSold += parseFloat(invoiceItems[j].quantity);
                         itemTotal += parseFloat(await getItemPrice(invoiceItems[j].itemID)) - invoiceItems[j].discount;
                     }
@@ -171,8 +174,8 @@ const reportController = {
             // sort by best-selling
             formattedInventory.sort((a, b) => (a.total > b.total) ? -1 : 1);
 
-            // get top 10
-            formattedInventory = formattedInventory.slice(0, 10);
+            // get top 50
+            formattedInventory = formattedInventory.slice(0, 50);
 
             for (var k = 0; k < formattedInventory.length; k++)
                 formattedInventory[k].rank = k + 1;
@@ -190,8 +193,8 @@ const reportController = {
 
             var today = new Date().toLocaleString('en-US');
             var temp_purchases = await getPurchases();
-            var purchases = []
-            var total =0
+            var purchases = [];
+            var total =0;
 
             for (var i=0; i<temp_purchases.length; i++) {
                 var dateMade = new Date(temp_purchases[i].date);
@@ -203,10 +206,10 @@ const reportController = {
                     dateReceived: dateReceived.getMonth() + 1 + "/" + dateReceived.getDate() + "/" + dateReceived.getFullYear(),
                     amountPaid: temp_purchases[i].total.toLocaleString('en-US')
                 }
-                purchases.push(purchase)
-                total += parseFloat(temp_purchases[i].total)
+                purchases.push(purchase);
+                total += parseFloat(temp_purchases[i].total);
             }
-            total = total.toLocaleString('en-US')
+            total = total.toLocaleString('en-US');
             
             res.render('purchasesReport', {today, purchases, total})
         }
@@ -215,19 +218,15 @@ const reportController = {
     },
 
     getFilteredPurchaseReport: function(req, res) {
-        var startDate = new Date(req.query.startDate);
-        var endDate = new Date(req.query.endDate);
-        startDate.setHours(0,0,0,0);
-        endDate.setHours(0,0,0,0);
 
         async function getInfo() {
             var today = new Date().toLocaleString('en-US');
-            var temp_purchases = await getPurchases()
-            var purchases = []
+            var temp_purchases = await getPurchases();
+            var purchases = [];
 
             for (var i=0; i<temp_purchases.length; i++) {
                 var dateMade = new Date(temp_purchases[i].date);
-                var dateReceived = new Date(temp_purchases[i].dateReceived)
+                var dateReceived = new Date(temp_purchases[i].dateReceived);
                 dateMade.setHours(0,0,0,0);
                 
                 if (!(startDate > dateMade || dateMade > endDate)) {
@@ -241,15 +240,15 @@ const reportController = {
                     purchases.push(purchase);
                 }
             }
-            res.send(purchases)
+            res.send(purchases);
         }
 
-        getInfo()
+        getInfo();
     },
 
     getSalesPerCustomer: function(req, res) {
         var today = new Date().toLocaleString('en-US');
-        var total = 0
+        var total = 0;
 
         res.render('salesPerCustomerReport', {today, total});
     },
@@ -257,15 +256,15 @@ const reportController = {
     getCustomerInvoicesReport: function(req, res) {
 
         async function getInfo() {
-            var customer = await getCustomerIDs(req.query.customerName)
-            var invoices = []
+            var customer = await getCustomerIDs(req.query.customerName);
+            var invoices = [];
 
             for (var i=0; i<customer.length; i++) {
-                var invoice = await getCustomerInvoices(customer[i]._id)
-                invoices.push(invoice)
+                var invoice = await getCustomerInvoices(customer[i]._id);
+                invoices.push(invoice);
             }
 
-            res.send(invoices[1])
+            res.send(invoices[1]);
         }
 
         getInfo();
@@ -278,33 +277,90 @@ const reportController = {
         endDate.setHours(0,0,0,0);
 
         async function getInfo() {
-            var customer = await getCustomerIDs(req.query.customerName)
-            var temp_invoices = []
+            var customer = await getCustomerIDs(req.query.customerName);
+            var temp_invoices = [];
 
             for (var i=0; i<customer.length; i++) {
-                var invoice = await getCustomerInvoices(customer[i]._id)
-                temp_invoices.push(invoice)
+                var invoice = await getCustomerInvoices(customer[i]._id);
+                temp_invoices.push(invoice);
             }
 
-            temp_invoices = temp_invoices[1]
-            var invoices = []
+            temp_invoices = temp_invoices[1];
+            var invoices = [];
 
             for (var j=0; j<temp_invoices.length; j++) {
                 var date= new Date(temp_invoices[j].date);
                 date.setHours(0,0,0,0);
 
                 if (!(startDate > date || date > endDate)) {
-                    invoices.push(temp_invoices[j])
+                    invoices.push(temp_invoices[j]);
                 }
             }
  
-            //var invoices = []
             //console.log(invoices)
 
-            res.send(invoices)
+            res.send(invoices);
         }
 
         getInfo();
+    },
+
+    getFilteredSalesPerformanceReport: function(req, res) {
+        var startDate = new Date(req.query.startDate);
+        var endDate = new Date(req.query.endDate);
+        startDate.setHours(0,0,0,0);
+        endDate.setHours(0,0,0,0);
+        var sortFilter = req.query.sortFilter;
+        var numberFilter = req.query.numberFilter;
+
+        async function getInformation() {
+            var allInventory = await getAllInventoryItems();
+            var inventory = await filterInventory(allInventory);
+            var invoiceItems = await getAllInvoiceItems();
+            var formattedInventory = [];
+
+            for (var i = 0; i < inventory.length; i++) {
+                var unitsSold = 0;
+                var itemTotal = 0;
+
+                for (var j = 0 ; j < invoiceItems.length; j++) {
+                    if (await getItemDescription(invoiceItems[j].itemID) == inventory[i].itemDescription) {
+                        
+                        var invoiceDate = new Date(await getInvoiceDate(invoiceItems[j].invoice_id));
+                        invoiceDate.setHours(0,0,0,0);
+
+                        if ((!(startDate > invoiceDate || invoiceDate > endDate)) && (await checkInvoicePaid(invoiceItems[j].invoice_id) ==  await getSpecificInvoiceStatusID("Paid"))) {
+                            unitsSold += parseFloat(invoiceItems[j].quantity);
+                            itemTotal += parseFloat(await getItemPrice(invoiceItems[j].itemID)) - invoiceItems[j].discount;
+                        }
+                    }
+                }
+
+                var item = {
+                    rank: 1,
+                    description: inventory[i].itemDescription,
+                    unitsSold: unitsSold,
+                    UOM: await getSpecificUnit(inventory[j].unitID),
+                    total: itemTotal.toFixed(2)
+                };
+
+                formattedInventory.push(item);
+            } 
+
+            if (sortFilter == "best-selling")
+                formattedInventory.sort((a, b) => (a.total > b.total) ? -1 : 1);
+            else 
+                formattedInventory.sort((a, b) => (a.total > b.total) ? 1 : -1);
+
+            formattedInventory = formattedInventory.slice(0, numberFilter);
+
+            for (var k = 0; k < formattedInventory.length; k++)
+                formattedInventory[k].rank = k + 1;
+
+            res.send(formattedInventory);
+        }
+
+        getInformation();
     }
 };
 

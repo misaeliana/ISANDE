@@ -20,23 +20,15 @@
     </head>
     <body>
 
-        <!-- PARTIALS -->
-        <div id="navbar"> 
-            <div class="navbar-logo"> <img src="../images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
-            <div class="navbar-logout"> <a href= "login.html">
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
-                    <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
-                </svg>
-            </a>
-            </div>
-        </div>
+        {{> logoutPartial }}
 
-        <div class="sidebar">
-            <a href="#">Home</a>
-            <a href="#">Deliveries</a>
-            <a href="#">Customers</a>
-        </div>
+        {{#if inventoryAndPurchasing}}
+            {{> inventoryAndPurchasingPartial }}
+        {{/if}}
+
+        {{#if manager}}
+            {{> managerPartial }}
+        {{/if}}
 
         <div class="content">
             <div> <!-- ADD FIXED -->
@@ -129,61 +121,76 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h3 class="modal-title" id="exampleModalLongTitle">New Item</h3>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
-                        </button>
+                        </button>-->
                     </div>
                     <div class="modal-body">
                         <form id="add-new-item">
-                            <label for="description">Description</label> <input id="description" type="text"><br>
-                            <p class="error" id="error-description" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <div class="flex-display">
+                                <label for="description" class="modal-label">Description</label> 
+                                <input id="description" type="text" class="modal-input"><br>
+                            </div>
+                            <p class="error modal-error" id="error-description" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
-                            <label for="dropdown-category" style="margin-right: 10px">Type</label>
-                            <select class="dropdown" id="dropdown-category" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
-                                <option value="no-selected" selected>Select Type</option>
-                                {{#each itemCategories}}
-                                    <option value={{_id}}>{{category}}</option>
-                                {{/each}}
-                            </select>
-                            <p class="error" id="error-category" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <div class="flex-display">
+                                <label for="dropdown-category" class="modal-label">Type</label>
+                                <select class="dropdown" id="dropdown-category" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
+                                    <option value="no-selected" selected>Select Type</option>
+                                    {{#each itemCategories}}
+                                        <option value={{_id}}>{{category}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                            <p class="error" id="error-category modal-error" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
-                            <label for="dropdown-unit" style="margin-right: 10px">Unit</label>
-                            <select class="dropdown" id="dropdown-unit" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
-                                <option value="no-selected" selected>Select Unit</option>
-                                {{#each units}}
-                                    <option value={{_id}}>{{unit}}</option>
-                                {{/each}}
-                            </select>
-                            <p class="error" id="error-unit" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <div class="flex-display">
+                                <label for="dropdown-unit" class="modal-label">Unit</label>
+                                <select class="dropdown" id="dropdown-unit" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
+                                    <option value="no-selected" selected>Select Unit</option>
+                                    {{#each units}}
+                                        <option value={{_id}}>{{unit}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                            <p class="error modal-error" id="error-unit" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
+                            <div class="flex-display">
+                                <label for="reorder-level" class="modal-label">Reorder Level</label>
+                                <input id="reorder-level" class="modal-input" type="number" style="text-align: right;"><br>
+                            </div>
+                            <p class="error modal-error" id="error-reorder-level" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
-                            <label for="reorder-level">Reorder Level</label> <input id="reorder-level" type="number"><br>
-                            <p class="error" id="error-reorder-level" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <div class="flex-display">
+                                <label for="EOQ" class="modal-label">EOQ</label> 
+                                <input id="EOQ" class="modal-input" type="number" style="text-align: right;"><br>
+                            </div>
+                            <p class="error modal-error" id="error-EOQ" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
-                            <label for="EOQ">EOQ</label> <input id="EOQ" type="number"><br>
-                            <p class="error" id="error-EOQ" style="margin-top: 3px; margin-bottom: 3px;"></p>
-
-                            <label for="selling-price">Selling Price</label> <input id="selling-price" type="number"><br>
-                            <p class="error" id="error-selling-price" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <div class="flex-display">
+                                <label for="selling-price" class="modal-label">Selling Price</label> 
+                                <input id="selling-price" class="modal-input" type="number" style="text-align: right;"><br>
+                            </div>
+                            <p class="error modal-error" id="error-selling-price" style="margin-top: 3px; margin-bottom: 3px;"></p>
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="btn-add-new-item">Save</button>
+                        <button type="button" class="modal-btn-grey" data-dismiss="modal">Close</button>
+                        <button type="button" class="modal-btn-light-blue" id="btn-add-new-item">Save</button>
                     </div>
                 </div>
                 </div>
             </div>
 
-            <!----------MODAL FOR CHANGING SUPPLIERS----------------->
+            <!--MODAL FOR CHANGING SUPPLIERS--->
             <div class="modal fade" id="modal-change-item-supplier" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h3 class="modal-title" id="exampleModalLongTitle">Change Item Suppliers</h3>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
-                        </button>
+                        </button>-->
                     </div>
                     <div class="modal-body">
                         <table id="table-change-item-supplier" style="width: 100%;">
@@ -200,8 +207,8 @@
                         </table>  
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btn-change-supplier-close">Close</button>
-                        <button type="button" class="btn btn-primary" id="btn-save-change-item-supplier">Save</button>
+                        <button type="button" class="modal-btn-grey" data-dismiss="modal" id="btn-change-supplier-close">Close</button>
+                        <button type="button" class="modal-btn-light-blue" id="btn-save-change-item-supplier">Save</button>
                     </div>
                 </div>
                 </div>
@@ -239,7 +246,7 @@
                         {{#each items}}
                             <tr class="itemRow" >
                                 <td class="classItemDescription">{{itemDescription}}</td>
-                                <td><input class="classQty" type="number" value="{{quantity}}"></td>
+                                <td><input class="classQty" style="text-align: right;" type="number" value="{{quantity}}"></td>
                                 <td class="classUnit">{{unitName}}</td>
                                 <td> <button class="delete-button delete-item-btn"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button> </td>
                             </tr>
@@ -470,9 +477,9 @@
                                         $('#table-change-item-supplier-body').append(
                                             `<tr>
                                                 <td class="change-supplier-itemDesc">${itemDesc}</td>
-                                                <td><input class="change-supplier-qty " value=${qty} style="width:70px"></td>
+                                                <td><input class="change-supplier-qty" style="text-align: right;" value=${qty} style="width:70px"></td>
                                                 <td class="change-supplier-unit">${unit}</td>
-                                                <td><select class="change-supplier-supplier">
+                                                <td><select class="change-supplier-supplier" style="height: 27px">
                                                     <option value="no-selected">--Select Supplier--</option>
                                                 </select></td>
                                             </tr>`)
@@ -743,7 +750,7 @@
                         $('#table-poItem').append(`
                             <tr>
                                 <td class="classItemDescription">${itemDesc}</td>
-                                <td><input class="classQty" type="number" value="${qty}"</td>
+                                <td><input class="classQty" style="text-align: right;" type="number" value="${qty}"</td>
                                 <td class="classUnit">${unit}</td>
                                 <td></td>
                                 <td></td>
@@ -991,7 +998,7 @@
                                         <td>${updatedItem.itemDescription}</td> 
                                         <td value="${updatedItem.categoryID}" class="category-id">${updatedItem.category}</td>
                                         <td style="text-align: right;">${updatedItem.quantityAvailable}</td> 
-                                        <td class="unit-id">${updatedItem.unit}</td> 
+                                        <td class="unit-id" >${updatedItem.unit}</td> 
                                         <td style="text-align: right;">₱ ${sellingPrice}</td> 
                                         <td><button class="btn-status btn-low status-id" value="${updatedItem.statusID}">Low Stock</button></td>
                                     </tr>`

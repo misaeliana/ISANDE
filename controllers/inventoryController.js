@@ -65,7 +65,15 @@ const inventoryController = {
 			    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
 			}); 
 
-			res.render('inventory', {itemCategories, units, inventory, itemStatuses});
+			if(req.session.position == "Inventory and Purchasing"){
+                var inventoryAndPurchasing = req.session.position;
+                res.render('inventory', {itemCategories, units, inventory, itemStatuses, inventoryAndPurchasing});	
+            }
+
+            if(req.session.position == "Manager"){
+                var manager = req.session.position;
+                res.render('inventory', {itemCategories, units, inventory, itemStatuses, manager});
+			}
 		}
 
 		getInformation();
@@ -223,6 +231,17 @@ const inventoryController = {
 				itemInfo.toBeReceived = parseFloat(result).toFixed(2)
 				res.render('viewSpecificItem', {itemInfo, itemUnits, itemCategories, units, itemSuppliers});
 			})
+
+				if(req.session.position == "Inventory and Purchasing"){
+					var inventoryAndPurchasing = req.session.position;
+					res.render('viewSpecificItem', {itemInfo, itemCategories, units, itemSuppliers, inventoryAndPurchasing});	
+				}
+	
+				if(req.session.position == "Manager"){
+					var manager = req.session.position;
+					res.render('viewSpecificItem', {itemInfo, itemCategories, units, itemSuppliers, manager});
+				}
+			});
 		}
 
 		getInformation();
@@ -248,6 +267,15 @@ const inventoryController = {
 			var itemName = await getItemDescription(itemID)
 
 			res.render('editItemSuppliers', {itemID, itemName, suppliers, itemSuppliers, units});
+			if(req.session.position == "Inventory and Purchasing"){
+				var inventoryAndPurchasing = req.session.position;
+				res.render('editItemSuppliers', {itemID, suppliers, itemSuppliers, inventoryAndPurchasing});	
+			}
+
+			if(req.session.position == "Manager"){
+				var manager = req.session.position;
+				res.render('editItemSuppliers', {itemID, suppliers, itemSuppliers, manager});
+			}
 		}
 
 		getInformation();
@@ -408,33 +436,6 @@ const inventoryController = {
 
 		getInformation();
 	},
-
-	/*getFilterInventory: function(req, res) {
-		var typeFilter = req.query.typeFilter;
-		var statusFilter = req.query.statusFilter;
-		var inventory = [];
-
-		console.log(typeFilter + ", " + statusFilter);
-
-		async function filters() {
-			var inventoryItems = await getInventoryItems("618a7830c8067bf46fbfd4e4");
-
-			for (var i = 0; i < inventoryItems.length; i++) {
-				if (typeFilter == "all-type" && statusFilter == "all-type") {
-					temp = getInformation(inventoryItems[i]);
-				} else if (typeFilter == "all-type" && statusFilter != "all-type") {
-					if (statusFilter == inventoryItems[i])
-						getInformation(inventoryItems[i]);
-				} else if (typeFilter != "all-type" && statusFilter == "all-type") {
-					if (typeFilter == inventoryItems[i])
-						getInformation(inventoryItems[i]);
-				} else {
-					if (typeFilter == inventoryItems[i].categoryID && statusFilter == inventoryItems[i].statusID) {
-						getInformation(inventoryItems[i]);
-					}
-				}
-			}
-		}*/
 
 	getFilterInventory: function(req, res) {
 		var typeFilter = req.query.typeFilter;

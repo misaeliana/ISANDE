@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html class="login-html">
+    <head>
+        <title> Log In </title>
+        <meta name="description" content="Log In">
+        <meta name="keyword" content="Moderna, Log In">
+        <link rel="stylesheet" type="text/css" href="../css/general.css">
+        <link rel="stylesheet" type="text/css" href="../css/information.css">
+        <link rel="stylesheet" type="text/css" href="../css/list.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <div class="logo"><img src="../images/Moderno.png" alt="Moderno Logo" width="300" height="120"></div>
+        <div class="login-container">
+            <h1 class="login-h1"> LOG IN </h1>
+            <div>
+                <label for="username"> Username </label> <br>
+                <input type="text" class="login-input form-control" id="username" name="username"> <br>
+                <label for="password"> Passsword </label> <br>
+                <input type="password" class="login-input form-control" id="password" name="password"> 
+                <p class="error" id="error" style="margin-top: 3px; margin-bottom: 3px; color: red"></p>
+                <br>
+                <div style="display:flex; justify-content: flex-end;">
+                    <button type="button" class="btn-light-blue" style="margin-top: 10px;" id="login">Log In</button>
+                </div>
+            </div>
+        </div>
+        <script> 
+            $(document).ready(function() {
+
+                $('#login').click(function() {
+                    var username = $('#username').val();
+                    var password = $('#password').val();
+
+                    $.ajax({
+                        url: "/checkLogIn",              
+                        type: "POST",
+                        data: {'username': username,'password': password},
+                        async: false,
+                        success: function(result){
+                            if(result.redirect != null){
+                                $("#error").text("");
+                                window.location = result.redirect;
+                            }
+                            else{
+                                $("#error").text("Incorrect username or password.");
+                            }
+                        }
+                    });           
+                });
+            });
+        </script>    
+    </body>
+</html>

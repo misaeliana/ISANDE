@@ -14,23 +14,15 @@
     </head>
     <body>
 
-        <!-- PARTIALS -->
-        <div id="navbar"> 
-            <div class="navbar-logo"> <img src="../images/Kamuning.png" alt="Kamuning Hardware Logo" width="200" height="65"></div>
-            <div class="navbar-logout"> <a href= "login.html">
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
-                    <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
-                </svg>
-            </a>
-            </div>
-        </div>
+        {{> logoutPartial }}
 
-        <div class="sidebar">
-            <a href="#">Home</a>
-            <a href="#">Deliveries</a>
-            <a href="#">Customers</a>
-        </div>
+        {{#if cashier}}
+            {{> cashierPartial }}
+        {{/if}}
+
+        {{#if manager}}
+            {{> managerPartial }}
+        {{/if}}
 
         <div class="content">
             <br>
@@ -58,23 +50,31 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h3 class="modal-title" id="exampleModalLongTitle">Edit Customer Details</h3>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
-                            </button>
+                            </button>-->
                         </div>
                         <div class="modal-body">
                             <form id="edit-customer">
                                 <!--<label for="Customer-name">Customer Name</label> <input id="customer-name" type="text" value="{{name}}"><br>
                                 <p class="error" id="error-new-customer-name" style="margin-top: 3px; margin-bottom: 3px;"></p>-->
-                                <label for="contact-number">Contact Number</label> <input id="contact-number" type="number" value="{{customerInfo.number}}" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;"><br>
-                                <p class="error" id="error-contact-number" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                                <label for="address">Address</label> <input id="address" type="text" value="{{customerInfo.address}}"><br>
-                                <p class="error" id="error-address" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                                <div class="flex-display">
+                                    <label for="contact-number" class="modal-label">Contact Number</label> 
+                                    <input id="contact-number" class="modal-input form-control" type="number" value="{{customerInfo.number}}" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;"><br>
+                                </div>
+                                <p class="error modal-error" id="error-contact-number"></p>
+                                
+                                <div class="flex-display">
+                                    <label for="address" class="modal-label">Address</label> 
+                                    <input id="address" class="modal-input form-control" type="text" value="{{customerInfo.address}}"><br>
+                                </div>
+                                <p class="error modal-error" id="error-address"></p>
                             </form>
                         </div>
                         <div class="modal-footer">
-                            <button id="btn-delete-customer" class="btn-red" style="float:left">Delete Customer</button>
-                            <button type="button" class="btn btn-primary" id="btn-update-customer">Save</button>
+                            <button id="btn-delete-customer" class="modal-btn-red" style="float:left">Delete</button>
+                             <button type="button" class="modal-btn-grey" data-dismiss="modal">Close</button>
+                            <button type="button" class="modal-btn-light-blue" id="btn-update-customer">Save</button>
                         </div>
                     </div>
                     </div>
@@ -102,7 +102,7 @@
                                 <tr class="link" style="cursor: pointer" data-href="/invoices/{{invoiceID}}">
                                     <td>{{date}}</td>
                                     <td>{{invoiceNumber}}</td>
-                                    <td>{{total}}</td>
+                                    <td style="text-align: right;">₱ {{total}}</td>
                                     <td>{{type}}</td>
                                     <td>{{status}}</td>
                                 </tr>
@@ -116,8 +116,10 @@
                     <hr>
 
                     <div class="display-flex" style="margin-top: 30px">
-                        <h3 class ="bold h3-left">Accounts Payable</h3>
-                        <button class="btn-light-blue" data-toggle="modal" data-target="#modal-new-payment" style="position: absolute; right: 4%;">New Payment</button>
+                        <div style="width: 50%"><h3 class ="bold h3-left">Accounts Payable</h3></div>
+                        <div class="btn-status">
+                            <button class="btn-light-blue" data-toggle="modal" data-target="#modal-new-payment">New Payment</button>
+                        </div>
                     </div>
 
                     <!---PAYMENT MODAL-->
@@ -126,17 +128,20 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h3 class="modal-title" id="exampleModalLongTitle">New Payment</h3>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
-                                </button>
+                                </button>-->
                             </div>
                             <div class="modal-body">
-                                <label for="input-new-payment">Amount</label> 
-                                <input type="number" id="input-new-payment">
-                                <p id="error-amount" class ="error" style="display:none">Amount inputted is greater than total amount due</p>
+                                <div class="flex-display">
+                                    <label for="input-new-payment" class="modal-label">Amount</label> 
+                                    <input type="number" id="input-new-payment" class="modal-input form-control" style="text-align: right;">
+                                </div>
+                                <p id="error-amount" class ="error" style="display:none">Amount inputted cannot be greater than total amount due.</p>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-primary" id="btn-save-payment">Save</button>
+                                 <button type="button" class="modal-btn-grey" data-dismiss="modal">Close</button>
+                                <button type="button" class="modal-btn-light-blue" id="btn-save-payment">Save</button>
                             </div>
                         </div>
                         </div>
@@ -157,9 +162,9 @@
                                     <tr class="link" style="cursor: pointer" data-href="/invoices/{{invoiceID}}">
                                         <td>{{date}}</td>
                                         <td>{{invoiceNumber}}</td>
-                                        <td>{{total}}</td>
-                                        <td>{{paid}}</td>
-                                        <td>{{due}}</td>
+                                        <td style="text-align: right;">₱ {{total}}</td>
+                                        <td style="text-align: right;">₱ {{paid}}</td>
+                                        <td style="text-align: right;">₱ {{due}}</td>
                                     </tr>
                                 {{/each}}
                             </tbody>

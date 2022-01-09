@@ -62,7 +62,17 @@ const invoiceController = {
                 invoicesInfo.push(invoiceInfo);
            
             }
-			res.render('invoiceList', {invoicesInfo});
+            //console.log(req.session.position);
+
+            if(req.session.position == "Cashier"){
+                var cashier = req.session.position;
+                res.render('invoiceList', {invoicesInfo, cashier});	
+            }
+
+            if(req.session.position == "Manager"){
+                var manager = req.session.position;
+                res.render('invoiceList', {invoicesInfo, manager});
+            }
 		}
 		getInformation();
     },
@@ -141,31 +151,52 @@ const invoiceController = {
 
 
             if (invoiceInfo.status == "Pending" || invoiceInfo.status == "Partial" || invoiceInfo.paymentOption == "On Account") {
-                var pending = true
-                var onAccount = true
-                var temp_paymentHistory = await getPaymentHistory(invoice_id)
-                var paymentTotal = 0
-                var paymentHistory = []
+                var pending = true;
+                var onAccount = true;
+                var temp_paymentHistory = await getPaymentHistory(invoice_id);
+                var paymentTotal = 0;
+                var paymentHistory = [];
                 for (var i=0; i<temp_paymentHistory.length; i++) {
-                    var temp_date = new Date(temp_paymentHistory[i].datePaid)
+                    var temp_date = new Date(temp_paymentHistory[i].datePaid);
                     var payment = {
                         date: temp_date.getMonth() + 1 + "/" + temp_date.getDate() + "/" + temp_date.getFullYear(),
                         amountPaid: temp_paymentHistory[i].amountPaid
                     }
-                    paymentTotal += temp_paymentHistory[i].amountPaid
-                    paymentHistory.push(payment)
+                    paymentTotal += temp_paymentHistory[i].amountPaid;
+                    paymentHistory.push(payment);
                 }
-                var amountDue = invoiceInfo.total - paymentTotal
+                var amountDue = invoiceInfo.total - paymentTotal;
 
                 if (invoiceInfo.paymentOption == "On Account")
                 {
                     if (invoiceInfo.status == "Paid") {
-                        var paid = true
-                        if (delivery != "")
-                            res.render('viewInvoice', {invoiceInfo, items, delivery, paid, onAccount, paymentHistory, paymentTotal, amountDue});
-                        else
-                            res.render('viewInvoice', {invoiceInfo, items, paid, onAccount, paymentHistory, paymentTotal, amountDue});
-
+                        var paid = true;
+                        if (delivery != "") {
+                            //res.render('viewInvoice', {invoiceInfo, items, delivery, paid, onAccount, paymentHistory, paymentTotal, amountDue});
+                            
+                            if(req.session.position == "Cashier"){
+                                var cashier = req.session.position;
+                                res.render('viewInvoice', {invoiceInfo, items, delivery, paid, onAccount, paymentHistory, paymentTotal, amountDue, cashier});	
+                            }
+                
+                            if(req.session.position == "Manager"){
+                                var manager = req.session.position;
+                                res.render('viewInvoice', {invoiceInfo, items, delivery, paid, onAccount, paymentHistory, paymentTotal, amountDue, manager});
+                            }
+                        }
+                        else {
+                            //res.render('viewInvoice', {invoiceInfo, items, paid, onAccount, paymentHistory, paymentTotal, amountDue});
+                            
+                            if(req.session.position == "Cashier"){
+                                var cashier = req.session.position;
+                                res.render('viewInvoice', {invoiceInfo, items, paid, onAccount, paymentHistory, paymentTotal, amountDue, cashier});	
+                            }
+                
+                            if(req.session.position == "Manager"){
+                                var manager = req.session.position;
+                                res.render('viewInvoice', {invoiceInfo, items, paid, onAccount, paymentHistory, paymentTotal, amountDue, manager});
+                            }
+                        }
                     }
                     else {
                         if (delivery != "")
@@ -186,6 +217,90 @@ const invoiceController = {
                             res.render('viewInvoice', {invoiceInfo, customer, items, delivery});
                         else
                             res.render('viewInvoice', {invoiceInfo, items});
+                        if (delivery != "") {
+                            //res.render('viewInvoice', {invoiceInfo, items, delivery, pending, onAccount, paymentHistory, paymentTotal, amountDue});
+                            
+                            if(req.session.position == "Cashier"){
+                                var cashier = req.session.position;
+                                res.render('viewInvoice', {invoiceInfo, items, delivery, pending, onAccount, paymentHistory, paymentTotal, amountDue, cashier});	
+                            }
+                
+                            if(req.session.position == "Manager"){
+                                var manager = req.session.position;
+                                res.render('viewInvoice', {invoiceInfo, items, delivery, pending, onAccount, paymentHistory, paymentTotal, amountDue, manager});
+                            }
+                        }
+                        else {
+                          //res.render('viewInvoice', {invoiceInfo, items, pending, onAccount, paymentHistory, paymentTotal, amountDue});
+                            
+                            if(req.session.position == "Cashier"){
+                                var cashier = req.session.position;
+                                res.render('viewInvoice', {invoiceInfo, items, pending, onAccount, paymentHistory, paymentTotal, amountDue, cashier});	
+                            }
+                
+                            if(req.session.position == "Manager"){
+                                var manager = req.session.position;
+                                res.render('viewInvoice', {invoiceInfo, items, pending, onAccount, paymentHistory, paymentTotal, amountDue, manager});
+                            }
+                        }
+                    }
+                }
+                else {
+                    if (delivery != "") {
+                        //res.render('viewInvoice', {invoiceInfo, items, delivery,  paymentHistory, paymentTotal, amountDue});
+                        
+                        if(req.session.position == "Cashier"){
+                            var cashier = req.session.position;
+                            res.render('viewInvoice', {invoiceInfo, items, delivery,  paymentHistory, paymentTotal, amountDue, cashier});	
+                        }
+            
+                        if(req.session.position == "Manager"){
+                            var manager = req.session.position;
+                            res.render('viewInvoice', {invoiceInfo, items, delivery,  paymentHistory, paymentTotal, amountDue, manager});
+                        }
+                    }
+                    else {
+                        //res.render('viewInvoice', {invoiceInfo, items, paymentHistory, paymentTotal, amountDue});
+
+                        if(req.session.position == "Cashier"){
+                            var cashier = req.session.position;
+                            res.render('viewInvoice', {invoiceInfo, items, paymentHistory, paymentTotal, amountDue, cashier});	
+                        }
+            
+                        if(req.session.position == "Manager"){
+                            var manager = req.session.position;
+                            res.render('viewInvoice', {invoiceInfo, items, paymentHistory, paymentTotal, amountDue, manager});
+                        }
+                    }
+                }
+            }
+            else {
+                if (delivery != "") {
+                    //res.render('viewInvoice', {invoiceInfo, items, delivery});
+
+                    if(req.session.position == "Cashier"){
+                        var cashier = req.session.position;
+                        res.render('viewInvoice', {invoiceInfo, items, delivery, cashier});	
+                    }
+        
+                    if(req.session.position == "Manager"){
+                        var manager = req.session.position;
+                        res.render('viewInvoice', {invoiceInfo, items, delivery, manager});
+                    }
+                }
+                else {
+                    //res.render('viewInvoice', {invoiceInfo, items});
+
+                    if(req.session.position == "Cashier"){
+                        var cashier = req.session.position;
+                        res.render('viewInvoice', {invoiceInfo, items, cashier});	
+                    }
+        
+                    if(req.session.position == "Manager"){
+                        var manager = req.session.position;
+                        res.render('viewInvoice', {invoiceInfo, items, manager});
+                    }
+                }
             }
 		}
 
@@ -521,7 +636,15 @@ const invoiceController = {
                 }
             }
 
-            res.render('deliveryList', {deliveryInfo});
+            if(req.session.position == "Delivery"){
+                var delivery = req.session.position;
+                res.render('deliveryList', {deliveryInfo, delivery});	
+            }
+
+            if(req.session.position == "Manager"){
+                var manager = req.session.position;
+                res.render('deliveryList', {deliveryInfo, manager});
+			}
         }
 
         getInformation();
@@ -576,7 +699,15 @@ const invoiceController = {
                 items.push(item);
             }
 
-            res.render('viewDeliveryInformation', {customer, deliveryInfo, invoice, items});
+            if(req.session.position == "Delivery"){
+                var delivery = req.session.position;
+                res.render('viewDeliveryInformation', {customer, deliveryInfo, invoice, items, delivery});	
+            }
+
+            if(req.session.position == "Manager"){
+                var manager = req.session.position;
+                res.render('viewDeliveryInformation', {customer, deliveryInfo, invoice, items, manager});
+			}
         }
 
         getInformation();
@@ -766,7 +897,17 @@ const invoiceController = {
                 total: parseFloat(temp_invoiceInfo.total).toFixed(2)
             }
 
-            res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems})
+            // res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems})
+            
+            if(req.session.position == "Cashier"){
+                var cashier = req.session.position;
+                res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems, cashier});	
+            }
+
+            if(req.session.position == "Manager"){
+                var manager = req.session.position;
+                res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems, manager});
+			}
         }
 
         getInfo();

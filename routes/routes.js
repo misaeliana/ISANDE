@@ -19,6 +19,15 @@ const manualCountController = require('../controllers/manualCountController.js')
 
 const reportController = require('../controllers/reportController.js');
 
+const loginController = require('../controllers/loginController.js');
+
+//--ACCOUNT--
+router.get('/login', loginController.getLogin);
+
+router.post('/checkLogIn', loginController.checkLogIn);
+
+router.get('/logout', loginController.logout);
+
 //--CUSTOMER--
 
 router.get('/customers', customerController.getCustomerList);
@@ -35,7 +44,7 @@ router.post('/deleteCustomer', customerController.deleteCustomer);
 
 router.post('/payAccount', customerController.payAccount);
 
-router.get('/checkPendingInvoices', customerController.checkPendingInvoices)
+router.get('/checkPendingInvoices', customerController.checkPendingInvoices);
 
 //--SUPPLIER--
 
@@ -111,7 +120,9 @@ router.get('/generatePurchaseOrder', purchaseOrderController.generatePurchaseOrd
 
 router.get('/getItemNamePO', purchaseOrderController.getItems);
 
-router.get('/getEOQ', purchaseOrderController.getEOQ)
+router.get('/getItemUnit', purchaseOrderController.getItemUnit);
+
+router.get('/getEOQ', purchaseOrderController.getEOQ);
 
 router.get('/previousPONumber', purchaseOrderController.previousPONumber);
 
@@ -119,7 +130,7 @@ router.post('/saveNewPO', purchaseOrderController.saveNewPO);
 
 router.get('/purchaseOrder/:poID', purchaseOrderController.getPurchaseOrder);
 
-router.post('/addItemSupplier', purchaseOrderController.addItemSupplier)
+router.post('/addItemSupplier', purchaseOrderController.addItemSupplier);
 
 router.post('/saveGeneratePurchaseOrder', purchaseOrderController.saveGeneratePurchaseOrder);
 
@@ -127,7 +138,7 @@ router.get('/editPO/:poID', purchaseOrderController.editPO);
 
 router.get('/getSupplierName', purchaseOrderController.getSupplierName);
 
-router.get('/getSupplierInformation', purchaseOrderController.getSupplierInformation)
+router.get('/getSupplierInformation', purchaseOrderController.getSupplierInformation);
 
 router.get('/isSold', purchaseOrderController.isSold);
 
@@ -223,7 +234,9 @@ router.get('/salesPerCustomer', reportController.getSalesPerCustomer);
 
 router.get('/getCustomerInvoices', reportController.getCustomerInvoicesReport);
 
-router.get('/getFilteredCustomerInvoices', reportController.getFilteredCustomerInvoices)
+router.get('/getFilteredCustomerInvoices', reportController.getFilteredCustomerInvoices);
+
+router.get('/getFilteredSalesPerformanceReport', reportController.getFilteredSalesPerformanceReport);
 
 
 
