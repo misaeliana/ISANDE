@@ -323,7 +323,16 @@ const invoiceController = {
                     }
                 }
             }*/
-            res.render('viewInvoice')
+            if(req.session.position == "Cashier"){
+                var cashier = req.session.position;
+                res.render('viewInvoice', {invoiceInfo, items, cashier});	
+            }
+
+            if(req.session.position == "Manager"){
+                var manager = req.session.position;
+                res.render('viewInvoice', {invoiceInfo, items, manager});
+            }
+
 		}
 
 		getInformation();
