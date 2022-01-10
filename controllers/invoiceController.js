@@ -628,7 +628,7 @@ const invoiceController = {
 
             var info = {
                 quantityAvailable:quantityAvailable, 
-                sellingPrice: itemUnit.sellingPrice
+                sellingPrice: parseFloat(itemUnit.sellingPrice).toFixed(2)
             }
 
             res.send(info)

@@ -50,7 +50,7 @@
                         {{#each deliveryInfo}}
                             <tr class="link" style="cursor: pointer" data-href="/deliveries/{{_id}}">
                                 <td>{{deliveryDate}}</td>
-                                <td>{{invoiceNum}}</td>
+                                <td style="text-align:end;">{{invoiceNum}}</td>
                                 <td>{{customerName}}</td>
                                 <td style="text-align:end;">₱ {{amount}}</td>
                                 <td><button class="btn-status btn-{{paymentStatus}} status-id">{{paymentStatus}}</button></td>

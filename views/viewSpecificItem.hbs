@@ -165,8 +165,8 @@
 
             <div style="margin-top: 30px;">
                 <div style="display: flex;">
-                    <div style="width: 50%"><h3 class ="bold">Item units</h3></div>
-                    <div class="btn-status"><button class="btn-light-blue" id="btn-selling-unit" style=" width: 150px" data-toggle="modal" data-target="#modal-add-selling-unit">Add selling unit</button></div>
+                    <div style="width: 50%"><h3 class ="bold h3-left">Item Units</h3></div>
+                    <div class="btn-status"><button class="btn-light-blue" id="btn-selling-unit" data-toggle="modal" data-target="#modal-add-selling-unit">Add Selling Unit</button></div>
                 </div>
             </div>
 
@@ -218,22 +218,22 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h3 class="modal-title" id="exampleModalLongTitle">Edit Selling Price</h3>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
                          <p id="modal-unit-name" style="display: none;"></p>
                     </div>
                     <div class="modal-body">
                         <form id="edit-item">
-                            <label for="edit-selling-price">Selling Price</label> <input id="edit-selling-price" type="number"><br>
-                            <p class="error" id="old-selling-price" style="display: none;"></p>
-                            <p class="error" id="error-edit-selling-price" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <div class="flex-display">
+                                <label for="edit-selling-price" class="modal-label">Selling Price</label> 
+                                <input id="edit-selling-price" type="number" class="modal-input form-control"><br>
+                            </div>
+                            <p class="error modal-error" id="old-selling-price" style="display: none;"></p>
+                            <p class="error modal-error" id="error-edit-selling-price"></p>
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn-red" id="btn-delete-selling-unit" style="float:left">Delete</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="btn-save-edit-selling-unit">Save</button>
+                        <button type="button" class="modal-btn-red" id="btn-delete-selling-unit" style="float:left">Delete</button>
+                        <button type="button" class="modal-btn-grey" data-dismiss="modal">Close</button>
+                        <button type="button" class="modal-btn-light-blue" id="btn-save-edit-selling-unit">Save</button>
                     </div>
                 </div>
                 </div>
@@ -268,12 +268,12 @@
 
             <div style="margin-top: 50px;">
                 <div style="display: flex;">
-                    <div style="width: 50%"><h3 class ="bold">Suppliers</h3></div>
-
-                    <form action="/editItemSuppliers/{{itemInfo._id}}" style="float: right;" class="btn-status">
-                        <div class="btn-status"><button class="btn-light-blue" id="btn-edit-supplier" style=" width: 150px">Edit Item Suppliers</button></div>
-                    </form>
-                </div>
+                    <div style="width: 50%"><h3 class ="bold h3-left">Suppliers</h3></div>
+                    <div class="btn-status">
+                        <form action="/editItemSuppliers/{{itemInfo._id}}" class="btn-status">
+                            <button class="btn-light-blue" id="btn-edit-supplier" data-toggle="modal">Edit Item Suppliers</button>
+                        </form>
+                    </div>
             </div>
           
             <table class="table">

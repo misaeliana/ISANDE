@@ -39,18 +39,18 @@
                     </div>
                 </div>
             </div> 
-            <hr>
+            <hr style="margin-top: 0px;">
 
         <div style="display: flex; align-items: center;">
             <label for="dropdown-new-invoice-type" style="margin-right: 10px">Type</label>
-            <select class="dropdown" id="drop-down-new-invoice-type" style="margin-right: 10px">
+            <select class="form-control" id="drop-down-new-invoice-type" style="margin-right: 20px; width: 150px;">
                      {{#each itype}}
                         <option value={{_id}}>{{type}}</option>
                      {{/each}}
             </select>
 
             <label for="dropdown-payment-type" style="margin-right: 10px">Payment Type</label>
-            <select class="dropdown" id="dropdown-payment-type" style="margin-right: 10px">
+            <select class="form-control" id="dropdown-payment-type" style="margin-right: 10px; width: 150px;">
                 {{#each paymentTypes}}
                     <option value={{_id}}>{{paymentOption}}</option>
                 {{/each}}
@@ -64,7 +64,7 @@
 
                 <label  id = "label-delivery" for="dropdown-delivery-personnel" style="margin-right: 10px">Delivery Personnel</label>
                 <select class="dropdown" id="dropdown-delivery-personnel" style="margin-right: 10px; min-width:170px">
-                        <option value="no-selected" selected>--Select--</option>
+                        <option value="no-selected" selected>Select</option>
                          {{#each delperson}}
                             <option value={{_id}}>{{name}}</option>
                         {{/each}}
@@ -134,15 +134,15 @@
 
                 <form>
                     <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="itemDescription" name="itemDescription" placeholder="Item Description">
-                    <select class="dropdown" id="dropdown-item-unit" style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px">
-                        <option value="no-selected">--Unit--</option>
+                    <select class="form-control" id="dropdown-item-unit" style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px">
+                        <option value="no-selected">Unit</option>
                     </select>
                     <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px; text-align: right;" type="number" class="form-control" id="qty" name="qty" placeholder="Qty">
                     <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px; text-align: right;" type="text" class="form-control" id="discount" name="discount" placeholder="Discount">
                     <input style="margin-top: 5px; margin-bottom: 0px; float: left; height: 34px; width: 34px; background-color: #0F84D9; border: #0F84D9; border-radius: 7px; color: white;" type="button" id="addItem" name="addItem" value="+">
                 </form>
             
-                <div style="height: 45px"></div>
+                <div style="height: 50px"></div>
 
                 <div id="div-warning-new-invoice">
                     <p id="text-warning-new-invoice" class="error"> </p>
@@ -171,19 +171,19 @@
                     <br> 
                     <div class="summary-container">
                         <div class="summary-text">Subtotal </div>
-                        <div class="summary-info-container"><div class="summary-info" style="text-align:right" id ="subtotalbox">₱ 0</div></div>
+                        <div class="summary-info-container"><div class="summary-info" style="text-align:right" id ="subtotalbox">₱ 0.00</div></div>
                     </div>
                     <div class="summary-container">
                         <div class="summary-text">VAT </div>
-                        <div class="summary-info-container" ><div class="summary-info" id ="vatbox">₱ 0</div></div>
+                        <div class="summary-info-container" ><div class="summary-info" id ="vatbox">₱ 0.00</div></div>
                     </div>
                     <div class="summary-container">    
                         <div class="summary-text">Discount </div>
-                        <div class="summary-info-container"><div class="summary-info" id ="disbox">₱ 0</div></div>
+                        <div class="summary-info-container"><div class="summary-info" id ="disbox">₱ 0.00</div></div>
                     </div>
                     <div class="summary-container">
                         <div class="summary-text">Total </div>
-                        <div class="summary-info-container" ><div class="summary-info" id ="totbox">₱ 0</div></div>
+                        <div class="summary-info-container" ><div class="summary-info" id ="totbox">₱ 0.00</div></div>
                     </div>
 
                     <div style="height: 10px"></div>
@@ -486,7 +486,7 @@
                    var unit = $("#dropdown-item-unit option:selected").text(    )
                    var unitID = $('#dropdown-item-unit').val();
                    var quantity = $('#qty').val();
-                   var discount = $('#discount').val();
+                   var discount = parseFloat($('#discount').val()).toFixed(2);
                    if (discount == "")
                         discount = 0
                    
@@ -514,11 +514,11 @@
                                     $('#table-body-item-list').append(
                                     `<tr>
                                         <td class="itemDescription">${itemDesc}</td>
-                                        <td class="qty">${quantity}</td>
+                                        <td class="qty" style="text-align:right;">${quantity}</td>
                                         <td class="unit">${unit}</td>
-                                        <td class="price">₱ ${sellingPrice}</td>
-                                        <td class="discount" style="color:red">₱${discount}</td>
-                                        <td class = "amount">₱ ${totalPrice}</td>
+                                        <td class="price" style="text-align:right;">₱ ${sellingPrice}</td>
+                                        <td class="discount" style="color:red" style="text-align:right;">₱${discount}</td>
+                                        <td class ="amount" style="text-align:right;">₱ ${totalPrice}</td>
                                         <td><button class="delete-button add-stock-delete-btn" id="btn-delete-item"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
                                     </tr>`);
                                     //console.log(amount);

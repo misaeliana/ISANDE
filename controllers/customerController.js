@@ -69,54 +69,56 @@ const customerController = {
 	getViewCustomer: function(req, res) {
 
 		async function getCustomerInformation() {
-			var customerInfo = await getCustomerInfo(req.params.customerID)
-			var temp_customerInvoices = await getCustomerInvoices(req.params.customerID)
-			var customerInvoices = [] 
+			var customerInfo = await getCustomerInfo(req.params.customerID);
+			var temp_customerInvoices = await getCustomerInvoices(req.params.customerID);
+			var customerInvoices = [] ;
 			for (var i=0; i<temp_customerInvoices.length; i++) {
-				var temp_date = new Date(temp_customerInvoices[i].date)
+				var temp_date = new Date(temp_customerInvoices[i].date);
 				var invoice = {
 					invoiceID: temp_customerInvoices[i]._id,
 					date: temp_date.getMonth() + 1 + "/" + temp_date.getDate() + "/" + temp_date.getFullYear(),
 					invoiceNumber: temp_customerInvoices[i].invoiceID,
-					total: temp_customerInvoices[i].total,
+					total: parseFloat(temp_customerInvoices[i].total).toFixed(2),
 					type: await getSpecificInvoiceType(temp_customerInvoices[i].typeID),
 					status: await getSpecificInvoiceStatus(temp_customerInvoices[i].statusID)
-				}
-				customerInvoices.push(invoice)
+				};
+				customerInvoices.push(invoice);
 			}
 
 
 			var temp_unpaidInvoices = await getUnpaidInvoices(req.params.customerID);
-			var unpaidInvoices = []
-			var totalAmountDue = 0
+			var unpaidInvoices = [];
+			var totalAmountDue = 0;
 			for (var i=0; i<temp_unpaidInvoices.length; i++) {
-				var temp_date = new Date(temp_customerInvoices[i].date)
-				var total = temp_unpaidInvoices[i].total
-				var amountPaid = await getAmountPaid(temp_unpaidInvoices[i]._id)
+				var temp_date = new Date(temp_customerInvoices[i].date);
+				var total = temp_unpaidInvoices[i].total;
+				var amountPaid = await getAmountPaid(temp_unpaidInvoices[i]._id);
 				var invoice = {
 					invoiceID: temp_unpaidInvoices[i]._id,
 					date: temp_date.getMonth() + 1 + "/" + temp_date.getDate() + "/" + temp_date.getFullYear(),
 					invoiceNumber: temp_unpaidInvoices[i].invoiceID,
-					total: total,
-					paid: amountPaid,
-					due: total-amountPaid,
+					total: parseFloat(total).toFixed(2),
+					paid: parseFloat(amountPaid).toFixed(2),
+					due: parseFloat(total-amountPaid).toFixed(2),
 				};
 
-				totalAmountDue += invoice.due;
+				totalAmountDue += parseFloat(invoice.due).toFixed(2);
 				unpaidInvoices.push(invoice);
 			}
+
+			totalAmountDue = parseFloat(totalAmountDue).toFixed(2);
 
 			if (unpaidInvoices.length==0) {
 				if(req.session.position == "Cashier"){
 					var cashier = req.session.position;
-					res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue, cashier})
+					res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue, cashier});
 				}
 	
 				if(req.session.position == "Manager"){
 					var manager = req.session.position;
-					res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue, manager})
+					res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue, manager});
 				}
-				res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue})
+				res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue});
 			}
 			else {
 				if(req.session.position == "Cashier"){

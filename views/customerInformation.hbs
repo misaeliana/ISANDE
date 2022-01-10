@@ -6,6 +6,7 @@
         <meta name="keyword" content="Moderna, Customer Information">
         <link rel="stylesheet" type="text/css" href="../css/general.css">
         <link rel="stylesheet" type="text/css" href="../css/information.css">
+        <link rel="stylesheet" type="text/css" href="../css/list.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -101,10 +102,10 @@
                             {{#each customerInvoices}}
                                 <tr class="link" style="cursor: pointer" data-href="/invoices/{{invoiceID}}">
                                     <td>{{date}}</td>
-                                    <td>{{invoiceNumber}}</td>
+                                    <td style="text-align: right;">{{invoiceNumber}}</td>
                                     <td style="text-align: right;">₱ {{total}}</td>
                                     <td>{{type}}</td>
-                                    <td>{{status}}</td>
+                                    <td><div style="text-align: center;"><button class="btn-status btn-{{status}} status-id" style="display: inline-block;">{{status}}</button></div></td>
                                 </tr>
                             {{/each}}
                         </tbody>
@@ -161,7 +162,7 @@
                                 {{#each unpaidInvoices}}
                                     <tr class="link" style="cursor: pointer" data-href="/invoices/{{invoiceID}}">
                                         <td>{{date}}</td>
-                                        <td>{{invoiceNumber}}</td>
+                                        <td style="text-align: right;">{{invoiceNumber}}</td>
                                         <td style="text-align: right;">₱ {{total}}</td>
                                         <td style="text-align: right;">₱ {{paid}}</td>
                                         <td style="text-align: right;">₱ {{due}}</td>
@@ -171,7 +172,7 @@
                         </table>
 
                     <div class="summary-container">
-                        <div class="summary-text">Total Amount Due</div>
+                        <div class="summary-text">Amount Due</div>
                         <div class="summary-info-container" ><div class="summary-info" id="totalAmountDue">₱ {{totalAmountDue}}</div></div>
                     </div>
                 {{/if}}
