@@ -90,9 +90,11 @@
                         <div class="label-content">₱ {{itemInfo.sellingPrice}}</div>
                     </div>--->
             </div> 
-            <div style="height: 20px"></div>
+            <div style="height: 10px"></div>
 
-            <div><button class="btn-light-blue" id="btn-edit-details" style="float: right;" data-toggle="modal" data-target="#modal-edit-item">Edit Details</button></div>
+            <div><button class="btn-light-blue" id="btn-edit-details" style="float: right; margin-bottom: 10px;" data-toggle="modal" data-target="#modal-edit-item">Edit Details</button></div>
+
+            <hr style="margin-top: 50px;">
 
             <!-- Modal -->
             <div class="modal fade" id="modal-edit-item" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -109,30 +111,45 @@
                             {{!-- <label for="description">Description</label> <input id="description" type="text" value="{{itemInfo.itemDescription}}"><br>
                             <p class="error" id="error-description" style="margin-top: 3px; margin-bottom: 3px;"></p> --}}
 
-                            <label for="dropdown-category" style="margin-right: 10px">Item Category</label>
-                            <select class="dropdown" id="dropdown-category" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
-                                <option value="no-selected" selected>Select Type</option>
-                                {{#each itemCategories}}
-                                        <option value={{_id}}>{{category}}</option>
-                                {{/each}}
-                            </select>
-                            <p class="error" id="error-category" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <div class="flex-display">
+                                <label for="dropdown-category" class="modal-label">Item Category</label>
+                                <select class="form-control" id="dropdown-category">
+                                    <option value="no-selected" selected>Select Type</option>
+                                    {{#each itemCategories}}
+                                            <option value={{_id}}>{{category}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                            <p class="error modal-error" id="error-category"></p>
 
-                            <label for="dropdown-unit" style="margin-right: 10px">Unit</label>
-                            <select class="dropdown" id="dropdown-unit" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
-                                <option value="no-selected" selected>Select Unit</option>
-                                {{#each units}}
-                                    <option value={{_id}}>{{unit}}</option>
-                                {{/each}}
-                            </select>
-                            <p class="error" id="error-unit" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                            <label for="retail-quantity">Retail Quantity</label><input id="retail-quantity" type="number" value={{itemInfo.retailQuantity}}>
-                            <p class="error" id="error-retail-quantity" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                            <label for="reorder-level">Reorder Level</label> <input id="reorder-level" type="number" value="{{itemInfo.reorderLevel}}"><br>
-                            <p class="error" id="error-reorder-level" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <div class="flex-display">
+                                <label for="dropdown-unit" class="modal-label">Unit</label>
+                                <select class="form-control" id="dropdown-unit">
+                                    <option value="no-selected" selected>Select Unit</option>
+                                    {{#each units}}
+                                        <option value={{_id}}>{{unit}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                            <p class="error modal-error" id="error-unit"></p>
+                            
+                            <div class="flex-display">
+                                <label for="retail-quantity" class="modal-label">Retail Quantity</label>
+                                <input id="retail-quantity" type="number" class="modal-input form-control" style="text-align:end;" value={{itemInfo.retailQuantity}}>
+                            </div>
+                            <p class="error modal-error" id="error-retail-quantity"></p>
+                            
+                            <div class="flex-display">
+                                <label for="reorder-level" class="modal-label">Reorder Level</label> 
+                                <input id="reorder-level" type="number" class="modal-input form-control" style="text-align:end;" value="{{itemInfo.reorderLevel}}"><br>
+                            </div>
+                            <p class="error modal-error" id="error-reorder-level"></p>
 
-                            <label for="EOQ">EOQ</label> <input id="EOQ" type="number" value="{{itemInfo.EOQ}}"><br>
-                            <p class="error" id="error-EOQ" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <div class="flex-display">
+                                <label for="EOQ" class="modal-label">EOQ</label> 
+                                <input id="EOQ" type="number" class="modal-input form-control" style="text-align:end;" value="{{itemInfo.EOQ}}"><br>
+                            </div>
+                            <p class="error modal-error" id="error-EOQ"></p>
 
                             <!--<label for="selling-price">Selling Price</label> <input id="selling-price" type="number" value="{{itemInfo.sellingPrice}}"><br>
                             <p class="error" id="error-selling-price" style="margin-top: 3px; margin-bottom: 3px;"></p>-->
@@ -146,7 +163,7 @@
                 </div>
             </div>
 
-            <div style="margin-top: 50px;">
+            <div style="margin-top: 30px;">
                 <div style="display: flex;">
                     <div style="width: 50%"><h3 class ="bold">Item units</h3></div>
                     <div class="btn-status"><button class="btn-light-blue" id="btn-selling-unit" style=" width: 150px" data-toggle="modal" data-target="#modal-add-selling-unit">Add selling unit</button></div>
@@ -159,30 +176,36 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h3 class="modal-title" id="exampleModalLongTitle">Add Selling Unit</h3>
-                        <button type="button" class="close" data-dismiss="modal" a ria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
                     </div>
                     <div class="modal-body">
                         <form id="edit-item">
-                            <label for="quatity" style="margin-right: 10px">Quantity</label>
-                            <input id="quantity" type="number"><br>
-                            <label for="dropdown-new-selling-unit" style="margin-right: 10px">Unit</label>
-                            <select class="dropdown" id="dropdown-new-selling-unit" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
-                                <option value="no-selected" selected>Select Unit</option>
-                                {{#each units}}
-                                    <option value={{_id}}>{{unit}}</option>
-                                {{/each}}
-                            </select>
-                            <p class="error" id="error-unit" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <div class="flex-display">
+                                <label for="quatity" class="modal-label">Quantity</label>
+                                <input id="quantity" class="form-control" style="text-align:end;" type="number"><br>
+                            </div>
+                            <p class="error modal-error" id="error-selling-unit-quantity"></p>
 
-                            <label for="selling-price">Selling Price</label> <input id="selling-price" type="number"><br>
-                            <p class="error" id="error-selling-price" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <div class="flex-display">
+                                <label for="dropdown-new-selling-unit" class="modal-label">Unit</label>
+                                <select class="form-control" id="dropdown-new-selling-unit">
+                                    <option value="no-selected" selected>Select Unit</option>
+                                    {{#each units}}
+                                        <option value={{_id}}>{{unit}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                            <p class="error modal-error" id="error-unit"></p>
+
+                            <div class="flex-display">
+                                <label for="selling-price" class="modal-label">Selling Price</label> 
+                                <input id="selling-price" class="form-control" style="text-align:end;" type="number"><br>
+                            </div>
+                            <p class="error modal-error" id="error-selling-price"></p>
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="btn-save-selling-unit">Save</button>
+                        <button type="button" class="modal-btn-grey" data-dismiss="modal">Close</button>
+                        <button type="button" class="modal-btn-light-blue" id="btn-save-selling-unit">Save</button>
                     </div>
                 </div>
                 </div>
@@ -240,6 +263,8 @@
             </table>
 
             <br>
+
+            <hr>
 
             <div style="margin-top: 50px;">
                 <div style="display: flex;">
