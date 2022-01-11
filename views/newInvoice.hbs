@@ -388,7 +388,7 @@
                     }, select: function(event, ui) {
                         $('#dropdown-item-unit option:not(:first)').remove();
                         var itemDesc = ui.item.label;
-                        $.get('/getItemUnits', {itemDesc}, function(result) {
+                        $.get('/getItemUnitsInvoice', {itemDesc}, function(result) {
                             for (var i=0; i<result.length; i++) {
                                 $('#dropdown-item-unit').append(`
                                     <option value="${result[i].id}">${result[i].unit}</option>

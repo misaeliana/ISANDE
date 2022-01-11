@@ -33,7 +33,10 @@ const customerController = {
 			    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
 			});
 
-			if(req.session.position == "Cashier"){
+                res.render('customerList', {customers});	
+
+
+			/*if(req.session.position == "Cashier"){
                 var cashier = req.session.position;
                 res.render('customerList', {customers, cashier});	
             }
@@ -41,7 +44,7 @@ const customerController = {
             if(req.session.position == "Manager"){
                 var manager = req.session.position;
                 res.render('customerList', {customers, manager});
-			}
+			}*/
 		});
 	},
 
@@ -109,7 +112,7 @@ const customerController = {
 			totalAmountDue = parseFloat(totalAmountDue).toFixed(2);
 
 			if (unpaidInvoices.length==0) {
-				if(req.session.position == "Cashier"){
+				/*if(req.session.position == "Cashier"){
 					var cashier = req.session.position;
 					res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue, cashier});
 				}
@@ -117,11 +120,11 @@ const customerController = {
 				if(req.session.position == "Manager"){
 					var manager = req.session.position;
 					res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue, manager});
-				}
-				res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue});
+				}*/
+				res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue})
 			}
 			else {
-				if(req.session.position == "Cashier"){
+				/*if(req.session.position == "Cashier"){
 					var cashier = req.session.position;
 					res.render('customerInformation', {customerInfo, customerInvoices, unpaidInvoices, totalAmountDue, cashier});
 				}
@@ -129,7 +132,9 @@ const customerController = {
 				if(req.session.position == "Manager"){
 					var manager = req.session.position;
 					res.render('customerInformation', {customerInfo, customerInvoices, unpaidInvoices, totalAmountDue, manager});
-				}
+				}*/
+				res.render('customerInformation', {customerInfo, customerInvoices, unpaidInvoices, totalAmountDue});
+
 			}
 		}
 

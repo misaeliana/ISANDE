@@ -45,9 +45,9 @@ const purchaseOrderController = {
 				purchases.push(purchase);
 			}
 			var statuses = await getAllPurchaseOrderStatus();
-			//res.render('purchaseOrderList', {purchases, statuses});
+			res.render('purchaseOrderList', {purchases, statuses});
 
-			if(req.session.position == "Inventory and Purchasing"){
+			/*if(req.session.position == "Inventory and Purchasing"){
 				var inventoryAndPurchasing = req.session.position;
 				res.render('purchaseOrderList', {purchases, statuses, inventoryAndPurchasing});	
 			}
@@ -55,7 +55,7 @@ const purchaseOrderController = {
 			if(req.session.position == "Manager"){
 				var manager = req.session.position;
 				res.render('purchaseOrderList', {purchases, statuses, manager});
-			}
+			}*/
 		}
 
 		db.findMany(Purchases, {statusID: {$ne:"61a632b4f6780b76e175421f"}}, 'date purchaseOrderNumber supplierID statusID total', function(result) {
@@ -75,9 +75,9 @@ const purchaseOrderController = {
 			else
 				newPONumber = result[length].purchaseOrderNumber+1;
 
-			//res.render('newPO', {newPONumber});
+			res.render('newPO', {newPONumber});
 			
-			if(req.session.position == "Inventory and Purchasing"){
+			/*if(req.session.position == "Inventory and Purchasing"){
 				var inventoryAndPurchasing = req.session.position;
 				res.render('newPO', {newPONumber, inventoryAndPurchasing});	
 			}
@@ -85,7 +85,7 @@ const purchaseOrderController = {
 			if(req.session.position == "Manager"){
 				var manager = req.session.position;
 				res.render('newPO', {newPONumber, manager});
-			}
+			}*/
 		});
 		
 	},
@@ -117,7 +117,7 @@ const purchaseOrderController = {
 
 			for (var i=0; i<items.length; i++){
 				var itemName = await getItemDescription(items[i])
-				var itemName = await getItemDescription(items[i].itemID);
+				var itemName = await getItemDescription(items[i]);
 				itemNames.push(itemName);
 			}
 
@@ -237,9 +237,9 @@ const purchaseOrderController = {
 			//new po
 			if (purchaseInfo.statusID == "618f650546c716a39100a809") {
 				var newPO = purchaseInfo.statusID;
-				//res.render('viewPO', {items, poInfo, newPO, supplier});
+				res.render('viewPO', {items, poInfo, newPO, supplier});
 
-				if(req.session.position == "Inventory and Purchasing"){
+				/*if(req.session.position == "Inventory and Purchasing"){
 					var inventoryAndPurchasing = req.session.position;
 					res.render('viewPO', {items, poInfo, newPO, supplier, inventoryAndPurchasing});	
 				}
@@ -247,14 +247,14 @@ const purchaseOrderController = {
 				if(req.session.position == "Manager"){
 					var manager = req.session.position;
 					res.render('viewPO', {items, poInfo, newPO, supplier, manager});
-				}
+				}*/
 			}
 			//sent
 			else if (purchaseInfo.statusID == "618f652746c716a39100a80a") {
 				var released = purchaseInfo.statusID
-				//res.render('viewPO', {items, poInfo, released, supplier});
+				res.render('viewPO', {items, poInfo, released, supplier});
 
-				if(req.session.position == "Inventory and Purchasing"){
+				/*if(req.session.position == "Inventory and Purchasing"){
 					var inventoryAndPurchasing = req.session.position;
 					res.render('viewPO', {items, poInfo, released, supplier, inventoryAndPurchasing});	
 				}
@@ -262,7 +262,7 @@ const purchaseOrderController = {
 				if(req.session.position == "Manager"){
 					var manager = req.session.position;
 					res.render('viewPO', {items, poInfo, released, supplier, manager});
-				}
+				}*/
 			}
 
 			//incomplete
@@ -295,9 +295,9 @@ const purchaseOrderController = {
 				if (purchaseInfo.statusID == "618f653746c716a39100a80b") {
 					var incomplete = purchaseInfo.statusID;
 					var received = purchaseInfo.statusID;
-					//res.render('viewPO', {supplier, items, poInfo, incomplete, received});
+					res.render('viewPO', {supplier, items, poInfo, incomplete, received});
 
-					if(req.session.position == "Inventory and Purchasing"){
+					/*if(req.session.position == "Inventory and Purchasing"){
 						var inventoryAndPurchasing = req.session.position;
 						res.render('viewPO', {supplier, items, poInfo, incomplete, received, inventoryAndPurchasing});	
 					}
@@ -305,14 +305,14 @@ const purchaseOrderController = {
 					if(req.session.position == "Manager"){
 						var manager = req.session.position;
 						res.render('viewPO', {supplier, items, poInfo, incomplete, received, manager});
-					}
+					}*/
 				}
 				//received
 				else {
 					var received = purchaseInfo.statusID;
-					//res.render('viewPO', {supplier, items, poInfo, received});
+					res.render('viewPO', {supplier, items, poInfo, received});
 
-					if(req.session.position == "Inventory and Purchasing"){
+					/*if(req.session.position == "Inventory and Purchasing"){
 						var inventoryAndPurchasing = req.session.position;
 						res.render('viewPO', {supplier, items, poInfo, received, inventoryAndPurchasing});	
 					}
@@ -320,7 +320,7 @@ const purchaseOrderController = {
 					if(req.session.position == "Manager"){
 						var manager = req.session.position;
 						res.render('viewPO', {supplier, items, poInfo, received, manager});
-					}
+					}*/
 				}
 			}
 		}
@@ -334,7 +334,7 @@ const purchaseOrderController = {
 
 		function getLowItems() {
 			return new Promise((resolve, reject) => {
-				db.findMany(Items, {$and:[ {$or:[{statusID:"618b32205f628509c592daab"}, {statusID:"61b0d6751ca91f5969f166de"}]}, {informationStatusID:"618a7830c8067bf46fbfd4e4"} ]}, '_id itemDescription EOQ unitID', function(result) {
+				db.findMany(Items, {$and:[ {$or:[{statusID:"618b32205f628509c592daab"}, {statusID:"61b0d6751ca91f5969f166de"}]}, {informationStatusID:"618a7830c8067bf46fbfd4e4"} ]}, '', function(result) {
 					resolve (result);
 				});
 			});
@@ -342,10 +342,51 @@ const purchaseOrderController = {
 
 		async function getItems() {
 			var items = await getLowItems();
+			var itemCategories = await getItemCategories();
 
 			for (var i=0; i<items.length; i++) {
+				items[i].itemCategory = await getSpecificItemCategory(items[i].categoryID)
+			}
 
-				var temp_suppliers = await getItemSuppliers(items[i]._id);
+			res.render('generatePO', {items, itemCategories});
+
+			/*if(req.session.position == "Inventory and Purchasing"){
+				var inventoryAndPurchasing = req.session.position;
+				res.render('generatePO', {items, inventoryAndPurchasing});	
+			}
+
+			if(req.session.position == "Manager"){
+				var manager = req.session.position;
+				res.render('generatePO', {items, manager});
+			}*/
+		}
+
+		getItems();
+		
+	},
+
+	generatePOChooseSuppliers: function(req, res) {
+		function getLowItems() {
+			return new Promise((resolve, reject) => {
+				db.findMany(Items, {$and:[ {$or:[{statusID:"618b32205f628509c592daab"}, {statusID:"61b0d6751ca91f5969f166de"}]}, {informationStatusID:"618a7830c8067bf46fbfd4e4"} ]}, '', function(result) {
+					resolve (result);
+				});
+			});
+		}
+
+		async function getItems() {
+			var temp_orderItems = JSON.parse(req.query.orderItemsString)
+			var orderItems = []
+			for (var a=0; a<temp_orderItems;a++) {
+				console.log(temp_orderItems[a])
+				var item  =  await getInventoryItemsFromDescription(temp_orderItems[a], "618a7830c8067bf46fbfd4e4")
+				console.log(item)
+				orderItems.push(item)
+			}
+
+			for (var i=0; i<orderItems.length; i++) {
+
+				var temp_suppliers = await getItemSuppliers(orderItems[i]._id);
 				var suppliers = []
 				for (var j=0; j<temp_suppliers.length; j++) {
 					var supplier = {
@@ -355,14 +396,14 @@ const purchaseOrderController = {
 					if (!suppliers.includes(supplier))
 						suppliers.push(supplier)
 				}
-
-				items[i].suppliers = suppliers
-				items[i].unit = await getSpecificUnit(items[i].unitID)
+				orderItems[i].suppliers = suppliers
+				orderItems[i].itemCategory = await getSpecificItemCategory(orderItems[i].categoryID)
+				orderItems[i].unit = await getSpecificUnit(orderItems[i].unitID)
 			}
+			console.log(orderItems)
+			res.render('generatePO1', {orderItems});
 
-			//res.render('generatePO', {items});
-
-			if(req.session.position == "Inventory and Purchasing"){
+			/*if(req.session.position == "Inventory and Purchasing"){
 				var inventoryAndPurchasing = req.session.position;
 				res.render('generatePO', {items, inventoryAndPurchasing});	
 			}
@@ -370,11 +411,10 @@ const purchaseOrderController = {
 			if(req.session.position == "Manager"){
 				var manager = req.session.position;
 				res.render('generatePO', {items, manager});
-			}
+			}*/
 		}
 
 		getItems();
-		
 	},
 
 	addItemSupplier: function(req, res) {
@@ -494,9 +534,9 @@ const purchaseOrderController = {
 			if (statusID == "618f650546c716a39100a809") {
 				var newPO = statusID;
 				//renders delete button and probably cancel PO button
-				//res.render('editPO', {items, purchaseInfo, supplier, units, itemCategories,newPO});
+				res.render('editPO', {items, purchaseInfo, supplier, units, itemCategories,newPO});
 
-				if(req.session.position == "Inventory and Purchasing"){
+				/*if(req.session.position == "Inventory and Purchasing"){
 					var inventoryAndPurchasing = req.session.position;
 					res.render('editPO', {items, purchaseInfo, supplier, units, itemCategories,newPO, inventoryAndPurchasing});	
 				}
@@ -504,14 +544,14 @@ const purchaseOrderController = {
 				if(req.session.position == "Manager"){
 					var manager = req.session.position;
 					res.render('editPO', {items, purchaseInfo, supplier, units, itemCategories,newPO, manager});
-				}
+				}*/
 			}
 			else if (statusID == "618f652746c716a39100a80a") {
 				var released = statusID;
 				//renders input for price 
-				//res.render('editPO', {items, purchaseInfo, supplier, units, itemCategories, released})
+				res.render('editPO', {items, purchaseInfo, supplier, units, itemCategories, released})
 
-				if(req.session.position == "Inventory and Purchasing"){
+				/*if(req.session.position == "Inventory and Purchasing"){
 					var inventoryAndPurchasing = req.session.position;
 					res.render('editPO', {items, purchaseInfo, supplier, units, itemCategories, released, inventoryAndPurchasing});	
 				}
@@ -519,7 +559,7 @@ const purchaseOrderController = {
 				if(req.session.position == "Manager"){
 					var manager = req.session.position;
 					res.render('editPO', {items, purchaseInfo, supplier, units, itemCategories, released, manager});
-				}
+				}*/
 			}
 		
 		}

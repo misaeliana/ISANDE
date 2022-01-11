@@ -87,16 +87,23 @@ const reportController = {
     },
     
     getInventoryPerformanceReport: function(req, res) {
+
+        async function convert(itemID, invoiceQuantity) {
+            var inventoryItem = await getSpecificInventoryItems(itemID);
+            var convertedQuantity = invoiceQuantity/inventory.retailQuantity
+            return convertedQuantity
+        }
         
         async function getInformation() {
             var today = new Date().toLocaleString('en-US');
             var allInventory = await getAllInventoryItems();
-            var inventory = await filterInventory(allInventory);
+            var inventory = await filterInventory(allInventory);    //inventory items with no duplicate
             var formattedInventory = [];
             var categories = await getItemCategories();
             var invoiceItems = await getAllInvoiceItems();
-            
-            //console.log(invoiceItems);
+
+
+             //console.log(invoiceItems);
 
             /*for (var i = 0; i < categories.length; i++) {
                 formattedInventory.push(getItemCategories[i].category);
@@ -109,9 +116,15 @@ const reportController = {
 
                 // get number of units sold
                 for (var k = 0 ; k < invoiceItems.length; k++) {
+
+                    var itemUnitInfo = await getItemUnitInfo(invoiceItems[k].itemUnitID)
                   
-                    if (await getItemDescription(invoiceItems[k].itemID) == inventory[j].itemDescription) {
-                        unitsSold += parseFloat(invoiceItems[k].quantity);
+                    if (await getItemDescription(itemUnitInfo.itemID) == inventory[j].itemDescription) {
+                        //no need conversion
+                        if (itemUnitInfo.unitID == inventory[j].unitID)
+                            unitsSold += parseFloat(invoiceItems[k].quantity);
+                        else
+                            unitsSold += parseFloat(itemUnitInfo.itemID, invoiceItems[k].quantity)
                     }
                 }
 
@@ -126,7 +139,12 @@ const reportController = {
                 formattedInventory.push(item);
             }
 
-            formattedInventory.sort((a, b) => (a.unitsSold > b.unitsSold) ? -1 : 1);
+            formattedInventory.sort(function(a, b) {
+                var quantityA = a.unitsSold;
+                var quantityB = b.unitsSold;
+                //syntax is "condition ? value if true : value if false"
+                return (quantityA < quantityB) ? -1 : (quantityA > quantityB) ? 1 : 0;
+            });
 
             res.render('inventoryPerformanceReport', {formattedInventory, today});
         }

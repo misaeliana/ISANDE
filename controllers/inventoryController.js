@@ -65,7 +65,10 @@ const inventoryController = {
 			    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
 			}); 
 
-			if(req.session.position == "Inventory and Purchasing"){
+                res.render('inventory', {itemCategories, units, inventory, itemStatuses});
+
+
+			/*if(req.session.position == "Inventory and Purchasing"){
                 var inventoryAndPurchasing = req.session.position;
                 res.render('inventory', {itemCategories, units, inventory, itemStatuses, inventoryAndPurchasing});	
             }
@@ -73,7 +76,7 @@ const inventoryController = {
             if(req.session.position == "Manager"){
                 var manager = req.session.position;
                 res.render('inventory', {itemCategories, units, inventory, itemStatuses, manager});
-			}
+			}*/
 		}
 
 		getInformation();
@@ -232,7 +235,7 @@ const inventoryController = {
 				res.render('viewSpecificItem', {itemInfo, itemUnits, itemCategories, units, itemSuppliers});
 			})
 
-			if(req.session.position == "Inventory and Purchasing"){
+			/*if(req.session.position == "Inventory and Purchasing"){
 				var inventoryAndPurchasing = req.session.position;
 				res.render('viewSpecificItem', {itemInfo, itemCategories, units, itemSuppliers, inventoryAndPurchasing});	
 			}
@@ -240,7 +243,7 @@ const inventoryController = {
 			if(req.session.position == "Manager"){
 				var manager = req.session.position;
 				res.render('viewSpecificItem', {itemInfo, itemCategories, units, itemSuppliers, manager});
-			}
+			}*/
 		}
 
 		getInformation();
@@ -266,7 +269,7 @@ const inventoryController = {
 			var itemName = await getItemDescription(itemID)
 
 			res.render('editItemSuppliers', {itemID, itemName, suppliers, itemSuppliers, units});
-			if(req.session.position == "Inventory and Purchasing"){
+			/*if(req.session.position == "Inventory and Purchasing"){
 				var inventoryAndPurchasing = req.session.position;
 				res.render('editItemSuppliers', {itemID, suppliers, itemSuppliers, inventoryAndPurchasing});	
 			}
@@ -274,7 +277,7 @@ const inventoryController = {
 			if(req.session.position == "Manager"){
 				var manager = req.session.position;
 				res.render('editItemSuppliers', {itemID, suppliers, itemSuppliers, manager});
-			}
+			}*/
 		}
 
 		getInformation();

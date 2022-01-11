@@ -81,7 +81,7 @@
                     <div class="label-content">{{invoiceInfo.employeeName}}</div>
                     </div>
 
-                    {{#if delivery}}
+                    {{#compare invoiceInfo.type "==" Delivery}}
                         <div style="display: flex;" id="date-div">
                             <div class="label-container" style="width: 49%; margin-right: 2%;">
                                 <div class="override-label">Delivery Date</div> 
@@ -106,7 +106,7 @@
                             </div>
                             <div class="label-wide-content" style="height: 40px">{{delivery.deliveryNotes}}</div>
                         </div> 
-                    {{/if}}
+                    {{/compare}}
 
 
                     <table class="table" style="margin-top: 30px">
@@ -152,7 +152,7 @@
                     </div>
                     <br>
 
-                    {{#if onAccount}}
+                    {{#compare invoiceInfo.paymentOption "==" "On Account"}}
                         <hr style="margin-top: 0px;">
                         <h3 class ="bold h3-left">Payment History</h3>
                         <table class="table" style="margin-top: 30px">
@@ -181,7 +181,7 @@
                             <div class="summary-text">Amount Due</div>
                             <div class="summary-info-container"><div class="summary-info" id="totalAmountDue">₱ {{amountDue}}</div></div>
                         </div>
-                    {{/if}}
+                    {{/compare}}
 
                     <div style="height: 10px"></div>
 
@@ -210,13 +210,10 @@
                         </div>
                     </div>
 
-                    {{#if onAccount}}
-                        {{#if pending}}
+                    {{#compare invoiceInfo.status "==" "Pending"}}
                             <div class="btn-export-invoice"><button class="btn-light-blue" id="btn-pay-invoice" data-toggle="modal" data-target="#modal-new-payment">New Payment</button></div>
-                        {{else}}
-                        {{/if}}
                     <hr>
-                    {{/if}}
+                    {{/compare}}
                         
 
                     {{#compare invoiceInfo.status "!=" "Void"}}

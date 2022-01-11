@@ -28,7 +28,7 @@
 
         <div class="content">        
             <div class="fixed-div">
-                <h1 class="bold" style="padding-bottom: 10px;"> Select Items to Order </h1>
+                <h1 class="bold" style="padding-bottom: 10px;"> Generate Purchase Order </h1>
                 <div> 
                     <h3 class ="bold">Low Stock</h3>
                     <div style="height: 10px"></div>
@@ -49,10 +49,9 @@
                     <thead class="table-head">
                         <tr>
                             <th>Item Description</th>
-                            <!--<th style="width: 100px;">Supplier</th>
+                            <th style="width: 100px;">Supplier</th>
                             <th>Quantity</th>
-                            <th>Unit</th>-->
-                            <th>To be Ordered</th>
+                            <th>Unit</th>
                             <!--<th></th>-->
                         </tr>
                     </thead>
@@ -62,7 +61,7 @@
                             <tr>
                                 <td class="itemDescription">{{itemDescription}}</td>
                                 <td class="itemCategory" style="display: none;">{{itemCategory}}</td>
-                                <!--<td class="supplier">
+                                <td class="supplier">
                                     <select class="dropdown dropdown-supplier form-control" style="width: 300px">
                                         <option value="no-selected">--Select Supplier--</option>
                                         {{#each suppliers}}
@@ -72,7 +71,7 @@
                                 </td>
                                 <td><input value="{{EOQ}}" class="quantity form-control" style="text-align: right;"></td>
                                 <td class="unit">{{unit}}</td>
-                                <td style="width:400px">
+                                <!--<td style="width:400px">
                                     <input style="float: left; height: 34px; width: 34px; border-radius: 7px; color: white; display: block;" type="button" class="btn-dark-blue btn-add-item-supplier" name="addSupplier" value="+">
 
                                     <div class="div-add-item-supplier" style="display:none;">
@@ -80,7 +79,6 @@
                                         <button class="btn-save-item-supplier btn-dark-blue">Add Item Supplier</button>
                                     </div>
                                 </td>-->
-                                <td><input type="checkbox" class="item-check" style="height: 15px; width: 15px;"></td>
                             </tr>
                         {{/each}}
                     </tbody>
@@ -91,7 +89,7 @@
                     </div>
                            
                     <div class="btn-export-invoice">
-                        <button class="btn-light-blue" id="btn-next-generate-PO" style="margin-bottom: 10px; position:absolute; right:5% ">Next</button>
+                        <button class="btn-light-blue" id="btn-generate-PO" style="margin-bottom: 10px; position:absolute; right:5% ">Generate</button>
                     </div> 
                 </div>
 
@@ -108,6 +106,7 @@
                         if (categoryFilter != "All") {
                              $('#table-purchase-stocks-body > tr').each(function() {
                                 var itemCategory = $(this).find('.itemCategory').text()
+                                console.log(itemCategory)
 
                                 if (categoryFilter != itemCategory)
                                     $(this).toggle()
@@ -115,18 +114,7 @@
                         }      
                     })
 
-                    $('#btn-next-generate-PO').click(function() {
-                        var orderItems = []
-                        $('#table-purchase-stocks-body > tr').each(function() {
-                            if ($(this).find('.item-check').is(':checked'))
-                                orderItems.push($(this).find('.itemDescription').text())
-                        })
-                        var orderItemsString = JSON.stringify(orderItems)
-                        console.log(orderItems)
-                        $.get('/generatePOChooseSuppliers', {orderItemsString})
-                    })
-
-                    /*$('.dropdown-supplier').change(function() {
+                    $('.dropdown-supplier').change(function() {
                         var supplierID = $(this).val()
                         var itemDesc = $(this).parents('tr').find('.itemDescription').text()
 
@@ -245,8 +233,8 @@
                                 window.location.replace('/purchaseOrders');
                             });
                         }
-                    })*/
+                    })
                 })
             </script>
     </body>
-</html>
+</html> 

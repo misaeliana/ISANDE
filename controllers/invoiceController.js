@@ -38,9 +38,9 @@ const Docxtemplater = require("docxtemplater");
 
 const invoiceController = {
  
-	getInvoiceList: function(req, res) {
+    getInvoiceList: function(req, res) {
        
-		async function getInformation() {
+        async function getInformation() {
             
 
             var invoices = await getInvoices();
@@ -63,20 +63,22 @@ const invoiceController = {
            
             }
 
-            //res.render('invoiceList', {invoicesInfo});	
+            //res.render('invoiceList', {invoicesInfo});    
+            res.render('invoiceList', {invoicesInfo}); 
+
             //console.log(req.session.position);
 
-            if(req.session.position == "Cashier"){
+            /*if(req.session.position == "Cashier"){
                 var cashier = req.session.position;
-                res.render('invoiceList', {invoicesInfo, cashier});	
+                res.render('invoiceList', {invoicesInfo, cashier}); 
             }
 
             if(req.session.position == "Manager"){
                 var manager = req.session.position;
                 res.render('invoiceList', {invoicesInfo, manager});
-            }
-		}
-		getInformation();
+            }*/
+        }
+        getInformation();
     },
 
     getViewSpecificInvoice: function(req, res) {
@@ -89,14 +91,14 @@ const invoiceController = {
             });
         }
 
-		async function getInformation() {
+        async function getInformation() {
             var invoice_id = req.params.invoiceID;
             var invoice = await getInvoice(invoice_id);
             var date = new Date(invoice.date);
             var employee = await getEmployeeInfo(invoice.employeeID);
             var items = [];
 
-			var invoiceInfo = {
+            var invoiceInfo = {
                 invoice_id: invoice_id,
                 invoiceID: invoice.invoiceID,
                 customerName: await getSpecificCustomer(invoice.customerID),
@@ -112,7 +114,9 @@ const invoiceController = {
             };
 
 
-            var delivery;
+            var delivery = {};
+            // get customer info
+            var customer = await getCustomerInfo(invoice.customerID);
 
             if (invoiceInfo.type == "Delivery") {
                 delivery = await getDeliveryInformation(invoice_id);
@@ -128,9 +132,6 @@ const invoiceController = {
                     var dateDelivered = new Date(delivery.dateDelivered);
                     delivery.fdateDelivered = dateDelivered.getMonth() + 1 + "/" + dateDelivered.getDate() + "/" + dateDelivered.getFullYear(); 
                 }         
-
-                // get customer info
-                var customer = await getCustomerInfo(invoice.customerID);
             }
             
             var invoiceItems = await getInvoiceItems(invoice_id);
@@ -151,13 +152,10 @@ const invoiceController = {
                 items.push(item);
             }
 
-
-            /*if (invoiceInfo.status == "Pending" || invoiceInfo.status == "Partial" || invoiceInfo.paymentOption == "On Account") {
-                var pending = true;
-                var onAccount = true;
+            var paymentTotal = 0;
+            var paymentHistory = [];
+            if (invoiceInfo.status == "Pending" || invoiceInfo.status == "Partial" || invoiceInfo.paymentOption == "On Account") {
                 var temp_paymentHistory = await getPaymentHistory(invoice_id);
-                var paymentTotal = 0;
-                var paymentHistory = [];
                 for (var i=0; i<temp_paymentHistory.length; i++) {
                     var temp_date = new Date(temp_paymentHistory[i].datePaid);
                     var payment = {
@@ -167,177 +165,42 @@ const invoiceController = {
                     paymentTotal += temp_paymentHistory[i].amountPaid;
                     paymentHistory.push(payment);
                 }
-                var amountDue = invoiceInfo.total - paymentTotal;
-
-                if (invoiceInfo.paymentOption == "On Account")
-                {
-                    if (invoiceInfo.status == "Paid") {
-                        var paid = true;
-                        if (delivery != "") {
-                            //res.render('viewInvoice', {invoiceInfo, items, delivery, paid, onAccount, paymentHistory, paymentTotal, amountDue});
-                            
-                            if(req.session.position == "Cashier"){
-                                var cashier = req.session.position;
-                                res.render('viewInvoice', {invoiceInfo, items, delivery, paid, onAccount, paymentHistory, paymentTotal, amountDue, cashier});	
-                            }
-                
-                            if(req.session.position == "Manager"){
-                                var manager = req.session.position;
-                                res.render('viewInvoice', {invoiceInfo, items, delivery, paid, onAccount, paymentHistory, paymentTotal, amountDue, manager});
-                            }
-                        }
-                        else {
-                            //res.render('viewInvoice', {invoiceInfo, items, paid, onAccount, paymentHistory, paymentTotal, amountDue});
-                            
-                           if(req.session.position == "Cashier"){
-                                var cashier = req.session.position;
-                                res.render('viewInvoice', {invoiceInfo, items, paid, onAccount, paymentHistory, paymentTotal, amountDue, cashier});
-                            }
-                
-                            if(req.session.position == "Manager"){
-                                var manager = req.session.position;
-                                res.render('viewInvoice', {invoiceInfo, items, paid, onAccount, paymentHistory, paymentTotal, amountDue, manager});
-
-                            }
-                        }
-                    }
-                    else {
-                        if (delivery != "") {
-                             if(req.session.position == "Cashier"){
-                                var cashier = req.session.position;
-                                 res.render('viewInvoice', {invoiceInfo, customer, items, delivery, pending, onAccount, paymentHistory, paymentTotal, amountDue, cashier});
-                            }
-                
-                            if(req.session.position == "Manager"){
-                                var manager = req.session.position;
-                                 res.render('viewInvoice', {invoiceInfo, customer, items, delivery, pending, onAccount, paymentHistory, paymentTotal, amountDue, manager});
-                            }
-                        }
-                        else {
-                            if(req.session.position == "Cashier"){
-                                var cashier = req.session.position;
-                                 res.render('viewInvoice', {invoiceInfo, items, pending, onAccount, paymentHistory, paymentTotal, amountDue, cashier});
-                            }
-                
-                            if(req.session.position == "Manager"){
-                                var manager = req.session.position;
-                                 res.render('viewInvoice', {invoiceInfo, items, pending, onAccount, paymentHistory, paymentTotal, amountDue, manager});
-                            }
-                        }
-                    }
-                }
-                else {
-                    if (delivery != "")
-                        res.render('viewInvoice', {invoiceInfo, customer, items, delivery,  paymentHistory, paymentTotal, amountDue});
-                    else
-                        res.render('viewInvoice', {invoiceInfo, items, paymentHistory, paymentTotal, amountDue});
-                }
             }
-            else {
-                if (delivery != "") {
-                    res.render('viewInvoice', {invoiceInfo, customer, items, delivery});
-                else {
-                    res.render('viewInvoice', {invoiceInfo, items});
+            
+            var amountDue = invoiceInfo.total - paymentTotal;
 
-                    if (delivery != "") {
-                        //res.render('viewInvoice', {invoiceInfo, items, delivery, pending, onAccount, paymentHistory, paymentTotal, amountDue});
-                        
-                        if(req.session.position == "Cashier"){
-                            var cashier = req.session.position;
-                            res.render('viewInvoice', {invoiceInfo, items, delivery, pending, onAccount, paymentHistory, paymentTotal, amountDue, cashier});	
-                        }
-            
-                        if(req.session.position == "Manager"){
-                            var manager = req.session.position;
-                            res.render('viewInvoice', {invoiceInfo, items, delivery, pending, onAccount, paymentHistory, paymentTotal, amountDue, manager});
-                        }
-                    }
-                    else {
-                      //res.render('viewInvoice', {invoiceInfo, items, pending, onAccount, paymentHistory, paymentTotal, amountDue});
-                        
-                        if(req.session.position == "Cashier"){
-                            var cashier = req.session.position;
-                            res.render('viewInvoice', {invoiceInfo, items, pending, onAccount, paymentHistory, paymentTotal, amountDue, cashier});	
-                        }
-            
-                        if(req.session.position == "Manager"){
-                            var manager = req.session.position;
-                            res.render('viewInvoice', {invoiceInfo, items, pending, onAccount, paymentHistory, paymentTotal, amountDue, manager});
-                        }
-                    }
-                }
-                else {
-                    if (delivery != "") {
-                        //res.render('viewInvoice', {invoiceInfo, items, delivery,  paymentHistory, paymentTotal, amountDue});
-                        
-                        if(req.session.position == "Cashier"){
-                            var cashier = req.session.position;
-                            res.render('viewInvoice', {invoiceInfo, items, delivery,  paymentHistory, paymentTotal, amountDue, cashier});	
-                        }
-            
-                        if(req.session.position == "Manager"){
-                            var manager = req.session.position;
-                            res.render('viewInvoice', {invoiceInfo, items, delivery,  paymentHistory, paymentTotal, amountDue, manager});
-                        }
-                    }
-                    else {
-                        //res.render('viewInvoice', {invoiceInfo, items, paymentHistory, paymentTotal, amountDue});
+                //res.render('viewInvoice', {invoiceInfo, items, delivery, paid, onAccount, paymentHistory, paymentTotal, amountDue});
 
-                        if(req.session.position == "Cashier"){
-                            var cashier = req.session.position;
-                            res.render('viewInvoice', {invoiceInfo, items, paymentHistory, paymentTotal, amountDue, cashier});	
-                        }
-            
-                        if(req.session.position == "Manager"){
-                            var manager = req.session.position;
-                            res.render('viewInvoice', {invoiceInfo, items, paymentHistory, paymentTotal, amountDue, manager});
-                        }
-                    }
-                }
+            res.render('viewInvoice', {invoiceInfo, items, delivery, customer, paymentHistory, paymentTotal, amountDue});
+                
+            /*if(req.session.position == "Cashier"){
+                console.log("cashier")
+                var cashier = req.session.position;
+                res.render('viewInvoice', {invoiceInfo, items, delivery, paymentHistory, paymentTotal, amountDue, cashier});    
             }
-            else {
-                if (delivery != "") {
-                    //res.render('viewInvoice', {invoiceInfo, items, delivery});
 
-                    if(req.session.position == "Cashier"){
-                        var cashier = req.session.position;
-                        res.render('viewInvoice', {invoiceInfo, items, delivery, cashier});	
-                    }
-        
-                    if(req.session.position == "Manager"){
-                        var manager = req.session.position;
-                        res.render('viewInvoice', {invoiceInfo, items, delivery, manager});
-                    }
-                }
-                else {
-                    //res.render('viewInvoice', {invoiceInfo, items});
-
-                    if(req.session.position == "Cashier"){
-                        var cashier = req.session.position;
-                        res.render('viewInvoice', {invoiceInfo, items, cashier});	
-                    }
-        
-                    if(req.session.position == "Manager"){
-                        var manager = req.session.position;
-                        res.render('viewInvoice', {invoiceInfo, items, manager});
-                    }
-                }
-            }*/
+            if(req.session.position == "Manager"){
+                console.log("manager")
+                var manager = req.session.position;
+                res.render('viewInvoice', {invoiceInfo, items, delivery, paymentHistory, paymentTotal, amountDue, manager});
+            }
+            
             if(req.session.position == "Cashier"){
                 var cashier = req.session.position;
-                res.render('viewInvoice', {invoiceInfo, items, cashier});	
+                res.render('viewInvoice', {invoiceInfo, items, cashier});   
             }
 
             if(req.session.position == "Manager"){
                 var manager = req.session.position;
                 res.render('viewInvoice', {invoiceInfo, items, manager});
-            }
+            }*/
 
-		}
+                    
+        }
 
-		getInformation();
-		
-	},
+        getInformation();
+        
+    },
     
     getFilteredRowsInvoice: function(req, res) {
         var startDate = new Date(req.query.startDate);
@@ -422,28 +285,28 @@ const invoiceController = {
                 res.send(invoiceInfo);
             else 
                 res.send(null);
-		}
+        }
         getInformation();
     },
 
     getNewInvoice: function(req, res) {
-		async function getInvoiceTypes () {
-			var itype = await getAllInvoiceTypes();
+        async function getInvoiceTypes () {
+            var itype = await getAllInvoiceTypes();
             var delperson = await getDeliveryPersonnel();
             var paymentTypes = await getPaymentOptions();
-            //res.render('newInvoice', {itype,delperson, paymentTypes});
+            res.render('newInvoice', {itype,delperson, paymentTypes});
 
-            if(req.session.position == "Cashier"){
+            /*if(req.session.position == "Cashier"){
                 var cashier = req.session.position;
-                res.render('newInvoice', {itype, delperson, paymentTypes, cashier});	
+                res.render('newInvoice', {itype, delperson, paymentTypes, cashier});    
             }
 
             if(req.session.position == "Manager"){
                 var manager = req.session.position;
                 res.render('newInvoice', {itype, delperson, paymentTypes, manager});
-            }
+            }*/
 
-		}	//res.sendFile( dir+"/newInvoice.html");
+        }   //res.sendFile( dir+"/newInvoice.html");
         getInvoiceTypes();
     },
     
@@ -522,7 +385,7 @@ const invoiceController = {
 
         async function saveItems(invoiceID, items) {
             var formattedItems = []
-			for (var i=0; i<items.length; i++) {
+            for (var i=0; i<items.length; i++) {
                 items[i].itemID = await getItemID(items[i].itemDescription)
                 items[i].unitID = await getUnitID(items[i].unit);
 
@@ -537,13 +400,13 @@ const invoiceController = {
                     discount: items[i].discount
                 }
                 formattedItems.push(item)
-			}
+            }
 
-			db.insertMany(InvoiceItems, formattedItems, function(flag) {
+            db.insertMany(InvoiceItems, formattedItems, function(flag) {
                 if (flag)
                     res.sendStatus(200)
             });
-		}
+        }
 
 
         async function saveInvoice() {
@@ -678,15 +541,18 @@ const invoiceController = {
                 }
             }
 
-            if(req.session.position == "Delivery"){
+            res.render('deliveryList', {deliveryInfo});   
+
+
+            /*if(req.session.position == "Delivery"){
                 var delivery = req.session.position;
-                res.render('deliveryList', {deliveryInfo, delivery});	
+                res.render('deliveryList', {deliveryInfo, delivery});   
             }
 
             if(req.session.position == "Manager"){
                 var manager = req.session.position;
                 res.render('deliveryList', {deliveryInfo, manager});
-			}
+            }*/
         }
 
         getInformation();
@@ -741,15 +607,17 @@ const invoiceController = {
                 items.push(item);
             }
 
-            if(req.session.position == "Delivery"){
+            res.render('viewDeliveryInformation', {customer, deliveryInfo, invoice, items});  
+
+            /*if(req.session.position == "Delivery"){
                 var delivery = req.session.position;
-                res.render('viewDeliveryInformation', {customer, deliveryInfo, invoice, items, delivery});	
+                res.render('viewDeliveryInformation', {customer, deliveryInfo, invoice, items, delivery});  
             }
 
             if(req.session.position == "Manager"){
                 var manager = req.session.position;
                 res.render('viewDeliveryInformation', {customer, deliveryInfo, invoice, items, manager});
-			}
+            }*/
         }
 
         getInformation();
@@ -838,7 +706,7 @@ const invoiceController = {
                 res.send(deliveryInfo);
             else
                 res.send(null);
-		}
+        }
         getInformation();
     },
 
@@ -939,17 +807,17 @@ const invoiceController = {
                 total: parseFloat(temp_invoiceInfo.total).toFixed(2)
             }
 
-            // res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems})
+             res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems})
             
-            if(req.session.position == "Cashier"){
+            /*if(req.session.position == "Cashier"){
                 var cashier = req.session.position;
-                res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems, cashier});	
+                res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems, cashier});   
             }
 
             if(req.session.position == "Manager"){
                 var manager = req.session.position;
                 res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems, manager});
-			}
+            }*/
         }
 
         getInfo();
@@ -1342,6 +1210,8 @@ const invoiceController = {
 
         async function getInfo() {
             var itemID = await getItemID(req.query.itemDesc)
+
+            console.log(itemID)
 
             var temp_itemUnits = await getItemUnits(itemID)
             var itemUnits = []

@@ -123,11 +123,11 @@
 
                 $('#dropdown-po-status').change(function() {
                     $('#table-po tr').show();
-                    var filter = $('#dropdown-po-status').val();
+                    var filter = $('#dropdown-po-status option:selected').text();
                      $('#search-field').val(null);
                     
                     $('#table-po > tbody > tr').each(function(index) {
-                        var statusID = $(this).children('.btn-status').text()
+                        var statusID = $(this).find('.btn-status').text()
                         if (filter != statusID && filter!="all-type")
                             $(this).toggle();
                     })

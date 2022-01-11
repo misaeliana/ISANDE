@@ -40,7 +40,10 @@ const supplierController = {
 			    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
 			});
 
-			if(req.session.position == "Inventory and Purchasing"){
+            res.render('supplierList', {suppliers});	
+
+
+			/*if(req.session.position == "Inventory and Purchasing"){
                 var inventoryAndPurchasing = req.session.position;
                 res.render('supplierList', {suppliers, inventoryAndPurchasing});	
             }
@@ -48,7 +51,7 @@ const supplierController = {
             if(req.session.position == "Manager"){
                 var manager = req.session.position;
                 res.render('supplierList', {suppliers, manager});
-			}
+			}*/
 		});
 	},
 
@@ -116,7 +119,10 @@ const supplierController = {
 			var itemCategories = await getItemCategories();
 			var units = await getUnits();
 
-			if(req.session.position == "Inventory and Purchasing"){
+            res.render('supplierInformation', {supplierInfo, inventory, itemCategories, units});	
+
+
+			/*if(req.session.position == "Inventory and Purchasing"){
                 var inventoryAndPurchasing = req.session.position;
                 res.render('supplierList', {supplierInfo, inventory, itemCategories, units, inventoryAndPurchasing});	
             }
@@ -124,7 +130,7 @@ const supplierController = {
             if(req.session.position == "Manager"){
                 var manager = req.session.position;
                 res.render('supplierList', {supplierInfo, inventory, itemCategories, units, manager});
-			}
+			}*/
 		}
 
 		getInfo();
