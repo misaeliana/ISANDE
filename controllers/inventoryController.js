@@ -100,7 +100,7 @@ const inventoryController = {
 
 	postNewItem: function(req, res) {
 		if (req.body.retailQuantity == "")
-			var retailQuantity = 1
+			var retailQuantity = 1;
 		else
 			var retailQuantity = req.body.retailQuantity
 
@@ -217,23 +217,23 @@ const inventoryController = {
 				btn_status: btnStatus
 			};
 
-			var temp_itemUnits = await getItemUnits(item._id)
-			var itemUnits = []
+			var temp_itemUnits = await getItemUnits(item._id);
+			var itemUnits = [];
 
 			for (var i=0; i<temp_itemUnits.length; i++) {
 				var itemUnit = {
 					unitName: await getSpecificUnit(temp_itemUnits[i].unitID),
 					ratio:temp_itemUnits[i].quantity,
-					sellingPrice: temp_itemUnits[i].sellingPrice,
+					sellingPrice: parseFloat(temp_itemUnits[i].sellingPrice).toFixed(2),
 					availableStock: parseFloat(itemInfo.quantityAvailable * itemInfo.retailQuantity / temp_itemUnits[i].quantity).toFixed(2)
-				}
-				itemUnits.push(itemUnit)
+				};
+				itemUnits.push(itemUnit);
 			}
 
 			getToBeReceived(itemInfo).then((result) =>{
-				itemInfo.toBeReceived = parseFloat(result).toFixed(2)
+				itemInfo.toBeReceived = parseFloat(result).toFixed(2);
 				res.render('viewSpecificItem', {itemInfo, itemUnits, itemCategories, units, itemSuppliers});
-			})
+			});
 
 			/*if(req.session.position == "Inventory and Purchasing"){
 				var inventoryAndPurchasing = req.session.position;
@@ -473,6 +473,8 @@ const inventoryController = {
 					btnStatus = "low";
 				else if (textStatus == "In Stock")
 					btnStatus = "in";
+				else if (textStatus == "Out of Stock")
+					btnStatus = "out";
 			
 				var item = {
 					_id: inventoryItems[i]._id,

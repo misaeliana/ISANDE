@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title> Dashboard </title>
+    <meta name="description" content="Dashboard">
+    <meta name="keyword" content="Moderna, Dashboard">
+    <link rel="stylesheet" type="text/css" href="../css/general.css">
+    <link rel="stylesheet" type="text/css" href="../css/dashboard.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+   {{> logoutPartial }}
+
+    <div class="content-dashboard">
+        <div class="greeting">
+            <h1> Welcome, {{employeeName}}!</h1>
+        </div>
+
+        <div class="options-format">
+            {{#if cashier}}
+                <div class="options">
+                    <div class="column"><a href="invoices"><button type="button">Invoices</button></a></div>
+                    <div class="column"><a href="inventory"><button type="button">Inventory</button></a></div>
+                    <div class="column"><a href="customers"><button type="button">Customers</button></a></div>
+                </div>
+                <!--<div class="options">
+                        <div class="column"><button type="button">View Inventory</button></div>
+                        <div class="column"><button type="button">View Customers</button></div>
+                </div>--> 
+            {{/if}}
+
+            {{#if inventoryAndPurchasing}}
+                <div class="options">
+                    <div class="column"><a href="inventory"><button type="button">Inventory</button></a></div>
+                    <div class="column"><a href="purchaseOrders"><button type="button">Purchase Orders</button></a></div>
+                    <div class="column"><a href="manualCount"><button type="button">Manual Count</button></a></div>
+                </div>
+                <div class="options">
+                    <div class="column"><a href="shrinkages"><button type="button">Shrinkages</button></a></div>
+                    <div class="column"><a href="suppliers"><button type="button">Suppliers</button></a></div>
+                </div>
+            {{/if}}
+            
+
+            {{#if delivery}}
+                <div class="options">
+                    <div class="column"><a href="deliveries"><button type="button">Deliveries</button></a></div>
+                </div>
+            {{/if}}
+
+            {{#if manager}}
+                <div class="options">
+                    <div class="column"><a href="#"><button type="button">Reports</button></a></div>
+                    <div class="column"><a href="employees"><button type="button">Employees</button></a></div>
+                </div>
+                <div class="options">
+                    <div class="column"><a href="invoices"><button type="button">Invoices</button></a></div>
+                    <div class="column"><a href="deliveries"><button type="button">Deliveries</button></a></div>
+                    <div class="column"><a href="customers"><button type="button">Customers</button></a></div>
+                </div>
+                <div class="options">
+                    <div class="column"><a href="inventory"><button type="button">Inventory</button></a></div>
+                    <div class="column"><a href="purchaseOrders"><button type="button">Purchase Orders</button></a></div>
+                     <div class="column"><a href="manualCount"><button type="button">Manual Count</button></a></div>
+                </div>
+                <div class="options">
+                    <div class="column"><a href="shrinkages"><button type="button">Shrinkages</button></a></div>
+                    <div class="column"><a href="suppliers"><button type="button">Suppliers</button></a></div>
+                </div>
+            {{/if}}
+        </div>
+    </div> 
+</body>
+</html>

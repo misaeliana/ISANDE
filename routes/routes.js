@@ -28,6 +28,8 @@ router.post('/checkLogIn', loginController.checkLogIn);
 
 router.get('/logout', loginController.logout);
 
+router.get('/dashboard', loginController.getDashboard);
+
 //--CUSTOMER--
 
 router.get('/customers', customerController.getCustomerList);

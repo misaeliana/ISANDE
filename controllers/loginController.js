@@ -29,7 +29,7 @@ const loginController = {
     logout: function (req, res) {
         req.session.destroy(function(err) {
             if(err) throw err;
-			res.send({redirect: '/login'});
+				res.redirect('/login');
         });
     },
 
@@ -52,7 +52,7 @@ const loginController = {
 					req.session.positionID = employee.positionID;
 					req.session.position = await getPositionName(req.session.positionID);
 						
-					if ("Manager" == req.session.position)
+					/*if ("Manager" == req.session.position)
 						res.send({redirect: '/invoices'}); // change manager landing page
 					else if ("Cashier" == req.session.position)
 						res.send({redirect: '/invoices'});
@@ -60,6 +60,9 @@ const loginController = {
 						res.send({redirect: '/inventory'});
 					else if ("Delivery" == req.session.position)
 						res.send({redirect: '/deliveries'});
+					*/
+
+					res.send({redirect: '/dashboard'});
 				}
 				else
 				{
@@ -70,6 +73,30 @@ const loginController = {
 			}
 		}
 		redirect();
+	},
+
+	getDashboard: function (req, res) {
+		var employeeName = req.session.name;
+		
+		if(req.session.position == "Cashier"){
+            var cashier = req.session.position;
+            res.render('dashboard', {employeeName, cashier});   
+        }
+
+    	if(req.session.position == "Manager"){
+            var manager = req.session.position;
+            res.render('dashboard', {employeeName, manager});
+		}
+
+		if(req.session.position == "Inventory and Purchasing"){
+			var inventoryAndPurchasing = req.session.position;
+			res.render('dashboard', {employeeName, inventoryAndPurchasing});	
+		}
+
+		if(req.session.position == "Delivery"){
+			var delivery = req.session.position;
+			res.render('dashboard', {employeeName, delivery});	
+		}
 	}
 };
 

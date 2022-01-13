@@ -253,10 +253,10 @@
                     {{#each itemUnits}}
                         <tr>
                             <td class="item-unit-name">{{unitName}}</td>
-                            <td>{{ratio}}</td>
-                            <td class="item-unit-selling-price">₱ {{sellingPrice}}</td>
-                            <td>{{availableStock}}</td>
-                            <td><button class="edit-button"><img src="../images/edit-icon.png" height="20px" width="15x" alt="Edit"></button></td>
+                            <td style="text-align: right;">{{ratio}}</td>
+                            <td class="item-unit-selling-price" style="text-align: right;">₱ {{sellingPrice}}</td>
+                            <td style="text-align: right;">{{availableStock}}</td>
+                            <td style="text-align: right;"><button class="edit-button"><img src="../images/edit-icon.png" height="20px" width="15x" alt="Edit"></button></td>
                         </tr>
                     {{/each}}
                 </tbody>

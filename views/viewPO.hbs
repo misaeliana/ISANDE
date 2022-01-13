@@ -30,15 +30,15 @@
                     <div style="width: 50%"><h1 class="bold" id="poNumber"> Purchase Order #{{poInfo.purchaseOrderNumber}} </h1></div>
                     <div class="btn-status">
                         {{#if newPO}}
-                            <div><button id="btn-status" style="background-color: #0F84D9;">New</button></div>
+                            <div><button id="btn-status" style="background-color: #0F84D9; width: 100px; border-radius: 15px; color: white; height: 25px;">New</button></div>
                         {{else if released}}
-                            <div><button id="btn-status" style="background-color: #F2A154;">Released</button></div>
+                            <div><button id="btn-status" style="background-color: #F2A154; width: 100px; border-radius: 15px; color: white; height: 25px;">Released</button></div>
                         {{else if incomplete}}
-                            <div><button id="btn-status" style="background-color: #E24E3A;">Incomplete</button></div>
+                            <div><button id="btn-status" style="background-color: #E24E3A; width: 100px; border-radius: 15px; color: white; height: 25px;">Incomplete</button></div>
                         {{else if received}}
-                            <div><button id="btn-status" style="background-color: #55B66A;">Received</button></div>
+                            <div><button id="btn-status" style="background-color: #55B66A; width: 100px; border-radius: 15px; color: white; height: 25px;">Received</button></div>
                         {{else if canceled}}
-                            <div><button id="btn-status" style="background-color: #E24E3A;">Canceled</button></div>
+                            <div><button id="btn-status" style="background-color: #E24E3A; width: 100px; border-radius: 15px; color: white; height: 25px;">Canceled</button></div>
                         {{/if}}
                     </div>
                 </div>
@@ -118,18 +118,18 @@
                                 {{#each items}}
                                     <tr>
                                         <td class="classItemDescription">{{itemDescription}}</td>
-                                        <td class="classQty">{{quantity}}</td>
+                                        <td class="classQty" style="text-align: right;">{{quantity}}</td>
                                         <td class="classUnit">{{unitName}}</td>
-                                        <td>₱ {{unitPrice}}</td>
-                                        <td>{{quantityReceived}}</td>
-                                        <td>₱ {{amount}}</td>  
+                                        <td style="text-align: right;">₱ {{unitPrice}}</td>
+                                        <td style="text-align: right;">{{quantityReceived}}</td>
+                                        <td style="text-align: right;">₱ {{amount}}</td>  
                                     </tr>
                                 {{/each}}
                             {{else}}
                                 {{#each items}}
                                     <tr>
                                         <td class="classItemDescription">{{itemDescription}}</td>
-                                        <td class="classQty">{{quantity}}</td>
+                                        <td style="text-align: right;" class="classQty">{{quantity}}</td>
                                         <td class="classUnit">{{unitName}}</td>
                                     </tr>
                                 {{/each}}
