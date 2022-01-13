@@ -485,6 +485,14 @@ module.exports = function() {
 		});
 	},
 
+	this.getDeliveryPersonnelDeliveries = function(personnel_id) {
+		return new Promise((resolve, reject) => {
+			db.findMany(Deliveries, {dateDelivered: null, deliveryPersonnel: personnel_id}, '', function(result) {
+				resolve (result);
+			});
+		});
+	},
+
 	this.getSpecificDelivery = function(deliveryID) {
 		return new Promise((resolve, reject) => {
 			db.findOne(Deliveries, {_id: deliveryID}, '', function(result) {

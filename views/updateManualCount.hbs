@@ -65,10 +65,10 @@
                                 <td>{{itemDescription}}</td>
                                 <td style="display: none;" class="itemID">{{_id}}</td>
                                 <td style="text-align:end;" class="quantity-available">{{quantityAvailable}}</td>
-                                <td class="quantity"><input type="number" value="{{quantityAvailable}}" style="text-align:end;" class="quantity-val"></td>
+                                <td class="quantity"><input type="number" value="{{quantityAvailable}}" style="text-align:end; width: 150px" class="quantity-val form-control"></td>
                                 <td class="unit">{{unit}}</td>
                                 <td class="reason">
-                                    <select disabled class="dropdown-shrinkage-reasons">
+                                    <select disabled class="dropdown-shrinkage-reasons form-control" style="width: 200px;">
                                         <option value="no-selected">Select Reason</option>
                                         {{#each reasons}}
                                             <option value={{_id}}>{{reason}}</option>

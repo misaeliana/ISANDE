@@ -276,20 +276,23 @@ const purchaseOrderController = {
 				var poInfo = await getPOInfo (purchaseInfo._id);
 				poInfo.fdateMade = poInfo.date.toLocaleString('en-US');
 				poInfo.fdateReceived = poInfo.dateReceived.toLocaleString('en-US');
-				poInfo.employeeName =  await getEmployeeName(poInfo.employeeID)
+				poInfo.employeeName =  await getEmployeeName(poInfo.employeeID);
 
 				items = await getReceivedItems(purchaseInfo._id);
 
 				for (var i=0; i<items.length; i++) {
 					items[i].itemDescription = await getItemDescription(items[i].itemID);
 					items[i].unitName = await getSpecificUnit(items[i].unitID);
+					items[i].unitPrice = parseFloat(items[i].unitPrice).toFixed(2);
+					items[i].amount = parseFloat(items[i].amount).toFixed(2);
 				}
 				
 
 				poInfo.vat = parseFloat(poInfo.vat).toFixed(2);
 				poInfo.fsubtotal = parseFloat(poInfo.subtotal).toFixed(2);
 				poInfo.ftotal = parseFloat(poInfo.total).toFixed(2);
-				poInfo.discount = parseFloat(poInfo.discount).toFixed(2)
+				poInfo.total = parseFloat(poInfo.total).toFixed(2);
+				poInfo.discount = parseFloat(poInfo.discount).toFixed(2);
 
 				//incomplete
 				if (purchaseInfo.statusID == "618f653746c716a39100a80b") {

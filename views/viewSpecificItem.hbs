@@ -37,33 +37,23 @@
             </div> 
             <hr style="margin-top: 0px;">
 
-            <div>
-                <table style="width: 100%;">
-                    <th>
-                        <div>
-                            <div class="div-number" id="item-quantity">{{itemInfo.quantityAvailable}}</div>
-                            <div class="div-number-label">Available</div>
-                        </div>
-                    </th>
-                    <th>
-                        <div>
-                            <div class="div-number">{{itemInfo.reorderLevel}}</div>
-                            <div class="div-number-label">Reorder Level</div>
-                        </div>
-                    </th>
-                    <th>
-                        <div>
-                            <div class="div-number">{{itemInfo.EOQ}}</div>
-                            <div class="div-number-label">EOQ </div>
-                        </div>
-                    </th>
-                    <th>
-                        <div>
-                            <div class="div-number">{{itemInfo.toBeReceived}}</div>
-                            <div class="div-number-label">To Be Received</div>
-                        </div>
-                    </th>
-                </table>
+            <div style="display: flex; justify-content: space-between">
+                <div>
+                    <div class="div-number" id="item-quantity">{{itemInfo.quantityAvailable}}</div>
+                    <div class="div-number-label">Available</div>
+                </div>
+                <div>
+                    <div class="div-number">{{itemInfo.reorderLevel}}</div>
+                    <div class="div-number-label">Reorder Level</div>
+                </div>
+                 <div>
+                    <div class="div-number">{{itemInfo.EOQ}}</div>
+                    <div class="div-number-label">EOQ </div>
+                </div>
+                 <div>
+                    <div class="div-number">{{itemInfo.toBeReceived}}</div>
+                    <div class="div-number-label">To Be Received</div>
+                </div>
             </div>
 
             <div style="margin-top: 20px;">

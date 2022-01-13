@@ -37,34 +37,36 @@
                     </div>
                 </div>
             </div> 
-            <hr>
+            <hr style="margin-top: 0px;">
 
             <div style="display: flex; align-content: center; align-items: center;">
                 <label for="dropdown-return-type" style="margin-right: 10px">Type</label>
-                <select class="dropdown" id="dropdown-return-type" style="margin-right: 10px">
+                <select class="form-control" id="dropdown-return-type" style="margin-right: 20px; width: 150px;">
                     {{#each types}}
                         <option value="{{_id}}">{{type}}</option>
                     {{/each}}
                 </select>
 
                 <label for="dropdown-payment-type" style="margin-right: 10px">Payment Type</label>
-                <select class="dropdown" id="dropdown-payment-type" style="margin-right: 10px">
+                <select class="form-control" id="dropdown-payment-type" style="margin-right: 10px; width: 150px;">
                         {{#each paymentTypes}}
                             <option value="{{_id}}">{{paymentOption}}</option>
                         {{/each}}
                     </select>
                 
                 <div class="delivery-info" style="display: none;">
-                    <label class="date-label" for="delivery-date">Delivery Date</label>
-                    <input style="height: 34px" type="date" id="delivery-date" name="delivery-date">
+                     <div style="display: flex; align-items: center;">
+                        <label class="date-label" style="margin-right: 10px" for="delivery-date">Delivery Date</label>
+                        <input style="margin-right: 20px; width: 180px;" type="date" id="delivery-date" class="form-control" name="delivery-date">
 
-                    <label for="dropdown-delivery-personnel" style="margin-right: 10px">Delivery Personnel</label>
-                    <select class="dropdown" id="dropdown-delivery-personnel" style="margin-right: 10px">
-                        <option value="no-selected">--Select Delivery Personnel--</option>
-                        {{#each deliveryPersonnel}}
-                            <option value="{{_id}}">{{name}}</option>
-                        {{/each}}
-                    </select>
+                        <label for="dropdown-delivery-personnel" style="margin-right: 10px">Delivery Personnel</label>
+                        <select class="form-control" id="dropdown-delivery-personnel" style="margin-right: 10px; width: 150px;">
+                            <option value="no-selected">Select Personnel</option>
+                            {{#each deliveryPersonnel}}
+                                <option value="{{_id}}">{{name}}</option>
+                            {{/each}}
+                        </select>
+                     </div>
                 </div>
             </div>
 
@@ -83,7 +85,7 @@
             </div>
 
 
-                <div class="header-colored-bg" style="margin-top: 40px; margin-bottom: 10px">
+                <div class="header-colored-bg" style="margin-top: 20px; margin-bottom: 10px">
                     <h3 class ="bold bold header-text">Order Details</h3>
                 </div>
                 
@@ -107,18 +109,18 @@
                             {{#each invoiceItems}}
                                 <tr class="return-row">
                                     <td class="return-item-desc">{{itemDescription}}</td>
-                                    <td style="display: none" class="quantity-purchased">{{quantity}}</td>
-                                    <td><input class="return-quantity" type="number" value="{{quantity}}" style="width:70px" disabled></td>
+                                    <td style="display: none;" class="quantity-purchased">{{quantity}}</td>
+                                    <td><input class="return-quantity form-control" type="number" value="{{quantity}}" style="width:150px; text-align:right;" disabled></td>
                                     <td class="unit">{{unit}}</td>
-                                    <td class="return-unit-price">₱ {{unitPrice}}</td>
-                                    <td class="return-discount">₱ {{discount}}</td>
-                                    <td class="return-amount">₱ {{amount}}</td>
-                                    <td>
+                                    <td class="return-unit-price" style="text-align: right;">₱ {{unitPrice}}</td>
+                                    <td class="return-discount" style="text-align: right;">₱ {{discount}}</td>
+                                    <td class="return-amount" style="text-align: right;">₱ {{amount}}</td>
+                                    <td style="text-align:center;"> 
                                         <input type="checkbox" class="return-check">
                                     </td>
                                     <td>
-                                        <select class= "dropdown return-reason" style="height: 30px" disabled>
-                                            <option value="no-selected" selected>--Select Reason--</option>
+                                        <select class= "dropdown return-reason form-control" style="width: 150px;" disabled>
+                                            <option value="no-selected" selected>Select Reason</option>
                                             {{#each returnReasons}}
                                                 <option value="{{_id}}">{{reason}}</option>
                                             {{/each}}
@@ -129,16 +131,16 @@
                         </tbody>
                     </table>
 
-                    <div class="display-flex" style="margin-top: 30px">
+                     <hr style="margin-top: 0px; margin-bottom: 10px;">
+
+                    <div class="display-flex" style="margin-top: 20px">
                         <h3 class ="bold h3-left">Add New Item</h3>
                     </div>
 
-                    <hr style="margin-top: 0px; margin-bottom: 10px;">
-
                     <form>
                         <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="return-add-item-description" name="return-add-item-description" placeholder="Item Description">
-                         <select class="dropdown" id="dropdown-item-unit" style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px">
-                            <option value="no-selected">--Unit--</option>
+                         <select class="form-control" id="dropdown-item-unit" style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px">
+                            <option value="no-selected">Select Unit</option>
                         </select>
                         <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px; text-align: right;" type="text" class="form-control" id="return-add-item-qty" name="return-add-item-qty" placeholder="Qty">
                         <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px; text-align: right;" type="text" class="form-control" id="return-add-item-discount" name="return-add-item-discount" placeholder="Discount">
@@ -199,7 +201,7 @@
 
                     <div class="summary-container">
                         <div class="summary-text">Refunded Amount</div>
-                        <div class="summary-info-container"><div class="summary-info" id="refund">₱ 0</div></div>
+                        <div class="summary-info-container"><div class="summary-info" id="refund">₱ 0.00</div></div>
                     </div>
 
                     <!--<div class="summary-container">
@@ -212,7 +214,7 @@
 
                     <div class="summary-container">
                         <div class="summary-text">Total</div>
-                        <div class="summary-info-container"><div class="summary-info" id="total">₱ 0</div></div>
+                        <div class="summary-info-container"><div class="summary-info" id="total">₱ 0.00</div></div>
                     </div>
 
                     <div style="height: 10px"></div>
@@ -235,12 +237,11 @@
                 $('#dropdown-return-type').change(function() {
                     var val = $('#dropdown-return-type option:selected').text();
 
-                    if (val == "In-Store") {
+                    if (val == "In-Store") 
                         $('.delivery-info').css('display', 'none')
-                    }
                     else
                         $('.delivery-info').css('display', 'block')
-                })
+                });
 
                 //should be for delivery only
                 $("#customerName").autocomplete({
@@ -320,7 +321,7 @@
 
                 $('#total-discount').keyup(function() {
                     computeTotal()
-                })
+                });
 
                 $('.return-check').change(function() {
                     if ($(this).is(":checked")) {
@@ -347,7 +348,7 @@
                         $("#btn-save-return").css("background-color", "#0F84D9");
                         computeTotal()
                     }
-                })
+                });
 
                 $("#table-return-new-item-body").on('click','.delete-item-btn',function() {
                     $(this).closest('tr').remove();
@@ -358,66 +359,66 @@
                     var customerName = $('#customerName').val();
                     if (customerName == '') {
                             $("#customerName").css("border", "1px solid #B00000");
-                            $("#error-customer-name").text("Customer name cannot be empty")
+                            $("#error-customer-name").text("Customer name cannot be empty");
                             $("#btn-save-return").prop("disabled", true);
                             $("#btn-save-return").css("background-color", "#b3b3b3");
-                            $('#contactNumber').val('')
-                            $('#address').val('')
-                            return false
+                            $('#contactNumber').val('');
+                            $('#address').val('');
+                            return false;
                         }
                         else {
                             $("#customerName").css("border", "1px solid #DDDDDD");
                             $('#error-customer-name').text('')
                             $("#btn-save-return").prop("disabled", false);
                             $("#btn-save-return").css("background-color", "#0F84D9");
-                            return true
+                            return true;
                         }
                 }
 
                 function deliveryInfoFilled() {
-                    var deliveryDate = $('#delivery-date').val()
-                    var paymentType = $('#dropdown-payment-type').val()
-                    var deliveryPersonnel = $('#dropdown-delivery-personnel').val()
+                    var deliveryDate = $('#delivery-date').val();
+                    var paymentType = $('#dropdown-payment-type').val();
+                    var deliveryPersonnel = $('#dropdown-delivery-personnel').val();
 
-                    var address = $('#address').val()
-                    var contactNumber = $('#contactNumber').val()
+                    var address = $('#address').val();
+                    var contactNumber = $('#contactNumber').val();
 
                     //inputs are complete
                     if (deliveryDate && paymentType!="no-selected" && deliveryPersonnel!="no-selected" && address!="" && contactNumber!="") {
-                        $('#delivery-date').css("border", "1px solid #DDDDDD")
-                        $('#dropdown-payment-type').css("border", "1px solid #DDDDDD")
-                        $('#dropdown-delivery-personnel').css("border", "1px solid #DDDDDD")
-                        $('#address').css("border", "1px solid #DDDDDD")
-                        $('#contactNumber').css("border", "1px solid #DDDDDD")
-                        return true
+                        $('#delivery-date').css("border", "1px solid #DDDDDD");
+                        $('#dropdown-payment-type').css("border", "1px solid #DDDDDD");
+                        $('#dropdown-delivery-personnel').css("border", "1px solid #DDDDDD");
+                        $('#address').css("border", "1px solid #DDDDDD");
+                        $('#contactNumber').css("border", "1px solid #DDDDDD");
+                        return true;
                     }
                     else {
                         if (!deliveryDate) //delivery date is blank
                             $('#delivery-date').css("border", "2px solid #B00000");
                         else
-                            $('#delivery-date').css("border", "1px solid #DDDDDD")
+                            $('#delivery-date').css("border", "1px solid #DDDDDD");
 
                         if (paymentType == "no-selected")
                             $('#dropdown-payment-type').css("border", "2px solid #B00000");
                         else
-                            $('#dropdown-payment-type').css("border", "1px solid #DDDDDD")
+                            $('#dropdown-payment-type').css("border", "1px solid #DDDDDD");
 
                         if (deliveryPersonnel == "no-selected")
                             $('#dropdown-delivery-personnel').css("border", "2px solid #B00000")
                         else
-                            $('#dropdown-delivery-personnel').css("border", "1px solid #DDDDDD")
+                            $('#dropdown-delivery-personnel').css("border", "1px solid #DDDDDD");
 
                         if (address == "")
                             $('#address').css("border", "2px solid #B00000");
                         else
-                            $('#address').css("border", "1px solid #DDDDDD")
+                            $('#address').css("border", "1px solid #DDDDDD");
 
                         if (contactNumber == "")
                             $('#contactNumber').css("border", "2px solid #B00000");
                         else
-                            $('#contactNumber').css("border", "1px solid #DDDDDD")
+                            $('#contactNumber').css("border", "1px solid #DDDDDD");
 
-                        return false
+                        return false;
                     }
                 }
 
@@ -430,7 +431,7 @@
                         if ($(this).find('.return-check').is(":checked")) {
                             //no selected return reason
                             if ($(this).find('.return-reason').val() == "no-selected") {
-                                noReason = true
+                                noReason = true;
                                 $(this).find('.return-reason').css("border", "2px solid #B00000")
                             }
                             else {
@@ -444,16 +445,16 @@
 
                     if (invoiceType == "In-Store") {
                         if (customerNameFilled()) 
-                            return true
+                            return true;
                         else
-                            return false
+                            return false;
                     }
 
                     else if (invoiceType == "Delivery") {
                         if (customerNameFilled() && deliveryInfoFilled())
-                            return true
+                            return true;
                         else
-                            return false
+                            return false;
                     }
 
                 }
@@ -462,62 +463,61 @@
                     var orderTotal = 0;
                     var discount = 0;
                     var refund = 0;
-                    var newItemsTotal = 0
+                    var newItemsTotal = 0;
 
-                    var paid = $('#paid').text().slice(1)
+                    var paid = $('#paid').text().slice(1);
 
                     $('#table-return-order-details > tbody > tr').each(function() {
                         //item to be returned, either added to shrinkage or added back to inventory
-                        var quantity = $(this).find('.return-quantity').val()
+                        var quantity = $(this).find('.return-quantity').val();
                         if (quantity == "" || quantity == NaN)
-                            quantity = 0
+                            quantity = 0;
 
                         if ($(this).find('.return-check').is(":checked")) 
                             refund += (quantity * parseFloat($(this).children('.return-unit-price').text().slice(1)) - $(this).children('.return-discount').text().slice(1));
-
                         else 
-                            orderTotal += (quantity * parseFloat($(this).children('.return-unit-price').text().slice(1))   
+                            orderTotal += (quantity * parseFloat($(this).children('.return-unit-price').text().slice(1)));
 
                         if ((quantity*parseFloat($(this).children('.return-unit-price').text().slice(1))) != parseFloat($(this).children('.return-amount').text().slice(1))) {
-                            orderTotal += (parseFloat($(this).children('.return-amount').text().slice(1)) - (quantity * parseFloat($(this).children('.return-unit-price').text().slice(1))) 
+                            orderTotal += (parseFloat($(this).children('.return-amount').text().slice(1)) - (quantity * parseFloat($(this).children('.return-unit-price').text().slice(1)));
                         }
                     })
 
                     $('#table-return-new-item-body > tr').each(function() {
-                        var amount = parseFloat($(this).find('.amount').text().slice(1))
-                        orderTotal += parseFloat(amount)
+                        var amount = parseFloat($(this).find('.amount').text().slice(1));
+                        orderTotal += parseFloat(amount);
                         //newItemsTotal += parseFloat(amount)
                     })
 
-                    var discountTotal = $('#total-discount').val()
+                    var discountTotal = $('#total-discount').val();
                     //there is discount
                     if (discountTotal != "")
-                        discount = orderTotal * (discountPercent/100)
+                        discount = orderTotal * (discountPercent/100);
 
-                    orderTotal -= discount
-                    var subtotal = orderTotal/1.12
-                    var vat = orderTotal - subtotal
+                    orderTotal -= discount;
+                    var subtotal = orderTotal/1.12;
+                    var vat = orderTotal - subtotal;
 
-                    var total = orderTotal - paid
+                    var total = orderTotal - paid;
                     
-                    $('#subtotal').text("₱ " + parseFloat(subtotal).toFixed(2))
-                    $('#vat').text("₱ " + parseFloat(vat).toFixed(2))
-                    $('#discount').text("₱ " + parseFloat(discount).toFixed(2))
-                    $('#orderTotal').text("₱ " + parseFloat(orderTotal).toFixed(2))
+                    $('#subtotal').text("₱ " + parseFloat(subtotal).toFixed(2));
+                    $('#vat').text("₱ " + parseFloat(vat).toFixed(2));
+                    $('#discount').text("₱ " + parseFloat(discount).toFixed(2));
+                    $('#orderTotal').text("₱ " + parseFloat(orderTotal).toFixed(2));
 
-                    $('#refund').text("₱ " + parseFloat(refund).toFixed(2))
+                    $('#refund').text("₱ " + parseFloat(refund).toFixed(2));
                     //$('#balance').text("₱ " + parseFloat(balance).toFixed(2))
-                    $('#total').text("₱ " + parseFloat(total).toFixed(2))
+                    $('#total').text("₱ " + parseFloat(total).toFixed(2));
                 }
 
 
                 $('#return-add-item').click(function() {
-                    var itemDesc = $('#return-add-item-description').val()
-                    var quantity = $('#return-add-item-qty').val()
-                    var discount = $('#return-add-item-discount').val()
+                    var itemDesc = $('#return-add-item-description').val();
+                    var quantity = $('#return-add-item-qty').val();
+                    var discount = $('#return-add-item-discount').val();
                     if (discount == "")
-                        discount = 0
-                    var unit = $("#dropdown-item-unit option:selected").text()
+                        discount = 0;
+                    var unit = $("#dropdown-item-unit option:selected").text();
                     var unitID = $('#dropdown-item-unit').val();
 
                     $.get('/getItemPrice', {itemDesc, quantity, unitID}, function (result) {
@@ -528,34 +528,33 @@
                             $('#table-return-new-item-body').append(
                                 `<tr>
                                     <td class="itemDesc">${itemDesc}</td>
-                                    <td class="quantity">${quantity}</td>
+                                    <td class="quantity" style="text-align: right;">${quantity}</td>
                                     <td class="unit">${unit}</td>
-                                    <td class="unitPrice">₱ ${sellingPrice}</td>
-                                    <td class="discount">₱ ${discount}</td>
-                                    <td class = "amount">₱ ${totalPrice}</td>
-                                    <td> <button class="delete-button delete-item-btn"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button> </td>
+                                    <td class="unitPrice" style="text-align: right;">₱ ${sellingPrice}</td>
+                                    <td class="discount" style="text-align: right;">₱ ${discount}</td>
+                                    <td class = "amount" style="text-align: right;">₱ ${totalPrice}</td>
+                                    <td> style="text-align: right;" <button class="delete-button delete-item-btn" ><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button> </td>
                                 </tr>`)
 
-                            computeTotal()
-                            $('#text-warning').css('display', 'none')
-                            $('#return-add-item-description').val('')
-                            $('#return-add-item-qty').val('')
-                            $('#return-add-item-discount').val('')
+                            computeTotal();
+                            $('#text-warning').css('display', 'none');
+                            $('#return-add-item-description').val('');
+                            $('#return-add-item-qty').val('');
+                            $('#return-add-item-discount').val('');
                         }
-
                         else {
-                            $('#text-warning').text("Cannot add Item. There is not enough quantity for the item.")
-                            $('#text-warning').css('display', 'block')
+                            $('#text-warning').text("Cannot add Item. There is not enough quantity for the item.");
+                            $('#text-warning').css('display', 'block');
                         }
                     })
                 })
 
                 $('#btn-save-return').click(function () {
-                    var returns = []
-                    var newInvoiceItems = []
+                    var returns = [];
+                    var newInvoiceItems = [];
 
                     var address = window.location.pathname.split('/');
-                    var oldInvoiceID = address[address.length -1]
+                    var oldInvoiceID = address[address.length -1];
 
                     if (allFilled()) {
 
@@ -592,8 +591,8 @@
                             newInvoiceItems.push(invoiceItem);
                         })
 
-                        var invoiceType = $('#dropdown-return-type').val()
-                        var deliveryInfo
+                        var invoiceType = $('#dropdown-return-type').val();
+                        var deliveryInfo;
                         //order is a delivery
                         if (invoiceType == "61a591c1233fa7f9abcd5726") {
                             var invoiceInfo = {
@@ -624,13 +623,13 @@
                                 discount: parseFloat($('#discount').text().slice(1)),
                                 total: parseFloat($('#orderTotal').text().slice(1))
                             }
-                            deliveryInfo= {}
+                            deliveryInfo= {};
                         }
 
-                        var invoiceInfoString = JSON.stringify(invoiceInfo)
-                        var returnsString = JSON.stringify(returns)
-                        var newInvoiceItemsString = JSON.stringify(newInvoiceItems)
-                        var deliveryInfoString = JSON.stringify(deliveryInfo)
+                        var invoiceInfoString = JSON.stringify(invoiceInfo);
+                        var returnsString = JSON.stringify(returns);
+                        var newInvoiceItemsString = JSON.stringify(newInvoiceItems);
+                        var deliveryInfoString = JSON.stringify(deliveryInfo);
                         $.post('/saveReturn', {oldInvoiceID, invoiceInfoString, returnsString, newInvoiceItemsString, deliveryInfoString}, function(result) {
                                 alert("Return processed")
                                 window.location = `/invoices/${result}`;
@@ -638,11 +637,8 @@
 
                     }
                     else
-                        alert("Please fill out the necessary information")
-
-                    
-                })
-
+                        alert("Please fill out the necessary information")    
+                });
             })
         </script>
     </body>

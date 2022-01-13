@@ -50,7 +50,7 @@
             </select>
 
             <label for="dropdown-payment-type" style="margin-right: 10px">Payment Type</label>
-            <select class="form-control" id="dropdown-payment-type" style="margin-right: 10px; width: 150px;">
+            <select class="form-control" id="dropdown-payment-type" style="margin-right: 20px; width: 150px;">
                 {{#each paymentTypes}}
                     <option value={{_id}}>{{paymentOption}}</option>
                 {{/each}}
@@ -59,16 +59,18 @@
             <p id="payment-type-error" class="error"></p>
 
             <div class="delivery-info" style="display:none;">
-                <label class="date-label" for="deliverydate">Delivery Date</label>
-                <input style="height: 34px" type="date" id="delivery-date" name="deliverydate">
+                <div style="display: flex; align-items: center;"> 
+                     <label class="date-label" style="margin-right: 10px" for="delivery-date">Delivery Date</label>
+                    <input style="margin-right: 20px; width: 180px;" type="date" id="delivery-date" class="form-control" name="delivery-date">
 
-                <label  id = "label-delivery" for="dropdown-delivery-personnel" style="margin-right: 10px">Delivery Personnel</label>
-                <select class="dropdown" id="dropdown-delivery-personnel" style="margin-right: 10px; min-width:170px">
-                        <option value="no-selected" selected>Select</option>
-                         {{#each delperson}}
-                            <option value={{_id}}>{{name}}</option>
-                        {{/each}}
-                </select>
+                    <label  id = "label-delivery" for="dropdown-delivery-personnel" style="margin-right: 10px">Delivery Personnel</label>
+                    <select class="form-control" id="dropdown-delivery-personnel" style="margin-right: 10px; width: 150px;">
+                            <option value="no-selected" selected>Select Personnel</option>
+                            {{#each delperson}}
+                                <option value={{_id}}>{{name}}</option>
+                            {{/each}}
+                    </select>
+                </div>
             </div>
         </div>
 

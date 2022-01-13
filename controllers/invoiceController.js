@@ -160,14 +160,17 @@ const invoiceController = {
                     var temp_date = new Date(temp_paymentHistory[i].datePaid);
                     var payment = {
                         date: temp_date.getMonth() + 1 + "/" + temp_date.getDate() + "/" + temp_date.getFullYear(),
-                        amountPaid: temp_paymentHistory[i].amountPaid
-                    }
+                        amountPaid: parseFloat(temp_paymentHistory[i].amountPaid).toFixed(2)
+                    };
                     paymentTotal += temp_paymentHistory[i].amountPaid;
                     paymentHistory.push(payment);
                 }
             }
             
             var amountDue = invoiceInfo.total - paymentTotal;
+
+            paymentTotal = parseFloat(paymentTotal).toFixed(2);
+            amountDue = parseFloat(amountDue).toFixed(2);
 
                 //res.render('viewInvoice', {invoiceInfo, items, delivery, paid, onAccount, paymentHistory, paymentTotal, amountDue});
 
@@ -515,7 +518,15 @@ const invoiceController = {
     getDeliveryList: function(req, res) {
 
         async function getInformation() {
-            var deliveries = await getDeliveries();
+            /*if(req.session.position == "Delivery"){
+                var deliveries = await getDeliveryPersonnelDeliveries(req.session._id);
+            }
+
+            if(req.session.position == "Manager"){
+                var deliveries = await getDeliveries();
+            }*/
+            
+            //var deliveries = await getDeliveries();
             var deliveryInfo = [];
             var invoiceStatusVoid = await getSpecificInvoiceStatusName("Void");
 

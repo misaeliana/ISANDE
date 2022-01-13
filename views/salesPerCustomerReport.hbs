@@ -123,6 +123,8 @@
                                 total += parseFloat(result[i].total);
                             }
 
+                            total = parseFloat(total).toFixed(2);
+
                             $("#sales-total").text("₱ " + total.toLocaleString('en-US'));
                         })
                     }
@@ -152,7 +154,7 @@
                             $("#start-date").css("border", "1px solid #DDDDDD");
                             $("#end-date").css("border", "1px solid #DDDDDD");
 
-                            var customerName = $('#customer-name').val()
+                            var customerName = $('#customer-name').val();
 
                             $.get("/getFilteredCustomerInvoices", {customerName, startDate: convertedStartDate, endDate: convertedEndDate}, function (result) {
 
@@ -173,6 +175,7 @@
 
                                         total += parseFloat(result[i].total);
                                     }
+                                    total = parseFloat(total).toFixed(2);
 
                                 $("#sales-total").text("₱ " + total.toLocaleString('en-US'));
                             });

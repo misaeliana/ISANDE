@@ -59,6 +59,8 @@
             
                 <div style="height: 20px"></div>
 
+                <hr>
+
                     <h3 class ="bold">Order Details</h3>
 
                     <div class="label-container"> 
@@ -154,8 +156,18 @@
 
                     {{#compare invoiceInfo.paymentOption "==" "On Account"}}
                         <hr style="margin-top: 0px;">
-                        <h3 class ="bold h3-left">Payment History</h3>
-                        <table class="table" style="margin-top: 30px">
+                      
+                        <div style="margin-top: 50px;">
+                            <div style="display: flex;">
+                                <div style="width: 50%"><h3 class ="bold h3-left">Payment History</h3></div>
+                                 {{#compare invoiceInfo.status "==" "Pending"}}
+                                    <div class="btn-status">
+                                        <button class="btn-light-blue" id="btn-pay-invoice" data-toggle="modal" data-target="#modal-new-payment">New Payment</button>
+                                    </div>
+                                 {{/compare}}
+                        </div>
+
+                        <table class="table" style="margin-top: 0px">
                             <thead style="background-color: #2F5D62; color: white">
                                 <tr>
                                     <th>Date</th>
@@ -166,7 +178,7 @@
                                 {{#each paymentHistory}}
                                     <tr>
                                         <td>{{date}}</td>
-                                        <td>{{amountPaid}}</td> 
+                                        <td style="text-align: right;">₱ {{amountPaid}}</td> 
                                     </tr>
                                 {{/each}}
                             </tbody>
@@ -211,7 +223,6 @@
                     </div>
 
                     {{#compare invoiceInfo.status "==" "Pending"}}
-                            <div class="btn-export-invoice"><button class="btn-light-blue" id="btn-pay-invoice" data-toggle="modal" data-target="#modal-new-payment">New Payment</button></div>
                     <hr>
                     {{/compare}}
                         

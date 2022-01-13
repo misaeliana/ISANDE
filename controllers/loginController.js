@@ -37,7 +37,7 @@ const loginController = {
 		var username = req.body.username;
 		var password = req.body.password;
 
-		console.log(username + " " + password);
+		//console.log(username + " " + password);
 
 		async function redirect () {
 			var employee = await getEmployeeInfoFromUsername(username);
