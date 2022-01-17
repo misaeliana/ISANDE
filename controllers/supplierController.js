@@ -106,13 +106,8 @@ const supplierController = {
 				var item = {
 					itemDescription: await getItemDescription(temp_inventory[i].itemID),
 					unit: await getSpecificUnit(temp_inventory[i].unitID)
-				}
-				inventory.push(item)
-				var itemInfo = await getItem(temp_inventory[i].itemID);
-				var item = {
-					itemDescription: itemInfo.itemDescription,
-					unit: await getSpecificUnit(itemInfo.unitID)
 				};
+
 				inventory.push(item);
 			}
 
@@ -187,29 +182,6 @@ const supplierController = {
 		res.sendStatus(200);
 	},
 
-	addSupplierItem: function(req, res) {
-
-		function insert(itemSupplier) {
-			db.insertOne(ItemSuppliers, itemSupplier, function(flag) {
-
-			});
-		}
-
-		async function addInfo() {
-			var itemSupplier = {
-				itemID: await getItemID(req.body.itemDesc),
-				unitID: req.body.unitID, 
-				supplierID: req.body.supplierID
-			};
-
-			insert(itemSupplier);
-      
-			res.sendStatus(200)
-		}
-
-		addInfo();
-	},
-
 	getItems: function(req, res) {
 		db.findMany (Items, {itemDescription:{$regex:req.query.query, $options:'i'}, informationStatusID: "618a7830c8067bf46fbfd4e4"}, 'itemDescription', function (result) {
             var formattedResults = [];
@@ -270,6 +242,86 @@ const supplierController = {
 		});
 
 		res.sendStatus(200);
+	},
+
+	editSupplierItems: function(req, res) {
+		async function getInfo() {
+			var temp_supplierItems = await getSupplierItems(req.params.supplierID)
+			var units = await getUnits()
+
+			var supplierItems = []
+			for (var i=0; i<temp_supplierItems.length; i++) {
+				var supplierItem = {
+					itemDescription: await getItemDescription(temp_supplierItems[i].itemID),
+					unit: await getSpecificUnit(temp_supplierItems[i].unitID)
+				}
+				supplierItems.push(supplierItem)
+			}
+			var supplierName = await getSupplierName(req.params.supplierID)
+			var supplierID = req.params.supplierID
+			res.render('editSupplierItems', {supplierItems, units, supplierID, supplierName})
+		}
+
+		getInfo();
+	},
+
+	checkForPendingPOSuppliers: function(req, res) {
+		async function check() {
+			var itemID = await getItemID(req.query.itemDesc);
+			var unitID = await getUnitID(req.query.unit);
+			var supplierID = req.query.supplierID
+
+			var pos = await getSupplierPO(supplierID)
+			var pending = false
+			for (var i=0; i<pos.length && !pending; i++) {
+				var poItems = await getCurrentPOItems(pos[i]._id)
+
+				for (var j=0; j<poItems.length && !pending; j++) {
+					if (poItems[j].itemID == itemID && poItems[j].unitID == unitID.toString())
+						pending = true
+				}
+			}
+			res.send(pending)
+		}
+
+		check()	
+	},
+
+	updateSupplierItems: function(req, res) {
+
+		function deleteSupplierItems(supplierID) {
+			db.deleteMany(ItemSuppliers, {supplierID:supplierID}, function(result) {
+
+			})
+		}
+
+		async function updateItemInfo() {
+			var temp_supplierItems = JSON.parse(req.body.JSONsupplierItems);
+
+			var supplierItems = [];
+			for (var i = 0; i < temp_supplierItems.length; i++) {
+				var supplierItem = {
+					itemID: await getItemID(temp_supplierItems[i].itemDesc),
+					unitID: await getUnitID(temp_supplierItems[i].unit),
+					supplierID: req.body.supplierID
+				};
+
+				supplierItems.push(supplierItem);
+			}
+
+			// delete all item suppliers with ID
+			await deleteSupplierItems(req.body.supplierID);
+
+			// save new item suppliers
+			db.insertMany(ItemSuppliers, supplierItems, function (flag) {
+				if (flag) { }
+			});
+	
+			res.send({redirect: '/supplier/' + req.body.supplierID});
+		}
+
+		updateItemInfo();
+
 	}
 };
 

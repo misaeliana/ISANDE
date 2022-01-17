@@ -488,10 +488,9 @@
                    var unit = $("#dropdown-item-unit option:selected").text(    )
                    var unitID = $('#dropdown-item-unit').val();
                    var quantity = $('#qty').val();
-                   var discount = parseFloat($('#discount').val()).toFixed(2);
+                   var discount = $('#discount').val();
                    if (discount == "")
-                        discount = 0
-                   
+                        discount = 0                   
                     
                     if(filled(itemDesc, qty) == 0) {
                         $.get('/getItemPrice', {itemDesc, quantity, unitID}, function (result) {

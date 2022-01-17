@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title> Edit Item Suppliers - {{itemName}} </title>
+        <title> Edit Supplier Items - {{supplierName}} </title>
         <meta name="description" content="Edit Item Suppliers">
         <meta name="keyword" content="Moderna, Edit Item Suppliers">
         <link rel="stylesheet" type="text/css" href="../css/general.css">
@@ -29,46 +29,40 @@
 
         <div class="content">
             <div style="display: flex;">
-                <h1 class="bold"> Edit Item Suppliers - {{itemName}}</h1>
+                <h1 class="bold"> Edit Supplier Items - {{supplierName}}</h1>
             </div>
 
             <hr style="margin-top: 0px;">
 
-            <form id="new-supplier">
-                <p id="item-ID" style="display: none;">{{itemID}}</p>
-                <select class="dropdown" id="dropdown-supplier" style="margin-top: 5px; margin-bottom: 0px; width: 200px; float: left; margin-right: 10px">
-                    <option value="no-selected" selected>Select Supplier</option>
-                    {{#each suppliers}}
-                            <option value={{_id}}>{{name}}</option>
-                    {{/each}}
-                </select>
+            <form id="new-item">
+                <input type="text" id="itemDesc" style="margin-top: 5px; margin-bottom: 0px; width: 200px; float: left; margin-right: 10px; border-radius: 5px;  height: 34px; border-width: 1px;" placeholder="Item Description">
                 <select class="dropdown" id="dropdown-unit" style="margin-top: 5px; margin-bottom: 0px; width: 200px; float: left; margin-right: 10px">
                     <option value="no-selected">Select Unit</option>
                     {{#each units}}
                         <option value={{_id}}>{{unit}}</option>
                     {{/each}}
                 </select>
-                <input style="margin-top: 5px; margin-bottom: 0px; float: left; height: 34px; width: 34px; background-color: #0F84D9; border: #0F84D9; border-radius: 7px; color: white;" type="button" id="add-supplier" name="add-supplier" value="+">
+                <input style="margin-top: 5px; margin-bottom: 0px; float: left; height: 34px; width: 34px; background-color: #0F84D9; border: #0F84D9; border-radius: 7px; color: white;" type="button" id="add-item" name="add-item" value="+">
             </form>
             
             <div style="height: 45px"></div>
 
-            <p class="error" id="error-supplier" style="margin-bottom: 5px;"></p>
+            <p class="error" id="error-item" style="margin-bottom: 5px;"></p>
             <p class="error" id="error-unit" style="margin-bottom: 5px;"></p>
 
 
-            <table class="table" id="table-suppliers">
+            <table class="table" id="table-items">
                 <thead class="table-regular-head">
                     <tr>
-                        <th>Name</th>
+                        <th>Item Description</th>
                         <th>Unit</th>
                         <th></th>
                     </tr>
                 </thead>
-                <tbody id="table-suppliers-body"> 
-                    {{#each itemSuppliers}}
+                <tbody id="table-items-body"> 
+                    {{#each supplierItems}}
                         <tr>
-                            <td class="supplierName">{{supplierID}}</td>
+                            <td class="itemDesc">{{itemDescription}}</td>
                             <td class="unit">{{unit}}</td>
                             <td><button class="delete-button"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
                         </tr>
@@ -78,8 +72,8 @@
 
              <div>
                 <div style="display: flex;">
-                    <div style="width: 50%"><div class="btn-cancel-invoice"><a href = "/inventory/{{itemID}}"><button class="btn-light-grey" id="btn-cancel-edit-item-suppliers" style="margin-bottom: 10px;">Cancel</button></a></div></div>
-                    <div class="btn-save-invoice btn-status"><button class="btn-light-blue" id="btn-save-edit-item-suppliers" style="margin-bottom: 10px;" >Save</button></div>
+                    <div style="width: 50%"><div class="btn-cancel-invoice"><a href = "/supplier/{{supplierID}}"><button class="btn-light-grey" id="btn-cancel-edit-item-suppliers" style="margin-bottom: 10px;">Cancel</button></a></div></div>
+                    <div class="btn-save-invoice btn-status"><button class="btn-light-blue" id="btn-save-edit-supplier-items" style="margin-bottom: 10px;" >Save</button></div>
                  </div>
             </div>
         </div>
@@ -87,15 +81,40 @@
         <script>
             $(document).ready(function() {
 
-                $("#table-suppliers").on('click','.delete-button',function() {
+                $("#itemDesc" ).autocomplete({
+                    source: function(request, response) {
+                    $.ajax({
+                                url: `/getAllItemName?query=${request.term}`,
+                                dataType: "json",
+                                data: {
+                                    //request.term refers to the value currently in the text input
+                                    term: request.term,
+                                },
+                                success: function (data) {
+                                    response(data);
+                                }
+                         });
+                    }, response: function (event, ui) {
+                        if (ui.content.length === 0) {
+                        }
+
+                        else {
+
+                        }
+                    }, select: function(event, ui) {
+
+                    }
+                })
+
+                $("#table-items").on('click','.delete-button',function() {
                     var address = window.location.pathname.split('/');
-                    var itemID = address[address.length -1]
+                    var supplierID = address[address.length -1]
 
                     var row = $(this).closest('tr');
-                    var supplierName = row.find('.supplierName').text();
+                    var itemDesc = row.find('.itemDesc').text();
                     var unit = row.find('.unit').text();
 
-                    $.get('/checkForPendingPOInventory', {itemID, supplierName, unit}, function(result) {
+                    $.get('/checkForPendingPOSuppliers', {supplierID, itemDesc, unit}, function(result) {
                         if (result == false)
                             row.remove();
                         else
@@ -103,15 +122,15 @@
                     })
                 });
 
-                function supplierValidation(supplierVal, unit, supplierName) {
+                function itemValidation(itemDescription, unit) {
                     var found = false;
 
-                    if (supplierVal == "no-selected") {
-                        errorMessage("no-selected");
+                    if (itemDescription == "") {
+                        errorMessage("no-description");
                         return 1;
                     } else {
-                        $("#table-suppliers-body > tr").each(function () {
-                            if (supplierName == $(this).children('.supplierName').text() && unit == $(this).children('.unit').text())
+                        $("#table-items-body > tr").each(function () {
+                            if (itemDescription == $(this).children('.itemDescription').text() && unit == $(this).children('.unit').text())
                                 found = true;
                         });
 
@@ -133,7 +152,7 @@
                         return 0;
                 }
 
-                $('#dropdown-supplier').change(function() {
+                $('#itemDesc').change(function() {
                     resetErrorMessage();
                 })
 
@@ -142,69 +161,70 @@
                 })
 
                 function resetErrorMessage () {
-                    $("#dropdown-supplier").css("border", "1px solid #DDDDDD");
-                    $("#error-supplier").text("");
+                    $("#itemDesc").css("border", "1px solid #DDDDDD");
+                    $("#error-item").text("");
                     $("#dropdown-unit").css("border", "1px solid #DDDDDD");
                     $("#error-unit").text("");
                 }
 
                 function errorMessage(type) {
-                    if (type == "no-selected") {
-                        $("#dropdown-supplier").css("border", "1px solid #B00000");
-                        $("#error-supplier").text("Please select a Supplier.");
+                    if (type == "no-description") {
+                        $("#itemDesc").css("border", "1px solid #B00000");
+                        $("#error-item").text("Please enter Item Description.");
                     } else if (type == "no-unit") {
                         $("#dropdown-unit").css("border", "1px solid #B00000");
                         $("#error-unit").text("Please select a Unit.");
                     }else if (type == "in-list") {
-                        $("#dropdown-supplier").css("border", "1px solid #B00000");
-                        $("#error-supplier").text("Supplier already selected.");
+                        $("#itemDesc").css("border", "1px solid #B00000");
+                        $("#error-item").text("Item already exists.");
                     }
                 }
 
-                $('#add-supplier').click(function() {
-                    var supplierName = $('#dropdown-supplier option:selected').text();
-                    var supplierVal = $('#dropdown-supplier').val();
+                $('#add-item').click(function() {
+                    var itemDescription = $('#itemDesc').val();
                     var unitID = $('#dropdown-unit').val()
                     var unit = $("#dropdown-unit option:selected").text();
 
-                    if (!supplierValidation(supplierVal,unit, supplierName) && !unitValidation(unitID)) {
+                    if (!itemValidation(itemDescription,unit) && !unitValidation(unitID)) {
                         //resetErrorMessage();
 
-                        $('#table-suppliers').find('tbody').append(
+                        $('#table-items').find('tbody').append(
                             `  <tr> 
-                                    <td class="supplierName">${supplierName}</td>
+                                    <td class="itemDesc">${itemDescription}</td>
                                     <td class="unit">${unit}</td>
                                     <td><button class="delete-button"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
                                 </tr>`
                         );
 
-                        $('#new-supplier').trigger('reset');
+                        $('#new-item').trigger('reset');
                     }
                 });
 
-                $('#btn-save-edit-item-suppliers').click(function() {
-                    var itemID = $('#item-ID').text();
-                    var supplierInfos = [];
+                $('#btn-save-edit-supplier-items').click(function() {
+                    var address = window.location.pathname.split('/');
+                    var supplierID = address[address.length -1]
 
-                      $("#table-suppliers-body > tr").each(function () {
-                        var supplierInfo = {
-                            supplierName: $(this).children('.supplierName').text(),
+                    var supplierItems = [];
+
+                      $("#table-items-body > tr").each(function () {
+                        var item = {
+                            itemDesc: $(this).children('.itemDesc').text(),
                             unit: $(this).children('.unit').text()
                         }
-                        supplierInfos.push(supplierInfo);
+                        supplierItems.push(item);
                     });
 
                     $('#new-supplier').trigger('reset');
 
-                     var JSONsupplierInfos = JSON.stringify(supplierInfos);
+                     var JSONsupplierItems = JSON.stringify(supplierItems);
                      $.ajax({
-                            url: "/updateItemSuppliers",              
+                            url: "/updateSupplierItems",              
                             type: "POST",
-                            data: {JSONsupplierInfos, itemID},
+                            data: {JSONsupplierItems, supplierID},
                             async: false,
                             success: function(result){
                                 if(result.redirect != null){
-                                    alert('Successfully updated Item Suppliers')
+                                    alert('Successfully updated Supplier Items')
                                     window.location = result.redirect;
                                 }
                             }

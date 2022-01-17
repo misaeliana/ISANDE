@@ -208,7 +208,7 @@ const inventoryController = {
 				category: await getSpecificItemCategory(item.categoryID),
 				unitID: item.unitID,
 				unit: await getSpecificUnit(item.unitID),
-				quantityAvailable: item.quantityAvailable,
+				quantityAvailable: parseFloat(item.quantityAvailable).toFixed(2),
 				EOQ: item.EOQ,
 				reorderLevel: item.reorderLevel,
 				statusID: item.statusID,
@@ -505,6 +505,15 @@ const inventoryController = {
 
 
 	//NEW STUFF
+	checkSellingUnit: function (req, res) {
+		db.findOne(ItemUnits, {itemID: req.query.itemID, unitID:req.query.unit, informationStatusID:"618a7830c8067bf46fbfd4e4"}, "", function(result) {
+			if (result!= null)
+				res.send("found")
+			else
+				res.send("not found")
+		})
+	},
+
 	newSellingUnit: function(req, res) {
 		var itemUnit = {
 			itemID: req.body.itemID,

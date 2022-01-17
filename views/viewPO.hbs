@@ -222,7 +222,7 @@
                         var poID = address[address.length -1]
                         $.post('/deletePO', {poID}, function(result) {
                             alert("Purchase Order has been deleted")
-                            window.location = "/purchaseOrderList"
+                            window.location = "/purchaseOrders"
                         })
                     } 
                 })
@@ -233,7 +233,7 @@
                         var poID = address[address.length -1]
                         $.post('/cancelPO', {poID}, function(result) {
                             alert("Purchase Order has been canceled")
-                            window.location = "/purchaseOrderList"
+                            window.location = "/purchaseOrders"
                         })
                     } 
                 })

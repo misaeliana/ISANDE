@@ -230,7 +230,7 @@ module.exports = function() {
 
 	this.getItemID = function(itemDescription) {
 		return new Promise((resolve, reject) => {
-			db.findOne(Items, {itemDescription:itemDescription}, '_id', function(result) {
+			db.findOne(Items, {itemDescription:itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, '_id', function(result) {
 				resolve(result._id);
 			});
 		});
@@ -820,7 +820,7 @@ module.exports = function() {
     	})
     },
 
-    this.getSupplierItems = function(itemID, supplierID) {
+    this.getSupplierItemsUnits = function(itemID, supplierID) {
     	return new Promise((resolve, reject) => {
     		db.findMany(ItemSuppliers, {itemID:itemID, supplierID:supplierID}, '', function(result) {
     			resolve(result)
@@ -832,6 +832,14 @@ module.exports = function() {
     	return new Promise((resolve, reject) => {
     		db.findMany(Purchases, {$and: [{supplierID:supplierID}, {$or: [{statusID:"618f650546c716a39100a809"}, {statusID:"618f652746c716a39100a80a"} ]} ]}, '', function(result) {
     			console.log(result)
+    			resolve(result)
+    		})
+    	})
+    },
+
+    this.getSupplierItems = function(supplierID) {
+    	return new Promise((resolve, reject) => {
+    		db.findMany(ItemSuppliers, {supplierID:supplierID}, '', function(result) {
     			resolve(result)
     		})
     	})

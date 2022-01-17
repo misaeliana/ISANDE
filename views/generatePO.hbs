@@ -122,7 +122,6 @@
                                 orderItems.push($(this).find('.itemDescription').text())
                         })
                         var orderItemsString = JSON.stringify(orderItems)
-                        console.log(orderItems)
                         $.get('/generatePOChooseSuppliers', {orderItemsString})
                     })
 

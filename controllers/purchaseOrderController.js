@@ -117,8 +117,8 @@ const purchaseOrderController = {
 
 			for (var i=0; i<items.length; i++){
 				var itemName = await getItemDescription(items[i])
-				var itemName = await getItemDescription(items[i]);
-				itemNames.push(itemName);
+				if (!itemNames.includes(itemName))
+					itemNames.push(itemName);
 			}
 
 			for (var i=0; i<itemNames.length; i++) {
@@ -285,8 +285,7 @@ const purchaseOrderController = {
 					items[i].unitName = await getSpecificUnit(items[i].unitID);
 					items[i].unitPrice = parseFloat(items[i].unitPrice).toFixed(2);
 					items[i].amount = parseFloat(items[i].amount).toFixed(2);
-				}
-				
+				}				
 
 				poInfo.vat = parseFloat(poInfo.vat).toFixed(2);
 				poInfo.fsubtotal = parseFloat(poInfo.subtotal).toFixed(2);
@@ -369,41 +368,49 @@ const purchaseOrderController = {
 	},
 
 	generatePOChooseSuppliers: function(req, res) {
-		function getLowItems() {
+
+		function getItemFromDescription(itemDescription) {
 			return new Promise((resolve, reject) => {
-				db.findMany(Items, {$and:[ {$or:[{statusID:"618b32205f628509c592daab"}, {statusID:"61b0d6751ca91f5969f166de"}]}, {informationStatusID:"618a7830c8067bf46fbfd4e4"} ]}, '', function(result) {
-					resolve (result);
-				});
-			});
+				db.findOne(Items, {itemDescription: itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, '', function(result) {
+					resolve(result)
+				})
+			})
+		}
+
+		async function getItemSuppliersName (itemID) {
+			var temp_suppliers = await getItemSuppliers(itemID);
+			var suppliers = []
+			for (var j=0; j<temp_suppliers.length; j++) {
+				var supplier = {
+					_id: temp_suppliers[j].supplierID,
+					name: await getSupplierName(temp_suppliers[j].supplierID)
+				}
+				if (!suppliers.includes(supplier))
+					suppliers.push(supplier)
+			}
+			return suppliers
 		}
 
 		async function getItems() {
-			var temp_orderItems = JSON.parse(req.query.orderItemsString)
+			var temp_orderItems = JSON.parse(req.body.orderItemsString)
 			var orderItems = []
-			for (var a=0; a<temp_orderItems;a++) {
-				console.log(temp_orderItems[a])
-				var item  =  await getInventoryItemsFromDescription(temp_orderItems[a], "618a7830c8067bf46fbfd4e4")
-				console.log(item)
+
+			for (var a=0; a<temp_orderItems.length;a++) {
+				var temp_item  =  await getItemFromDescription(temp_orderItems[a])
+
+				
+
+				var item = {
+					itemDescription: temp_item.itemDescription,
+					EOQ: temp_item.EOQ,
+					unit: await getSpecificUnit(temp_item.unitID),
+					suppliers:  await getItemSuppliersName(temp_item._id)
+				}
 				orderItems.push(item)
 			}
 
-			for (var i=0; i<orderItems.length; i++) {
-
-				var temp_suppliers = await getItemSuppliers(orderItems[i]._id);
-				var suppliers = []
-				for (var j=0; j<temp_suppliers.length; j++) {
-					var supplier = {
-						_id: temp_suppliers[j].supplierID,
-						name: await getSupplierName(temp_suppliers[j].supplierID)
-					}
-					if (!suppliers.includes(supplier))
-						suppliers.push(supplier)
-				}
-				orderItems[i].suppliers = suppliers
-				orderItems[i].itemCategory = await getSpecificItemCategory(orderItems[i].categoryID)
-				orderItems[i].unit = await getSpecificUnit(orderItems[i].unitID)
-			}
 			console.log(orderItems)
+
 			res.render('generatePO1', {orderItems});
 
 			/*if(req.session.position == "Inventory and Purchasing"){
@@ -650,9 +657,9 @@ const purchaseOrderController = {
 	updatePOWithPrice: function(req, res) {
 
 		function updatePOItemInfo (poID, item) {
-			var unitPrice = parseFloat(item.price)
-			var amount  = parseFloat(item.amount)
-			db.updateOne (PurchasedItems, {purchaseOrderID:poID, itemID:item.itemID}, {$set: {unitPrice:unitPrice, amount:amount, quantityReceived: item.quantityReceived}}, function(flag) {
+			var itemID = item.itemID.toString()
+
+			db.updateOne (PurchasedItems, {purchaseOrderID:poID, itemID:itemID}, {$set: {unitPrice:item.price, amount:item.amount, quantityReceived: item.quantityReceived}}, function(flag) {
 				if (flag) { }
 			})
 		}
@@ -669,7 +676,8 @@ const purchaseOrderController = {
 
 		function updateQuantity(itemID, newQuantity) {
 			return new Promise((resolve, reject) => {
-				db.updateOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {quantityAvailable:newQuantity}, function(flag) {
+				var quantity = parseFloat(newQuantity)
+				db.updateOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {$set:{quantityAvailable:quantity}}, function(flag) {
 
 				})
 			})
@@ -677,23 +685,30 @@ const purchaseOrderController = {
 
 		function updateQuantityInStock(itemID, newQuantity) {
 			return new Promise((resolve, reject) => {
-				db.updateOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {$set:{quantityAvailable:newQuantity, statusID:"618b6c82a07cb824ce7bfca2"}}, function(flag) {
+				var quantity = parseFloat(newQuantity)
+				db.updateOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {$set:{quantityAvailable:quantity, statusID:"618b6c82a07cb824ce7bfca2"}}, function(flag) {
 
 				})
 			})
 		}
 
 		async function updateInventory(poItem) {
+			console.log("update inventoryItem")
+			poItem.unitID = await getUnitID(poItem.unit)
 			var inventoryItem = await getSpecificInventoryItems(poItem.itemID)
+			console.log(poItem.unitID != inventoryItem.unitID)
 
 			//needs conversion
 			if (poItem.unitID != inventoryItem.unitID){
-				var newQuantity = parseFloat(poItem.quantity) / inventoryItem.retailQuantity;
-				newQuantity = parseFloat(parseFloat(inventoryItem.quantityAvailable) + parseFloat(newQuantity)).toFixed(2)
+				console.log("conversion")
+				var newQuantity = parseFloat(poItem.quantityReceived) / inventoryItem.retailQuantity;
+				newQuantity = parseFloat(inventoryItem.quantityAvailable) + parseFloat(newQuantity)
 			}
 			
 			else
-				var newQuantity = parseInt(inventoryItem.quantityAvailable) + parseInt (quantityReceived)
+				var newQuantity = parseFloat(inventoryItem.quantityAvailable) + parseFloat (poItem.quantityReceived)
+
+			console.log("new quantity " + newQuantity)
 			
 			//item is still low in stock
 			if (inventoryItem.reorderLevel > newQuantity)
@@ -740,6 +755,7 @@ const purchaseOrderController = {
 			for (var i=0; i<currentPOItems.length; i++) {
 				if (items[i].price!="" && items[i].quantity!="") {
 					items[i].itemID = await getItemID(items[i].itemDesc)
+					items[i].unitID = await getUnitID(items[i].unit)
 					//update po price and quantity received
 					updatePOItemInfo(poID, items[i]);
 					//add quantity to inventory
@@ -747,7 +763,7 @@ const purchaseOrderController = {
 				}
 
 				//quantity received is less that ordered quantity
-				if (req.body.needNewPo) {
+				if (req.body.needNewPo == true) {
 					var newPOItem = {
 						itemID: await getItemID(items[i].itemDesc),
 						unitID: await getItemUnit(items[i].itemDesc),
@@ -757,7 +773,7 @@ const purchaseOrderController = {
 				}
 			}
 
-			if (req.body.needNewPo)  {
+			if (req.body.needNewPo == true)  {
 				//status is received
 				db.updateOne(Purchases, {_id: poID}, {statusID: "618f654646c716a39100a80c"}, function (flag) {
 				})
@@ -908,9 +924,11 @@ const purchaseOrderController = {
 	getItemUnitsPO: function(req, res) {
 		 async function getInfo() {
             var itemID = await getItemID(req.query.itemDesc)
+            console.log(itemID.toString())
             var supplierID = await getSupplierID(req.query.supplierName);
+            console.log(supplierID.toString())
 
-            var temp_itemUnits = await getSupplierItems(itemID, supplierID)
+            var temp_itemUnits = await getSupplierItemsUnits(itemID.toString(), supplierID.toString())
 
             var itemUnits = []
 
@@ -920,6 +938,8 @@ const purchaseOrderController = {
             	unit: await getSpecificUnit(item.unitID)
             }
             itemUnits.push(itemUnit)
+
+            console.log(temp_itemUnits)
 
             for (var i=0; i<temp_itemUnits.length; i++) {
             	if (temp_itemUnits[i].unitID != itemUnits[0].id)

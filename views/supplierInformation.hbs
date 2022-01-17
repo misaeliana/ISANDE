@@ -115,12 +115,12 @@
                 <div style="display: flex">
                     <div style="width: 50%"><h3 class ="bold h3-left">Items</h3></div>
                     <div class="btn-status btn-status">
-                        <button id="btn-new-item" class="btn-light-blue">+ Add Supplier Item</button>
+                        <button id="btn-new-item" class="btn-light-blue">Edit Supplier Item</button>
                     </div>
                 </div>
             </div>
 
-            <div id="add-new-item" style="display: none;">
+            <!--<div id="add-new-item" style="display: none;">
                 <div style="display: flex; align-items:center;">
                      <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="itemDescription" name="itemDescription" placeholder="Item Description">
                      <select class="dropdown" id="dropdown-add-unit" style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px">
@@ -134,7 +134,7 @@
                 <p class="error" id="error-description"></p>
                 <button id="btn-add-new-inventory" class="btn-light-blue" style="display: none;
                 margin-top: 10px;" data-toggle="modal" data-target="#modal-new-item">Add New Item</button>
-            </div>
+            </div>-->
 
             <!-- Modal -->
             <div class="modal fade" id="modal-new-item" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -405,7 +405,10 @@
                 }
 
                 $('#btn-new-item').click(function() {
-                    $('#add-new-item').css('display', 'block')
+                    var address = window.location.pathname.split('/');
+                    var supplierID = address[address.length -1]
+                    //$('#add-new-item').css('display', 'block')
+                    window.location.href = `/editSupplierItems/${supplierID}`
                 })
 
                  $("#itemDescription").autocomplete({

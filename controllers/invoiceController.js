@@ -376,13 +376,19 @@ const invoiceController = {
             else 
                 updatedQuantity = parseInt(quantityAvailable) - parseInt(item.quantity)
             
-            db.updateOne(Items, {itemDescription:item.itemDescription}, {quantityAvailable: updatedQuantity}, function(result) {
-                //update item info to out of stock
-                if (updatedQuantity == 0) {
-                    db.updateOne(Items, {itemDescription:item.itemDescription}, {statusID:"61b0d6751ca91f5969f166de"}, function(result) {
+            db.updateOne(Items, {itemDescription:item.itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {quantityAvailable: updatedQuantity}, function(result) {
+                
+                db.findOne(Items, {itemDescription:item.itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'quantityAvailable reorderLevel', function(result1) {
 
-                    })
-                }
+                    if (result1.quantityAvailable <= result1.reorderLevel && result1.quantityAvailable!=0) {
+                        db.updateOne(Items, {itemDescription:item.itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {statusID:"618b32205f628509c592daab"}, function(result2) {
+                        })
+                    }
+                    else if (result1.quantityAvailable == 0) {
+                        db.updateOne(Items, {itemDescription:item.itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {statusID:"61b0d6751ca91f5969f166de"}, function(result3) {
+                        })
+                    }
+                })
             })
         }
 
@@ -901,15 +907,16 @@ const invoiceController = {
         }
 
         async function incorrectItem(returnItem) {
-            //console.log(returnItem)
+            console.log(returnItem)
             var itemID = await getItemID(returnItem.itemDesc);
             var unitID = await getUnitID(returnItem.unit);
 
             var stockItemUnit = await getItemUnitItemID(itemID)
-            console.log(stockItemUnit)
+            var quantityAvailable = await getQuantityAvailableInRetail(itemID)
+            var updatedQuantity = 0;
+
 
              if (unitID != stockItemUnit.unitID) {
-                quantityAvailable = await getQuantityAvailableInRetail(itemID)
 
                 //multiplier based on unit bought
                 var boughtItemsMultiplier = await getItemUnitID(itemID, unitID)
@@ -923,9 +930,11 @@ const invoiceController = {
                 console.log("updatedQuantity " + updatedQuantity)
             } 
             else 
-                updatedQuantity = parseInt(quantityAvailable) + parseInt(returnItem.quantity)
+                updatedQuantity = parseFloat(quantityAvailable) + parseFloat(returnItem.quantity)
+
+            console.log("incorrect item " +  updatedQuantity)
             
-            db.updateOne(Items, {itemDescription:returns.itemDescription}, {quantityAvailable: updatedQuantity}, function(result) {
+            db.updateOne(Items, {_id:itemID}, {quantityAvailable: updatedQuantity}, function(result) {
                 
             })
 
@@ -993,15 +1002,13 @@ const invoiceController = {
         
 
         async function deductInventory(item) {
-            item.itemID = await getItemID(item.itemDescription)
+            item.itemID = await getItemID(item.itemDesc)
             item.unitID = await getUnitID(item.unit)
             var quantityAvailable = await getQuantityAvailable(item.itemID)
 
             var stockItemUnit = await getItemUnit(item.itemID)   //unit they use to keep track of inventory
 
             var updatedQuantity = 0;
-
-            console.log(item)
 
             //needs conversion
             if (item.unitID != stockItemUnit.unitID) {
@@ -1011,7 +1018,7 @@ const invoiceController = {
                 var boughtItemsMultiplier = await getItemUnitID(item.itemID, item.unitID)
                 var boughtQuantity = parseFloat(item.quantity) * parseFloat(boughtItemsMultiplier.quantity)
                 
-                updatedQuantity = quantityAvailable - boughtQuantity
+                updatedQuantity = parseFloat(quantityAvailable) - parseFloat(boughtQuantity)
                 updatedQuantity = await returnToStockUnit(item.itemID, updatedQuantity);
 
                 console.log("quantity available " + quantityAvailable)
@@ -1020,21 +1027,28 @@ const invoiceController = {
             } 
             else 
                 updatedQuantity = parseInt(quantityAvailable) - parseInt(item.quantity)
-            
-            db.updateOne(Items, {itemDescription:item.itemDescription}, {quantityAvailable: updatedQuantity}, function(result) {
-                //update item info to out of stock
-                if (updatedQuantity == 0) {
-                    db.updateOne(Items, {itemDescription:item.itemDescription}, {statusID:"61b0d6751ca91f5969f166de"}, function(result) {
 
-                    })
-                }
+
+            
+            db.updateOne(Items, {_id:item.itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {quantityAvailable: updatedQuantity}, function(result) {
+                
+                db.findOne(Items, {_id:item.itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'quantityAvailable reorderLevel', function(result1) {
+                    if (result1.quantityAvailable <= result1.reorderLevel && result1.quantityAvailable!=0) {
+                        db.updateOne(Items, {itemDescription:item.itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {statusID:"618b32205f628509c592daab"}, function(result2) {
+                        })
+                    }
+                    else if (result1.quantityAvailable == 0) {
+                        db.updateOne(Items, {itemDescription:item.itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {statusID:"61b0d6751ca91f5969f166de"}, function(result3) {
+                        })
+                    }
+                })
             })
         }
 
         //------------END OF FUNCTIONS TO UPDATING INVENTORY QUANTITY-------------
 
 
-        async function processReturn(oldInvoiceID, returns) {
+        function processReturn(oldInvoiceID, returns) {
             var notReturnedItems = []
 
             for (var i=0; i<returns.length; i++) {
@@ -1044,47 +1058,29 @@ const invoiceController = {
                     damagedItem(returns[i])
 
                 //item was incorrect
-                else if (returns[i].reason == "61a76e7f57d8d868d3eb5b2d") 
+                else if (returns[i].reason == "61a76e7f57d8d868d3eb5b2d")  
                     incorrectItem(returns[i])
-
-                var itemID = await getItemID(returns[i].itemDesc);
-                var unitID = await getUnitID(returns[i].unit);
-                var itemUnitID = await getItemUnitID(itemID, unitID);
-                var oldQuantity = await getInvoiceItemQuantity(oldInvoiceID, itemID);
-
-                //not all quantity were returned
-                if (returns[i].quantity !=oldQuantity) {
-                    var notReturnedItem = {
-                        itemID: await getItemID(returns[i].itemDesc),
-                        unitID: await getUnitID(returns[i].unit),
-                        quantity: oldQuantity - returns[i].quantity,
-                        discount: returns[i].discount
-                    }
-                    notReturnedItems.push(notReturnedItem)
-                }
             }
             db.updateOne(Invoices, {_id:oldInvoiceID}, {statusID:"619785ceda48eab55320c0c8"}, function(flag) {
 
             })
-
-            return notReturnedItems;
         }
 
         //------------MAIN FUNCTION FOR NEW INVOICE-------------
-        async function newInvoice(invoiceInfo, notReturnedItems, invoiceItems, deliveryInfo) {
+        async function newInvoice(invoiceInfo, invoiceItems, deliveryInfo) {
             var finalInvoiceItems = []
             var invoiceNumber = await getInvoiceNumber()
             var customerID =  await getCustomerID(invoiceInfo.customerName)
 
             var invoiceID = await makeInvoiceID(invoiceNumber, customerID, invoiceInfo);
 
-            console.log("invoiceItems")
             for (var i=0; i<invoiceItems.length; i++) {
                 invoiceItems[i].itemID = await getItemID(invoiceItems[i].itemDesc)
                 invoiceItems[i].unitID = await getUnitID(invoiceItems[i].unit);
                 var itemUnit = await getItemUnitID(invoiceItems[i].itemID, invoiceItems[i].unitID)
 
-                deductInventory (invoiceItems[i])
+                if (invoiceItems.fromReturn != true)
+                    deductInventory (invoiceItems[i])
 
                 var item = {
                     invoice_id: invoiceID,
@@ -1095,22 +1091,6 @@ const invoiceController = {
                 finalInvoiceItems.push(item)
             }
 
-            console.log("not returned items")
-            if (notReturnedItems.length != 0) {
-                for (var i=0; i<notReturnedItems.length; i++) {
-                    console.log(i)
-
-                    var itemUnit = await getItemUnitID(notReturnedItems[i].itemID, notReturnedItems[i].unitID)
-
-                    var item = {
-                        invoice_id: invoiceID,
-                        itemUnitID: itemUnit._id,
-                        quantity: notReturnedItems[i].quantity,
-                        discount: 0
-                    }
-                    finalInvoiceItems.push(item)
-                }
-            }
 
             db.insertMany(InvoiceItems, finalInvoiceItems, function(flag) {
             
@@ -1139,9 +1119,8 @@ const invoiceController = {
         var newInvoiceInfo = JSON.parse(req.body.invoiceInfoString)
         var deliveryInfo = JSON.parse(req.body.deliveryInfoString)
     
-        processReturn(oldInvoiceID, returns).then(notReturnedItems => {
-            newInvoice(newInvoiceInfo, notReturnedItems, newInvoiceItems, deliveryInfo)
-        })
+        processReturn(oldInvoiceID, returns)
+        newInvoice(newInvoiceInfo, newInvoiceItems, deliveryInfo)
     },
 
     payOneInvoice: function(req, res) {
@@ -1221,8 +1200,6 @@ const invoiceController = {
 
         async function getInfo() {
             var itemID = await getItemID(req.query.itemDesc)
-
-            console.log(itemID)
 
             var temp_itemUnits = await getItemUnits(itemID)
             var itemUnits = []

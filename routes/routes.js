@@ -62,13 +62,20 @@ router.post('/postUpdateSupplierInformation', supplierController. postUpdateInfo
 
 router.post('/deleteSupplier', supplierController.deleteSupplier);
 
-router.post('/addSupplierItem', supplierController.addSupplierItem);
+//router.post('/addSupplierItem', supplierController.addSupplierItem);
 
 router.get('/getAllItemName', supplierController.getItems);
 
 router.get('/checkPendingPO', supplierController.checkPendingPO);
 
-router.post('/deleteSupplierPO', supplierController.deleteSupplierPO)
+router.post('/deleteSupplierPO', supplierController.deleteSupplierPO);
+
+router.get('/editSupplierItems/:supplierID', supplierController.editSupplierItems)
+
+router.get('/checkForPendingPOSuppliers', supplierController.checkForPendingPOSuppliers);
+
+router.post('/updateSupplierItems', supplierController.updateSupplierItems)
+
 
 //--EMPLOYEE--
 
@@ -120,7 +127,7 @@ router.get('/newPurchaseOrder', purchaseOrderController.getCreateNewPurchaseOrde
 
 router.get('/generatePurchaseOrder', purchaseOrderController.generatePurchaseOrder);
 
-router.get('/generatePOChooseSuppliers', purchaseOrderController.generatePOChooseSuppliers)
+router.post('/generatePOChooseSuppliers', purchaseOrderController.generatePOChooseSuppliers)
 
 router.get('/getItemNamePO', purchaseOrderController.getItems);
 
@@ -246,6 +253,8 @@ router.get('/getFilteredSalesPerformanceReport', reportController.getFilteredSal
 
 
 //NEW STUFF
+
+router.get('/checkSellingUnit', inventoryController.checkSellingUnit)
 
 router.post('/newSellingUnit', inventoryController.newSellingUnit);
 

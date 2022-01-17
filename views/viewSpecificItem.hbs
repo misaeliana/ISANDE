@@ -192,6 +192,7 @@
                             </div>
                             <p class="error modal-error" id="error-selling-price"></p>
                         </form>
+                        <p class="error modal-error" id="error-selling-unit"></p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="modal-btn-grey" data-dismiss="modal">Close</button>
@@ -410,7 +411,7 @@
                     $("#error-reorder-level").text("");
                     $("#EOQ").css("border", "1px solid #DDDDDD");
                     $("#error-EOQ").text("");
-                    
+                    $('#error-selling-unit').text("");
                 }
 
                 $('#dropdown-category').change(function() {
@@ -515,6 +516,40 @@
                       }
                 })
 
+                function sellingUnitValidation(quantity, unit, sellingPrice) {
+                    var filled = true
+
+                    if (quantity == null || quantity == "" || quantity < 0) {
+                        $("#quantity").css("border", "1px solid #B00000");
+                        $("#error-selling-unit-quantity").text("Invalid quantity.");
+                        filled = false
+                    } else {
+                        $("#quantity-price").css("border", "1px solid #DDDDDD");
+                        $("error-selling-unit-quantity").text("");
+                    }
+                    
+                    if (sellingPrice == null || sellingPrice == "" || sellingPrice < 0) {
+                        $("#selling-price").css("border", "1px solid #B00000");
+                        $("#error-selling-price").text("Invalid selling price.");
+                        filled = false
+                    } else {
+                        $("#selling-price").css("border", "1px solid #DDDDDD");
+                        $("#error-selling-price").text("");
+                    }
+
+                    if (unit == "no-selected") {
+                        $('#dropdown-new-selling-unit').css("border", "1px solid #B00000")
+                        $('#error-unit').text("Select selling unit")
+                        filled = false
+                    }
+                    else {
+                        $("#dropdown-new-selling-unit").css("border", "1px solid #DDDDDD");
+                        $("#error-unit").text("");
+                    }
+
+                    return filled   
+                }
+
                 $('#btn-save-selling-unit').click(function() {
                     var address = window.location.pathname.split('/');
                     var itemID = address[address.length -1]
@@ -522,9 +557,19 @@
                     var quantity = $('#quantity').val()
                     var unit = $("#dropdown-new-selling-unit").val()
                     var sellingPrice = $('#selling-price').val();
+                    $.get('/checkSellingUnit', {itemID, quantity, unit, sellingPrice}, function(result) {
+                        if (result == "found")
+                            $('#error-selling-unit').text('Selling unit already exists')
 
-                    $.post('/newSellingUnit', {itemID, quantity, unit, sellingPrice}, function(result) {
-                        window.location.reload();
+                        else {
+                            $('#error-selling-unit').text("")
+                            console.log(sellingUnitValidation(quantity, unit, sellingPrice))
+                            if (sellingUnitValidation(quantity, unit, sellingPrice)) {
+                                $.post('/newSellingUnit', {itemID, quantity, unit, sellingPrice}, function(result) {
+                                    window.location.reload();
+                                })
+                            }
+                        }
                     })
                 })
 
