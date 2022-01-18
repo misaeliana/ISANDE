@@ -61,8 +61,8 @@
             <form>
                 <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="itemDescription" name="itemDescription" placeholder="Item Description">
                 <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px; text-align: right;" type="number" class="form-control" id="qty" name="qty" placeholder="Qty">
-                <select class="dropdown" id="dropdown-item-unit" style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px">
-                    <option value="no-selected">--Unit--</option>
+                <select class="form-control" id="dropdown-item-unit" style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px">
+                    <option value="no-selected">Select Unit</option>
                 </select>
                 <input style="margin-top: 5px; margin-bottom: 0px; float: left; height: 34px; width: 34px; background-color: #0F84D9; border: #0F84D9; border-radius: 7px; color: white;" type="button" id="addItem" name="addItem" value="+">
             </form>
@@ -84,41 +84,58 @@
                                 <input id="description" class="modal-input form-control" type="text"><br>
                             </div>
                             <p class="error" id="error-description" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                            <label for="dropdown-category" style="margin-right: 10px">Item Category</label>
-                            <select class="dropdown" id="dropdown-category" style="margin-top: 3px; margin-bottom: 5px; height: 30px">
-                                <option value="no-selected" selected>--Select Category--</option>
-                                {{#each itemCategories}}
-                                    <option value={{_id}}>{{category}}</option>
-                                {{/each}}
-                            </select>
+                            
+                            <div class="flex-display">
+                                <label for="dropdown-category" class="modal-label">Item Category</label>
+                                <select class="form-control" id="dropdown-category">
+                                    <option value="no-selected" selected>Select Category</option>
+                                    {{#each itemCategories}}
+                                        <option value={{_id}}>{{category}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
                             <p class="error" id="error-category" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
-                            <label for="dropdown-unit" style="margin-right: 10px">Unit</label>
-                            <select class="dropdown" id="dropdown-unit" style="margin-top: 3px; margin-bottom: 5px; height: 30px; margin-right: 20px;">
-                                <option value="no-selected" selected>--Select Unit--</option>
-                                {{#each units}}
-                                    <option value={{_id}}>{{unit}}</option>
-                                {{/each}}
-                            </select>
-                            <input id="same-selling-unit"type="checkbox" style="margin-right: 5px;">
-                            <label for="same-selling-unit">Same as selling unit</label><br>
+                            <div class="flex-display">
+                                <label for="dropdown-unit" class="modal-label">Unit</label>
+                                <select class="form-control" style="width: 73%;" id="dropdown-unit">
+                                    <option value="no-selected" selected>Select Unit</option>
+                                    {{#each units}}
+                                        <option value={{_id}}>{{unit}}</option>
+                                    {{/each}}
+                                </select>
+                                <input id="same-selling-unit"type="checkbox" style="margin-left: 5px; margin-right: 5px;">
+                                <label for="same-selling-unit">Same as selling unit</label>
+                            </div>
                             <p class ="error" id="error-unit"></p>
+
                             <div id="div-selling-price" style="display: none;">
-                                <label for="selling-price" style="margin-right: 10px">Selling Price</label>
-                                <input id="selling-price" type="number">
-                                <br>
+                                <div class="flex-display">
+                                    <label for="selling-price" class="modal-label">Selling Price</label>
+                                    <input id="selling-price" class="form-control" style="text-align:right" type="number">
+                                    <br>
+                                </div>
                                 <p class="error" id="error-selling-price" style="margin-top: 3px; margin-bottom: 3px;"></p>
                             </div>
+
                             <div id="div-quantity-in-retail">
-                                <label for="quantity-in-retail" style="margin-right: 10px;">Quantity in retail</label><input type="number" id="quantity-in-retail"><br>
+                                <div class="flex-display">
+                                    <label for="quantity-in-retail" class="modal-label">Quantity in retail</label>
+                                    <input type="number" id="quantity-in-retail" class="modal-input form-control" style="text-align:right"><br>
+                                </div>
                                 <p class="error" id="error-retail-quantity" style="margin-top: 3px; margin-bottom: 3px;"></p>
                             </div>
-
-
-                            <label for="reorder-level">Reorder Level</label> <input id="reorder-level" type="number"><br>
+                            
+                            <div class="flex-display">
+                                <label for="reorder-level"  class="modal-label">Reorder Level</label> 
+                                <input id="reorder-level"  class="modal-input form-control" style="text-align:right" type="number"><br>
+                            </div>
                             <p class="error" id="error-reorder-level" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
-                            <label for="EOQ">EOQ</label> <input id="EOQ" type="number"><br>
+                            <div class="flex-display">
+                                <label for="EOQ"  class="modal-label">EOQ</label> 
+                                <input id="EOQ" class="modal-input form-control" style="text-align:right" type="number"><br>
+                            </div>
                             <p class="error" id="error-EOQ" style="margin-top: 3px; margin-bottom: 3px;"></p>
                         </form>
                     </div>

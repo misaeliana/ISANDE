@@ -36,13 +36,13 @@
 
             <form id="new-supplier">
                 <p id="item-ID" style="display: none;">{{itemID}}</p>
-                <select class="dropdown" id="dropdown-supplier" style="margin-top: 5px; margin-bottom: 0px; width: 200px; float: left; margin-right: 10px">
+                <select class="form-control" id="dropdown-supplier" style="margin-top: 5px; margin-bottom: 0px; width: 200px; float: left; margin-right: 10px">
                     <option value="no-selected" selected>Select Supplier</option>
                     {{#each suppliers}}
                             <option value={{_id}}>{{name}}</option>
                     {{/each}}
                 </select>
-                <select class="dropdown" id="dropdown-unit" style="margin-top: 5px; margin-bottom: 0px; width: 200px; float: left; margin-right: 10px">
+                <select class="form-control" id="dropdown-unit" style="margin-top: 5px; margin-bottom: 0px; width: 200px; float: left; margin-right: 10px">
                     <option value="no-selected">Select Unit</option>
                     {{#each units}}
                         <option value={{_id}}>{{unit}}</option>
@@ -70,7 +70,7 @@
                         <tr>
                             <td class="supplierName">{{supplierID}}</td>
                             <td class="unit">{{unit}}</td>
-                            <td><button class="delete-button"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
+                            <td style="text-align: right;"><button class="delete-button"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
                         </tr>
                     {{/each}}
                 </tbody>

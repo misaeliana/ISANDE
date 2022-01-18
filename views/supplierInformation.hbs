@@ -115,7 +115,7 @@
                 <div style="display: flex">
                     <div style="width: 50%"><h3 class ="bold h3-left">Items</h3></div>
                     <div class="btn-status btn-status">
-                        <button id="btn-new-item" class="btn-light-blue">Edit Supplier Item</button>
+                        <button id="btn-new-item" class="btn-light-blue">Edit Supplier Items</button>
                     </div>
                 </div>
             </div>
@@ -124,7 +124,7 @@
                 <div style="display: flex; align-items:center;">
                      <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="itemDescription" name="itemDescription" placeholder="Item Description">
                      <select class="dropdown" id="dropdown-add-unit" style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px">
-                         <option value="no-selected">--Select Unit--</option>
+                         <option value="no-selected">Select Unit</option>
                          {{#each units}}
                             <option value="{{_id}}">{{unit}}</option> 
                          {{/each}}
@@ -440,11 +440,11 @@
 
                 $('#addItem').click(function() {
                     var itemDesc = capitalize($('#itemDescription').val());
-                    var unit = $('#dropdown-add-unit option:selected').text()
-                    var unitID = $("#dropdown-add-unit").val()
+                    var unit = $('#dropdown-add-unit option:selected').text();
+                    var unitID = $("#dropdown-add-unit").val();
 
                     var address = window.location.pathname.split('/');
-                    var supplierID = address[address.length -1]
+                    var supplierID = address[address.length -1];
 
                     if (!descriptionValidation(itemDesc)) {
 
