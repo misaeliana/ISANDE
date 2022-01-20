@@ -39,8 +39,8 @@ const manualCountController = {
                     category: inventoryItems[i].categoryID,
                     reasons: shrinkageReasons
                 };
-
-                items.push(item);
+                if (item.quantityAvailable>0)
+                    items.push(item);
 
                 //quantity availbale has decimal
                 if (!Number.isInteger(inventoryItems[i].quantityAvailable)) {

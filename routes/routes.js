@@ -119,6 +119,8 @@ router.post('/deleteSellingUnit', inventoryController.deleteSellingUnit);
 
 router.post('/editSellingUnit', inventoryController.editSellingUnit);
 
+router.get('/getLastestPrices', inventoryController.getLastestPrices)
+
 
 //--PURCHASE ORDER--
 router.get('/purchaseOrders', purchaseOrderController.getPurchaseOrderList);

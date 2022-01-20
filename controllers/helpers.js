@@ -601,16 +601,8 @@ module.exports = function() {
 
 	this.getCurrentPOItems = function (poID) {
 		return new Promise((resolve, reject) => {
-			db.findMany(PurchasedItems, {purchaseOrderID:poID}, 'itemID unitID quantity', function(result) {
+			db.findMany(PurchasedItems, {purchaseOrderID:poID}, '', function(result) {
 				resolve(result);
-			})
-		})
-	},
-
-	this.getItemPrice = function (itemID) {
-		return new Promise((resolve, reject) =>{
-			db.findOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'sellingPrice', function(result) {
-				resolve(result.sellingPrice)
 			})
 		})
 	},
@@ -830,12 +822,21 @@ module.exports = function() {
 
     this.getSupplierPO = function(supplierID) {
     	return new Promise((resolve, reject) => {
+    		//new or released po
     		db.findMany(Purchases, {$and: [{supplierID:supplierID}, {$or: [{statusID:"618f650546c716a39100a809"}, {statusID:"618f652746c716a39100a80a"} ]} ]}, '', function(result) {
-    			console.log(result)
     			resolve(result)
     		})
     	})
     },
+
+    this.getReceivedSupplierPO = function (supplierID) {
+    	return new Promise((resolve, reject) => {
+    		//received or incomplete pos
+    		db.findMany(Purchases, {$and: [{supplierID:supplierID}, {$or: [{statusID:"618f654646c716a39100a80c"}, {statusID:"618f653746c716a39100a80b"} ]} ]}, '', function(result) {
+    			resolve(result)
+    		})
+    	})
+    }
 
     this.getSupplierItems = function(supplierID) {
     	return new Promise((resolve, reject) => {
@@ -843,5 +844,20 @@ module.exports = function() {
     			resolve(result)
     		})
     	})
-    }
+    },
+
+    this.numberWithCommas = function(x) {
+    	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	},
+
+	this.getAllItemIDs = function(itemDescription) {
+		return new Promise((resolve, reject) => {
+			db.findMany(Items, {itemDescription:itemDescription}, '_id', function(result){
+				var format = []
+				for (var z=0; z<result.length; z++)
+					format.push(result[z]._id.toString())
+				resolve(format)
+			})
+		})
+	}
 };

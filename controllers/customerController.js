@@ -81,7 +81,7 @@ const customerController = {
 					invoiceID: temp_customerInvoices[i]._id,
 					date: temp_date.getMonth() + 1 + "/" + temp_date.getDate() + "/" + temp_date.getFullYear(),
 					invoiceNumber: temp_customerInvoices[i].invoiceID,
-					total: parseFloat(temp_customerInvoices[i].total).toFixed(2),
+					total: numberWithCommas(parseFloat(temp_customerInvoices[i].total).toFixed(2)),
 					type: await getSpecificInvoiceType(temp_customerInvoices[i].typeID),
 					status: await getSpecificInvoiceStatus(temp_customerInvoices[i].statusID)
 				};
@@ -96,20 +96,20 @@ const customerController = {
 				var temp_date = new Date(temp_customerInvoices[i].date);
 				var total = temp_unpaidInvoices[i].total;
 				var amountPaid = await getAmountPaid(temp_unpaidInvoices[i]._id);
+				var due = total - amountPaid
 				var invoice = {
 					invoiceID: temp_unpaidInvoices[i]._id,
 					date: temp_date.getMonth() + 1 + "/" + temp_date.getDate() + "/" + temp_date.getFullYear(),
 					invoiceNumber: temp_unpaidInvoices[i].invoiceID,
-					total: parseFloat(total).toFixed(2),
-					paid: parseFloat(amountPaid).toFixed(2),
-					due: parseFloat(total-amountPaid).toFixed(2),
+					total: numberWithCommas(parseFloat(total).toFixed(2)),
+					paid: numberWithCommas(parseFloat(amountPaid).toFixed(2)),
+					due: numberWithCommas(parseFloat(due).toFixed(2)),
 				};
 
-				totalAmountDue += parseFloat(invoice.due).toFixed(2);
+				totalAmountDue += parseFloat(due).toFixed(2);
 				unpaidInvoices.push(invoice);
 			}
-
-			totalAmountDue = parseFloat(totalAmountDue).toFixed(2);
+			totalAmountDue = numberWithCommas(parseFloat(totalAmountDue).toFixed(2));
 
 			if (unpaidInvoices.length==0) {
 				/*if(req.session.position == "Cashier"){

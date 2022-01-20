@@ -73,13 +73,18 @@
                     <div class="summary-info-container"><div id="sales-total" class="summary-total-info">₱ {{total}}</div></div>
                 </div>
                 <div class="btn-new-PO">
-                    <button class="btn-dark-blue" id="btn-export" style="margin-top: 10px; margin-bottom: 10px;">Export</button>
+                    <button class="btn-dark-blue" id="btn-export" style="margin-top: 10px; margin-bottom: 10px;" disabled>Export</button>
                 </div> 
             </div>
         </div>
 
         <script>
             $(document).ready(function() {
+
+                function numberWithCommas (x) {
+                    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                }
+
                 $('#customer-name').autocomplete({
                     source: function(request, response) {
                     $.ajax({
@@ -91,11 +96,13 @@
                                 },
                                 success: function (data) {
                                     $("#customer-name").css("border", "1px solid #DDDDDD");
+                                    $('#btn-export').prop('disabled', false)
                                     response(data);
                                 }
                          });
                     }, response: function (event, ui) {
                         if (ui.content.length === 0) {
+                            $('#btn-export').prop('disabled', true)
                             $('#contactPerson').css("border", "2px solid #B00000");
                             alert("Customer does not exists");
                         }
@@ -106,26 +113,30 @@
                         var customerName = ui.item.label;
 
                         $.get('/getCustomerInvoices', {customerName}, function(result) {
-                            var total = 0;
 
-                            for (var i = 0; i < result.length; i++) {
-                                var date = new Date(result[i].date)
-                                date = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear()
-                                var amount = result[i].total.toLocaleString('en-US')
-                                $("#table-customer-sales-body").append(
-                                    `  <tr> 
-                                            <td>${date}</td>
-                                            <td>${result[i].invoiceID}</td>
-                                            <td style="text-align: right;">₱ ${amount}</td>
-                                    </tr>`
-                                );
+                            if (result.length!=0) {
+                                var total = 0;
+                                for (var i = 0; i < result.length; i++) {
+                                    var date = new Date(result[i].date)
+                                    date = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear()
+                                    var amount = numberWithCommas(parseFloat(result[i].total).toFixed(2))
+                                    $("#table-customer-sales-body").append(
+                                        `  <tr> 
+                                                <td>${date}</td>
+                                                <td>${result[i].invoiceID}</td>
+                                                <td style="text-align: right;">₱ ${amount}</td>
+                                        </tr>`
+                                    );
 
-                                total += parseFloat(result[i].total);
+                                    total += parseFloat(result[i].total);
+                                }
+
+                                total = numberWithCommas(parseFloat(total).toFixed(2));
+
+                                $("#sales-total").text("₱ " + total.toLocaleString('en-US'));
                             }
-
-                            total = parseFloat(total).toFixed(2);
-
-                            $("#sales-total").text("₱ " + total.toLocaleString('en-US'));
+                            else
+                                alert("No invoices were found for the customer")
                         })
                     }
                 })
@@ -164,7 +175,7 @@
                                     for (var i = 0; i < result.length; i++) {
                                         var date = new Date(result[i].date)
                                         date = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear()
-                                        var amount = result[i].total.toLocaleString('en-US')
+                                        var amount = numberWithCommas(parseFloat(result[i].total).toFixed(2))
                                         $("#table-customer-sales-body").append(
                                             `  <tr> 
                                                     <td>${date}</td>
@@ -175,7 +186,7 @@
 
                                         total += parseFloat(result[i].total);
                                     }
-                                    total = parseFloat(total).toFixed(2);
+                                    total = numberWithCommas(parseFloat(total).toFixed(2));
 
                                 $("#sales-total").text("₱ " + total.toLocaleString('en-US'));
                             });

@@ -54,7 +54,7 @@ const invoiceController = {
                     formattedDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
                     invoiceID: invoices[i].invoiceID,
                     customerName: await getSpecificCustomer(invoices[i].customerID),
-                    total: parseFloat(invoices[i].total).toFixed(2),
+                    total: numberWithCommas(parseFloat(invoices[i].total).toFixed(2)),
                     type: await getSpecificInvoiceType(invoices[i].typeID),
                     status: await getSpecificInvoiceStatus(invoices[i].statusID)
                 };
@@ -97,7 +97,6 @@ const invoiceController = {
             var date = new Date(invoice.date);
             var employee = await getEmployeeInfo(invoice.employeeID);
             var items = [];
-
             var invoiceInfo = {
                 invoice_id: invoice_id,
                 invoiceID: invoice.invoiceID,
@@ -106,10 +105,10 @@ const invoiceController = {
                 type: await getSpecificInvoiceType(invoice.typeID),
                 paymentOption: await getSpecificPaymentType(invoice.paymentOptionID),
                 status: await getSpecificInvoiceStatus(invoice.statusID),
-                subtotal: parseFloat(invoice.subtotal).toFixed(2),
-                VAT: parseFloat(invoice.VAT).toFixed(2),
-                discount: parseFloat(invoice.discount).toFixed(2),
-                total: parseFloat(invoice.total).toFixed(2),
+                subtotal: numberWithCommas(parseFloat(invoice.subtotal).toFixed(2)),
+                VAT: numberWithCommas(parseFloat(invoice.VAT).toFixed(2)),
+                discount: numberWithCommas(parseFloat(invoice.discount).toFixed(2)),
+                total: numberWithCommas(parseFloat(invoice.total).toFixed(2)),
                 employeeName: employee.name
             };
 
@@ -144,9 +143,9 @@ const invoiceController = {
                     itemDescription: itemInfo.itemDescription,
                     qty: invoiceItems[i].quantity,
                     unit: await getSpecificUnit(itemUnitInfo.unitID),
-                    unitPrice: parseFloat(itemUnitInfo.sellingPrice).toFixed(2),
-                    discount: parseFloat(invoiceItems[i].discount).toFixed(2),
-                    amount: ((parseFloat(itemUnitInfo.sellingPrice) * parseFloat(invoiceItems[i].quantity)) - parseFloat(invoiceItems[i].discount)).toFixed(2)
+                    unitPrice: numberWithCommas(parseFloat(itemUnitInfo.sellingPrice).toFixed(2)),
+                    discount: numberWithCommas(parseFloat(invoiceItems[i].discount).toFixed(2)),
+                    amount: numberWithCommas(((parseFloat(itemUnitInfo.sellingPrice) * parseFloat(invoiceItems[i].quantity)) - parseFloat(invoiceItems[i].discount)).toFixed(2))
                 };
 
                 items.push(item);
@@ -160,17 +159,17 @@ const invoiceController = {
                     var temp_date = new Date(temp_paymentHistory[i].datePaid);
                     var payment = {
                         date: temp_date.getMonth() + 1 + "/" + temp_date.getDate() + "/" + temp_date.getFullYear(),
-                        amountPaid: parseFloat(temp_paymentHistory[i].amountPaid).toFixed(2)
+                        amountPaid: numberWithCommas(parseFloat(temp_paymentHistory[i].amountPaid).toFixed(2))
                     };
                     paymentTotal += temp_paymentHistory[i].amountPaid;
                     paymentHistory.push(payment);
                 }
             }
             
-            var amountDue = invoiceInfo.total - paymentTotal;
+            var amountDue = invoice.total - paymentTotal;
 
-            paymentTotal = parseFloat(paymentTotal).toFixed(2);
-            amountDue = parseFloat(amountDue).toFixed(2);
+            paymentTotal = numberWithCommas(parseFloat(paymentTotal).toFixed(2));
+            amountDue = numberWithCommas(parseFloat(amountDue).toFixed(2));
 
                 //res.render('viewInvoice', {invoiceInfo, items, delivery, paid, onAccount, paymentHistory, paymentTotal, amountDue});
 
@@ -224,7 +223,7 @@ const invoiceController = {
                         formattedDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
                         invoiceID: invoices[i].invoiceID,
                         customerName: await getSpecificCustomer(invoices[i].customerID),
-                        total: parseFloat(invoices[i].total).toFixed(2),
+                        total: numberWithCommas(parseFloat(invoices[i].total).toFixed(2)),
                         type: await getSpecificInvoiceType(invoices[i].typeID),
                         status: await getSpecificInvoiceStatus(invoices[i].statusID)
                     };
@@ -255,7 +254,7 @@ const invoiceController = {
                     formattedDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
                     invoiceID: invoice.invoiceID,
                     customerName: await getSpecificCustomer(invoice.customerID),
-                    total: parseFloat(invoice.total).toFixed(2),
+                    total: numberWithCommas(parseFloat(invoice.total).toFixed(2)),
                     type: await getSpecificInvoiceType(invoice.typeID),
                     status: await getSpecificInvoiceStatus(invoice.statusID)
                 };
@@ -274,7 +273,7 @@ const invoiceController = {
                                 formattedDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
                                 invoiceID: customerInvoices[j].invoiceID,
                                 customerName: await getSpecificCustomer(customerInvoices[j].customerID),
-                                total: parseFloat(customerInvoices[j].total).toFixed(2),
+                                total: numberWithCommas(parseFloat(customerInvoices[j].total).toFixed(2)),
                                 type: await getSpecificInvoiceType(customerInvoices[j].typeID),
                                 status: await getSpecificInvoiceStatus(customerInvoices[j].statusID)
                             };
@@ -532,11 +531,12 @@ const invoiceController = {
                 var deliveries = await getDeliveries();
             }*/
             
-            //var deliveries = await getDeliveries();
+            var deliveries = await getDeliveries();
             var deliveryInfo = [];
             var invoiceStatusVoid = await getSpecificInvoiceStatusName("Void");
 
             for (var i = 0; i < deliveries.length; i++) {
+                console.log(deliveries[i])
                 var date = new Date(deliveries[i].deliveryDate);
                 var invoice = await getInvoice(deliveries[i].invoice_id);
 
@@ -548,7 +548,7 @@ const invoiceController = {
                             invoiceNum: invoice.invoiceID,
                             customerName: await getSpecificCustomer(invoice.customerID),
                             paymentStatus: await getSpecificInvoiceStatus(invoice.statusID),
-                            amount: parseFloat(invoice.total).toFixed(2), 
+                            amount: numberWithCommas(parseFloat(invoice.total).toFixed(2)), 
                             deliveryDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
                             deliveryPersonnel: await getEmployeeInfo(deliveries[i].deliveryPersonnel)
                         };
@@ -591,10 +591,10 @@ const invoiceController = {
                 date: invocieDate.getMonth() + 1 + "/" + invocieDate.getDate() + "/" + invocieDate.getFullYear(),
                 invoiceType: await getSpecificInvoiceType(uneditedInvoice.typeID),
                 paymentType: await getSpecificPaymentType(uneditedInvoice.paymentOptionID),
-                subtotal: parseFloat(uneditedInvoice.subtotal).toFixed(2),
-                VAT: parseFloat(uneditedInvoice.VAT).toFixed(2),
-                discount: parseFloat(uneditedInvoice.discount).toFixed(2),
-                total: parseFloat(uneditedInvoice.total).toFixed(2),
+                subtotal: numberWithCommas(parseFloat(uneditedInvoice.subtotal).toFixed(2)),
+                VAT: numberWithCommas(parseFloat(uneditedInvoice.VAT).toFixed(2)),
+                discount: numberWithCommas(parseFloat(uneditedInvoice.discount).toFixed(2)),
+                total: numberWithCommas(parseFloat(uneditedInvoice.total).toFixed(2)),
             };
 
             var deliveryInfo = {
@@ -616,9 +616,9 @@ const invoiceController = {
                     itemDescription: await getItemDescription(itemUnitInfo.itemID),
                     qty: invoiceItems[i].quantity,
                     unit: await getSpecificUnit(itemUnitInfo.unitID),
-                    unitPrice: parseFloat(itemUnitInfo.sellingPrice).toFixed(2),
-                    discount: parseFloat(invoiceItems[i].discount).toFixed(2),
-                    amount: ((parseFloat(itemUnitInfo.sellingPrice) * parseFloat(invoiceItems[i].quantity)) - parseFloat(invoiceItems[i].discount)).toFixed(2)
+                    unitPrice: numberWithCommas(parseFloat(itemUnitInfo.sellingPrice).toFixed(2)),
+                    discount: numberWithCommas(parseFloat(invoiceItems[i].discount).toFixed(2)),
+                    amount: numberWithCommas(((parseFloat(itemUnitInfo.sellingPrice) * parseFloat(invoiceItems[i].quantity)) - parseFloat(invoiceItems[i].discount)).toFixed(2))
                 };
 
                 items.push(item);
@@ -683,7 +683,7 @@ const invoiceController = {
                             invoiceNum: invoice.invoiceID,
                             customerName: await getSpecificCustomer(invoice.customerID),
                             paymentStatus: await getSpecificInvoiceStatus(invoice.statusID),
-                            amount: parseFloat(invoice.total).toFixed(2), 
+                            amount: numberWithCommas(parseFloat(invoice.total).toFixed(2)), 
                             deliveryDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
                             deliveryPersonnel: await getEmployeeInfo(specificDelivery.deliveryPersonnel)
                         };
@@ -709,7 +709,7 @@ const invoiceController = {
                             invoiceNum: deliveryInvoice[j].invoiceID,
                             customerName: await getSpecificCustomer(deliveryInvoice[j].customerID),
                             paymentStatus: await getSpecificInvoiceStatus(deliveryInvoice[j].statusID),
-                            amount: parseFloat(deliveryInvoice[j].total).toFixed(2), 
+                            amount: numberWithCommas(parseFloat(deliveryInvoice[j].total).toFixed(2)), 
                             deliveryDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
                             deliveryPersonnel: await getEmployeeInfo(specificDelivery.deliveryPersonnel)
                         };

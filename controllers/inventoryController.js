@@ -46,7 +46,7 @@ const inventoryController = {
 					categoryID: inventoryItems[i].categoryID,
 					category: await getSpecificItemCategory(inventoryItems[i].categoryID),
 					unit: await getSpecificUnit(inventoryItems[i].unitID),
-					quantityAvailable: inventoryItems[i].quantityAvailable,
+					quantityAvailable: numberWithCommas(parseFloat(inventoryItems[i].quantityAvailable).toFixed(2)),
 					statusID: inventoryItems[i].statusID,
 					status: textStatus,
 					btn_status: btnStatus
@@ -208,9 +208,9 @@ const inventoryController = {
 				category: await getSpecificItemCategory(item.categoryID),
 				unitID: item.unitID,
 				unit: await getSpecificUnit(item.unitID),
-				quantityAvailable: parseFloat(item.quantityAvailable).toFixed(2),
-				EOQ: item.EOQ,
-				reorderLevel: item.reorderLevel,
+				quantityAvailable: numberWithCommas(parseFloat(item.quantityAvailable).toFixed(2)),
+				EOQ: numberWithCommas(item.EOQ),
+				reorderLevel: numberWithCommas(item.reorderLevel),
 				statusID: item.statusID,
 				status: textStatus,
 				retailQuantity: item.retailQuantity,
@@ -224,7 +224,7 @@ const inventoryController = {
 				var itemUnit = {
 					unitName: await getSpecificUnit(temp_itemUnits[i].unitID),
 					ratio:temp_itemUnits[i].quantity,
-					sellingPrice: parseFloat(temp_itemUnits[i].sellingPrice).toFixed(2),
+					sellingPrice: numberWithCommas(parseFloat(temp_itemUnits[i].sellingPrice).toFixed(2)),
 					availableStock: parseFloat(itemInfo.quantityAvailable * itemInfo.retailQuantity / temp_itemUnits[i].quantity).toFixed(2)
 				};
 				itemUnits.push(itemUnit);
@@ -421,7 +421,7 @@ const inventoryController = {
 						categoryID: invoice[i].categoryID,
 						category: await getSpecificItemCategory(invoice[i].categoryID),
 						unit: await getSpecificUnit(invoice[i].unitID),
-						quantityAvailable: invoice[i].quantityAvailable,
+						quantityAvailable: numberWithCommas(invoice[i].quantityAvailable),
 						statusID: invoice[i].statusID,
 						status: textStatus,
 						btn_status: btnStatus
@@ -482,7 +482,7 @@ const inventoryController = {
 					categoryID: inventoryItems[i].categoryID,
 					category: await getSpecificItemCategory(inventoryItems[i].categoryID),
 					unit: await getSpecificUnit(inventoryItems[i].unitID),
-					quantityAvailable: inventoryItems[i].quantityAvailable,
+					quantityAvailable: numberWithCommas(inventoryItems[i].quantityAvailable),
 					statusID: inventoryItems[i].statusID,
 					status: textStatus,
 					btn_status: btnStatus
@@ -575,6 +575,49 @@ const inventoryController = {
 		}
 
 		editInfo();
+	},
+
+	getLastestPrices: function(req, res) {
+
+		async function getFilteredPOItem(purchaseOrder, itemDesc) {
+			var poItems = await getCurrentPOItems(purchaseOrder._id)
+			var itemFound;
+
+			var itemIDs = await getAllItemIDs(itemDesc)
+
+			for (var a=0; a<poItems.length; a++) {
+				if (itemIDs.includes(poItems[a].itemID) && (poItems[a].unitPrice!=undefined || poItems[a].unitPrice!=null)) {
+					var date = new Date(purchaseOrder.date)
+					date.setHours(0,0,0,0)
+					itemFound = {
+						date: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
+						price: numberWithCommas(poItems[a].unitPrice)
+					}
+				}
+			}
+			return itemFound
+		}
+
+		async function getInfo() {
+			var latestPrices = []
+
+			var supplierID = await getSupplierID(req.query.supplierName)
+			var unitID = await getUnitID(req.query.unit)
+			var itemDesc = req.query.itemDesc
+
+			var purchaseOrders = await getReceivedSupplierPO(supplierID)
+
+			for (var i=purchaseOrders.length-1; i>=0; i--) {
+				var item = await getFilteredPOItem(purchaseOrders[i],itemDesc) 
+				if (item!= undefined)
+					latestPrices.push(item)
+			}
+
+			res.send(latestPrices)
+
+		}
+
+		getInfo()
 	}
 };
 

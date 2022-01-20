@@ -9,6 +9,8 @@ const Purchases = require('../models/PurchasesModel.js');
 
 const PurchasedItems = require('../models/PurchasedItemsModel.js');
 
+const Items = require('../models/ItemsModel.js');
+
 require('../controllers/helpers.js')();
 
 const reportController = {
@@ -88,9 +90,17 @@ const reportController = {
     
     getInventoryPerformanceReport: function(req, res) {
 
+        function getItemCategory(itemID) {
+            return new Promise((resolve, reject) => {
+                db.findOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'categoryID', function(result) {
+                    resolve(result)
+                })
+            })
+        }
+
         async function convert(itemID, invoiceQuantity) {
             var inventoryItem = await getSpecificInventoryItems(itemID);
-            var convertedQuantity = invoiceQuantity/inventory.retailQuantity
+            var convertedQuantity = invoiceQuantity/inventoryItem.retailQuantity
             return convertedQuantity
         }
         
@@ -110,41 +120,51 @@ const reportController = {
             }*/
 
             // check if invoice is paid
-            
-            for (var j = 0; j < inventory.length; j++) {
-                var unitsSold = 0;
 
-                // get number of units sold
-                for (var k = 0 ; k < invoiceItems.length; k++) {
+            for (var a=0; a<categories.length; a++) {
+                var categoryItems = []
+                var temp  = {
+                    category: categories[a].category
+                }
+                formattedInventory.push(temp)
 
-                    var itemUnitInfo = await getItemUnitInfo(invoiceItems[k].itemUnitID)
-                  
-                    if (await getItemDescription(itemUnitInfo.itemID) == inventory[j].itemDescription) {
-                        //no need conversion
-                        if (itemUnitInfo.unitID == inventory[j].unitID)
-                            unitsSold += parseFloat(invoiceItems[k].quantity);
-                        else
-                            unitsSold += parseFloat(itemUnitInfo.itemID, invoiceItems[k].quantity)
+                for (var j = 0; j < inventory.length; j++) {
+                    var unitsSold = 0;
+
+                    // get number of units sold
+                    for (var k = 0 ; k < invoiceItems.length; k++) {
+
+                        var itemUnitInfo = await getItemUnitInfo(invoiceItems[k].itemUnitID)
+
+
+                            if (await getItemDescription(itemUnitInfo.itemID) == inventory[j].itemDescription) {
+                                //no need conversion
+                                if (itemUnitInfo.unitID == inventory[j].unitID)
+                                    unitsSold += parseFloat(invoiceItems[k].quantity);
+                                else
+                                    unitsSold += parseFloat(convert(itemUnitInfo.itemID, invoiceItems[k].quantity))
+                            }
+                    }
+
+
+                    if (categories[a]._id == inventory[j].categoryID) {
+
+                         var item = {
+                            rank: 1,
+                            description: inventory[j].itemDescription,
+                            unitsSold: unitsSold,
+                            UOM: await getSpecificUnit(inventory[j].unitID)
+                        };
+
+                        formattedInventory.push(item)
                     }
                 }
 
-                var item = {
-                    category: await getSpecificItemCategory(inventory[j].categoryID),
-                    rank: 1,
-                    description: inventory[j].itemDescription,
-                    unitsSold: unitsSold,
-                    UOM: await getSpecificUnit(inventory[j].unitID)
-                };
-
-                formattedInventory.push(item);
+               formattedInventory.sort((a, b) => (a.unitsSold > b.unitsSold) ? -1 : 1);
+                
             }
 
-            formattedInventory.sort(function(a, b) {
-                var quantityA = a.unitsSold;
-                var quantityB = b.unitsSold;
-                //syntax is "condition ? value if true : value if false"
-                return (quantityA < quantityB) ? -1 : (quantityA > quantityB) ? 1 : 0;
-            });
+            console.log(formattedInventory)
 
             res.render('inventoryPerformanceReport', {formattedInventory, today});
         }
@@ -164,29 +184,36 @@ const reportController = {
             var paidStatus = await getSpecificInvoiceStatusID("Paid");
 
             for (var i = 0; i < inventory.length; i++) {
-                var unitsSold = 0;
-                var itemTotal = 0;
 
-                // get number of units sold
-                for (var j = 0 ; j < invoiceItems.length; j++) {
-                  
-                    if ((await getItemDescription(invoiceItems[j].itemID) == inventory[i].itemDescription) && (await checkInvoicePaid(invoiceItems[j].invoice_id) == paidStatus)) {
-                        unitsSold += parseFloat(invoiceItems[j].quantity);
-                        itemTotal += parseFloat(await getItemPrice(invoiceItems[j].itemID)) - invoiceItems[j].discount;
+                var sellingUnits = await getItemUnits(inventory[i]._id)
+
+                for (var j=0; j<sellingUnits.length; j++) {
+                    var unitsSold = 0;
+                    var itemTotal = 0;
+
+                    // get number of units sold
+                    for (var k = 0 ; k < invoiceItems.length; k++) {
+                        var itemUnitInfo = await getItemUnitInfo(invoiceItems[k].itemUnitID)
+
+                        if ((await getItemDescription(itemUnitInfo.itemID) == inventory[i].itemDescription) && (sellingUnits[j].unitID == itemUnitInfo.unitID) && (await checkInvoicePaid(invoiceItems[k].invoice_id) == paidStatus)) {
+                            unitsSold += parseFloat(invoiceItems[k].quantity);
+                            itemTotal += (invoiceItems[k].quantity * parseFloat(itemUnitInfo.sellingPrice)) - invoiceItems[k].discount;
+                        }
                     }
+
+                    var item = {
+                        rank: 1,
+                        description: inventory[i].itemDescription,
+                        unitsSold: unitsSold,
+                        UOM: await getSpecificUnit(sellingUnits[j].unitID),
+                        total: itemTotal.toFixed(2)
+                    };
+
+                    overallTotal += parseFloat(item.total);
+
+                    formattedInventory.push(item);
+
                 }
-
-                var item = {
-                    rank: 1,
-                    description: inventory[i].itemDescription,
-                    unitsSold: unitsSold,
-                    UOM: await getSpecificUnit(inventory[j].unitID),
-                    total: itemTotal.toFixed(2)
-                };
-
-                overallTotal += parseFloat(item.total);
-
-                formattedInventory.push(item);
             }      
 
             // sort by best-selling
@@ -195,12 +222,84 @@ const reportController = {
             // get top 50
             formattedInventory = formattedInventory.slice(0, 50);
 
+            for (var k = 0; k < formattedInventory.length; k++) {
+                formattedInventory[k].total = numberWithCommas(formattedInventory[k].total)
+                formattedInventory[k].rank = k + 1;
+            }
+
+            overallTotal = numberWithCommas(overallTotal.toFixed(2));
+
+            res.render('salesPerformanceReport', {formattedInventory, overallTotal, today});
+        }
+
+        getInformation();
+    },
+
+    getFilteredSalesPerformanceReport: function(req, res) {
+        var startDate = new Date(req.query.startDate);
+        var endDate = new Date(req.query.endDate);
+        startDate.setHours(0,0,0,0);
+        endDate.setHours(0,0,0,0);
+        var sortFilter = req.query.sortFilter;
+        var numberFilter = req.query.numberFilter;
+
+        async function getInformation() {
+            var allInventory = await getAllInventoryItems();
+            var inventory = await filterInventory(allInventory);
+            var invoiceItems = await getAllInvoiceItems();
+            var formattedInventory = [];
+            var overallTotal = 0;
+            var paidStatus = await getSpecificInvoiceStatusID("Paid");
+
+            for (var i = 0; i < inventory.length; i++) {
+
+                var sellingUnits = await getItemUnits(inventory[i]._id)
+
+                for (var j=0; j<sellingUnits.length; j++) {
+                    var unitsSold = 0;
+                    var itemTotal = 0;
+
+                    // get number of units sold
+                    for (var k = 0 ; k < invoiceItems.length; k++) {
+                        var invoiceDate = new Date(await getInvoiceDate(invoiceItems[k].invoice_id));
+                        invoiceDate.setHours(0,0,0,0);
+
+                        var itemUnitInfo = await getItemUnitInfo(invoiceItems[k].itemUnitID)
+
+                        if ((!(startDate > invoiceDate || invoiceDate > endDate)) && (await getItemDescription(itemUnitInfo.itemID) == inventory[i].itemDescription) && (sellingUnits[j].unitID == itemUnitInfo.unitID) && (await checkInvoicePaid(invoiceItems[k].invoice_id) == paidStatus)) {
+                            console.log("adding")
+                            unitsSold += parseFloat(invoiceItems[k].quantity);
+                            itemTotal += (invoiceItems[k].quantity * parseFloat(itemUnitInfo.sellingPrice)) - invoiceItems[k].discount;
+                        }
+                    }
+
+                    var item = {
+                        rank: 1,
+                        description: inventory[i].itemDescription,
+                        unitsSold: unitsSold,
+                        UOM: await getSpecificUnit(sellingUnits[j].unitID),
+                        total: itemTotal.toFixed(2)
+                    };
+
+                    overallTotal += parseFloat(item.total);
+
+                    formattedInventory.push(item);
+
+                }
+            }
+
+
+            if (sortFilter == "best-selling")
+                formattedInventory.sort((a, b) => (a.total > b.total) ? -1 : 1);
+            else 
+                formattedInventory.sort((a, b) => (a.total > b.total) ? 1 : -1);
+
+            formattedInventory = formattedInventory.slice(0, numberFilter);
+
             for (var k = 0; k < formattedInventory.length; k++)
                 formattedInventory[k].rank = k + 1;
 
-            overallTotal = overallTotal.toFixed(2);
-
-            res.render('salesPerformanceReport', {formattedInventory, overallTotal, today});
+            res.send(formattedInventory);
         }
 
         getInformation();
@@ -222,12 +321,12 @@ const reportController = {
                     poNumber: temp_purchases[i].purchaseOrderNumber,
                     supplier: await getSupplierName(temp_purchases[i].supplierID),
                     dateReceived: dateReceived.getMonth() + 1 + "/" + dateReceived.getDate() + "/" + dateReceived.getFullYear(),
-                    amountPaid: temp_purchases[i].total.toLocaleString('en-US')
+                    amountPaid: numberWithCommas(temp_purchases[i].total.toFixed(2))
                 }
                 purchases.push(purchase);
                 total += parseFloat(temp_purchases[i].total);
             }
-            total = total.toLocaleString('en-US');
+            total = numberWithCommas(total.toFixed(2));
             
             res.render('purchasesReport', {today, purchases, total})
         }
@@ -253,7 +352,7 @@ const reportController = {
                         poNumber: temp_purchases[i].purchaseOrderNumber,
                         supplier: await getSupplierName(temp_purchases[i].supplierID),
                         dateReceived: dateReceived.getMonth() + 1 + "/" + dateReceived.getDate() + "/" + dateReceived.getFullYear(),
-                        amountPaid: temp_purchases[i].total
+                        amountPaid: numberWithCommas(temp_purchases[i].total.toFixed(2))
                         };
                     purchases.push(purchase);
                 }
@@ -321,64 +420,6 @@ const reportController = {
         }
 
         getInfo();
-    },
-
-    getFilteredSalesPerformanceReport: function(req, res) {
-        var startDate = new Date(req.query.startDate);
-        var endDate = new Date(req.query.endDate);
-        startDate.setHours(0,0,0,0);
-        endDate.setHours(0,0,0,0);
-        var sortFilter = req.query.sortFilter;
-        var numberFilter = req.query.numberFilter;
-
-        async function getInformation() {
-            var allInventory = await getAllInventoryItems();
-            var inventory = await filterInventory(allInventory);
-            var invoiceItems = await getAllInvoiceItems();
-            var formattedInventory = [];
-
-            for (var i = 0; i < inventory.length; i++) {
-                var unitsSold = 0;
-                var itemTotal = 0;
-
-                for (var j = 0 ; j < invoiceItems.length; j++) {
-                    if (await getItemDescription(invoiceItems[j].itemID) == inventory[i].itemDescription) {
-                        
-                        var invoiceDate = new Date(await getInvoiceDate(invoiceItems[j].invoice_id));
-                        invoiceDate.setHours(0,0,0,0);
-
-                        if ((!(startDate > invoiceDate || invoiceDate > endDate)) && (await checkInvoicePaid(invoiceItems[j].invoice_id) ==  await getSpecificInvoiceStatusID("Paid"))) {
-                            unitsSold += parseFloat(invoiceItems[j].quantity);
-                            itemTotal += parseFloat(await getItemPrice(invoiceItems[j].itemID)) - invoiceItems[j].discount;
-                        }
-                    }
-                }
-
-                var item = {
-                    rank: 1,
-                    description: inventory[i].itemDescription,
-                    unitsSold: unitsSold,
-                    UOM: await getSpecificUnit(inventory[j].unitID),
-                    total: itemTotal.toFixed(2)
-                };
-
-                formattedInventory.push(item);
-            } 
-
-            if (sortFilter == "best-selling")
-                formattedInventory.sort((a, b) => (a.total > b.total) ? -1 : 1);
-            else 
-                formattedInventory.sort((a, b) => (a.total > b.total) ? 1 : -1);
-
-            formattedInventory = formattedInventory.slice(0, numberFilter);
-
-            for (var k = 0; k < formattedInventory.length; k++)
-                formattedInventory[k].rank = k + 1;
-
-            res.send(formattedInventory);
-        }
-
-        getInformation();
     }
 };
 

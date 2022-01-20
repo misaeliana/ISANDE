@@ -283,15 +283,15 @@ const purchaseOrderController = {
 				for (var i=0; i<items.length; i++) {
 					items[i].itemDescription = await getItemDescription(items[i].itemID);
 					items[i].unitName = await getSpecificUnit(items[i].unitID);
-					items[i].unitPrice = parseFloat(items[i].unitPrice).toFixed(2);
-					items[i].amount = parseFloat(items[i].amount).toFixed(2);
+					items[i].funitPrice = numberWithCommas(items[i].unitPrice.toFixed(2));
+					items[i].famount = numberWithCommas(items[i].amount.toFixed(2));
 				}				
 
-				poInfo.vat = parseFloat(poInfo.vat).toFixed(2);
-				poInfo.fsubtotal = parseFloat(poInfo.subtotal).toFixed(2);
-				poInfo.ftotal = parseFloat(poInfo.total).toFixed(2);
-				poInfo.total = parseFloat(poInfo.total).toFixed(2);
-				poInfo.discount = parseFloat(poInfo.discount).toFixed(2);
+				poInfo.fvat = numberWithCommas(poInfo.vat.toFixed(2));
+				poInfo.fsubtotal = numberWithCommas(poInfo.subtotal.toFixed(2));
+				poInfo.ftotal = numberWithCommas(poInfo.total.toFixed(2));
+				//poInfo.ftotal = poInfo.total.toFixed(2);
+				poInfo.fdiscount = numberWithCommas(poInfo.discount.toFixed(2));
 
 				//incomplete
 				if (purchaseInfo.statusID == "618f653746c716a39100a80b") {
@@ -774,8 +774,8 @@ const purchaseOrderController = {
 			}
 
 			if (req.body.needNewPo == true)  {
-				//status is received
-				db.updateOne(Purchases, {_id: poID}, {statusID: "618f654646c716a39100a80c"}, function (flag) {
+				//status is incomplete
+				db.updateOne(Purchases, {_id: poID}, {statusID: "618f653746c716a39100a80b"}, function (flag) {
 				})
 	
 				var supplierID = await getPOSupplier(poID) 

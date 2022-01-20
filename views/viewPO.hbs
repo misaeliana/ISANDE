@@ -120,9 +120,9 @@
                                         <td class="classItemDescription">{{itemDescription}}</td>
                                         <td class="classQty" style="text-align: right;">{{quantity}}</td>
                                         <td class="classUnit">{{unitName}}</td>
-                                        <td style="text-align: right;">₱ {{unitPrice}}</td>
+                                        <td style="text-align: right;">₱ {{funitPrice}}</td>
                                         <td style="text-align: right;">{{quantityReceived}}</td>
-                                        <td style="text-align: right;">₱ {{amount}}</td>  
+                                        <td style="text-align: right;">₱ {{famount}}</td>  
                                     </tr>
                                 {{/each}}
                             {{else}}
@@ -139,19 +139,19 @@
                     {{#if received}}
                         <div class="summary-container">
                             <div class="summary-text">Subtotal</div>
-                            <div class="summary-info-container"><div class="summary-info">₱ {{poInfo.subtotal}}</div></div>
+                            <div class="summary-info-container"><div class="summary-info">₱ {{poInfo.fsubtotal}}</div></div>
                         </div>
                         <div class="summary-container">
                             <div class="summary-text">VAT</div>
-                            <div class="summary-info-container"><div class="summary-info">₱ {{poInfo.vat}}</div></div>
+                            <div class="summary-info-container"><div class="summary-info">₱ {{poInfo.fvat}}</div></div>
                         </div>
                         <div class="summary-container">    
                             <div class="summary-text">Discount</div>
-                            <div class="summary-info-container"><div class="summary-info">₱ {{poInfo.discount}}</div></div>
+                            <div class="summary-info-container"><div class="summary-info">₱ {{poInfo.fdiscount}}</div></div>
                         </div>
                         <div class="summary-container">
                             <div class="summary-text">Total</div>
-                            <div class="summary-info-container"><div class="summary-info">₱ {{poInfo.total}}</div></div>
+                            <div class="summary-info-container"><div class="summary-info">₱ {{poInfo.ftotal}}</div></div>
                         </div>
                     {{/if}}
 
