@@ -25,6 +25,8 @@ const bcrypt = require(`bcrypt`);
 
 const session = require('express-session');
 
+const cookieParser = require("cookie-parser");
+
 dotenv.config();
 
 const app = express();
@@ -38,6 +40,8 @@ app.use(session( {
 	saveUninitialized: true,
 	cookie: { maxAge: 1*3600*1000 }
 } ));
+
+app.use(cookieParser());
 
 
 // set `hbs` as view engine

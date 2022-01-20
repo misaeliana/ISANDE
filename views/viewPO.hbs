@@ -120,9 +120,23 @@
                                         <td class="classItemDescription">{{itemDescription}}</td>
                                         <td class="classQty" style="text-align: right;">{{quantity}}</td>
                                         <td class="classUnit">{{unitName}}</td>
-                                        <td style="text-align: right;">₱ {{funitPrice}}</td>
-                                        <td style="text-align: right;">{{quantityReceived}}</td>
-                                        <td style="text-align: right;">₱ {{famount}}</td>  
+                                        {{#if funitPrice}}
+                                            <td style="text-align: right;">₱ {{funitPrice}}</td>
+                                        {{else}}
+                                            <td style="text-align: right;">₱ 0</td>
+
+                                        {{/if}}    
+                                        {{#if quantityReceived}}
+                                            <td style="text-align: right;">{{quantityReceived}}</td>
+                                        {{else}}
+                                            <td style="text-align: right;">0</td>
+                                        {{/if}}   
+                                        {{#if famount}}
+                                            <td style="text-align: right;">₱ {{famount}}</td>  
+                                        {{else}}
+                                            <td style="text-align: right;">₱ 0</td>
+
+                                        {{/if}}  
                                     </tr>
                                 {{/each}}
                             {{else}}

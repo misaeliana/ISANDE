@@ -19,6 +19,11 @@ var SuppliersSchema = new mongoose.Schema({
 		required: true
 	},
 
+	number2: {
+		type:String,
+		required: false
+	},
+
 	email: {
 		type: String,
 		required: true

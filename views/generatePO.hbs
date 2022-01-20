@@ -122,7 +122,17 @@
                                 orderItems.push($(this).find('.itemDescription').text())
                         })
                         var orderItemsString = JSON.stringify(orderItems)
-                        $.get('/generatePOChooseSuppliers', {orderItemsString})
+                        $.get('/generatePOGetSuppliers', {orderItemsString})
+                        /*$.ajax({
+                            type:"POST",
+                            url: '/generatePOGetSuppliers',
+                            data: {orderItemsString},
+                            dataType:"json",
+                            success: function(data,textStatus) {
+                                console.log(data)
+                                window.location.href = data
+                            }
+                        })*/
                     })
 
                     /*$('.dropdown-supplier').change(function() {

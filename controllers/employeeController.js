@@ -27,6 +27,13 @@ const employeeController = {
 				employees.push(employee);
 			}
 
+			employees.sort(function(a, b) {
+			    var textA = a.name.toUpperCase();
+			    var textB = b.name.toUpperCase();
+			    //syntax is "condition ? value if true : value if false"
+			    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+			});
+
 			var positions = await getAllPositions();
 			res.render('employeeList', {positions, employees});
 		}

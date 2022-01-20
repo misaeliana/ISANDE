@@ -283,15 +283,15 @@ const purchaseOrderController = {
 				for (var i=0; i<items.length; i++) {
 					items[i].itemDescription = await getItemDescription(items[i].itemID);
 					items[i].unitName = await getSpecificUnit(items[i].unitID);
-					items[i].funitPrice = numberWithCommas(items[i].unitPrice.toFixed(2));
-					items[i].famount = numberWithCommas(items[i].amount.toFixed(2));
-				}				
-
-				poInfo.fvat = numberWithCommas(poInfo.vat.toFixed(2));
-				poInfo.fsubtotal = numberWithCommas(poInfo.subtotal.toFixed(2));
-				poInfo.ftotal = numberWithCommas(poInfo.total.toFixed(2));
+					items[i].funitPrice = numberWithCommas(items[i].unitPrice?.toFixed(2));
+					items[i].famount = numberWithCommas(items[i].amount?.toFixed(2));
+				}			
+				
+				poInfo.fvat = numberWithCommas(poInfo.vat?.toFixed(2));
+				poInfo.fsubtotal = numberWithCommas(poInfo.subtotal?.toFixed(2));
+				poInfo.ftotal = numberWithCommas(poInfo.total?.toFixed(2));
 				//poInfo.ftotal = poInfo.total.toFixed(2);
-				poInfo.fdiscount = numberWithCommas(poInfo.discount.toFixed(2));
+				poInfo.fdiscount = numberWithCommas(poInfo.discount?.toFixed(2));
 
 				//incomplete
 				if (purchaseInfo.statusID == "618f653746c716a39100a80b") {
@@ -367,7 +367,7 @@ const purchaseOrderController = {
 		
 	},
 
-	generatePOChooseSuppliers: function(req, res) {
+	generatePOGetSuppliers: function(req, res) {
 
 		function getItemFromDescription(itemDescription) {
 			return new Promise((resolve, reject) => {
@@ -392,13 +392,11 @@ const purchaseOrderController = {
 		}
 
 		async function getItems() {
-			var temp_orderItems = JSON.parse(req.body.orderItemsString)
+			var temp_orderItems = JSON.parse(req.query.orderItemsString)
 			var orderItems = []
 
 			for (var a=0; a<temp_orderItems.length;a++) {
-				var temp_item  =  await getItemFromDescription(temp_orderItems[a])
-
-				
+				var temp_item  =  await getItemFromDescription(temp_orderItems[a])			
 
 				var item = {
 					itemDescription: temp_item.itemDescription,
@@ -411,7 +409,9 @@ const purchaseOrderController = {
 
 			console.log(orderItems)
 
-			res.render('generatePO1', {orderItems});
+			var strOrderItems = JSON.stringify(orderItems)
+			res.cookie('strOrderItems', strOrderItems)
+			res.redirect("/generatePOChooseSupplier");
 
 			/*if(req.session.position == "Inventory and Purchasing"){
 				var inventoryAndPurchasing = req.session.position;
@@ -425,6 +425,12 @@ const purchaseOrderController = {
 		}
 
 		getItems();
+	},
+
+	generatePOChooseSupplier: function(req, res) {
+		var orderItems = JSON.parse(req.cookies['strOrderItems'])
+		console.log(orderItems)
+		res.render('generatePOChooseSupplier', {orderItems})
 	},
 
 	addItemSupplier: function(req, res) {

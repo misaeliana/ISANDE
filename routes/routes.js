@@ -129,7 +129,9 @@ router.get('/newPurchaseOrder', purchaseOrderController.getCreateNewPurchaseOrde
 
 router.get('/generatePurchaseOrder', purchaseOrderController.generatePurchaseOrder);
 
-router.post('/generatePOChooseSuppliers', purchaseOrderController.generatePOChooseSuppliers)
+router.get('/generatePOGetSuppliers', purchaseOrderController.generatePOGetSuppliers);
+
+router.get('/generatePOChooseSupplier', purchaseOrderController.generatePOChooseSupplier)
 
 router.get('/getItemNamePO', purchaseOrderController.getItems);
 

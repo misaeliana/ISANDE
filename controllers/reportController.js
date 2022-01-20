@@ -128,6 +128,8 @@ const reportController = {
                 }
                 formattedInventory.push(temp)
 
+                var itemCount = 0
+
                 for (var j = 0; j < inventory.length; j++) {
                     var unitsSold = 0;
 
@@ -155,13 +157,25 @@ const reportController = {
                             unitsSold: unitsSold,
                             UOM: await getSpecificUnit(inventory[j].unitID)
                         };
-
+                        itemCount++;
                         formattedInventory.push(item)
                     }
                 }
 
-               formattedInventory.sort((a, b) => (a.unitsSold > b.unitsSold) ? -1 : 1);
-                
+                var toBeArranged = []
+                for (var z=formattedInventory.length-1; itemCount>0; itemCount--) {
+                    var item = formattedInventory.pop()
+                    toBeArranged.push(item)
+                }
+
+                toBeArranged.sort((a, b) => (a.unitsSold > b.unitsSold) ? -1 : 1)
+
+                for (var y=0; y<toBeArranged.length; y++) {
+                    toBeArranged[y].rank = y + 1
+                    console.log(toBeArranged[y])
+                    formattedInventory.push(toBeArranged[y])
+                }   
+
             }
 
             console.log(formattedInventory)

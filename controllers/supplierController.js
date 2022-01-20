@@ -56,15 +56,31 @@ const supplierController = {
 	},
 
 	postSupplierInformation: function(req, res) {
-		var supplier = {
-			name: req.body.name,
-            contactPerson: req.body.contactPerson,
-			number: req.body.number,
-            email: req.body.email,
-			address: req.body.address,
-			informationStatusID: "618a7830c8067bf46fbfd4e4"
-		};
 
+		var supplier
+
+		if (req.body.number2 == "") {
+			supplier = {
+				name: req.body.name,
+	            contactPerson: req.body.contactPerson,
+				number: req.body.number,
+	            email: req.body.email,
+				address: req.body.address,
+				informationStatusID: "618a7830c8067bf46fbfd4e4"
+			};
+		}
+		else {
+			supplier = {
+				name: req.body.name,
+	            contactPerson: req.body.contactPerson,
+				number: req.body.number,
+				number2: req.body.number2,
+	            email: req.body.email,
+				address: req.body.address,
+				informationStatusID: "618a7830c8067bf46fbfd4e4"
+			}
+		}
+			
 		db.insertOne (Suppliers, supplier, function(flag) {
 			if (flag)
 				res.sendStatus(200);
@@ -152,14 +168,28 @@ const supplierController = {
 			if (flag) { }
 		});
 
-		var supplier = {
-			name:req.body.name,
-            contactPerson:req.body.contactPerson,
-			number:req.body.number, 
-            email:req.body.email,
-			address:req.body.address,
-			informationStatusID: "618a7830c8067bf46fbfd4e4"
-		};
+
+		if (req.body.number2 == "") {
+			supplier = {
+				name: req.body.name,
+	            contactPerson: req.body.contactPerson,
+				number: req.body.number,
+	            email: req.body.email,
+				address: req.body.address,
+				informationStatusID: "618a7830c8067bf46fbfd4e4"
+			};
+		}
+		else {
+			supplier = {
+				name: req.body.name,
+	            contactPerson: req.body.contactPerson,
+				number: req.body.number,
+				number2: req.body.number2,
+	            email: req.body.email,
+				address: req.body.address,
+				informationStatusID: "618a7830c8067bf46fbfd4e4"
+			}
+		}
 
 		db.insertOneResult(Suppliers, supplier, function(result) {
 			updatePO(supplierID, result._id)

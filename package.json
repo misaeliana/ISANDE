@@ -22,6 +22,7 @@
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "connect-mongo": "^4.6.0",
+    "cookie-parser": "^1.4.6",
     "crypto-js": "^4.1.1",
     "docxtemplater": "^3.28.1",
     "dotenv": "^10.0.0",

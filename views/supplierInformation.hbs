@@ -44,11 +44,16 @@
                         <div class="override-label"> Contact Number </div> 
                          <div class="label-content">{{supplierInfo.number}}</div>
                     </div>
+                    {{#if supplierInfo.number2}}
+                    <div class="label-container">
+                        <div class="override-label"> Contact Number 2 </div> 
+                        <div class="label-content">{{supplierInfo.number2}}  </div>
+                    </div>
+                    {{/if}}
                     <div class="label-container">
                         <div class="override-label"> Email Address </div> 
                         <div class="label-content">{{supplierInfo.email}}  </div>
                     </div>
-
                   <div class="label-container">
                         <div class="override-label"> Address </div> 
                         <div class="label-content">{{supplierInfo.address}}  </div>
@@ -84,7 +89,12 @@
                                     <input id="contact-number" class="modal-input form-control" type="number" value="{{supplierInfo.number}}" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;"><br>
                                 </div>
                                 <p class="error modal-error" id="error-contact-number" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                                
+                                 {{#if supplierInfo.number2}}
+                                    <div class="flex-display">
+                                        <label for="contact-number2" class="modal-label">Contact Number 2</label> 
+                                        <input id="contact-number2" class="modal-input form-control" type="number" value="{{supplierInfo.number2}}" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;"><br>
+                                    </div>
+                                 {{/if}}
                                 <div class="flex-display">
                                     <label for="email" class="modal-label">Email</label> 
                                     <input id="email" class="modal-input form-control" type="text" value="{{supplierInfo.email}}"><br>
@@ -101,7 +111,7 @@
                         <div class="modal-footer">
                             <button id="btn-delete-supplier" class="modal-btn-red" style="float:left">Delete</button>
                             <button type="button" class="modal-btn-grey" data-dismiss="modal">Close</button>
-                            <button type="button" class="modal-btn-light-blue" id="btn-update-supplier">Update</button>
+                            <button type="button" class="modal-btn-light-blue" id="btn-update-supplier">Save</button>
                         </div>
                     </div>
                     </div>
@@ -319,7 +329,8 @@
                     var supplierID = address[address.length -1]
                     var name = $('#supplier-name').text();
                     var contactPerson = $('#contact-person').val();
-                    var number = $('#contact-number').val();  
+                    var number = $('#contact-number').val(); 
+                    var number2 = $('#contact-number2').val();  
                     var email = $('#email').val();
                     var address = $('#address').val();
 
@@ -336,7 +347,7 @@
                             $('#error-email').text("");
                             $('#error-address').text(""); 
 
-                            $.post('/postUpdateSupplierInformation', {supplierID, name, contactPerson, number, email, address}, function(result) {
+                            $.post('/postUpdateSupplierInformation', {supplierID, name, contactPerson, number, number2, email, address}, function(result) {
                                     $('#modal-edit-supplier').modal('hide');
                                     $('#edit-supplier').trigger('reset');
                                     alert("Succesfully updated supplier information");
