@@ -286,19 +286,41 @@
                 $('#dropdown-return-type').change(function() {
                     var val = $('#dropdown-return-type option:selected').text();
 
-                    $('#add-new-customer').css('display', 'none')
+                    $('#add-new-customer').css('display', 'none');
                     $('#error-customer-name').text("");
 
                     if (val == "In-Store") 
                         $('.delivery-info').css('display', 'none')
-                    else if (($('#address').val() == "") && val == "Delivery") {
+                    else 
+                        $('.delivery-info').css('display', 'block');
+
+
+                    if (($('#address').val() == "") && type == "In-Store" && payment == "On Account" || ($('#address').val() == "") && type == "Delivery"){
                         $('#add-new-customer').css('display', 'block')
                         $('#error-customer-name').text("Create new customer record.");
-                        //$('#customer-Name').css("border", "2px solid #B00000");
+                    } 
+                });
+
+                $('#dropdown-payment-type').change(function() {
+                    var type = $('#dropdown-return-type option:selected').text();
+                    var payment = $('#dropdown-payment-type option:selected').text();
+
+                    $('#add-new-customer').css('display', 'none')
+                    $('#error-customer-name').text("");
+
+                    if (type == "In-Store" && payment == "COD") {
+                        $('#dropdown-payment-type').css("border", "2px solid #B00000")
+                        $('#payment-type-error').text('Payment method cannot be COD for in-store transactions')
+                    } 
+                    else {
+                        $('#dropdown-payment-type').css("border", "1px solid #DDDDDD");
+                        $('#payment-type-error').text('');
                     }
-                    else 
-                        $('.delivery-info').css('display', 'block')
-                    // check if may record
+
+                    if (($('#address').val() == "") && type == "In-Store" && payment == "On Account" || ($('#address').val() == "") && type == "Delivery"){
+                        $('#add-new-customer').css('display', 'block')
+                        $('#error-customer-name').text("Create new customer record.");
+                    } 
                 });
 
                 //should be for delivery only

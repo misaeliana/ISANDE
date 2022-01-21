@@ -27,6 +27,8 @@ const AccountPayments = require('../models/OnAccountPaymentModel.js')
 
 const ItemUnits = require('../models/ItemUnitsModel.js');
 
+const Customers = require('../models/CustomersModel.js');
+
 require('../controllers/helpers.js')();
 
 const fs = require('fs');
@@ -1232,7 +1234,13 @@ const invoiceController = {
         }
 
         getInfo()
-    }
+    },
+
+    getCheckCustomerName: function (req, res) {
+        db.findOne(Customers, {name:{$regex: req.query.customerName, $options:'i'}}, '', function (result) {
+            res.send(result);
+        });
+	}
 
 };
 

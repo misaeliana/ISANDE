@@ -229,40 +229,82 @@
                 }
 
                 $('#drop-down-new-invoice-type').on('change', function() {
+                    $('#add-new-customer').css('display', 'none')
+                    $('#error-customer').text("");
+                    $('#customer-Name').css("border", "1px solid #DDDDDD");
+
                     //in-store
                     if(this.value == '6197863ac4f0088e95c9bf84'){
-                        $('.delivery-info').css('display', 'none')
-                        var payment = $('#dropdown-payment-type option:selected').text()
+                        $('.delivery-info').css('display', 'none');
+
+                        var payment = $('#dropdown-payment-type option:selected').text();
+
                         if (payment == "COD") {
-                            $('#dropdown-payment-type').css("border", "2px solid #B00000")
-                            $('#payment-type-error').text('Payment method cannot be COD for in-store transactions')
+                            $('#dropdown-payment-type').css("border", "2px solid #B00000");
+                            $('#payment-type-error').text('Payment method cannot be COD for in-store transactions');
                         }
+
+                        if (payment == "On Account") 
+                            getCheckCustomerNameInvoice();
+                          
                     }
                     //delivery
                     else if(this.value == '61a591c1233fa7f9abcd5726'){
+                        getCheckCustomerNameInvoice();
                         $('.delivery-info').css('display', 'block');
                         $('#dropdown-payment-type').css("border", "1px solid #DDDDDD")
                         $('#payment-type-error').text('');
                     }
-                    //alert(this.value)
-
-                    // Remove all inputs
-                    // hide add new customer block
-                    // ------------------------------------------------------------------------------------------------------------------------------------------------------TO FIX LATER
                 })
 
                 $('#dropdown-payment-type').change(function() {
-                    var type = $('#drop-down-new-invoice-type option:selected').text() 
-                    var payment = $('#dropdown-payment-type option:selected').text()
+                    var type = $('#drop-down-new-invoice-type option:selected').text(); 
+                    var payment = $('#dropdown-payment-type option:selected').text();
+
+                    $('#add-new-customer').css('display', 'none')
+                    $('#error-customer').text("");
+                    $('#customer-Name').css("border", "1px solid #DDDDDD");
+
                     if (type == "In-Store" && payment == "COD") {
                         $('#dropdown-payment-type').css("border", "2px solid #B00000")
                         $('#payment-type-error').text('Payment method cannot be COD for in-store transactions')
-                    }
+                    } 
                     else {
                         $('#dropdown-payment-type').css("border", "1px solid #DDDDDD")
                         $('#payment-type-error').text('')
                     }
+
+                    if (type == "In-Store" && payment == "On Account"){
+                        getCheckCustomerNameInvoice();
+                    }
+
+                     if (type == "Delivery"){
+                        getCheckCustomerNameInvoice();
+                    }
                 })
+
+                function getCheckCustomerNameInvoice () {
+                    // Get value 
+                    var customerName = $("#customer-Name").val();
+
+                    if (customerName != "") {
+                        $.get("/getCheckCustomerNameInvoice", {customerName: customerName}, function (result) {
+                            if (result.name != customerName) {
+                                $('#add-new-customer').css('display', 'block')
+                                $('#error-customer').text("Create new customer record.");
+                                $('#customer-Name').css("border", "2px solid #B00000");
+                            } else {
+                                $('#add-new-customer').css('display', 'none')
+                                $('#error-customer').text("");
+                                $('#customer-Name').css("border", "1px solid #DDDDDD");
+                            }
+                        });
+                    } else {
+                        $('#add-new-customer').css('display', 'none')
+                        $('#error-customer').text("");
+                        $('#customer-Name').css("border", "1px solid #DDDDDD");
+                    }
+                }
 
                 //---------------------VALIDATION FOR NEW CUSTOMER--------------------------
 
@@ -351,8 +393,12 @@
                         $('#error-contact-number').text("");
                         $('#error-address').text("");
 
-                        $.post('/createNewCustomer', {custname,custphone,custaddress}, function(result) {})
-                     $('#customerModal').modal('hide');
+                        $.post('/createNewCustomer', {custname,custphone,custaddress}, function(result) {});
+
+                        $('#contact-number').val(custphone);
+                        $('#address').val(custaddress);
+
+                        $('#customerModal').modal('hide');
                      
                     }
                 })
@@ -430,9 +476,9 @@
                          });
                     }, 
                     response: function (event, ui) {
-                        if (ui.content.length === 0 && ($('#drop-down-new-invoice-type option:selected').text() == "Delivery")) {
+                        if ((ui.content.length === 0 && ($('#drop-down-new-invoice-type option:selected').text() == "Delivery")) || (ui.content.length === 0 && ($('#dropdown-payment-type option:selected').text() == "On Account"))) {
                             $('#add-new-customer').css('display', 'block')
-                            $('#error-customer').text("Customer does not exist");
+                            $('#error-customer').text("Create new customer record.");
                             $('#customer-Name').css("border", "2px solid #B00000");
                         }
                         else {

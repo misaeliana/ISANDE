@@ -208,6 +208,8 @@ router.post('/payOneInvoice', invoiceController.payOneInvoice);
 
 router.get('/exportInvoice', invoiceController.exportInvoice);
 
+router.get('/getCheckCustomerNameInvoice', invoiceController.getCheckCustomerName);
+
 
 //--DELIVERY--
 router.get('/deliveries', invoiceController.getDeliveryList);
