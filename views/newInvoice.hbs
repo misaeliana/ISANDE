@@ -120,9 +120,9 @@
                     </div>
 
                     <textarea class="form-control margin-bottom-10 delivery-info" id="address" name="address" placeholder="Address"></textarea> <!--style="display:none"-->
-                    <p class="error" id="error-address"></p>
+                    <!--<p class="error" id="error-address"></p>-->
                     <input type="text" class="form-control margin-bottom-10 delivery-info" id="contactNumber" name="contactNumber" placeholder="Contact Number"> <!--style="display:none"-->
-                    <p class="error" id="error-number"></p>
+                    <!--<p class="error" id="error-number"></p>-->
                     <div>
                         <div>
                             <textarea class="form-control delivery-info" id="notes" name="notes" placeholder="Delivery Notes"></textarea>
@@ -242,9 +242,13 @@
                     else if(this.value == '61a591c1233fa7f9abcd5726'){
                         $('.delivery-info').css('display', 'block');
                         $('#dropdown-payment-type').css("border", "1px solid #DDDDDD")
-                        $('#payment-type-error').text('')
+                        $('#payment-type-error').text('');
                     }
                     //alert(this.value)
+
+                    // Remove all inputs
+                    // hide add new customer block
+                    // ------------------------------------------------------------------------------------------------------------------------------------------------------TO FIX LATER
                 })
 
                 $('#dropdown-payment-type').change(function() {
@@ -284,15 +288,15 @@
                  function errorMessage(type) {
                     if (type == "noName") {
                         $('#customer-name').css("border", "1px solid #B00000");
-                        $('#error-new-customer-name').text("Input customer name");
+                        $('#error-new-customer-name').text("Input customer name.");
                     } 
                     else if (type == "noNumber") {
-                        $('#contact-number').css("border", "1px solid #B00000");
-                        $('#error-number').text("Invalid contact number");
+                        $('#new-contact-number').css("border", "1px solid #B00000");
+                        $('#error-contact-number').text("Invalid contact number.");
                     }
                     else if (type == "noAddress") {
-                        $('#address').css("border", "1px solid #B00000");
-                        $('#error-address').text("Input address");
+                        $('#new-address').css("border", "1px solid #B00000");
+                        $('#error-address').text("Input address.");
                     }
                 }
 
@@ -302,7 +306,7 @@
                         return 1;
                     }
                     else {
-                        $('#customer-name').css("border", "1px solid #DDDDDD");
+                        $('#new-customer-name').css("border", "1px solid #DDDDDD");
                         $('#error-new-customer-name').text("");
                         return 0;
                     }
@@ -314,8 +318,8 @@
                         return 1;
                     }
                     else {
-                        $('#contact-number').css("border", "1px solid #DDDDDD");
-                        $('#error-number').text("")
+                        $('#new-contact-number').css("border", "1px solid #DDDDDD");
+                        $('#error-contact-number').text("")
                         return 0;
                     }
                 }     
@@ -326,7 +330,7 @@
                         return 1;
                     }
                     else {
-                        $('#address').css("border", "1px solid #DDDDDD");
+                        $('#new-address').css("border", "1px solid #DDDDDD");
                         $('#error-address').text("");
                         return 0;
                     }
@@ -426,7 +430,7 @@
                          });
                     }, 
                     response: function (event, ui) {
-                        if (ui.content.length === 0) {
+                        if (ui.content.length === 0 && ($('#drop-down-new-invoice-type option:selected').text() == "Delivery")) {
                             $('#add-new-customer').css('display', 'block')
                             $('#error-customer').text("Customer does not exist");
                             $('#customer-Name').css("border", "2px solid #B00000");
@@ -551,7 +555,7 @@
                     switch($('#drop-down-new-invoice-type').val()){
                         //delivery
                         case '61a591c1233fa7f9abcd5726':
-                        var errmsg = 'There is no input data in the hightlighted fields!!';
+                        var errmsg = 'There is no input data in the hightlighted fields!';
                         var err = 0;
                         if ($('#customer-Name').val()==''){
                             $('#customer-Name').css("border","1px solid red")
@@ -650,8 +654,8 @@
                 })
 
                 $('#btn-export-invoice').click(function() {
-                    var customerName = $('#customer-Name')
-                    var items = []
+                    var customerName = $('#customer-Name');
+                    var items = [];
                     $("#table-body-item-list > tr").each(function () {
                         var item = {
                             itemDescription: $(this).children('.itemDescription').text(),
@@ -663,7 +667,7 @@
                         }
                         items.push(item);
                     }); 
-                    var itemsString = JSON.stringify(items)
+                    var itemsString = JSON.stringify(items);
                     $.get('/exportInvoice',{customerName, itemsString}, function(result){
 
                     })

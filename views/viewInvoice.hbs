@@ -39,13 +39,21 @@
                 <h3 class ="bold h3-left">Customer Details</h3>
                 <!--<h3 class="h3-right">{{invoiceInfo.date}}</h3>-->
             </div>
+            <div>
+            {{#if customerName}}
+                  <div>
+                    <div class="label-container">
+                        <div class="override-label"> Name </div> 
+                        <div class="label-content">{{customerName}}</div>
+                    </div>
+                </div>
+            {{/if}}
 
-                <div>
+            {{#if customer}}
                     <div class="label-container">
                         <div class="override-label"> Name </div> 
                         <div class="label-content">{{invoiceInfo.customerName}}</div>
                     </div>
-                </div>
                 {{#if delivery}}
                     <div class="label-container" id="address-div">
                         <div class="override-label"> Address </div> 
@@ -56,6 +64,8 @@
                         <div class="label-content">{{customer.number}}</div>
                     </div>
                 {{/if}}
+            {{/if}}
+            </div>
             
                 <div style="height: 20px"></div>
 

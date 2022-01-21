@@ -75,13 +75,62 @@
             </div>
 
             <div>
-                 <input style="margin-top: 15px;" type="text" class="form-control margin-bottom-10" id="customerName" name="customerName" placeholder="Customer Name" value="{{customerInfo.name}}" readonly>
-                 <p class="error" id="error-customer-name" style="margin-bottom: 5px;"></p>
-                 <div class="delivery-info" style="display: none;">
-                    <textarea class="form-control margin-bottom-10" id="address" name="address" placeholder="Address">{{customerInfo.address}}</textarea> <!--style="display:none"-->
-                    <input type="text" class="form-control margin-bottom-10" id="contactNumber" name="contactNumber" placeholder="Contact Number" value="{{customerInfo.number}}"> <!--style="display:none"-->
-                    <textarea class="form-control" id="delivery-notes" name="notes" placeholder="Delivery Notes"></textarea>
+                {{#if customerName}}
+                    <input style="margin-top: 15px;" type="text" class="form-control margin-bottom-10" id="customerName" name="customerName" placeholder="Customer Name" value="{{customerName}}" readonly>
+                    <p class="error" id="error-customer-name" style="margin-bottom: 5px;"></p>
+                    <button class="btn-light-blue" id="add-new-customer" style="display:none; margin-bottom: 10px;" data-toggle="modal" data-target="#customerModal">Add New Customer</button>
+                    <div class="delivery-info" style="display: none;">
+                        <textarea class="form-control margin-bottom-10" id="address" name="address" placeholder="Address"></textarea> <!--style="display:none"-->
+                        <input type="text" class="form-control margin-bottom-10" id="contactNumber" name="contactNumber" placeholder="Contact Number" value=""> <!--style="display:none"-->
+                        <textarea class="form-control" id="delivery-notes" name="notes" placeholder="Delivery Notes"></textarea>
+                    </div>
+                {{/if}}
+                
+                {{#if customerInfo}}
+                    <input style="margin-top: 15px;" type="text" class="form-control margin-bottom-10" id="customerName" name="customerName" placeholder="Customer Name" value="{{customerInfo.name}}" readonly>
+                    <p class="error" id="error-customer-name" style="margin-bottom: 5px;"></p>
+                    <div class="delivery-info" style="display: none;">
+                        <textarea class="form-control margin-bottom-10" id="address" name="address" placeholder="Address">{{customerInfo.address}}</textarea> <!--style="display:none"-->
+                        <input type="text" class="form-control margin-bottom-10" id="contactNumber" name="contactNumber" placeholder="Contact Number" value="{{customerInfo.number}}"> <!--style="display:none"-->
+                        <textarea class="form-control" id="delivery-notes" name="notes" placeholder="Delivery Notes"></textarea>
+                    </div>
+                {{/if}}
+            </div>
+
+            <!--MODAL-->
+            <div class="modal fade" id="customerModal">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h2 class="modal-title" id="modalTitle">Add Customer</h2>     
+                    </div>
+                    <div class="modal-body">
+                        <form id="add-new-customer">
+                            <div class="flex-display">
+                                <label for="new-customer-name" class="modal-label">Customer Name</label> 
+                                <input id="new-customer-name" class="modal-input form-control" value="{{customerName}}" type="text" readonly><br>
+                            </div>
+                            <p class="error modal-error" id="error-new-customer-name"></p>
+                                        
+                            <div class="flex-display">
+                                <label for="new-contact-number" class="modal-label">Contact Number</label> 
+                                <input id="new-contact-number" class="modal-input form-control" type="number"><br>
+                            </div>
+                            <p class="error modal-error" id="error-contact-number"></p>
+                                        
+                            <div class="flex-display">
+                                <label for="new-address" class="modal-label">Address</label> 
+                                <input id="new-address" class="modal-input form-control" type="text"><br>
+                            </div>
+                            <p class="error modal-error" id="error-address"></p>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="modal-btn-grey" data-dismiss="modal">Close</button>
+                        <button type="button" id = "save-cust" class="modal-btn-light-blue">Add</button>
+                    </div>
                 </div>
+            </div>
             </div>
 
 
@@ -237,10 +286,19 @@
                 $('#dropdown-return-type').change(function() {
                     var val = $('#dropdown-return-type option:selected').text();
 
+                    $('#add-new-customer').css('display', 'none')
+                    $('#error-customer-name').text("");
+
                     if (val == "In-Store") 
                         $('.delivery-info').css('display', 'none')
-                    else
+                    else if (($('#address').val() == "") && val == "Delivery") {
+                        $('#add-new-customer').css('display', 'block')
+                        $('#error-customer-name').text("Create new customer record.");
+                        //$('#customer-Name').css("border", "2px solid #B00000");
+                    }
+                    else 
                         $('.delivery-info').css('display', 'block')
+                    // check if may record
                 });
 
                 //should be for delivery only
@@ -664,6 +722,95 @@
                     else
                         alert("Please fill out the necessary information")    
                 });
+
+                //---------------------VALIDATION FOR NEW CUSTOMER--------------------------
+
+                 function errorMessage(type) {
+                    if (type == "noName") {
+                        $('#new-customer-name').css("border", "1px solid #B00000");
+                        $('#error-new-customer-name').text("Input customer name");
+                    } 
+                    else if (type == "noNumber") {
+                        $('#new-contact-number').css("border", "1px solid #B00000");
+                        $('#error-contact-number').text("Invalid contact number");
+                    }
+                    else if (type == "noAddress") {
+                        $('#new-address').css("border", "1px solid #B00000");
+                        $('#error-address').text("Input address");
+                    }
+                }
+
+                function customerNameValidation(name) {
+                    if (name == null || name == "") {
+                        errorMessage("noName")
+                        return 1;
+                    }
+                    else {
+                        $('#customer-name').css("border", "1px solid #DDDDDD");
+                        $('#error-new-customer-name').text("");
+                        return 0;
+                    }
+                }   
+
+                function numberValidation(number) {
+                    if (number == 0 || number < 0) {
+                        errorMessage("noNumber")
+                        return 1;
+                    }
+                    else {
+                        $('#contact-number').css("border", "1px solid #DDDDDD");
+                        $('#error-contact-number').text("")
+                        return 0;
+                    }
+                }     
+
+                function addressValidation(address) {
+                    if (address == null || address == "") {
+                        errorMessage("noAddress")
+                        return 1;
+                    }
+                    else {
+                        $('#address').css("border", "1px solid #DDDDDD");
+                        $('#error-address').text("");
+                        return 0;
+                    }
+                }
+
+                /*Modal functions*/
+                $('#save-cust').click(function() {
+                    var custname = capitalize($('#new-customer-name').val());
+                    var custphone = $('#new-contact-number').val();
+                    var custaddress = $('#new-address').val();
+                    if (!customerNameValidation(custname) && !numberValidation(custphone) && !addressValidation(custaddress)) {
+
+                        $('#customer-name').css("border", "1px solid #DDDDDD");
+                        $('#contact-number').css("border", "1px solid #DDDDDD");
+                        $('#address').css("border", "1px solid #DDDDDD");
+
+                        $('#error-new-customer-name').text("");
+                        $('#error-contact-number').text("");
+                        $('#error-address').text("");
+
+                        $.post('/createNewCustomer', {custname,custphone,custaddress}, function(result) {                 
+                        })
+
+                        $('#customerModal').modal('hide');
+
+                        $('#add-new-customer').css('display', 'none')
+                        $('#error-customer-name').text("");
+                        
+                        $('.delivery-info').css('display', 'block');
+                        $('#contactNumber').val(custphone);
+                        $('#address').val(custaddress);
+                    }
+                })
+
+                function capitalize(string){
+                    var words = string.toLowerCase().split(' ');
+                    for (i=0; i<words.length; i++)
+                        words[i] = words[i].charAt(0).toUpperCase() + words[i].substring(1);
+                    return words.join(' ');
+                };
             })
         </script>
     </body>

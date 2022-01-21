@@ -48,19 +48,21 @@ const invoiceController = {
 
             for (var i = 0; i < invoices.length; i++) {
                 var date = new Date(invoices[i].date);
+                var customerName = await getSpecificCustomer(invoices[i].customerID);
+                if (customerName == null)
+                    customerName = invoices[i].customerID;
 
                 var invoiceInfo = {
                     _id: invoices[i]._id,
                     formattedDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
                     invoiceID: invoices[i].invoiceID,
-                    customerName: await getSpecificCustomer(invoices[i].customerID),
+                    customerName: customerName,
                     total: numberWithCommas(parseFloat(invoices[i].total).toFixed(2)),
                     type: await getSpecificInvoiceType(invoices[i].typeID),
                     status: await getSpecificInvoiceStatus(invoices[i].statusID)
                 };
 
                 invoicesInfo.push(invoiceInfo);
-           
             }
 
             //res.render('invoiceList', {invoicesInfo});    
@@ -136,7 +138,7 @@ const invoiceController = {
             var invoiceItems = await getInvoiceItems(invoice_id);
 
             for (var i = 0; i < invoiceItems.length; i++) {
-                var itemUnitInfo = await getItemUnitInfo(invoiceItems[i].itemUnitID)
+                var itemUnitInfo = await getItemUnitInfo(invoiceItems[i].itemUnitID);
                 var itemInfo = await getSpecificInventoryItems(itemUnitInfo.itemID);
 
                var item = {
@@ -173,7 +175,13 @@ const invoiceController = {
 
                 //res.render('viewInvoice', {invoiceInfo, items, delivery, paid, onAccount, paymentHistory, paymentTotal, amountDue});
 
-            res.render('viewInvoice', {invoiceInfo, items, delivery, customer, paymentHistory, paymentTotal, amountDue});
+            if (customer == false) {
+                var customerName = invoice.customerID;
+
+                res.render('viewInvoice', {invoiceInfo, items, delivery, customerName, paymentHistory, paymentTotal, amountDue});
+            }
+            else 
+                res.render('viewInvoice', {invoiceInfo, items, delivery, customer, paymentHistory, paymentTotal, amountDue});
                 
             /*if(req.session.position == "Cashier"){
                 console.log("cashier")
@@ -333,47 +341,47 @@ const invoiceController = {
         function getQuantityAvailableInRetail(itemID) {
             return new Promise((resolve, reject) => {
                 db.findOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'quantityAvailable retailQuantity', function(result){
-                    var quantityAvailable = parseFloat(result.quantityAvailable) * parseFloat(result.retailQuantity)
-                    resolve(quantityAvailable)
-                })
-            })
+                    var quantityAvailable = parseFloat(result.quantityAvailable) * parseFloat(result.retailQuantity);
+                    resolve(quantityAvailable);
+                });
+            });
         }
 
         function returnToStockUnit(itemID, updatedQuantity) {
             return new Promise((resolve, reject) => {
                 db.findOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'quantityAvailable retailQuantity', function(result){
-                    var quantity = parseFloat(updatedQuantity) / parseFloat(result.retailQuantity)
-                    resolve(quantity)
-                })
-            })
+                    var quantity = parseFloat(updatedQuantity) / parseFloat(result.retailQuantity);
+                    resolve(quantity);
+                });
+            });
         }
 
         async function deductInventory(item) {
-            item.itemID = await getItemID(item.itemDescription)
-            item.unitID = await getUnitID(item.unit)
-            var quantityAvailable = await getQuantityAvailable(item.itemID)
+            item.itemID = await getItemID(item.itemDescription);
+            item.unitID = await getUnitID(item.unit);
+            var quantityAvailable = await getQuantityAvailable(item.itemID);
 
-            var stockItemUnit = await getItemUnit(item.itemID)   //unit they use to keep track of inventory
+            var stockItemUnit = await getItemUnit(item.itemID);   //unit they use to keep track of inventory
 
             var updatedQuantity = 0;
 
             //needs conversion
             if (item.unitID != stockItemUnit.unitID) {
-                quantityAvailable = await getQuantityAvailableInRetail(item.itemID)
+                quantityAvailable = await getQuantityAvailableInRetail(item.itemID);
 
                 //multiplier based on unit bought
-                var boughtItemsMultiplier = await getItemUnitID(item.itemID, item.unitID)
-                var boughtQuantity = parseFloat(item.quantity) * parseFloat(boughtItemsMultiplier.quantity)
+                var boughtItemsMultiplier = await getItemUnitID(item.itemID, item.unitID);
+                var boughtQuantity = parseFloat(item.quantity) * parseFloat(boughtItemsMultiplier.quantity);
                 
-                updatedQuantity = quantityAvailable - boughtQuantity
+                updatedQuantity = quantityAvailable - boughtQuantity;
                 updatedQuantity = await returnToStockUnit(item.itemID, updatedQuantity);
 
-                console.log("quantity available " + quantityAvailable)
-                console.log("boughtQuantity "  + boughtQuantity)
-                console.log("updatedQuantity " + updatedQuantity)
+                console.log("quantity available " + quantityAvailable);
+                console.log("boughtQuantity "  + boughtQuantity);
+                console.log("updatedQuantity " + updatedQuantity);
             } 
             else 
-                updatedQuantity = parseInt(quantityAvailable) - parseInt(item.quantity)
+                updatedQuantity = parseInt(quantityAvailable) - parseInt(item.quantity);
             
             db.updateOne(Items, {itemDescription:item.itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {quantityAvailable: updatedQuantity}, function(result) {
                 
@@ -381,38 +389,38 @@ const invoiceController = {
 
                     if (result1.quantityAvailable <= result1.reorderLevel && result1.quantityAvailable!=0) {
                         db.updateOne(Items, {itemDescription:item.itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {statusID:"618b32205f628509c592daab"}, function(result2) {
-                        })
+                        });
                     }
                     else if (result1.quantityAvailable == 0) {
                         db.updateOne(Items, {itemDescription:item.itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {statusID:"61b0d6751ca91f5969f166de"}, function(result3) {
-                        })
+                        });
                     }
-                })
-            })
+                });
+            });
         }
 
         async function saveItems(invoiceID, items) {
-            var formattedItems = []
+            var formattedItems = [];
             for (var i=0; i<items.length; i++) {
-                items[i].itemID = await getItemID(items[i].itemDescription)
+                items[i].itemID = await getItemID(items[i].itemDescription);
                 items[i].unitID = await getUnitID(items[i].unit);
 
-                var itemUnit = await getItemUnitID(items[i].itemID, items[i].unitID)
+                var itemUnit = await getItemUnitID(items[i].itemID, items[i].unitID);
 
-                deductInventory(items[i])
+                deductInventory(items[i]);
 
                 var item = {
                     invoice_id: invoiceID,
                     itemUnitID: itemUnit._id,
                     quantity: items[i].quantity,
                     discount: items[i].discount
-                }
-                formattedItems.push(item)
+                };
+                formattedItems.push(item);
             }
 
             db.insertMany(InvoiceItems, formattedItems, function(flag) {
                 if (flag)
-                    res.sendStatus(200)
+                    res.sendStatus(200);
             });
         }
 
@@ -420,6 +428,10 @@ const invoiceController = {
         async function saveInvoice() {
             var invoiceNo = await getInvoiceNumber();
             var custID = await getCustomerID(req.body.custName);
+
+            if (custID == null)
+                custID = req.body.custName;
+
              var invoice = {
                 invoiceID: invoiceNo,
                 customerID: custID,
@@ -443,7 +455,7 @@ const invoiceController = {
                         dateDelivered: null,
                         deliveryPersonnel: req.body.employeeID,
                         deliveryNotes: req.body.dnotes
-                    }
+                    };
                     db.insertOne(deliveries, dpackage, function(flag) {if (flag) {}});
                     console.log("delivery invoice added:");
                 }
@@ -460,49 +472,49 @@ const invoiceController = {
          function getItemUnit(itemID) {
             return new Promise((resolve, reject) => {
                 db.findOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'unitID', function(result) {
-                    resolve(result)
-                })
-            })
+                    resolve(result);
+                });
+            });
         }
 
          function getQuantityAvailable(itemID) {
             return new Promise((resolve, reject) => {
                 db.findOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'quantityAvailable', function(result){
-                    resolve(result.quantityAvailable)
-                })
-            })
+                    resolve(result.quantityAvailable);
+                });
+            });
         }
 
         function getQuantityAvailableInRetail(itemID) {
             return new Promise((resolve, reject) => {
                 db.findOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'quantityAvailable retailQuantity', function(result){
-                    var quantityAvailable = parseFloat(result.quantityAvailable) * parseFloat(result.retailQuantity)
-                    resolve(quantityAvailable)
-                })
-            })
+                    var quantityAvailable = parseFloat(result.quantityAvailable) * parseFloat(result.retailQuantity);
+                    resolve(quantityAvailable);
+                });
+            });
         }
 
         async function getPrice() {
 
-            var itemID = await getItemID(req.query.itemDesc)
-            var itemUnit = await getItemUnitID(itemID, req.query.unitID)
+            var itemID = await getItemID(req.query.itemDesc);
+            var itemUnit = await getItemUnitID(itemID, req.query.unitID);
 
             var quantityAvailable=0;
 
-            var stockItemUnit = await getItemUnit(itemID)
+            var stockItemUnit = await getItemUnit(itemID);
 
             //convert quantity avialable to unit needed
             if (req.query.unitID != stockItemUnit.unitID) 
-                quantityAvailable = await getQuantityAvailableInRetail(itemID)
+                quantityAvailable = await getQuantityAvailableInRetail(itemID);
             else
-                quantityAvailable = await getQuantityAvailable(itemID)
+                quantityAvailable = await getQuantityAvailable(itemID);
 
             var info = {
                 quantityAvailable:quantityAvailable, 
                 sellingPrice: parseFloat(itemUnit.sellingPrice).toFixed(2)
-            }
+            };
 
-            res.send(info)
+            res.send(info);
         }
 
         getPrice();
@@ -514,7 +526,7 @@ const invoiceController = {
             number: req.body.custphone,
             address: req.body.custaddress,
             informationStatusID: '618a7830c8067bf46fbfd4e4'
-        }
+        };
         db.insertOne(Customer, newCustomer, function(flag) {
             
         });
@@ -536,7 +548,7 @@ const invoiceController = {
             var invoiceStatusVoid = await getSpecificInvoiceStatusName("Void");
 
             for (var i = 0; i < deliveries.length; i++) {
-                console.log(deliveries[i])
+                console.log(deliveries[i]);
                 var date = new Date(deliveries[i].deliveryDate);
                 var invoice = await getInvoice(deliveries[i].invoice_id);
 
@@ -814,7 +826,7 @@ const invoiceController = {
                 invoiceItems.push(invoiceItem) 
             }
 
-            var customerInfo = await getCustomerInfo(temp_invoiceInfo.customerID)
+            var customerInfo = await getCustomerInfo(temp_invoiceInfo.customerID);
 
             var invoiceInfo = { 
                 invoiceID: temp_invoiceInfo.invoiceID,
@@ -824,7 +836,12 @@ const invoiceController = {
                 total: parseFloat(temp_invoiceInfo.total).toFixed(2)
             }
 
-             res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems})
+            if (customerInfo == false) {
+                var customerName = temp_invoiceInfo.customerID; 
+                res.render('return', {types, invoiceInfo, customerName, paymentTypes, deliveryPersonnel, invoiceItems});
+            }
+            else 
+                res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems});
             
             /*if(req.session.position == "Cashier"){
                 var cashier = req.session.position;
@@ -1070,7 +1087,8 @@ const invoiceController = {
         async function newInvoice(invoiceInfo, invoiceItems, deliveryInfo) {
             var finalInvoiceItems = []
             var invoiceNumber = await getInvoiceNumber()
-            var customerID =  await getCustomerID(invoiceInfo.customerName)
+            var customerID =  await getCustomerID(invoiceInfo.customerName);
+            customerID = customerID._id;
 
             var invoiceID = await makeInvoiceID(invoiceNumber, customerID, invoiceInfo);
 
