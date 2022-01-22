@@ -43,10 +43,15 @@
                 <div>
                     <div class="label-container">
                         <div class="override-label"> Name </div> 
-                        <div class="label-content">{{invoiceInfo.customerName}}</div>
+                        {{#if invoiceInfo.customerName}}
+                            <div class="label-content">{{invoiceInfo.customerName}}</div>
+                        {{else}}
+                            <div class="label-content">{{invoiceInfo.customerID}}</div>
+                        {{/if}}
+
                     </div>
                 </div>
-                {{#if delivery}}
+                {{#if invoiceInfo.customerName}}
                     <div class="label-container" id="address-div">
                         <div class="override-label"> Address </div> 
                         <div class="label-content ">{{customer.address}}</div>
@@ -271,6 +276,15 @@
                     }  
                     else
                         $('#error-amount').css('display', 'block')
+                })
+
+                $('#btn-export-invoice').click(function (e) {
+                    var address = window.location.pathname.split('/');
+                    var invoiceID = address[address.length -1]
+
+                    $.get('/exportInvoice', {invoiceID}, function(result) {
+
+                    })
                 })
                 
             })

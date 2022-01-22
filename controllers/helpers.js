@@ -383,7 +383,7 @@ module.exports = function() {
 	this.getSpecificCustomer = function(customerID) {
 		return new Promise((resolve, reject) => {
 			db.findOne(Customers, {_id: customerID}, 'name', function(result) {
-				resolve (result.name);
+				resolve (result?.name);
 			});
 		});
 	},
@@ -847,6 +847,7 @@ module.exports = function() {
     },
 
     this.numberWithCommas = function(x) {
+    	console.log(x)
     	return x?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 	},
 

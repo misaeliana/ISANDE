@@ -29,12 +29,13 @@ const ItemUnits = require('../models/ItemUnitsModel.js');
 
 require('../controllers/helpers.js')();
 
+const path = require('path');
+
 const fs = require('fs');
 
 const PizZip = require("pizzip");
 
 const Docxtemplater = require("docxtemplater");
-
 
 const invoiceController = {
  
@@ -53,6 +54,7 @@ const invoiceController = {
                     _id: invoices[i]._id,
                     formattedDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
                     invoiceID: invoices[i].invoiceID,
+                    customerID: invoices[i].customerID,
                     customerName: await getSpecificCustomer(invoices[i].customerID),
                     total: numberWithCommas(parseFloat(invoices[i].total).toFixed(2)),
                     type: await getSpecificInvoiceType(invoices[i].typeID),
@@ -100,6 +102,7 @@ const invoiceController = {
             var invoiceInfo = {
                 invoice_id: invoice_id,
                 invoiceID: invoice.invoiceID,
+                customerID: invoice.customerID,
                 customerName: await getSpecificCustomer(invoice.customerID),
                 date: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
                 type: await getSpecificInvoiceType(invoice.typeID),
@@ -172,7 +175,6 @@ const invoiceController = {
             amountDue = numberWithCommas(parseFloat(amountDue).toFixed(2));
 
                 //res.render('viewInvoice', {invoiceInfo, items, delivery, paid, onAccount, paymentHistory, paymentTotal, amountDue});
-
             res.render('viewInvoice', {invoiceInfo, items, delivery, customer, paymentHistory, paymentTotal, amountDue});
                 
             /*if(req.session.position == "Cashier"){
@@ -1153,44 +1155,99 @@ const invoiceController = {
     },
 
     exportInvoice: function(req, res) {
-        var customerName = req.query.customerName
-        var items = JSON.parse(req.query.itemsString)
 
-        var temp_fDate0 = req.query.date.split(",");
-        var temp_fDate = temp_fDate0[0].split("/")
-        var fDate = ""  
-        for (var i=0; i<temp_fDate.length; i++)
-            fDate += temp_fDate[i] + "_"
+        function getInvoice(invoiceID) {
+            return new Promise((resolve, reject) => {
+                db.findOne(Invoices, {_id:invoiceID}, '', function(result) {
+                    resolve(result)
+                })
+            })
+        }
+
+        async function getExportInfo() {
+            var invoiceID = req.query.invoiceID
+            var invoiceInfo = await getInvoice(invoiceID)
+            var temp_invoiceItems = await getInvoiceItems(invoiceID)
+            var items = []
+            for (var i=0; i<temp_invoiceItems.length; i++) {
+                var itemUnitInfo = await getItemUnitInfo(temp_invoiceItems[i].itemUnitID)
+                //console.log(itemUnitInfo.sellingPrice)
+                var item = {
+                    itemDesc: await getItemDescription(itemUnitInfo.itemID),
+                    quantity: temp_invoiceItems[i].quantity,
+                    unit: await getSpecificUnit(itemUnitInfo.unitID),
+                    price: "₱ " + numberWithCommas(parseFloat(itemUnitInfo.sellingPrice).toFixed(2)),
+                    discount: "₱ " + numberWithCommas(parseFloat(temp_invoiceItems[i].discount).toFixed(2)),
+                    amount: "₱ " + numberWithCommas(parseFloat(parseFloat(temp_invoiceItems[i].quantity) * parseFloat(itemUnitInfo.sellingPrice) - parseFloat(temp_invoiceItems[i].discount)).toFixed(2))
+                }
+                items.push(item)
+            }
+
+            var invoiceDate = invoiceInfo.date.toLocaleString('en-US')
+            var temp_fDate0 = invoiceDate.split(",");
+            var temp_fDate = temp_fDate0[0].split("/")
+            var fDate = ""  
+            for (var i=0; i<temp_fDate.length; i++)
+                fDate += temp_fDate[i] + "_"
+
+            var temp_customerName = await getSpecificCustomer(invoiceInfo.customerID)
+            if (temp_customerName == undefined)
+                temp_customerName = invoiceInfo.customerID
+            var customerName = ""
+
+            //for (var i=0; i<customerName.length; i++)
+                customerName += temp_customerName.replace(" ", "_")
+
+            var fileName = fDate + customerName
+
+            //for creating purchase order in docx
+            // Load the docx file as binary content
+            const content = fs.readFileSync(
+                path.resolve("files", "invoice_template.docx"), "binary"
+            );
+
+            const zip = new PizZip(content);
+            
+            const doc = new Docxtemplater(zip, {
+                paragraphLoop: true,
+                linebreaks: true,
+            });
+
+            if (await getSpecificCustomer(invoiceInfo.customerID) == undefined) {
+                // render the document
+                doc.render({
+                    //invoiceNumber: req.query.poNumber,
+                    date: temp_fDate0[0],
+                    customer_name: invoiceInfo.customerID,
+                    address: "",
+                    contact_number: "",
+                    items:items
+                });
+            }
+            else {
+                var customerInfo = await getCustomerInfo(invoiceInfo.customerID)
+                // render the document
+                doc.render({
+                    //invoiceNumber: req.query.poNumber,
+                    date: temp_fDate0[0],
+                    customer_name: customerInfo.name,
+                    address: customerInfo.address,
+                    contact_number: customerInfo.number,
+                    items:items
+                });
+            }
 
 
-        var fileName = fDate + customerName
+            const buf = doc.getZip().generate({ type: "nodebuffer" });
 
-        //for creating purchase order in docx
-        // Load the docx file as binary content
-        const content = fs.readFileSync(
-            path.resolve("files", "po_template.docx"), "binary"
-        );
+            fs.writeFileSync(path.resolve("documents", fileName+".docx"), buf);
+            var dlFileName = '/documents/' + fileName + '.docx'
+            
+            res.sendStatus(200)
 
-        const zip = new PizZip(content);
-        
-        const doc = new Docxtemplater(zip, {
-            paragraphLoop: true,
-            linebreaks: true,
-        });
+        }
 
-        // render the document
-        doc.render({
-            //invoiceNumber: req.query.poNumber,
-            date: temp_fDate0[0],
-            customer_name: supplierInfo.name,
-            items:items
-        });
-
-        const buf = doc.getZip().generate({ type: "nodebuffer" });
-
-        fs.writeFileSync(path.resolve("documents", fileName+".docx"), buf);
-
-        res.sendStatus(200)
+        getExportInfo()
     },
 
 
@@ -1215,7 +1272,6 @@ const invoiceController = {
 
         getInfo()
     }
-
 };
 
 module.exports = invoiceController;

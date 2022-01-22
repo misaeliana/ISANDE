@@ -129,10 +129,6 @@ router.get('/newPurchaseOrder', purchaseOrderController.getCreateNewPurchaseOrde
 
 router.get('/generatePurchaseOrder', purchaseOrderController.generatePurchaseOrder);
 
-router.get('/generatePOGetSuppliers', purchaseOrderController.generatePOGetSuppliers);
-
-router.get('/generatePOChooseSupplier', purchaseOrderController.generatePOChooseSupplier)
-
 router.get('/getItemNamePO', purchaseOrderController.getItems);
 
 //router.get('/getItemUnit', purchaseOrderController.getItemUnit);
@@ -265,6 +261,7 @@ router.post('/newSellingUnit', inventoryController.newSellingUnit);
 router.get('/getItemUnitsInvoice', invoiceController.getItemUnits);
 
 router.get('/getItemUnitsPO', purchaseOrderController.getItemUnitsPO);
+
 
 
 module.exports = router;

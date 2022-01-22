@@ -336,21 +336,43 @@ const purchaseOrderController = {
 
 		function getLowItems() {
 			return new Promise((resolve, reject) => {
-				db.findMany(Items, {$and:[ {$or:[{statusID:"618b32205f628509c592daab"}, {statusID:"61b0d6751ca91f5969f166de"}]}, {informationStatusID:"618a7830c8067bf46fbfd4e4"} ]}, '', function(result) {
+				db.findMany(Items, {$and:[ {$or:[{statusID:"618b32205f628509c592daab"}, {statusID:"61b0d6751ca91f5969f166de"}]}, {informationStatusID:"618a7830c8067bf46fbfd4e4"} ]}, '_id itemDescription EOQ unitID', function(result) {
 					resolve (result);
 				});
 			});
 		}
 
+		function filterSuppliers(suppliers) { 
+			var supplierNames = []
+			var finalSuppliers = []
+			for (var a=0; a<suppliers.length; a++) {
+				if (!supplierNames.includes(suppliers[a].name)) {
+					supplierNames.push(suppliers[a].name)
+					finalSuppliers.push(suppliers[a])
+				}
+			}
+			return finalSuppliers
+		}
+
 		async function getItems() {
 			var items = await getLowItems();
-			var itemCategories = await getItemCategories();
 
 			for (var i=0; i<items.length; i++) {
-				items[i].itemCategory = await getSpecificItemCategory(items[i].categoryID)
-			}
 
-			res.render('generatePO', {items, itemCategories});
+				var temp_suppliers = await getItemSuppliers(items[i]._id);
+				var suppliers = []
+				for (var j=0; j<temp_suppliers.length; j++) {
+					var supplier = {
+						_id: temp_suppliers[j].supplierID,
+						name: await getSupplierName(temp_suppliers[j].supplierID)
+					}
+					suppliers.push(supplier)
+				}
+
+				items[i].suppliers = filterSuppliers(suppliers)
+				items[i].unit = await getSpecificUnit(items[i].unitID)
+			}
+			res.render('generatePO', {items})
 
 			/*if(req.session.position == "Inventory and Purchasing"){
 				var inventoryAndPurchasing = req.session.position;
@@ -365,72 +387,6 @@ const purchaseOrderController = {
 
 		getItems();
 		
-	},
-
-	generatePOGetSuppliers: function(req, res) {
-
-		function getItemFromDescription(itemDescription) {
-			return new Promise((resolve, reject) => {
-				db.findOne(Items, {itemDescription: itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, '', function(result) {
-					resolve(result)
-				})
-			})
-		}
-
-		async function getItemSuppliersName (itemID) {
-			var temp_suppliers = await getItemSuppliers(itemID);
-			var suppliers = []
-			for (var j=0; j<temp_suppliers.length; j++) {
-				var supplier = {
-					_id: temp_suppliers[j].supplierID,
-					name: await getSupplierName(temp_suppliers[j].supplierID)
-				}
-				if (!suppliers.includes(supplier))
-					suppliers.push(supplier)
-			}
-			return suppliers
-		}
-
-		async function getItems() {
-			var temp_orderItems = JSON.parse(req.query.orderItemsString)
-			var orderItems = []
-
-			for (var a=0; a<temp_orderItems.length;a++) {
-				var temp_item  =  await getItemFromDescription(temp_orderItems[a])			
-
-				var item = {
-					itemDescription: temp_item.itemDescription,
-					EOQ: temp_item.EOQ,
-					unit: await getSpecificUnit(temp_item.unitID),
-					suppliers:  await getItemSuppliersName(temp_item._id)
-				}
-				orderItems.push(item)
-			}
-
-			console.log(orderItems)
-
-			var strOrderItems = JSON.stringify(orderItems)
-			res.cookie('strOrderItems', strOrderItems)
-			res.redirect("/generatePOChooseSupplier");
-
-			/*if(req.session.position == "Inventory and Purchasing"){
-				var inventoryAndPurchasing = req.session.position;
-				res.render('generatePO', {items, inventoryAndPurchasing});	
-			}
-
-			if(req.session.position == "Manager"){
-				var manager = req.session.position;
-				res.render('generatePO', {items, manager});
-			}*/
-		}
-
-		getItems();
-	},
-
-	generatePOChooseSupplier: function(req, res) {
-		var orderItems = JSON.parse(req.cookies['strOrderItems'])
-		console.log(orderItems)
-		res.render('generatePOChooseSupplier', {orderItems})
 	},
 
 	addItemSupplier: function(req, res) {
@@ -490,18 +446,6 @@ const purchaseOrderController = {
 
 			for (var i=0; i<uniqueSuppliers.length; i++) {
 
-				var poItems = [];
-				for (var j=0; j<items.length; j++) {
-					if (uniqueSuppliers[i] == items[j].supplier) {
-						var item = {
-							itemID: await getItemID(items[j].itemDescription),
-							unitID: await getUnitID(items[j].unit),
-							quantity: items[j].quantity
-						};
-						poItems.push(item);
-					}
-				}
-
 				var purchase = {
 					purchaseOrderNumber: await getPONumber(),
 					supplierID: uniqueSuppliers[i],
@@ -513,10 +457,21 @@ const purchaseOrderController = {
 					total: 0,
 					statusID: "618f650546c716a39100a809"
 				};
-				
+
 				var purchaseID = await savePurchase(purchase)
-				for (var k=0; k<poItems.length; k++)
-						poItems[k].purchaseOrderID = purchaseID;
+
+				var poItems = [];
+				for (var j=0; j<items.length; j++) {
+					if (uniqueSuppliers[i] == items[j].supplier) {
+						var item = {
+							purchaseOrderID: purchaseID,
+							itemID: await getItemID(items[j].itemDescription),
+							unitID: items[j].unit,
+							quantity: items[j].quantity
+						};
+						poItems.push(item);
+					}
+				}
 
 				db.insertMany(PurchasedItems, poItems, function(flag) {
 					if (flag) { }
@@ -930,11 +885,9 @@ const purchaseOrderController = {
 	getItemUnitsPO: function(req, res) {
 		 async function getInfo() {
             var itemID = await getItemID(req.query.itemDesc)
-            console.log(itemID.toString())
-            var supplierID = await getSupplierID(req.query.supplierName);
-            console.log(supplierID.toString())
+            var supplierID = req.query.supplierID;
 
-            var temp_itemUnits = await getSupplierItemsUnits(itemID.toString(), supplierID.toString())
+            var temp_itemUnits = await getSupplierItemsUnits(itemID.toString(), supplierID)
 
             var itemUnits = []
 
@@ -944,8 +897,6 @@ const purchaseOrderController = {
             	unit: await getSpecificUnit(item.unitID)
             }
             itemUnits.push(itemUnit)
-
-            console.log(temp_itemUnits)
 
             for (var i=0; i<temp_itemUnits.length; i++) {
             	if (temp_itemUnits[i].unitID != itemUnits[0].id)
@@ -957,6 +908,8 @@ const purchaseOrderController = {
                     itemUnits.push(itemUnit)
                 }
             }
+
+            console.log(itemUnits)
             res.send(itemUnits)
         }
 

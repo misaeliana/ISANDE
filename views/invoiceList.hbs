@@ -62,7 +62,11 @@
                             <tr class="link" style="cursor: pointer" data-href="/invoices/{{_id}}">
                                 <td>{{formattedDate}}</td>
                                 <td style="text-align: right;">{{invoiceID}}</td>
-                                <td>{{customerName}}</td>
+                                {{#if customerName}}
+                                    <td>{{customerName}}</td>
+                                {{else}}
+                                    <td>{{customerID}}</td>
+                                {{/if}}
                                 <td style="text-align: right;">₱ {{total}}</td>
                                 <td>{{type}}</td>
                                 <td><button class="btn-status btn-{{status}} status-id">{{status}}</button></td>
