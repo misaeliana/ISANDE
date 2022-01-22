@@ -43,12 +43,7 @@
                 <div>
                     <div class="label-container">
                         <div class="override-label"> Name </div> 
-                        {{#if invoiceInfo.customerName}}
-                            <div class="label-content">{{invoiceInfo.customerName}}</div>
-                        {{else}}
-                            <div class="label-content">{{invoiceInfo.customerID}}</div>
-                        {{/if}}
-
+                        <div class="label-content">{{invoiceInfo.customerName}}</div>
                     </div>
                 </div>
                 {{#if invoiceInfo.customerName}}

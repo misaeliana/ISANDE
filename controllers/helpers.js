@@ -618,7 +618,7 @@ module.exports = function() {
 	this.getCustomerID = function(customerName) {
 		return new Promise((resolve, reject) => {
 			db.findOne(Customers, {name:customerName, informationStatusID:"618a7830c8067bf46fbfd4e4"}, '_id', function(result){
-				resolve(result._id)
+				resolve(result);
 			}) 
 		})
 	},
