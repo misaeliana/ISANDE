@@ -40,21 +40,30 @@
                 <!--<h3 class="h3-right">{{invoiceInfo.date}}</h3>-->
             </div>
 
-                <div>
-                    <div class="label-container">
-                        <div class="override-label"> Name </div> 
-                        <div class="label-content">{{invoiceInfo.customerName}}</div>
+                {{#if customerName}}
+                      <div>
+                        <div class="label-container">
+                            <div class="override-label"> Name </div> 
+                            <div class="label-content">{{customerName}}</div>
+                        </div>
                     </div>
-                </div>
-                {{#if invoiceInfo.customerName}}
-                    <div class="label-container" id="address-div">
-                        <div class="override-label"> Address </div> 
-                        <div class="label-content ">{{customer.address}}</div>
-                    </div>
-                    <div class="label-container" id="contantNum-div"> 
-                        <div class="override-label"> Contact Number </div> 
-                        <div class="label-content">{{customer.number}}</div>
-                    </div>
+                {{/if}}
+
+                {{#if customer}}
+                        <div class="label-container">
+                            <div class="override-label"> Name </div> 
+                            <div class="label-content">{{invoiceInfo.customerName}}</div>
+                        </div>
+                    {{#if delivery}}
+                        <div class="label-container" id="address-div">
+                            <div class="override-label"> Address </div> 
+                            <div class="label-content ">{{customer.address}}</div>
+                        </div>
+                        <div class="label-container" id="contantNum-div"> 
+                            <div class="override-label"> Contact Number </div> 
+                            <div class="label-content">{{customer.number}}</div>
+                        </div>
+                    {{/if}}
                 {{/if}}
             
                 <div style="height: 20px"></div>
