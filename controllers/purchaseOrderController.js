@@ -34,9 +34,10 @@ const purchaseOrderController = {
 		async function getPurchaseInfo (result) {
 			var purchases = [];
 			for (var i=0; i<result.length; i++) {
+				var date = new Date(result[i].date);
 				var purchase = {
 					poID: result[i]._id,
-					date: result[i].date.toLocaleString('en-US'), 
+					date: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(), 
 					poNumber: result[i].purchaseOrderNumber,
 					supplier: await getSupplierName(result[i].supplierID),
 					amount: parseFloat(result[i].total).toFixed(2), 

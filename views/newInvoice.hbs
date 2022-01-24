@@ -540,7 +540,9 @@
                    var quantity = $('#qty').val();
                    var discount = $('#discount').val();
                    if (discount == "")
-                        discount = 0                   
+                        discount = parseFloat(0).toFixed(2);
+                    else 
+                        discount = parseFloat(discount).toFixed(2);                   
                     
                     if(filled(itemDesc, qty) == 0) {
                         $.get('/getItemPrice', {itemDesc, quantity, unitID}, function (result) {
@@ -568,9 +570,9 @@
                                         <td class="qty" style="text-align:right;">${quantity}</td>
                                         <td class="unit">${unit}</td>
                                         <td class="price" style="text-align:right;">₱ ${sellingPrice}</td>
-                                        <td class="discount" style="color:red" style="text-align:right;">₱${discount}</td>
+                                        <td class="discount" style="color:red; text-align:right;">₱${discount}</td>
                                         <td class ="amount" style="text-align:right;">₱ ${totalPrice}</td>
-                                        <td><button class="delete-button add-stock-delete-btn" id="btn-delete-item"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
+                                        <td style="text-align:right;"><button class="delete-button add-stock-delete-btn" id="btn-delete-item"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
                                     </tr>`);
                                     //console.log(amount);
                                     computeTotal();

@@ -52,7 +52,7 @@
 
             {{#if manager}}
                 <div class="options">
-                    <div class="column"><a href="#"><button type="button">Reports</button></a></div>
+                    <div class="column"><button type="button" data-toggle="modal" data-target="#modal-report">Reports</button></div>
                     <div class="column"><a href="employees"><button type="button">Employees</button></a></div>
                 </div>
                 <div class="options">
@@ -70,7 +70,65 @@
                     <div class="column"><a href="suppliers"><button type="button">Suppliers</button></a></div>
                 </div>
             {{/if}}
+
+            <!-- Modal -->
+            <div class="modal fade" id="modal-report" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="exampleModalLongTitle">Select Report</h3>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="report" id="radio-sales-report" value="sales-report" checked>
+                                <label class="form-check-label" for="radio-sales-report">Sales Report</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="report" id="radio-sales-per-customer-report" value="sales-per-customer-report">
+                                <label class="form-check-label" for="radio-sales-per-customer-report">Sales Per Customer Report</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="report" id="radio-sales-performance-report" value="sales-performance-report">
+                                <label class="form-check-label" for="radio-sales-performance-report">Sales Performance Report</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="report" id="radio-inventory-performance-report" value="inventory-performance-report">
+                                <label class="form-check-label" for="radio-inventory-performance-report">Inventory Performance Report</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="report" id="radio-purchases-report" value="purchases-report">
+                                <label class="form-check-label" for="radio-purchases-report">Purchases Report</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="modal-btn-grey" data-dismiss="modal">Cancel</button>
+                            <button type="button" class="modal-btn-light-blue" id="btn-report-choice">Continue</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div> 
+     <script>
+            $(document).ready(function() {
+
+                $('#btn-report-choice').click(function() {
+                    var radioVal = $("input[name='report']:checked").val();
+
+                    if (radioVal == "sales-report") {
+                        window.location = "/salesReport";
+                    } else if (radioVal == "sales-per-customer-report") {
+                        window.location = "/salesPerCustomer";
+                    } else if (radioVal == "sales-performance-report") {
+                        window.location = "/salesPerformanceReport";
+                    } else if (radioVal == "inventory-performance-report") {
+                        window.location = "/inventoryPerformanceReport";
+                    } else if (radioVal == "purchases-report") {
+                        window.location = "/purchaseReport";
+                    }
+                    
+                })
+            })
+        </script>
 </body>
 </html>
