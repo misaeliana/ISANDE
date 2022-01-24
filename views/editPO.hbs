@@ -181,7 +181,7 @@
                                 <td class="classItemDescription">{{itemDescription}}</td>
                                 <td><input class="classQty form-control" style="text-align: right; width: 200px;" type="number" value="{{quantity}}"></td>
                                 <td class="classUnit">{{unitName}}</td>
-                                <td> <button class="delete-button delete-item-btn"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button> </td>
+                                <td style="text-align: right;"> <button class="delete-button delete-item-btn"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button> </td>
                             </tr>
                         {{/each}}
                     {{else}}
@@ -318,7 +318,7 @@
                             <td class="classItemDescription">${itemDesc}</td>
                             <td><input class="classQty form-control" type="number" style="text-align:right; width: 200px;" value="${qty}"</td>
                             <td class="classUnit">${unit}</td>
-                            <td> <button class="delete-button delete-item-btn"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button> </td>
+                            <td style="text-align: right;"> <button class="delete-button delete-item-btn"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button> </td>
                         </tr>`);
 
                         $('#itemDescription').val('');
@@ -695,7 +695,7 @@
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td> <button class="delete-button delete-item-btn"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button> </td>
+                                <td style="text-align: right;"> <button class="delete-button delete-item-btn"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button> </td>
                             </tr>`)
                         $(this).remove();
                         $('#btn-update-new-po').prop('disabled',true)

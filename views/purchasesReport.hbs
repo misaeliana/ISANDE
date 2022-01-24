@@ -50,7 +50,7 @@
                         {{#each purchases}}
                             <tr>
                                 <td>{{dateMade}}</td>
-                                <td>{{poNumber}}</td>
+                                <td style="text-align: right;">{{poNumber}}</td>
                                 <td>{{supplier}}</td>
                                 <td>{{dateReceived}}</td>
                                 <td style="text-align: right;">₱ {{amountPaid}}</td>
@@ -105,10 +105,10 @@
                                     $("#table-purchase-report-body").append(
                                         `  <tr> 
                                             <td>${result[i].dateMade}</td>
-                                            <td>${result[i].poNumber}</td>
+                                            <td style="text-align: right;">${result[i].poNumber}</td>
                                             <td>${result[i].supplier}</td>
                                             <td>${result[i].dateReceived}</td>
-                                            <td>₱ ${amountPaid}</td>
+                                            <td style="text-align: right;">₱ ${amountPaid}</td>
                                         </tr>`
                                     );
                                     total += parseFloat(result[i].amountPaid);
