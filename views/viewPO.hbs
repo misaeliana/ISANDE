@@ -82,6 +82,12 @@
                         <div class="override-label"> Contact Number </div> 
                         <div class="label-content" id="view-PO-contact-number">{{supplier.number}}</div>
                     </div>
+                    {{#if supplier.number2}} 
+                        <div class="label-container">
+                            <div class="override-label"> Contact Number 2</div> 
+                            <div class="label-content" id="view-PO-contact-number">{{supplier.number2}}</div>
+                        </div>
+                    {{/if}}
                     <div class="label-container">
                         <div class="override-label"> Address </div> 
                         <div class="label-content" id="view-PO-address-content">{{supplier.address}}</div>

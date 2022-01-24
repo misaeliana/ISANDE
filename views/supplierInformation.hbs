@@ -50,10 +50,12 @@
                         <div class="label-content">{{supplierInfo.number2}}  </div>
                     </div>
                     {{/if}}
+                    {{#if supplierInfo.email}}
                     <div class="label-container">
                         <div class="override-label"> Email Address </div> 
                         <div class="label-content">{{supplierInfo.email}}  </div>
                     </div>
+                    {{/if}}
                   <div class="label-container">
                         <div class="override-label"> Address </div> 
                         <div class="label-content">{{supplierInfo.address}}  </div>
@@ -277,10 +279,10 @@
                         $('#contact-number').css("border", "1px solid #B00000");
                         $('#error-contact-number').text("Invalid conact number");
                     }
-                    else if (type == "noEmail") {
+                    /*else if (type == "noEmail") {
                         $('#email').css("border", "1px solid #B00000");
                         $('#error-email').text("Invalid email");
-                    }
+                    }*/
                     else if (type == "noAddress") {
                         $('#address').css("border", "1px solid #B00000");
                         $('#error-address').text("Input address");
@@ -305,14 +307,14 @@
                         return 0;
                 }     
                 
-                function emailValidation(email) {
+                /*function emailValidation(email) {
                     if (email == null || email == "") {
                         errorMessage("noEmail")
                         return 1;
                     }
                     else 
                         return 0;
-                }
+                }*/
 
 
                 function addressValidation(address) {
@@ -334,8 +336,7 @@
                     var email = $('#email').val();
                     var address = $('#address').val();
 
-                    if (!contactPersonValidation(contactPerson) &&!numberValidation(number) 
-                    && !emailValidation(email) && !addressValidation(address)) {
+                    if (!contactPersonValidation(contactPerson) &&!numberValidation(number) && !addressValidation(address)) {
 
                             $('#contact-person').css("border", "1px solid #DDDDDD");
                             $('#contact-number').css("border", "1px solid #DDDDDD");

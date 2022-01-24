@@ -275,7 +275,7 @@
                         </div>
                     </div>
 
-                    <div class="btn-export-invoice"><button class="btn-dark-blue" id="btn-export-invoice">Export</button></div>
+                    <!--<div class="btn-export-invoice"><button class="btn-dark-blue" id="btn-export-invoice">Export</button></div>-->
 
                     <div style="height: 20px"></div>
         </div>
@@ -708,7 +708,7 @@
                                 subtotal: parseFloat($('#subtotal').text().slice(1)),
                                 vat: parseFloat($('#vat').text().slice(1)),
                                 discount: parseFloat($('#discount').text().slice(1)),
-                                total: parseFloat($('#orderTotal').text().slice(1))
+                                total: parseFloat($('#total').text().slice(1))
                             }
 
                             deliveryInfo = {
@@ -726,7 +726,7 @@
                                 subtotal: parseFloat($('#subtotal').text().slice(1)),
                                 vat: parseFloat($('#vat').text().slice(1)),
                                 discount: parseFloat($('#discount').text().slice(1)),
-                                total: parseFloat($('#orderTotal').text().slice(1))
+                                total: parseFloat($('#total').text().slice(1))
                             }
                             deliveryInfo= {};
                         }
@@ -738,7 +738,7 @@
                         $.post('/saveReturn', {oldInvoiceID, invoiceInfoString, returnsString, newInvoiceItemsString, deliveryInfoString}, function(result) {
                                 alert("Return processed")
                                 window.location = `/invoices/${result}`;
-                        })  
+                        }) 
 
                     }
                     else

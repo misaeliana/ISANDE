@@ -50,7 +50,8 @@
                     <p class="error" id="no-suppler">Supplier does not exist</p>
                 </div>
                 <input type="text" class="form-control margin-bottom-10" id="contactPerson" name="contactPerson" placeholder="Contact Person">
-                <input type="text" class="form-control margin-bottom-10" id="contactNumber" name="contactNumber" placeholder="Contact Number">
+                <input type="number" class="form-control margin-bottom-10" id="contactNumber" name="contactNumber" placeholder="Contact Number">
+                <input type="number" class="form-control margin-bottom-10" id="contactNumber2" name="contactNumber2" placeholder="Contact Number 2" style="display:none">
                 <input type="text" class="form-control margin-bottom-10" id="address" name="Address" placeholder="Address">   
             </div>
 
@@ -192,6 +193,15 @@
                         $('#contactPerson').val(result.contactPerson);
                         $('#contactNumber').val(result.number);
                         $('#address').val(result.address);
+
+                        if (result?.number2 != undefined) {
+                            $('#contactNumber2').css('display', 'block')
+                            $('#contactNumber2').val(result.number2)
+                        }
+                        else {
+                            $('#contactNumber2').css('display', 'none')
+                            $('#contactNumber2').val('')
+                        }
                     });
                 }
             });

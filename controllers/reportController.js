@@ -202,6 +202,7 @@ const reportController = {
                 var sellingUnits = await getItemUnits(inventory[i]._id)
 
                 for (var j=0; j<sellingUnits.length; j++) {
+
                     var unitsSold = 0;
                     var itemTotal = 0;
 
@@ -209,7 +210,9 @@ const reportController = {
                     for (var k = 0 ; k < invoiceItems.length; k++) {
                         var itemUnitInfo = await getItemUnitInfo(invoiceItems[k].itemUnitID)
 
-                        if ((await getItemDescription(itemUnitInfo.itemID) == inventory[i].itemDescription) && (sellingUnits[j].unitID == itemUnitInfo.unitID) && (await checkInvoicePaid(invoiceItems[k].invoice_id) == paidStatus)) {
+                        console.log(invoiceItems[k].invoice_id)
+
+                        if ((itemUnitInfo.itemID == inventory[i]._id) && (sellingUnits[j].unitID == itemUnitInfo.unitID) && (await checkInvoicePaid(invoiceItems[k].invoice_id) == paidStatus)) {
                             unitsSold += parseFloat(invoiceItems[k].quantity);
                             itemTotal += (invoiceItems[k].quantity * parseFloat(itemUnitInfo.sellingPrice)) - invoiceItems[k].discount;
                         }

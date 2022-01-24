@@ -59,12 +59,31 @@ const supplierController = {
 
 		var supplier
 
-		if (req.body.number2 == "") {
+		if (req.body.number2 == "" && req.body.email == "") {
+			supplier = {
+				name: req.body.name,
+	            contactPerson: req.body.contactPerson,
+				number: req.body.number,
+				address: req.body.address,
+				informationStatusID: "618a7830c8067bf46fbfd4e4"
+			};
+		}
+		else if (req.body.number2 == "" && req.body.email != "") {
 			supplier = {
 				name: req.body.name,
 	            contactPerson: req.body.contactPerson,
 				number: req.body.number,
 	            email: req.body.email,
+				address: req.body.address,
+				informationStatusID: "618a7830c8067bf46fbfd4e4"
+			};
+		}
+		else if (req.body.number2 != "" && req.body.email == "") {
+			supplier = {
+				name: req.body.name,
+	            contactPerson: req.body.contactPerson,
+				number: req.body.number,
+	            number2: req.body.number2,
 				address: req.body.address,
 				informationStatusID: "618a7830c8067bf46fbfd4e4"
 			};

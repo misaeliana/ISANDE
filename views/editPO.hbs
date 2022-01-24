@@ -92,8 +92,13 @@
                             <label for="contactPerson">Contact Person</label><input type="text" class="margin-bottom-10 supplierInfoInput" id="contactPerson" name="contactPerson" value="{{supplier.contactPerson}}">
                         </div>
                         <div style="display: flex; align-items: center; padding:10px">
-                            <label for="contactNumber">Contact Number</label><input type="text" class="margin-bottom-10 supplierInfoInput" id="contactNumber" name="contactNumber" value="{{supplier.number}}">
+                            <label for="contactNumber">Contact Number</label><input type="number" class="margin-bottom-10 supplierInfoInput" id="contactNumber" name="contactNumber" value="{{supplier.number}}">
                         </div>
+                        {{#if supplier.number2}}
+                            <div style="display: flex; align-items: center; padding:10px" id="div-number-2">
+                                <label for="contactNumber2">Contact Number 2</label><input type="number" class="margin-bottom-10 supplierInfoInput" id="contactNumber2" name="contactNumber2" value="{{supplier.number2}}">
+                            </div>
+                        {{/if}}
                         <div style="display: flex; align-items: center; padding:10px">
                             <label for="address">Address</label><input type="text" class="margin-bottom-10 supplierInfoInput" id="Address" name="Address" value="{{supplier.address}}">   
                         </div>
@@ -356,6 +361,15 @@
                             $('#contactPerson').val(result.contactPerson);
                             $('#number').val(result.number);
                             $('#address').val(result.address)
+
+                            if (result?.number2 != undefined) {
+                                $('#div-number-2').css('display', 'flex')
+                                $('#contactNumber2').val(result.number2)
+                            }
+                            else {
+                                $('#div-number-2').css('display', 'none')
+                                $('#div-number-2').val('')
+                            }
                         })
 
                         var forceBreak = false

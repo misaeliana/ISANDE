@@ -199,13 +199,6 @@ const purchaseOrderController = {
 
 	getPurchaseOrder: function(req, res) {
 
-		function getSupplierInfo(supplierID) {
-			return new Promise((resolve, reject) => {
-				db.findOne(Suppliers, {_id:supplierID}, 'name contactPerson number address', function(result) {
-					resolve(result);
-				});
-			});
-		}
 
 		function getPOInfo (poID) {
 			return new Promise((resolve, reject) => {
@@ -231,7 +224,7 @@ const purchaseOrderController = {
 			}
 
 			var poInfo = purchaseInfo
-			var supplier = await getSupplierInfo(poInfo.supplierID);
+			var supplier = await getSpecificSupplier(poInfo.supplierID);
 			poInfo.fdateMade = poInfo.date.toLocaleString('en-US');
 			poInfo.employeeName = await getEmployeeName(poInfo.employeeID);
 
@@ -557,7 +550,7 @@ const purchaseOrderController = {
 	},
 
 	getSupplierInformation: function(req, res) {
-		db.findOne(Suppliers, {name:req.query.supplierName, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name contactPerson number address', function(result) {
+		db.findOne(Suppliers, {name:req.query.supplierName, informationStatusID:"618a7830c8067bf46fbfd4e4"}, '', function(result) {
 			res.send(result)
 		})
 	},

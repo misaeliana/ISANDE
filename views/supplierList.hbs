@@ -172,10 +172,10 @@
                         $('#error-contact-number').text("Invalid contact number");
                     }
 
-                    else if (type == "noEmail") {
+                    /*else if (type == "noEmail") {
                         $('#email').css("border", "1px solid #B00000");
                         $('#error-email').text("Invalid email");
-                    }
+                    }*/
 
                     else if (type == "noAddress") {
                         $('#address').css("border", "1px solid #B00000");
@@ -212,14 +212,14 @@
 
 
 
-                function emailValidation(email) {
+                /*function emailValidation(email) {
                     if (email == null || email == "") {
                         errorMessage("noEmail")
                         return 1;
                     }
                     else 
                         return 0;
-                }
+                }*/
 
 
                 function addressValidation(address) {
@@ -240,7 +240,7 @@
                     var email = $('#email').val();
                     var address = capitalize($('#address').val());
 
-                    if (!supplierNameValidation(name) && !contactPersonValidation(contactPerson) && !numberValidation(number) && !emailValidation(email) && !addressValidation(address)) {
+                    if (!supplierNameValidation(name) && !contactPersonValidation(contactPerson) && !numberValidation(number) && !addressValidation(address)) {
 
                             $('#supplier-name').css("border", "1px solid #DDDDDD");
                             $('#contact-person').css("border", "1px solid #DDDDDD");
