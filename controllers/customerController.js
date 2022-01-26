@@ -12,40 +12,45 @@ require('../controllers/helpers.js')();
 const customerController = {
 
 	getCustomerList: function(req, res) {
-		db.findMany(Customers, {informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name number address', function (result) {
-			var customers = [];
-			for (var i=0; i<result.length; i++) {
-				var customer = {
-					customerID: result[i]._id,
-					name: result[i].name,
-					number: result[i].number,
-					address: result[i].address
-				};
-				customers.push(customer);
-			}
-			//sort function 
-			// if return value is > 0 sort b before a
-			// if reutrn value is < 0 sort a before b
-			customers.sort(function(a, b) {
-			    var textA = a.name.toUpperCase();
-			    var textB = b.name.toUpperCase();
-			    //syntax is "condition ? value if true : value if false"
-			    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+		//if(req.session.position != "Cashier" || req.session.position != "Manager"){
+            //res.redirect('/dashboard');
+        //}
+        //else{
+			db.findMany(Customers, {informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name number address', function (result) {
+				var customers = [];
+				for (var i=0; i<result.length; i++) {
+					var customer = {
+						customerID: result[i]._id,
+						name: result[i].name,
+						number: result[i].number,
+						address: result[i].address
+					};
+					customers.push(customer);
+				}
+				//sort function 
+				// if return value is > 0 sort b before a
+				// if reutrn value is < 0 sort a before b
+				customers.sort(function(a, b) {
+					var textA = a.name.toUpperCase();
+					var textB = b.name.toUpperCase();
+					//syntax is "condition ? value if true : value if false"
+					return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+				});
+
+					res.render('customerList', {customers});	
+
+
+				/*if(req.session.position == "Cashier"){
+					var cashier = req.session.position;
+					res.render('customerList', {customers, cashier});	
+				}
+
+				if(req.session.position == "Manager"){
+					var manager = req.session.position;
+					res.render('customerList', {customers, manager});
+				}*/
 			});
-
-                res.render('customerList', {customers});	
-
-
-			/*if(req.session.position == "Cashier"){
-                var cashier = req.session.position;
-                res.render('customerList', {customers, cashier});	
-            }
-
-            if(req.session.position == "Manager"){
-                var manager = req.session.position;
-                res.render('customerList', {customers, manager});
-			}*/
-		});
+		//}
 	},
 
 	postCustomerInformation: function(req, res) {
@@ -70,75 +75,79 @@ const customerController = {
 	},
 
 	getViewCustomer: function(req, res) {
-
-		async function getCustomerInformation() {
-			var customerInfo = await getCustomerInfo(req.params.customerID);
-			var temp_customerInvoices = await getCustomerInvoices(req.params.customerID);
-			var customerInvoices = [] ;
-			for (var i=0; i<temp_customerInvoices.length; i++) {
-				var temp_date = new Date(temp_customerInvoices[i].date);
-				var invoice = {
-					invoiceID: temp_customerInvoices[i]._id,
-					date: temp_date.getMonth() + 1 + "/" + temp_date.getDate() + "/" + temp_date.getFullYear(),
-					invoiceNumber: temp_customerInvoices[i].invoiceID,
-					total: numberWithCommas(parseFloat(temp_customerInvoices[i].total).toFixed(2)),
-					type: await getSpecificInvoiceType(temp_customerInvoices[i].typeID),
-					status: await getSpecificInvoiceStatus(temp_customerInvoices[i].statusID)
-				};
-				customerInvoices.push(invoice);
-			}
-
-
-			var temp_unpaidInvoices = await getUnpaidInvoices(req.params.customerID);
-			var unpaidInvoices = [];
-			var totalAmountDue = 0;
-			for (var i=0; i<temp_unpaidInvoices.length; i++) {
-				var temp_date = new Date(temp_customerInvoices[i].date);
-				var total = temp_unpaidInvoices[i].total;
-				var amountPaid = await getAmountPaid(temp_unpaidInvoices[i]._id);
-				var due = total - amountPaid
-				var invoice = {
-					invoiceID: temp_unpaidInvoices[i]._id,
-					date: temp_date.getMonth() + 1 + "/" + temp_date.getDate() + "/" + temp_date.getFullYear(),
-					invoiceNumber: temp_unpaidInvoices[i].invoiceID,
-					total: numberWithCommas(parseFloat(total).toFixed(2)),
-					paid: numberWithCommas(parseFloat(amountPaid).toFixed(2)),
-					due: numberWithCommas(parseFloat(due).toFixed(2)),
-				};
-
-				totalAmountDue += parseFloat(due).toFixed(2);
-				unpaidInvoices.push(invoice);
-			}
-			totalAmountDue = numberWithCommas(parseFloat(totalAmountDue).toFixed(2));
-
-			if (unpaidInvoices.length==0) {
-				/*if(req.session.position == "Cashier"){
-					var cashier = req.session.position;
-					res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue, cashier});
+		//if(req.session.position != "Cashier" || req.session.position != "Manager"){
+            //res.redirect('/dashboard');
+        //}
+        //else{
+			async function getCustomerInformation() {
+				var customerInfo = await getCustomerInfo(req.params.customerID);
+				var temp_customerInvoices = await getCustomerInvoices(req.params.customerID);
+				var customerInvoices = [] ;
+				for (var i=0; i<temp_customerInvoices.length; i++) {
+					var temp_date = new Date(temp_customerInvoices[i].date);
+					var invoice = {
+						invoiceID: temp_customerInvoices[i]._id,
+						date: temp_date.getMonth() + 1 + "/" + temp_date.getDate() + "/" + temp_date.getFullYear(),
+						invoiceNumber: temp_customerInvoices[i].invoiceID,
+						total: numberWithCommas(parseFloat(temp_customerInvoices[i].total).toFixed(2)),
+						type: await getSpecificInvoiceType(temp_customerInvoices[i].typeID),
+						status: await getSpecificInvoiceStatus(temp_customerInvoices[i].statusID)
+					};
+					customerInvoices.push(invoice);
 				}
-	
-				if(req.session.position == "Manager"){
-					var manager = req.session.position;
-					res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue, manager});
-				}*/
-				res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue})
-			}
-			else {
-				/*if(req.session.position == "Cashier"){
-					var cashier = req.session.position;
-					res.render('customerInformation', {customerInfo, customerInvoices, unpaidInvoices, totalAmountDue, cashier});
+
+
+				var temp_unpaidInvoices = await getUnpaidInvoices(req.params.customerID);
+				var unpaidInvoices = [];
+				var totalAmountDue = 0;
+				for (var i=0; i<temp_unpaidInvoices.length; i++) {
+					var temp_date = new Date(temp_customerInvoices[i].date);
+					var total = temp_unpaidInvoices[i].total;
+					var amountPaid = await getAmountPaid(temp_unpaidInvoices[i]._id);
+					var due = total - amountPaid
+					var invoice = {
+						invoiceID: temp_unpaidInvoices[i]._id,
+						date: temp_date.getMonth() + 1 + "/" + temp_date.getDate() + "/" + temp_date.getFullYear(),
+						invoiceNumber: temp_unpaidInvoices[i].invoiceID,
+						total: numberWithCommas(parseFloat(total).toFixed(2)),
+						paid: numberWithCommas(parseFloat(amountPaid).toFixed(2)),
+						due: numberWithCommas(parseFloat(due).toFixed(2)),
+					};
+
+					totalAmountDue += parseFloat(due).toFixed(2);
+					unpaidInvoices.push(invoice);
 				}
-	
-				if(req.session.position == "Manager"){
-					var manager = req.session.position;
-					res.render('customerInformation', {customerInfo, customerInvoices, unpaidInvoices, totalAmountDue, manager});
-				}*/
-				res.render('customerInformation', {customerInfo, customerInvoices, unpaidInvoices, totalAmountDue});
+				totalAmountDue = numberWithCommas(parseFloat(totalAmountDue).toFixed(2));
 
+				if (unpaidInvoices.length==0) {
+					/*if(req.session.position == "Cashier"){
+						var cashier = req.session.position;
+						res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue, cashier});
+					}
+		
+					if(req.session.position == "Manager"){
+						var manager = req.session.position;
+						res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue, manager});
+					}*/
+					res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue})
+				}
+				else {
+					/*if(req.session.position == "Cashier"){
+						var cashier = req.session.position;
+						res.render('customerInformation', {customerInfo, customerInvoices, unpaidInvoices, totalAmountDue, cashier});
+					}
+		
+					if(req.session.position == "Manager"){
+						var manager = req.session.position;
+						res.render('customerInformation', {customerInfo, customerInvoices, unpaidInvoices, totalAmountDue, manager});
+					}*/
+					res.render('customerInformation', {customerInfo, customerInvoices, unpaidInvoices, totalAmountDue});
+
+				}
 			}
-		}
 
-		getCustomerInformation();
+			getCustomerInformation();
+		//}
 	},
 
 	postUpdateInformation: function (req, res) {
@@ -146,26 +155,26 @@ const customerController = {
 		function updateInvoices(oldID, newID) {
 			db.updateMany(Invoices, {customerID:oldID}, {customerID:newID}, function(result) {
 
-			})
+			});
 		}	
 
 		var customerID = req.body.customerID;
 
 		db.updateOne(Customers, {_id:customerID}, {informationStatusID:"618a783cc8067bf46fbfd4e5"}, function(flag) {
 			if (flag) { }
-		})
+		});
 
 		var customer = {
 			name:req.body.name,
 			number:req.body.number, 
 			address:req.body.address,
 			informationStatusID: "618a7830c8067bf46fbfd4e4"
-		}
+		};
 
 		db.insertOneResult(Customers, customer, function(result) {
 			updateInvoices(customerID, result._id);
-			res.send(result._id)
-		})
+			res.send(result._id);
+		});
 	},
 
 	deleteCustomer: function(req, res) {
@@ -201,10 +210,10 @@ const customerController = {
 			var unpaidInvoices = await getUnpaidInvoices(req.body.customerID);
 
 			for (var i=0; i<unpaidInvoices.length && amountPaid > 0; i++) {
-				var invoiceTotal = await getInvoiceTotal(unpaidInvoices[i]._id)
-				var prevPaidAmount = await getAmountPaid(unpaidInvoices[i]._id)
+				var invoiceTotal = await getInvoiceTotal(unpaidInvoices[i]._id);
+				var prevPaidAmount = await getAmountPaid(unpaidInvoices[i]._id);
 
-				var possiblePayable = invoiceTotal - prevPaidAmount
+				var possiblePayable = invoiceTotal - prevPaidAmount;
 
 				//can still pay for other invoices
 				if (possiblePayable <= amountPaid) {
@@ -253,8 +262,8 @@ const customerController = {
 		}
 
 
-		check()
+		check();
 	}
-}
+};
 
 module.exports = customerController;

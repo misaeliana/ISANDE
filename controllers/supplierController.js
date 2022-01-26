@@ -16,43 +16,48 @@ require('../controllers/helpers.js')();
 const supplierController = {
 
 	getSupplierList: function(req, res) {
-		db.findMany(Suppliers, {informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name contactPerson number email address', function (result) {
-			var suppliers = [];
-			for (var i=0; i<result.length; i++) {
-				var supplier = {
-					supplierID: result[i]._id,
-					name: result[i].name,
-                    contactPerson : result[i].contactPerson,
-					number: result[i].number,
-                    email: result[i].email,
-					address: result[i].address
-                    
-				};
-				suppliers.push(supplier);
-			}
-			//sort function 
-			// if return value is > 0 sort b before a
-			// if reutrn value is < 0 sort a before b
-			suppliers.sort(function(a, b) {
-			    var textA = a.name.toUpperCase();
-			    var textB = b.name.toUpperCase();
-			    //syntax is "condition ? value if true : value if false"
-			    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+		//if(req.session.position != "Inventory and Purchasing" || req.session.position != "Manager"){
+			//res.redirect('/dashboard');
+		//}
+		//else{
+			db.findMany(Suppliers, {informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name contactPerson number email address', function (result) {
+				var suppliers = [];
+				for (var i=0; i<result.length; i++) {
+					var supplier = {
+						supplierID: result[i]._id,
+						name: result[i].name,
+						contactPerson : result[i].contactPerson,
+						number: result[i].number,
+						email: result[i].email,
+						address: result[i].address
+						
+					};
+					suppliers.push(supplier);
+				}
+				//sort function 
+				// if return value is > 0 sort b before a
+				// if reutrn value is < 0 sort a before b
+				suppliers.sort(function(a, b) {
+					var textA = a.name.toUpperCase();
+					var textB = b.name.toUpperCase();
+					//syntax is "condition ? value if true : value if false"
+					return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+				});
+
+				res.render('supplierList', {suppliers});	
+
+
+				/*if(req.session.position == "Inventory and Purchasing"){
+					var inventoryAndPurchasing = req.session.position;
+					res.render('supplierList', {suppliers, inventoryAndPurchasing});	
+				}
+
+				if(req.session.position == "Manager"){
+					var manager = req.session.position;
+					res.render('supplierList', {suppliers, manager});
+				}*/
 			});
-
-            res.render('supplierList', {suppliers});	
-
-
-			/*if(req.session.position == "Inventory and Purchasing"){
-                var inventoryAndPurchasing = req.session.position;
-                res.render('supplierList', {suppliers, inventoryAndPurchasing});	
-            }
-
-            if(req.session.position == "Manager"){
-                var manager = req.session.position;
-                res.render('supplierList', {suppliers, manager});
-			}*/
-		});
+		//}
 	},
 
 	postSupplierInformation: function(req, res) {
@@ -115,56 +120,59 @@ const supplierController = {
 	},
 
 	getViewSupplier: function(req, res) {
-
-		function getSupplierItem(supplierID) {
-			return new Promise((resolve, reject) => {
-				db.findMany(ItemSuppliers, {supplierID:supplierID}, '' ,function(result) {
-					resolve(result);
+		//if(req.session.position != "Inventory and Purchasing" || req.session.position != "Manager"){
+			//res.redirect('/dashboard');
+		//}
+		//else{
+			function getSupplierItem(supplierID) {
+				return new Promise((resolve, reject) => {
+					db.findMany(ItemSuppliers, {supplierID:supplierID}, '' ,function(result) {
+						resolve(result);
+					});
 				});
-			});
-		}
-
-		function getItem(itemID) {
-			return new Promise((resolve, reject) => {
-				db.findOne(Items, {_id:itemID}, '', function(result) {
-					resolve(result);
-				});
-			});
-		}
-
-		async function getInfo() {
-			var supplierInfo = await getSpecificSupplier(req.params.supplierID);
-			var temp_inventory = await getSupplierItem(req.params.supplierID);
-
-			var inventory = [];
-			for (var i=0; i<temp_inventory.length; i++) {
-				var item = {
-					itemDescription: await getItemDescription(temp_inventory[i].itemID),
-					unit: await getSpecificUnit(temp_inventory[i].unitID)
-				};
-
-				inventory.push(item);
 			}
 
-			var itemCategories = await getItemCategories();
-			var units = await getUnits();
+			function getItem(itemID) {
+				return new Promise((resolve, reject) => {
+					db.findOne(Items, {_id:itemID}, '', function(result) {
+						resolve(result);
+					});
+				});
+			}
 
-            res.render('supplierInformation', {supplierInfo, inventory, itemCategories, units});	
+			async function getInfo() {
+				var supplierInfo = await getSpecificSupplier(req.params.supplierID);
+				var temp_inventory = await getSupplierItem(req.params.supplierID);
+
+				var inventory = [];
+				for (var i=0; i<temp_inventory.length; i++) {
+					var item = {
+						itemDescription: await getItemDescription(temp_inventory[i].itemID),
+						unit: await getSpecificUnit(temp_inventory[i].unitID)
+					};
+
+					inventory.push(item);
+				}
+
+				var itemCategories = await getItemCategories();
+				var units = await getUnits();
+
+				res.render('supplierInformation', {supplierInfo, inventory, itemCategories, units});	
 
 
-			/*if(req.session.position == "Inventory and Purchasing"){
-                var inventoryAndPurchasing = req.session.position;
-                res.render('supplierList', {supplierInfo, inventory, itemCategories, units, inventoryAndPurchasing});	
-            }
+				/*if(req.session.position == "Inventory and Purchasing"){
+					var inventoryAndPurchasing = req.session.position;
+					res.render('supplierList', {supplierInfo, inventory, itemCategories, units, inventoryAndPurchasing});	
+				}
 
-            if(req.session.position == "Manager"){
-                var manager = req.session.position;
-                res.render('supplierList', {supplierInfo, inventory, itemCategories, units, manager});
-			}*/
-		}
+				if(req.session.position == "Manager"){
+					var manager = req.session.position;
+					res.render('supplierList', {supplierInfo, inventory, itemCategories, units, manager});
+				}*/
+			}
 
-		getInfo();
-
+			getInfo();
+		//}
 	},
 
 	postUpdateInformation: function (req, res) {
@@ -187,7 +195,6 @@ const supplierController = {
 			if (flag) { }
 		});
 
-
 		if (req.body.number2 == "") {
 			supplier = {
 				name: req.body.name,
@@ -207,12 +214,12 @@ const supplierController = {
 	            email: req.body.email,
 				address: req.body.address,
 				informationStatusID: "618a7830c8067bf46fbfd4e4"
-			}
+			};
 		}
 
 		db.insertOneResult(Suppliers, supplier, function(result) {
-			updatePO(supplierID, result._id)
-			updateItemSupplier(supplierID, result._id)
+			updatePO(supplierID, result._id);
+			updateItemSupplier(supplierID, result._id);
 			res.send(result._id);
 		});
 	},
@@ -294,54 +301,57 @@ const supplierController = {
 	},
 
 	editSupplierItems: function(req, res) {
-		async function getInfo() {
-			var temp_supplierItems = await getSupplierItems(req.params.supplierID)
-			var units = await getUnits()
+		//if(req.session.position != "Inventory and Purchasing" || req.session.position != "Manager"){
+			//res.redirect('/dashboard');
+		//}
+		//else{
+			async function getInfo() {
+				var temp_supplierItems = await getSupplierItems(req.params.supplierID);
+				var units = await getUnits();
 
-			var supplierItems = []
-			for (var i=0; i<temp_supplierItems.length; i++) {
-				var supplierItem = {
-					itemDescription: await getItemDescription(temp_supplierItems[i].itemID),
-					unit: await getSpecificUnit(temp_supplierItems[i].unitID)
+				var supplierItems = [];
+				for (var i=0; i<temp_supplierItems.length; i++) {
+					var supplierItem = {
+						itemDescription: await getItemDescription(temp_supplierItems[i].itemID),
+						unit: await getSpecificUnit(temp_supplierItems[i].unitID)
+					};
+					supplierItems.push(supplierItem);
 				}
-				supplierItems.push(supplierItem)
+				var supplierName = await getSupplierName(req.params.supplierID);
+				var supplierID = req.params.supplierID;
+				res.render('editSupplierItems', {supplierItems, units, supplierID, supplierName});
 			}
-			var supplierName = await getSupplierName(req.params.supplierID)
-			var supplierID = req.params.supplierID
-			res.render('editSupplierItems', {supplierItems, units, supplierID, supplierName})
-		}
 
-		getInfo();
+			getInfo();
+		//}
 	},
 
 	checkForPendingPOSuppliers: function(req, res) {
 		async function check() {
 			var itemID = await getItemID(req.query.itemDesc);
 			var unitID = await getUnitID(req.query.unit);
-			var supplierID = req.query.supplierID
+			var supplierID = req.query.supplierID; 
 
-			var pos = await getSupplierPO(supplierID)
-			var pending = false
+			var pos = await getSupplierPO(supplierID);
+			var pending = false;
 			for (var i=0; i<pos.length && !pending; i++) {
-				var poItems = await getCurrentPOItems(pos[i]._id)
+				var poItems = await getCurrentPOItems(pos[i]._id);
 
 				for (var j=0; j<poItems.length && !pending; j++) {
 					if (poItems[j].itemID == itemID && poItems[j].unitID == unitID.toString())
-						pending = true
+						pending = true;
 				}
 			}
-			res.send(pending)
+			res.send(pending);
 		}
-
-		check()	
+		check();  
 	},
 
 	updateSupplierItems: function(req, res) {
 
 		function deleteSupplierItems(supplierID) {
 			db.deleteMany(ItemSuppliers, {supplierID:supplierID}, function(result) {
-
-			})
+			});
 		}
 
 		async function updateItemInfo() {
@@ -368,9 +378,7 @@ const supplierController = {
 	
 			res.send({redirect: '/supplier/' + req.body.supplierID});
 		}
-
 		updateItemInfo();
-
 	}
 };
 

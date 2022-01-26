@@ -42,179 +42,181 @@ const Docxtemplater = require("docxtemplater");
 const invoiceController = {
  
     getInvoiceList: function(req, res) {
-       
-        async function getInformation() {
-            
+        //if(req.session.position != "Cashier" || req.session.position != "Manager"){
+			//res.redirect('/dashboard');
+		//}
+		//else{
+            async function getInformation() {
+                var invoices = await getInvoices();
+                var invoicesInfo = [];
 
-            var invoices = await getInvoices();
-            var invoicesInfo = [];
+                for (var i = 0; i < invoices.length; i++) {
+                    var date = new Date(invoices[i].date);
+                    var customerName = await getSpecificCustomer(invoices[i].customerID);
+                    if (customerName == null)
+                        customerName = invoices[i].customerID;
 
-            for (var i = 0; i < invoices.length; i++) {
-                var date = new Date(invoices[i].date);
-                var customerName = await getSpecificCustomer(invoices[i].customerID);
-                if (customerName == null)
-                    customerName = invoices[i].customerID;
+                    var invoiceInfo = {
+                        _id: invoices[i]._id,
+                        formattedDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
+                        invoiceID: invoices[i].invoiceID,
+                        customerName: customerName,
+                        total: numberWithCommas(parseFloat(invoices[i].total).toFixed(2)),
+                        type: await getSpecificInvoiceType(invoices[i].typeID),
+                        status: await getSpecificInvoiceStatus(invoices[i].statusID)
+                    };
 
-                var invoiceInfo = {
-                    _id: invoices[i]._id,
-                    formattedDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
-                    invoiceID: invoices[i].invoiceID,
-                    customerName: customerName,
-                    total: numberWithCommas(parseFloat(invoices[i].total).toFixed(2)),
-                    type: await getSpecificInvoiceType(invoices[i].typeID),
-                    status: await getSpecificInvoiceStatus(invoices[i].statusID)
-                };
+                    invoicesInfo.push(invoiceInfo);
+                }
 
-                invoicesInfo.push(invoiceInfo);
+                //res.render('invoiceList', {invoicesInfo});    
+                res.render('invoiceList', {invoicesInfo}); 
+
+                //console.log(req.session.position);
+
+                /*if(req.session.position == "Cashier"){
+                    var cashier = req.session.position;
+                    res.render('invoiceList', {invoicesInfo, cashier}); 
+                }
+
+                if(req.session.position == "Manager"){
+                    var manager = req.session.position;
+                    res.render('invoiceList', {invoicesInfo, manager});
+                }*/
             }
-
-            //res.render('invoiceList', {invoicesInfo});    
-            res.render('invoiceList', {invoicesInfo}); 
-
-            //console.log(req.session.position);
-
-            /*if(req.session.position == "Cashier"){
-                var cashier = req.session.position;
-                res.render('invoiceList', {invoicesInfo, cashier}); 
-            }
-
-            if(req.session.position == "Manager"){
-                var manager = req.session.position;
-                res.render('invoiceList', {invoicesInfo, manager});
-            }*/
-        }
-        getInformation();
+            getInformation();
+        // }
     },
 
     getViewSpecificInvoice: function(req, res) {
-
-        function getPaymentHistory(invoiceID) {
-            return new Promise((resolve, reject) => {
-                db.findMany(AccountPayments, {invoiceID:invoiceID}, 'datePaid amountPaid', function(result) {
-                    resolve (result);
+        //if(req.session.position != "Cashier" || req.session.position != "Manager"){
+			//res.redirect('/dashboard');
+		//}
+		//else{
+            function getPaymentHistory(invoiceID) {
+                return new Promise((resolve, reject) => {
+                    db.findMany(AccountPayments, {invoiceID:invoiceID}, 'datePaid amountPaid', function(result) {
+                        resolve (result);
+                    });
                 });
-            });
-        }
-
-        async function getInformation() {
-            var invoice_id = req.params.invoiceID;
-            var invoice = await getInvoice(invoice_id);
-            var date = new Date(invoice.date);
-            var employee = await getEmployeeInfo(invoice.employeeID);
-            var items = [];
-            var invoiceInfo = {
-                invoice_id: invoice_id,
-                invoiceID: invoice.invoiceID,
-                customerID: invoice.customerID,
-                customerName: await getSpecificCustomer(invoice.customerID),
-                date: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
-                type: await getSpecificInvoiceType(invoice.typeID),
-                paymentOption: await getSpecificPaymentType(invoice.paymentOptionID),
-                status: await getSpecificInvoiceStatus(invoice.statusID),
-                subtotal: numberWithCommas(parseFloat(invoice.subtotal).toFixed(2)),
-                VAT: numberWithCommas(parseFloat(invoice.VAT).toFixed(2)),
-                discount: numberWithCommas(parseFloat(invoice.discount).toFixed(2)),
-                total: numberWithCommas(parseFloat(invoice.total).toFixed(2)),
-                employeeName: employee.name
-            };
-
-
-            var delivery = {};
-            // get customer info
-            var customer = await getCustomerInfo(invoice.customerID);
-
-            if (invoiceInfo.type == "Delivery") {
-                delivery = await getDeliveryInformation(invoice_id);
-
-                employeeName = await getEmployeeInfo(delivery.deliveryPersonnel);
-
-                delivery.deliveryPersonnel = employeeName.name; 
-
-                var deliveryDate = new Date(delivery.deliveryDate);
-                delivery.fdeliveryDate = deliveryDate.getMonth() + 1 + "/" + deliveryDate.getDate() + "/" + deliveryDate.getFullYear(); 
-
-                if (delivery.dateDelivered != undefined ) {
-                    var dateDelivered = new Date(delivery.dateDelivered);
-                    delivery.fdateDelivered = dateDelivered.getMonth() + 1 + "/" + dateDelivered.getDate() + "/" + dateDelivered.getFullYear(); 
-                }         
             }
-            
-            var invoiceItems = await getInvoiceItems(invoice_id);
 
-            for (var i = 0; i < invoiceItems.length; i++) {
-                var itemUnitInfo = await getItemUnitInfo(invoiceItems[i].itemUnitID);
-                var itemInfo = await getSpecificInventoryItems(itemUnitInfo.itemID);
-
-               var item = {
-                    itemDescription: itemInfo.itemDescription,
-                    qty: invoiceItems[i].quantity,
-                    unit: await getSpecificUnit(itemUnitInfo.unitID),
-                    unitPrice: numberWithCommas(parseFloat(itemUnitInfo.sellingPrice).toFixed(2)),
-                    discount: numberWithCommas(parseFloat(invoiceItems[i].discount).toFixed(2)),
-                    amount: numberWithCommas(((parseFloat(itemUnitInfo.sellingPrice) * parseFloat(invoiceItems[i].quantity)) - parseFloat(invoiceItems[i].discount)).toFixed(2))
+            async function getInformation() {
+                var invoice_id = req.params.invoiceID;
+                var invoice = await getInvoice(invoice_id);
+                var date = new Date(invoice.date);
+                var employee = await getEmployeeInfo(invoice.employeeID);
+                var items = [];
+                var invoiceInfo = {
+                    invoice_id: invoice_id,
+                    invoiceID: invoice.invoiceID,
+                    customerID: invoice.customerID,
+                    customerName: await getSpecificCustomer(invoice.customerID),
+                    date: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
+                    type: await getSpecificInvoiceType(invoice.typeID),
+                    paymentOption: await getSpecificPaymentType(invoice.paymentOptionID),
+                    status: await getSpecificInvoiceStatus(invoice.statusID),
+                    subtotal: numberWithCommas(parseFloat(invoice.subtotal).toFixed(2)),
+                    VAT: numberWithCommas(parseFloat(invoice.VAT).toFixed(2)),
+                    discount: numberWithCommas(parseFloat(invoice.discount).toFixed(2)),
+                    total: numberWithCommas(parseFloat(invoice.total).toFixed(2)),
+                    employeeName: employee.name
                 };
 
-                items.push(item);
-            }
 
-            var paymentTotal = 0;
-            var paymentHistory = [];
-            if (invoiceInfo.status == "Pending" || invoiceInfo.status == "Partial" || invoiceInfo.paymentOption == "On Account") {
-                var temp_paymentHistory = await getPaymentHistory(invoice_id);
-                for (var i=0; i<temp_paymentHistory.length; i++) {
-                    var temp_date = new Date(temp_paymentHistory[i].datePaid);
-                    var payment = {
-                        date: temp_date.getMonth() + 1 + "/" + temp_date.getDate() + "/" + temp_date.getFullYear(),
-                        amountPaid: numberWithCommas(parseFloat(temp_paymentHistory[i].amountPaid).toFixed(2))
-                    };
-                    paymentTotal += temp_paymentHistory[i].amountPaid;
-                    paymentHistory.push(payment);
+                var delivery = {};
+                // get customer info
+                var customer = await getCustomerInfo(invoice.customerID);
+
+                if (invoiceInfo.type == "Delivery") {
+                    delivery = await getDeliveryInformation(invoice_id);
+
+                    employeeName = await getEmployeeInfo(delivery.deliveryPersonnel);
+
+                    delivery.deliveryPersonnel = employeeName.name; 
+
+                    var deliveryDate = new Date(delivery.deliveryDate);
+                    delivery.fdeliveryDate = deliveryDate.getMonth() + 1 + "/" + deliveryDate.getDate() + "/" + deliveryDate.getFullYear(); 
+
+                    if (delivery.dateDelivered != undefined ) {
+                        var dateDelivered = new Date(delivery.dateDelivered);
+                        delivery.fdateDelivered = dateDelivered.getMonth() + 1 + "/" + dateDelivered.getDate() + "/" + dateDelivered.getFullYear(); 
+                    }         
                 }
-            }
-            
-            var amountDue = invoice.total - paymentTotal;
-
-            paymentTotal = numberWithCommas(parseFloat(paymentTotal).toFixed(2));
-            amountDue = numberWithCommas(parseFloat(amountDue).toFixed(2));
-
-                //res.render('viewInvoice', {invoiceInfo, items, delivery, paid, onAccount, paymentHistory, paymentTotal, amountDue});
-
-
-            if (customer == false) {
-                var customerName = invoice.customerID;
-
-                res.render('viewInvoice', {invoiceInfo, items, delivery, customerName, paymentHistory, paymentTotal, amountDue});
-            }
-            else 
-                res.render('viewInvoice', {invoiceInfo, items, delivery, customer, paymentHistory, paymentTotal, amountDue});
                 
-            /*if(req.session.position == "Cashier"){
-                console.log("cashier")
-                var cashier = req.session.position;
-                res.render('viewInvoice', {invoiceInfo, items, delivery, paymentHistory, paymentTotal, amountDue, cashier});    
-            }
+                var invoiceItems = await getInvoiceItems(invoice_id);
 
-            if(req.session.position == "Manager"){
-                console.log("manager")
-                var manager = req.session.position;
-                res.render('viewInvoice', {invoiceInfo, items, delivery, paymentHistory, paymentTotal, amountDue, manager});
-            }
-            
-            if(req.session.position == "Cashier"){
-                var cashier = req.session.position;
-                res.render('viewInvoice', {invoiceInfo, items, cashier});   
-            }
+                for (var i = 0; i < invoiceItems.length; i++) {
+                    var itemUnitInfo = await getItemUnitInfo(invoiceItems[i].itemUnitID);
+                    var itemInfo = await getSpecificInventoryItems(itemUnitInfo.itemID);
 
-            if(req.session.position == "Manager"){
-                var manager = req.session.position;
-                res.render('viewInvoice', {invoiceInfo, items, manager});
-            }*/
+                var item = {
+                        itemDescription: itemInfo.itemDescription,
+                        qty: invoiceItems[i].quantity,
+                        unit: await getSpecificUnit(itemUnitInfo.unitID),
+                        unitPrice: numberWithCommas(parseFloat(itemUnitInfo.sellingPrice).toFixed(2)),
+                        discount: numberWithCommas(parseFloat(invoiceItems[i].discount).toFixed(2)),
+                        amount: numberWithCommas(((parseFloat(itemUnitInfo.sellingPrice) * parseFloat(invoiceItems[i].quantity)) - parseFloat(invoiceItems[i].discount)).toFixed(2))
+                    };
 
+                    items.push(item);
+                }
+
+                var paymentTotal = 0;
+                var paymentHistory = [];
+                if (invoiceInfo.status == "Pending" || invoiceInfo.status == "Partial" || invoiceInfo.paymentOption == "On Account") {
+                    var temp_paymentHistory = await getPaymentHistory(invoice_id);
+                    for (var i=0; i<temp_paymentHistory.length; i++) {
+                        var temp_date = new Date(temp_paymentHistory[i].datePaid);
+                        var payment = {
+                            date: temp_date.getMonth() + 1 + "/" + temp_date.getDate() + "/" + temp_date.getFullYear(),
+                            amountPaid: numberWithCommas(parseFloat(temp_paymentHistory[i].amountPaid).toFixed(2))
+                        };
+                        paymentTotal += temp_paymentHistory[i].amountPaid;
+                        paymentHistory.push(payment);
+                    }
+                }
+                
+                var amountDue = invoice.total - paymentTotal;
+
+                paymentTotal = numberWithCommas(parseFloat(paymentTotal).toFixed(2));
+                amountDue = numberWithCommas(parseFloat(amountDue).toFixed(2));
+
+                    //res.render('viewInvoice', {invoiceInfo, items, delivery, paid, onAccount, paymentHistory, paymentTotal, amountDue});
+
+
+                if (customer == false) {
+                    var customerName = invoice.customerID;
+
+                    res.render('viewInvoice', {invoiceInfo, items, delivery, customerName, paymentHistory, paymentTotal, amountDue});
+                }
+                else 
+                    res.render('viewInvoice', {invoiceInfo, items, delivery, customer, paymentHistory, paymentTotal, amountDue});
                     
-        }
+                /*if(req.session.position == "Cashier"){
+                    console.log("cashier")
+                    var cashier = req.session.position;
+                    res.render('viewInvoice', {invoiceInfo, items, delivery, paymentHistory, paymentTotal, amountDue, cashier});    
+                }
 
-        getInformation();
-        
+                if(req.session.position == "Manager"){
+                    console.log("manager")
+                    var manager = req.session.position;
+                    res.render('viewInvoice', {invoiceInfo, items, delivery, paymentHistory, paymentTotal, amountDue, manager});
+                }
+                
+                if(req.session.position == "Cashier"){
+                    var cashier = req.session.position;
+                    res.render('viewInvoice', {invoiceInfo, items, cashier});   
+                }
+
+                if(req.session.position == "Manager"){
+                    var manager = req.session.position;
+                    res.render('viewInvoice', {invoiceInfo, items, manager});
+                }*/        
+            }
+            getInformation();
+        // }
     },
     
     getFilteredRowsInvoice: function(req, res) {
@@ -305,24 +307,29 @@ const invoiceController = {
     },
 
     getNewInvoice: function(req, res) {
-        async function getInvoiceTypes () {
-            var itype = await getAllInvoiceTypes();
-            var delperson = await getDeliveryPersonnel();
-            var paymentTypes = await getPaymentOptions();
-            res.render('newInvoice', {itype,delperson, paymentTypes});
+        //if(req.session.position != "Cashier" || req.session.position != "Manager"){
+			//res.redirect('/dashboard');
+		//}
+		//else{
+            async function getInvoiceTypes () {
+                var itype = await getAllInvoiceTypes();
+                var delperson = await getDeliveryPersonnel();
+                var paymentTypes = await getPaymentOptions();
+                res.render('newInvoice', {itype,delperson, paymentTypes});
 
-            /*if(req.session.position == "Cashier"){
-                var cashier = req.session.position;
-                res.render('newInvoice', {itype, delperson, paymentTypes, cashier});    
-            }
+                /*if(req.session.position == "Cashier"){
+                    var cashier = req.session.position;
+                    res.render('newInvoice', {itype, delperson, paymentTypes, cashier});    
+                }
 
-            if(req.session.position == "Manager"){
-                var manager = req.session.position;
-                res.render('newInvoice', {itype, delperson, paymentTypes, manager});
-            }*/
+                if(req.session.position == "Manager"){
+                    var manager = req.session.position;
+                    res.render('newInvoice', {itype, delperson, paymentTypes, manager});
+                }*/
 
-        }   //res.sendFile( dir+"/newInvoice.html");
-        getInvoiceTypes();
+            }   //res.sendFile( dir+"/newInvoice.html");
+            getInvoiceTypes();
+        //}
     },
     
     addNewInvoice: function(req,res){
@@ -538,123 +545,131 @@ const invoiceController = {
     },
 
     getDeliveryList: function(req, res) {
+        //if(req.session.position != "Delivery" || req.session.position != "Manager"){
+			//res.redirect('/dashboard');
+		//}
+		//else{
+            async function getInformation() {
+                /*if(req.session.position == "Delivery"){
+                    var deliveries = await getDeliveryPersonnelDeliveries(req.session._id);
+                }
 
-        async function getInformation() {
-            /*if(req.session.position == "Delivery"){
-                var deliveries = await getDeliveryPersonnelDeliveries(req.session._id);
-            }
-
-            if(req.session.position == "Manager"){
+                if(req.session.position == "Manager"){
+                    var deliveries = await getDeliveries();
+                }*/
+                
                 var deliveries = await getDeliveries();
-            }*/
-            
-            var deliveries = await getDeliveries();
-            var deliveryInfo = [];
-            var invoiceStatusVoid = await getSpecificInvoiceStatusName("Void");
+                var deliveryInfo = [];
+                var invoiceStatusVoid = await getSpecificInvoiceStatusName("Void");
 
-            for (var i = 0; i < deliveries.length; i++) {
-                console.log(deliveries[i]);
-                var date = new Date(deliveries[i].deliveryDate);
-                var invoice = await getInvoice(deliveries[i].invoice_id);
+                for (var i = 0; i < deliveries.length; i++) {
+                    console.log(deliveries[i]);
+                    var date = new Date(deliveries[i].deliveryDate);
+                    var invoice = await getInvoice(deliveries[i].invoice_id);
 
-                if (invoice != null) {
-                    if (invoice.statusID != invoiceStatusVoid) {
-                        var delivery = {
-                            _id: deliveries[i]._id,
-                            invoice_id: deliveries[i].invoice_id,
-                            invoiceNum: invoice.invoiceID,
-                            customerName: await getSpecificCustomer(invoice.customerID),
-                            paymentStatus: await getSpecificInvoiceStatus(invoice.statusID),
-                            amount: numberWithCommas(parseFloat(invoice.total).toFixed(2)), 
-                            deliveryDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
-                            deliveryPersonnel: await getEmployeeInfo(deliveries[i].deliveryPersonnel)
-                        };
-    
-                        deliveryInfo.push(delivery);
+                    if (invoice != null) {
+                        if (invoice.statusID != invoiceStatusVoid) {
+                            var delivery = {
+                                _id: deliveries[i]._id,
+                                invoice_id: deliveries[i].invoice_id,
+                                invoiceNum: invoice.invoiceID,
+                                customerName: await getSpecificCustomer(invoice.customerID),
+                                paymentStatus: await getSpecificInvoiceStatus(invoice.statusID),
+                                amount: numberWithCommas(parseFloat(invoice.total).toFixed(2)), 
+                                deliveryDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
+                                deliveryPersonnel: await getEmployeeInfo(deliveries[i].deliveryPersonnel)
+                            };
+        
+                            deliveryInfo.push(delivery);
+                        }
                     }
                 }
+
+                res.render('deliveryList', {deliveryInfo});   
+
+
+                /*if(req.session.position == "Delivery"){
+                    var delivery = req.session.position;
+                    res.render('deliveryList', {deliveryInfo, delivery});   
+                }
+
+                if(req.session.position == "Manager"){
+                    var manager = req.session.position;
+                    res.render('deliveryList', {deliveryInfo, manager});
+                }*/
             }
-
-            res.render('deliveryList', {deliveryInfo});   
-
-
-            /*if(req.session.position == "Delivery"){
-                var delivery = req.session.position;
-                res.render('deliveryList', {deliveryInfo, delivery});   
-            }
-
-            if(req.session.position == "Manager"){
-                var manager = req.session.position;
-                res.render('deliveryList', {deliveryInfo, manager});
-            }*/
-        }
-
-        getInformation();
+            getInformation();
+        // }
     },
 
     getDeliveryInfo: function(req, res) {
-        var deliveryID = req.params.deliveryID;
-        var items = [];
+        //if(req.session.position != "Delivery" || req.session.position != "Manager"){
+			//res.redirect('/dashboard');
+		//}
+		//else{
+            var deliveryID = req.params.deliveryID;
+            var items = [];
 
-        async function getInformation() {
-            var delivery = await getSpecificDelivery(deliveryID);
-            var uneditedInvoice = await getInvoice(delivery.invoice_id);
-            var customer = await getCustomerInfo(uneditedInvoice.customerID);
-            var date = new Date(delivery.deliveryDate);
-            var invocieDate = new Date(uneditedInvoice.date);
+            async function getInformation() {
+                var delivery = await getSpecificDelivery(deliveryID);
+                var uneditedInvoice = await getInvoice(delivery.invoice_id);
+                var customer = await getCustomerInfo(uneditedInvoice.customerID);
+                var date = new Date(delivery.deliveryDate);
+                var invocieDate = new Date(uneditedInvoice.date);
 
-            var invoice = {
-                id: uneditedInvoice._id,
-                date: invocieDate.getMonth() + 1 + "/" + invocieDate.getDate() + "/" + invocieDate.getFullYear(),
-                invoiceType: await getSpecificInvoiceType(uneditedInvoice.typeID),
-                paymentType: await getSpecificPaymentType(uneditedInvoice.paymentOptionID),
-                subtotal: numberWithCommas(parseFloat(uneditedInvoice.subtotal).toFixed(2)),
-                VAT: numberWithCommas(parseFloat(uneditedInvoice.VAT).toFixed(2)),
-                discount: numberWithCommas(parseFloat(uneditedInvoice.discount).toFixed(2)),
-                total: numberWithCommas(parseFloat(uneditedInvoice.total).toFixed(2)),
-            };
-
-            var deliveryInfo = {
-                _id: deliveryID,
-                invoice_id: uneditedInvoice._id,
-                invoiceNum: uneditedInvoice.invoiceID,
-                deliveryDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
-                deliveryNotes: delivery.deliveryNotes,
-                paymentStatus: await getSpecificInvoiceStatus(uneditedInvoice.statusID)
-            };
-
-
-            var invoiceItems = await getInvoiceItems(invoice.id);
-
-            for (var i = 0; i < invoiceItems.length; i++) {
-                var itemUnitInfo = await getItemUnitInfo(invoiceItems[i].itemUnitID);
-
-                var item = {
-                    itemDescription: await getItemDescription(itemUnitInfo.itemID),
-                    qty: invoiceItems[i].quantity,
-                    unit: await getSpecificUnit(itemUnitInfo.unitID),
-                    unitPrice: numberWithCommas(parseFloat(itemUnitInfo.sellingPrice).toFixed(2)),
-                    discount: numberWithCommas(parseFloat(invoiceItems[i].discount).toFixed(2)),
-                    amount: numberWithCommas(((parseFloat(itemUnitInfo.sellingPrice) * parseFloat(invoiceItems[i].quantity)) - parseFloat(invoiceItems[i].discount)).toFixed(2))
+                var invoice = {
+                    id: uneditedInvoice._id,
+                    date: invocieDate.getMonth() + 1 + "/" + invocieDate.getDate() + "/" + invocieDate.getFullYear(),
+                    invoiceType: await getSpecificInvoiceType(uneditedInvoice.typeID),
+                    paymentType: await getSpecificPaymentType(uneditedInvoice.paymentOptionID),
+                    subtotal: numberWithCommas(parseFloat(uneditedInvoice.subtotal).toFixed(2)),
+                    VAT: numberWithCommas(parseFloat(uneditedInvoice.VAT).toFixed(2)),
+                    discount: numberWithCommas(parseFloat(uneditedInvoice.discount).toFixed(2)),
+                    total: numberWithCommas(parseFloat(uneditedInvoice.total).toFixed(2)),
                 };
 
-                items.push(item);
+                var deliveryInfo = {
+                    _id: deliveryID,
+                    invoice_id: uneditedInvoice._id,
+                    invoiceNum: uneditedInvoice.invoiceID,
+                    deliveryDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
+                    deliveryNotes: delivery.deliveryNotes,
+                    paymentStatus: await getSpecificInvoiceStatus(uneditedInvoice.statusID)
+                };
+
+
+                var invoiceItems = await getInvoiceItems(invoice.id);
+
+                for (var i = 0; i < invoiceItems.length; i++) {
+                    var itemUnitInfo = await getItemUnitInfo(invoiceItems[i].itemUnitID);
+
+                    var item = {
+                        itemDescription: await getItemDescription(itemUnitInfo.itemID),
+                        qty: invoiceItems[i].quantity,
+                        unit: await getSpecificUnit(itemUnitInfo.unitID),
+                        unitPrice: numberWithCommas(parseFloat(itemUnitInfo.sellingPrice).toFixed(2)),
+                        discount: numberWithCommas(parseFloat(invoiceItems[i].discount).toFixed(2)),
+                        amount: numberWithCommas(((parseFloat(itemUnitInfo.sellingPrice) * parseFloat(invoiceItems[i].quantity)) - parseFloat(invoiceItems[i].discount)).toFixed(2))
+                    };
+
+                    items.push(item);
+                }
+
+                res.render('viewDeliveryInformation', {customer, deliveryInfo, invoice, items});  
+
+                /*if(req.session.position == "Delivery"){
+                    var delivery = req.session.position;
+                    res.render('viewDeliveryInformation', {customer, deliveryInfo, invoice, items, delivery});  
+                }
+
+                if(req.session.position == "Manager"){
+                    var manager = req.session.position;
+                    res.render('viewDeliveryInformation', {customer, deliveryInfo, invoice, items, manager});
+                }*/
             }
 
-            res.render('viewDeliveryInformation', {customer, deliveryInfo, invoice, items});  
-
-            /*if(req.session.position == "Delivery"){
-                var delivery = req.session.position;
-                res.render('viewDeliveryInformation', {customer, deliveryInfo, invoice, items, delivery});  
-            }
-
-            if(req.session.position == "Manager"){
-                var manager = req.session.position;
-                res.render('viewDeliveryInformation', {customer, deliveryInfo, invoice, items, manager});
-            }*/
-        }
-
-        getInformation();
+            getInformation();
+        // }
     },
 
     getCustomerName: function(req, res) {
@@ -802,72 +817,77 @@ const invoiceController = {
     },
 
     returns: function(req, res) {
-        async function getInfo() {
-            var types = await getAllInvoiceTypes()
+        //if(req.session.position != "Cashier" || req.session.position != "Manager"){
+			//res.redirect('/dashboard');
+		//}
+		//else{
+            async function getInfo() {
+                var types = await getAllInvoiceTypes()
 
-            var temp_invoiceInfo = await getInvoice(req.params.invoiceID)
-            var temp_invoiceItems = await getInvoiceItems(temp_invoiceInfo._id)
-            var returnReasons = await getReturnReasons();
-            var paymentTypes = await getPaymentOptions()
-            var deliveryPersonnel = await getDeliveryPersonnel();
+                var temp_invoiceInfo = await getInvoice(req.params.invoiceID)
+                var temp_invoiceItems = await getInvoiceItems(temp_invoiceInfo._id)
+                var returnReasons = await getReturnReasons();
+                var paymentTypes = await getPaymentOptions()
+                var deliveryPersonnel = await getDeliveryPersonnel();
 
-            var invoiceItems = []
-            for (var i=0; i<temp_invoiceItems.length; i++) {
-                var itemUnitInfo = await getItemUnitInfo(temp_invoiceItems[i].itemUnitID)
+                var invoiceItems = []
+                for (var i=0; i<temp_invoiceItems.length; i++) {
+                    var itemUnitInfo = await getItemUnitInfo(temp_invoiceItems[i].itemUnitID)
 
-                var quantity = temp_invoiceItems[i].quantity
-                var unitPrice = itemUnitInfo.sellingPrice
-                var amount = quantity * parseFloat(unitPrice) - temp_invoiceItems[i].discount
+                    var quantity = temp_invoiceItems[i].quantity
+                    var unitPrice = itemUnitInfo.sellingPrice
+                    var amount = quantity * parseFloat(unitPrice) - temp_invoiceItems[i].discount
 
-                var invoiceItem = { 
-                    itemDescription: await getItemDescription(itemUnitInfo.itemID), 
-                    quantity: quantity, 
-                    unit: await getSpecificUnit(itemUnitInfo.unitID), 
-                    unitPrice: parseFloat(itemUnitInfo.sellingPrice).toFixed(2), 
-                    discount: temp_invoiceItems[i].discount, 
-                    amount: parseFloat(amount).toFixed(2), 
-                    returnReasons: returnReasons 
-                } 
-                invoiceItems.push(invoiceItem) 
+                    var invoiceItem = { 
+                        itemDescription: await getItemDescription(itemUnitInfo.itemID), 
+                        quantity: quantity, 
+                        unit: await getSpecificUnit(itemUnitInfo.unitID), 
+                        unitPrice: parseFloat(itemUnitInfo.sellingPrice).toFixed(2), 
+                        discount: temp_invoiceItems[i].discount, 
+                        amount: parseFloat(amount).toFixed(2), 
+                        returnReasons: returnReasons 
+                    } 
+                    invoiceItems.push(invoiceItem) 
+                }
+
+                var customerInfo = await getCustomerInfo(temp_invoiceInfo.customerID);
+
+                var invoiceInfo = { 
+                    invoiceID: temp_invoiceInfo.invoiceID,
+                    subtotal: parseFloat(temp_invoiceInfo.subtotal).toFixed(2),
+                    VAT: parseFloat(temp_invoiceInfo.VAT).toFixed(2),
+                    discount: parseFloat(temp_invoiceInfo.discount).toFixed(2),
+                    total: parseFloat(temp_invoiceInfo.total).toFixed(2)
+                }
+
+                if (customerInfo == false) {
+                    var customerName = temp_invoiceInfo.customerID; 
+                    res.render('return', {types, invoiceInfo, customerName, paymentTypes, deliveryPersonnel, invoiceItems});
+                }
+                else 
+                    res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems});
+                
+                /*if(req.session.position == "Cashier"){
+                    var cashier = req.session.position;
+                    res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems, cashier});   
+                }
+
+                if(req.session.position == "Manager"){
+                    var manager = req.session.position;
+                    res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems, manager});
+                }*/
             }
 
-            var customerInfo = await getCustomerInfo(temp_invoiceInfo.customerID);
-
-            var invoiceInfo = { 
-                invoiceID: temp_invoiceInfo.invoiceID,
-                subtotal: parseFloat(temp_invoiceInfo.subtotal).toFixed(2),
-                VAT: parseFloat(temp_invoiceInfo.VAT).toFixed(2),
-                discount: parseFloat(temp_invoiceInfo.discount).toFixed(2),
-                total: parseFloat(temp_invoiceInfo.total).toFixed(2)
-            }
-
-            if (customerInfo == false) {
-                var customerName = temp_invoiceInfo.customerID; 
-                res.render('return', {types, invoiceInfo, customerName, paymentTypes, deliveryPersonnel, invoiceItems});
-            }
-            else 
-                res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems});
-            
-            /*if(req.session.position == "Cashier"){
-                var cashier = req.session.position;
-                res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems, cashier});   
-            }
-
-            if(req.session.position == "Manager"){
-                var manager = req.session.position;
-                res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems, manager});
-            }*/
-        }
-
-        getInfo();
+            getInfo();
+        //}
     },
 
     checkQuantity: function(req, res) {
         db.findOne(Items, {itemDescription:req.query.itemDesc, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'quantityAvailable', function (result){
             if (result.quantityAvailable < req.query.quantity)
-                res.send(false)
+                res.send(false);
             else
-                res.send(true)
+                res.send(true);
         })
     },
 
@@ -875,7 +895,7 @@ const invoiceController = {
         function getItemInfo() {
             return new Promise((resolve, reject) => {
                 db.findOne(Items, {itemDescription:req.query.itemDesc, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'unitID sellingPrice', function(result) {
-                    resolve(result)
+                    resolve(result);
                 })
             })
         }
@@ -886,7 +906,7 @@ const invoiceController = {
                 unit: await getSpecificUnit(temp_item.unitID),
                 sellingPrice: temp_item.sellingPrice
             }
-            res.send(item)
+            res.send(item);
         }
 
         getInfo();
@@ -897,7 +917,7 @@ const invoiceController = {
         function getInvoiceItemQuantity(invoiceID, itemUnitiD) {
             return new Promise((resolve, reject) => {
                 db.findOne(InvoiceItems, {invoice_id:invoiceID, itemUnitiD:itemUnitiD}, 'quantity', function(result) {
-                    resolve (result.quantity)
+                    resolve (result.quantity);
                 })
             })
         }
@@ -905,7 +925,7 @@ const invoiceController = {
         function getShrinkageReasonID() {
             return new Promise((resolve, reject) => {
                 db.findOne(ShrinkagesReasons, {reason:"Damaged"}, '_id', function(result) {
-                    resolve(result._id)
+                    resolve(result._id);
                 })
             })
         }   
@@ -933,28 +953,28 @@ const invoiceController = {
             var itemID = await getItemID(returnItem.itemDesc);
             var unitID = await getUnitID(returnItem.unit);
 
-            var stockItemUnit = await getItemUnitItemID(itemID)
-            var quantityAvailable = await getQuantityAvailableInRetail(itemID)
+            var stockItemUnit = await getItemUnitItemID(itemID);
+            var quantityAvailable = await getQuantityAvailableInRetail(itemID);
             var updatedQuantity = 0;
 
 
              if (unitID != stockItemUnit.unitID) {
 
                 //multiplier based on unit bought
-                var boughtItemsMultiplier = await getItemUnitID(itemID, unitID)
-                var boughtQuantity = parseFloat(returnItem.quantity) * parseFloat(boughtItemsMultiplier.quantity)
+                var boughtItemsMultiplier = await getItemUnitID(itemID, unitID);
+                var boughtQuantity = parseFloat(returnItem.quantity) * parseFloat(boughtItemsMultiplier.quantity);
                 
-                updatedQuantity = quantityAvailable + boughtQuantity
+                updatedQuantity = quantityAvailable + boughtQuantity;
                 updatedQuantity = await returnToStockUnit(itemID, updatedQuantity);
 
-                console.log("quantity available " + quantityAvailable)
-                console.log("boughtQuantity "  + boughtQuantity)
-                console.log("updatedQuantity " + updatedQuantity)
+                console.log("quantity available " + quantityAvailable);
+                console.log("boughtQuantity "  + boughtQuantity);
+                console.log("updatedQuantity " + updatedQuantity);
             } 
             else 
-                updatedQuantity = parseFloat(quantityAvailable) + parseFloat(returnItem.quantity)
+                updatedQuantity = parseFloat(quantityAvailable) + parseFloat(returnItem.quantity);
 
-            console.log("incorrect item " +  updatedQuantity)
+            console.log("incorrect item " +  updatedQuantity);
             
             db.updateOne(Items, {_id:itemID}, {quantityAvailable: updatedQuantity}, function(result) {
                 
@@ -982,7 +1002,7 @@ const invoiceController = {
                 }
 
                 db.insertOneResult(Invoices, invoice, function(result) {
-                    resolve (result._id)
+                    resolve (result._id);
                 })
             })
         }
@@ -991,7 +1011,7 @@ const invoiceController = {
         function getItemUnit(itemID) {
             return new Promise((resolve, reject) => {
                 db.findOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'unitID', function(result) {
-                    resolve(result)
+                    resolve(result);
                 })
             })
         }
@@ -999,7 +1019,7 @@ const invoiceController = {
         function getQuantityAvailable(itemID) {
             return new Promise((resolve, reject) => {
                 db.findOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'quantityAvailable', function(result){
-                    resolve(result.quantityAvailable)
+                    resolve(result.quantityAvailable);
                 })
             })
         }
@@ -1008,7 +1028,7 @@ const invoiceController = {
             return new Promise((resolve, reject) => {
                 db.findOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'quantityAvailable retailQuantity', function(result){
                     var quantityAvailable = parseFloat(result.quantityAvailable) * parseFloat(result.retailQuantity)
-                    resolve(quantityAvailable)
+                    resolve(quantityAvailable);
                 })
             })
         }
@@ -1016,39 +1036,39 @@ const invoiceController = {
         function returnToStockUnit(itemID, updatedQuantity) {
             return new Promise((resolve, reject) => {
                 db.findOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'quantityAvailable retailQuantity', function(result){
-                    var quantity = parseFloat(updatedQuantity) / parseFloat(result.retailQuantity)
-                    resolve(quantity)
+                    var quantity = parseFloat(updatedQuantity) / parseFloat(result.retailQuantity);
+                    resolve(quantity);
                 })
             })
         }
         
 
         async function deductInventory(item) {
-            item.itemID = await getItemID(item.itemDesc)
-            item.unitID = await getUnitID(item.unit)
-            var quantityAvailable = await getQuantityAvailable(item.itemID)
+            item.itemID = await getItemID(item.itemDesc);
+            item.unitID = await getUnitID(item.unit);
+            var quantityAvailable = await getQuantityAvailable(item.itemID);
 
-            var stockItemUnit = await getItemUnit(item.itemID)   //unit they use to keep track of inventory
+            var stockItemUnit = await getItemUnit(item.itemID);   //unit they use to keep track of inventory
 
             var updatedQuantity = 0;
 
             //needs conversion
             if (item.unitID != stockItemUnit.unitID) {
-                quantityAvailable = await getQuantityAvailableInRetail(item.itemID)
+                quantityAvailable = await getQuantityAvailableInRetail(item.itemID);
 
                 //multiplier based on unit bought
-                var boughtItemsMultiplier = await getItemUnitID(item.itemID, item.unitID)
-                var boughtQuantity = parseFloat(item.quantity) * parseFloat(boughtItemsMultiplier.quantity)
+                var boughtItemsMultiplier = await getItemUnitID(item.itemID, item.unitID);
+                var boughtQuantity = parseFloat(item.quantity) * parseFloat(boughtItemsMultiplier.quantity);
                 
-                updatedQuantity = parseFloat(quantityAvailable) - parseFloat(boughtQuantity)
+                updatedQuantity = parseFloat(quantityAvailable) - parseFloat(boughtQuantity);
                 updatedQuantity = await returnToStockUnit(item.itemID, updatedQuantity);
 
-                console.log("quantity available " + quantityAvailable)
-                console.log("boughtQuantity "  + boughtQuantity)
-                console.log("updatedQuantity " + updatedQuantity)
+                console.log("quantity available " + quantityAvailable);
+                console.log("boughtQuantity "  + boughtQuantity);
+                console.log("updatedQuantity " + updatedQuantity);
             } 
             else 
-                updatedQuantity = parseInt(quantityAvailable) - parseInt(item.quantity)
+                updatedQuantity = parseInt(quantityAvailable) - parseInt(item.quantity);
 
 
             
@@ -1071,17 +1091,17 @@ const invoiceController = {
 
 
         function processReturn(oldInvoiceID, returns) {
-            var notReturnedItems = []
+            var notReturnedItems = [];
 
             for (var i=0; i<returns.length; i++) {
 
                 //item is damaged
                 if (returns[i].reason == "61a76e7357d8d868d3eb5b2c") 
-                    damagedItem(returns[i])
+                    damagedItem(returns[i]);
 
                 //item was incorrect
                 else if (returns[i].reason == "61a76e7f57d8d868d3eb5b2d")  
-                    incorrectItem(returns[i])
+                    incorrectItem(returns[i]);
             }
             db.updateOne(Invoices, {_id:oldInvoiceID}, {statusID:"619785ceda48eab55320c0c8"}, function(flag) {
 
@@ -1090,17 +1110,17 @@ const invoiceController = {
 
         //------------MAIN FUNCTION FOR NEW INVOICE-------------
         async function newInvoice(invoiceInfo, invoiceItems, deliveryInfo) {
-            var finalInvoiceItems = []
-            var invoiceNumber = await getInvoiceNumber()
+            var finalInvoiceItems = [];
+            var invoiceNumber = await getInvoiceNumber();
             var customerID =  await getCustomerID(invoiceInfo.customerName);
             customerID = customerID._id;
 
             var invoiceID = await makeInvoiceID(invoiceNumber, customerID, invoiceInfo);
 
             for (var i=0; i<invoiceItems.length; i++) {
-                invoiceItems[i].itemID = await getItemID(invoiceItems[i].itemDesc)
+                invoiceItems[i].itemID = await getItemID(invoiceItems[i].itemDesc);
                 invoiceItems[i].unitID = await getUnitID(invoiceItems[i].unit);
-                var itemUnit = await getItemUnitID(invoiceItems[i].itemID, invoiceItems[i].unitID)
+                var itemUnit = await getItemUnitID(invoiceItems[i].itemID, invoiceItems[i].unitID);
 
                 if (invoiceItems.fromReturn != true)
                     deductInventory (invoiceItems[i])
@@ -1111,7 +1131,7 @@ const invoiceController = {
                     quantity: invoiceItems[i].quantity,
                     discount: invoiceItems[i].discount
                 }
-                finalInvoiceItems.push(item)
+                finalInvoiceItems.push(item);
             }
 
 
@@ -1121,40 +1141,40 @@ const invoiceController = {
 
             //order is delivery
             if (invoiceInfo.invoiceType == "61a591c1233fa7f9abcd5726") 
-                newDelivery(invoiceID, deliveryInfo)
+                newDelivery(invoiceID, deliveryInfo);
             else
-                res.send(invoiceID)  
+                res.send(invoiceID);
         }
 
         //------------FUNCTION FOR DELIVERY-------------- 
 
         function newDelivery(invoiceID, deliveryInfo) {
-            deliveryInfo.invoice_id = invoiceID            
+            deliveryInfo.invoice_id = invoiceID;          
             db.insertOne(deliveries, deliveryInfo, function(flag) {
                 if (flag)
-                    res.send(invoiceID)
+                    res.send(invoiceID);
             })
         }
 
-        var oldInvoiceID = req.body.oldInvoiceID
-        var returns = JSON.parse(req.body.returnsString)
-        var newInvoiceItems = JSON.parse(req.body.newInvoiceItemsString)   
-        var newInvoiceInfo = JSON.parse(req.body.invoiceInfoString)
-        var deliveryInfo = JSON.parse(req.body.deliveryInfoString)
+        var oldInvoiceID = req.body.oldInvoiceID;
+        var returns = JSON.parse(req.body.returnsString);
+        var newInvoiceItems = JSON.parse(req.body.newInvoiceItemsString);   
+        var newInvoiceInfo = JSON.parse(req.body.invoiceInfoString);
+        var deliveryInfo = JSON.parse(req.body.deliveryInfoString);
     
-        processReturn(oldInvoiceID, returns)
-        newInvoice(newInvoiceInfo, newInvoiceItems, deliveryInfo)
+        processReturn(oldInvoiceID, returns);
+        newInvoice(newInvoiceInfo, newInvoiceItems, deliveryInfo);
     },
 
     payOneInvoice: function(req, res) {
 
         async function pay() {
-            var amountPaid = req.body.amountPaid
-            var invoiceID = req.body.invoiceID
+            var amountPaid = req.body.amountPaid;
+            var invoiceID = req.body.invoiceID;
 
             var invoiceTotal = await getInvoiceTotal(invoiceID);
 
-            var previousPayments = await getAmountPaid(invoiceID)
+            var previousPayments = await getAmountPaid(invoiceID);
 
             if ((parseFloat(amountPaid)+parseFloat(previousPayments)) ==  invoiceTotal)
                 db.updateOne(Invoices, {_id:invoiceID}, {statusID:"619785b0d9a967328c1e8fa6"}, function(flag){
@@ -1169,7 +1189,7 @@ const invoiceController = {
 
             db.insertOne(AccountPayments, newPayment, function(flag) {
             })
-            res.sendStatus(200)
+            res.sendStatus(200);
         }
 
         pay()
@@ -1180,16 +1200,16 @@ const invoiceController = {
         function getInvoice(invoiceID) {
             return new Promise((resolve, reject) => {
                 db.findOne(Invoices, {_id:invoiceID}, '', function(result) {
-                    resolve(result)
+                    resolve(result);
                 })
             })
         }
 
         async function getExportInfo() {
-            var invoiceID = req.query.invoiceID
-            var invoiceInfo = await getInvoice(invoiceID)
-            var temp_invoiceItems = await getInvoiceItems(invoiceID)
-            var items = []
+            var invoiceID = req.query.invoiceID;
+            var invoiceInfo = await getInvoice(invoiceID);
+            var temp_invoiceItems = await getInvoiceItems(invoiceID);
+            var items = [];
             for (var i=0; i<temp_invoiceItems.length; i++) {
                 var itemUnitInfo = await getItemUnitInfo(temp_invoiceItems[i].itemUnitID)
                 //console.log(itemUnitInfo.sellingPrice)
@@ -1201,25 +1221,25 @@ const invoiceController = {
                     discount: "₱ " + numberWithCommas(parseFloat(temp_invoiceItems[i].discount).toFixed(2)),
                     amount: "₱ " + numberWithCommas(parseFloat(parseFloat(temp_invoiceItems[i].quantity) * parseFloat(itemUnitInfo.sellingPrice) - parseFloat(temp_invoiceItems[i].discount)).toFixed(2))
                 }
-                items.push(item)
+                items.push(item);
             }
 
-            var invoiceDate = invoiceInfo.date.toLocaleString('en-US')
+            var invoiceDate = invoiceInfo.date.toLocaleString('en-US');
             var temp_fDate0 = invoiceDate.split(",");
-            var temp_fDate = temp_fDate0[0].split("/")
-            var fDate = ""  
+            var temp_fDate = temp_fDate0[0].split("/");
+            var fDate = "";  
             for (var i=0; i<temp_fDate.length; i++)
-                fDate += temp_fDate[i] + "_"
+                fDate += temp_fDate[i] + "_";
 
-            var temp_customerName = await getSpecificCustomer(invoiceInfo.customerID)
+            var temp_customerName = await getSpecificCustomer(invoiceInfo.customerID);
             if (temp_customerName == undefined)
-                temp_customerName = invoiceInfo.customerID
-            var customerName = ""
+                temp_customerName = invoiceInfo.customerID;
+            var customerName = "";
 
             //for (var i=0; i<customerName.length; i++)
-                customerName += temp_customerName.replace(" ", "_")
+                customerName += temp_customerName.replace(" ", "_");
 
-            var fileName = fDate + customerName
+            var fileName = fDate + customerName;
 
             //for creating purchase order in docx
             // Load the docx file as binary content
@@ -1262,13 +1282,13 @@ const invoiceController = {
             const buf = doc.getZip().generate({ type: "nodebuffer" });
 
             fs.writeFileSync(path.resolve("documents", fileName+".docx"), buf);
-            var dlFileName = '/documents/' + fileName + '.docx'
+            var dlFileName = '/documents/' + fileName + '.docx';
             
-            res.sendStatus(200)
+            res.sendStatus(200);
 
         }
 
-        getExportInfo()
+        getExportInfo();
     },
 
 
@@ -1277,18 +1297,18 @@ const invoiceController = {
     getItemUnits: function(req, res) {
 
         async function getInfo() {
-            var itemID = await getItemID(req.query.itemDesc)
+            var itemID = await getItemID(req.query.itemDesc);
 
-            var temp_itemUnits = await getItemUnits(itemID)
-            var itemUnits = []
+            var temp_itemUnits = await getItemUnits(itemID);
+            var itemUnits = [];
             for (var i=0; i<temp_itemUnits.length; i++) {
                 var itemUnit = {
                     id: temp_itemUnits[i].unitID,
                     unit: await getSpecificUnit(temp_itemUnits[i].unitID)
                 }
-                itemUnits.push(itemUnit)
+                itemUnits.push(itemUnit);
             }
-            res.send(itemUnits)
+            res.send(itemUnits);
         }
 
         getInfo()

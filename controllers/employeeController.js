@@ -10,36 +10,37 @@ const bcrypt = require('bcrypt');
 require('../controllers/helpers.js');
 
 const employeeController = {
-
 	getEmployeeList: function(req, res) {
+		//if(req.session.position != "Manager"){
+				//res.redirect('/dashboard');
+		//}
+		//else{
+			async function getInformation() {
+				var employees_temp = await getEmployees();
+				var employees = [];
+				for (var i=0; i<employees_temp.length; i++) {
+					var positionName = await getPositionName(employees_temp[i].positionID);
+					var employee = {
+						employeeID: employees_temp[i]._id,
+						name: employees_temp[i].name,
+						position: positionName, 
+						number:employees_temp[i].number
+					};
+					employees.push(employee);
+				}
 
-		async function getInformation() {
-			var employees_temp = await getEmployees();
-			var employees = [];
-			for (var i=0; i<employees_temp.length; i++) {
-				var positionName = await getPositionName(employees_temp[i].positionID);
-				var employee = {
-					employeeID: employees_temp[i]._id,
-					name: employees_temp[i].name,
-					position: positionName, 
-					number:employees_temp[i].number
-				};
-				employees.push(employee);
+				employees.sort(function(a, b) {
+					var textA = a.name.toUpperCase();
+					var textB = b.name.toUpperCase();
+					//syntax is "condition ? value if true : value if false"
+					return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+				});
+
+				var positions = await getAllPositions();
+				res.render('employeeList', {positions, employees});
 			}
-
-			employees.sort(function(a, b) {
-			    var textA = a.name.toUpperCase();
-			    var textB = b.name.toUpperCase();
-			    //syntax is "condition ? value if true : value if false"
-			    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
-			});
-
-			var positions = await getAllPositions();
-			res.render('employeeList', {positions, employees});
-		}
-
-		getInformation();
-
+			getInformation();
+		// }
 	},
 
 	postEmployeeInformation: function(req, res) {
@@ -83,17 +84,20 @@ const employeeController = {
 	},
 
 	getViewEmployee: function(req, res) {
+		//if(req.session.position != "Manager"){
+			//res.redirect('/dashboard');
+		//}
+		//else{
+			async function getInformation() {
+				var employeeInfo = await getEmployeeInfo(req.params.employeeID);
+				var positions = await getAllPositions();
 
-		async function getInformation() {
-			var employeeInfo = await getEmployeeInfo(req.params.employeeID);
-			var positions = await getAllPositions();
+				employeeInfo.positionName = await getPositionName(employeeInfo.positionID);
+				res.render('employeeInformation', {employeeInfo, positions});
+			}
 
-			employeeInfo.positionName = await getPositionName(employeeInfo.positionID)
-			res.render('employeeInformation', {employeeInfo, positions});
-		}
-
-		getInformation();
-		
+			getInformation();
+		//}
 	},
 
 	postUpdateInformation: function(req, res) {
@@ -110,11 +114,11 @@ const employeeController = {
 			number:req.body.number, 
 			positionID:req.body.position,
 			informationStatusID:"618a7830c8067bf46fbfd4e4"
-		}
+		};
 
 		db.insertOneResult(Employees, employee, function(result) {
-			res.send(result._id)
-		})
+			res.send(result._id);
+		});
 	},
 
 	deleteEmployee: function(req, res) {
