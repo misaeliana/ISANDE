@@ -97,7 +97,7 @@ const invoiceController = {
 		//else{
             function getPaymentHistory(invoiceID) {
                 return new Promise((resolve, reject) => {
-                    db.findMany(AccountPayments, {invoiceID:invoiceID}, 'datePaid amountPaid', function(result) {
+                    db.findMany(AccountPayments, {invoiceID:invoiceID}, '', function(result) {
                         resolve (result);
                     });
                 });
@@ -108,6 +108,7 @@ const invoiceController = {
                 var invoice = await getInvoice(invoice_id);
                 var date = new Date(invoice.date);
                 var employee = await getEmployeeInfo(invoice.employeeID);
+                var paymentMethods = await getOnAccountPaymentMethods()
                 var items = [];
                 var invoiceInfo = {
                     invoice_id: invoice_id,
@@ -165,6 +166,7 @@ const invoiceController = {
                     items.push(item);
                 }
 
+
                 var paymentTotal = 0;
                 var paymentHistory = [];
                 if (invoiceInfo.status == "Pending" || invoiceInfo.status == "Partial" || invoiceInfo.paymentOption == "On Account") {
@@ -173,7 +175,9 @@ const invoiceController = {
                         var temp_date = new Date(temp_paymentHistory[i].datePaid);
                         var payment = {
                             date: temp_date.getMonth() + 1 + "/" + temp_date.getDate() + "/" + temp_date.getFullYear(),
-                            amountPaid: numberWithCommas(parseFloat(temp_paymentHistory[i].amountPaid).toFixed(2))
+                            paymentMethod: await getSpecificPaymentMethod(temp_paymentHistory[i].paymentMethod),
+                            amountPaid: numberWithCommas(parseFloat(temp_paymentHistory[i].amountPaid).toFixed(2)),
+                            paymentDetails: temp_paymentHistory[i].paymentDetails
                         };
                         paymentTotal += temp_paymentHistory[i].amountPaid;
                         paymentHistory.push(payment);
@@ -191,10 +195,10 @@ const invoiceController = {
                 if (customer == false) {
                     var customerName = invoice.customerID;
 
-                    res.render('viewInvoice', {invoiceInfo, items, delivery, customerName, paymentHistory, paymentTotal, amountDue});
+                    res.render('viewInvoice', {invoiceInfo, items, delivery, customerName, paymentMethods, paymentHistory, paymentTotal, amountDue});
                 }
                 else 
-                    res.render('viewInvoice', {invoiceInfo, items, delivery, customer, paymentHistory, paymentTotal, amountDue});
+                    res.render('viewInvoice', {invoiceInfo, items, delivery, customer, paymentMethods, paymentHistory, paymentTotal, amountDue});
                     
                 /*if(req.session.position == "Cashier"){
                     console.log("cashier")
@@ -1212,8 +1216,13 @@ const invoiceController = {
             var newPayment = {
                 invoiceID: invoiceID,
                 datePaid: new Date(),
+                paymentMethod: req.body.paymentMethod,
+                //paymentDetails: req.body.paymentDetails,
                 amountPaid: amountPaid
-            }
+            };
+
+            if (req.body.paymentDetails!="")
+                newPayment.paymentDetails = req.body.paymentDetails
 
             db.insertOne(AccountPayments, newPayment, function(flag) {
             })

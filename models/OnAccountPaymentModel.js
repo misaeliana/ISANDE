@@ -14,6 +14,16 @@ var OnAccountPaymentSchema = new mongoose.Schema({
 		required: true
 	},
 
+	paymentMethod: {
+		type: String,
+		required: true
+	},
+
+	paymentDetails: {
+		type: String,
+		required: false
+	},
+
 	amountPaid: {
 		type: Number,
 		required: true
