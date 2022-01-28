@@ -32,13 +32,20 @@
             <div style= "margin-top: 20px;">
                 <div>
                     <div class="label-container">
+                        <div class="override-label">Contact Person</div> 
+                        <div class="label-content">{{customerInfo.contactPerson}}</div>
+                    </div>
+                    <div class="label-container">
                         <div class="override-label">Contact Number</div> 
                         <div class="label-content">{{customerInfo.number}}</div>
                     </div>
-                    <div class="label-container">
-                        <div class="override-label">Address</div> 
-                        <div class="label-content">{{customerInfo.address}}</div>
-                    </div>
+                    <h3 class="bold">Customer Addresses</h3>
+                    {{#each customerAddress}}
+                        <div class="label-container">
+                            <div class="override-label">{{addressTitle}}</div> 
+                            <div class="label-content">{{address}}</div>
+                        </div>
+                    {{/each}}
                 </div>
 
                 <div style="height: 10px"></div>
@@ -65,11 +72,20 @@
                                 </div>
                                 <p class="error modal-error" id="error-contact-number"></p>
                                 
+                            {{#each customerAddress}}
+                                <div class="flex-display">
+                                    <label for="address-title" class="modal-label">Address Title</label> 
+                                    <input class="address-title modal-input form-control" type="text" value="{{addressTitle}}"><br>
+                                </div>
+                                 <p class="error modal-error" id="error-address-title"></p>
                                 <div class="flex-display">
                                     <label for="address" class="modal-label">Address</label> 
-                                    <input id="address" class="modal-input form-control" type="text" value="{{customerInfo.address}}"><br>
+                                    <input class="address modal-input form-control" type="text" value="{{address}}"><br>
                                 </div>
                                 <p class="error modal-error" id="error-address"></p>
+                            {{/each}}
+                                <div id="new-row"></div>
+                                <button id="more-address" type="button" class='btn-light-blue'>Add address</button>
                             </form>
                         </div>
                         <div class="modal-footer">
@@ -134,10 +150,20 @@
                                 </button>-->
                             </div>
                             <div class="modal-body">
+                                <div class="flex-display" style="margin-bottom: 3px; align-items: center;">
+                                    <label for="dropdown-payment-method" class="modal-label">Payment Method</label> 
+                                    <select id="dropdown-payment-method" class="dropdown form-control">
+                                        {{#each paymentMethods}}
+                                            <option>{{paymentOption}}</option>
+                                        {{/each}}
+                                    </select>
+                                </div>
+
                                 <div class="flex-display">
                                     <label for="input-new-payment" class="modal-label">Amount</label> 
                                     <input type="number" id="input-new-payment" class="modal-input form-control" style="text-align: right;">
                                 </div>
+
                                 <p id="error-amount" class ="error" style="display:none">Amount inputted cannot be greater than total amount due.</p>
                             </div>
                             <div class="modal-footer">
@@ -197,6 +223,22 @@
                 $(".link").click(function() {
                     window.location = $(this).data("href");
                 });
+
+                $('#more-address').click(function() {
+                    $('#new-row').append(`
+                        <div class="flex-display" style="margin-bottom:3px;">
+                                <label for="address-title" class="modal-label">Address Title</label> 
+                                <input class="address-title modal-input form-control" type="text"><br>
+                            </div>
+                             <p class="error modal-error" id="error-address-title"></p>
+
+                        <div class="flex-display" style="margin-bottom:3px;">
+                            <label for="address" class="modal-label">Address</label> 
+                            <input class="address modal-input form-control" type="text"><br>
+                        </div>
+                        <p class="error modal-error" id="error-address"></p>
+                        `)
+                })
 
                 function capitalize(string){
                     var words = string.toLowerCase().split(' ');
@@ -272,7 +314,16 @@
 
                     var name = $('#customer-name').text();
                     var number = $('#contact-number').val();
-                    var address = $('#address').val();
+                    var address = []
+                    var addressTitle = []
+
+                    $('.address').each(function() {
+                        address.push($(this).val())
+                    })
+
+                    $('.address-title').each(function () {
+                        addressTitle.push($(this).val())
+                    })
 
                     if (/*!customerNameValidation(name) && */!numberValidation(number) && !addressValidation(address)) {
 

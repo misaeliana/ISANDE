@@ -9,6 +9,11 @@ var DeliveriesSchema = new mongoose.Schema({
 		required: true
 	},
 
+	customerAddress: {
+		type: String,
+		required: true
+	},
+
 	deliveryDate: {
 		type: Date,
 		required: true

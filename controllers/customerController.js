@@ -3,9 +3,12 @@ const db = require('../models/db.js');
 
 const Customers = require('../models/CustomersModel.js');
 
+const CustomerAddresses = require('../models/CustomerAddressModel.js')
+
 const Invoices = require('../models/InvoiceModel.js');
 
 const AccountPayments = require('../models/OnAccountPaymentModel.js');
+
 
 require('../controllers/helpers.js')();
 
@@ -16,14 +19,15 @@ const customerController = {
             //res.redirect('/dashboard');
         //}
         //else{
-			db.findMany(Customers, {informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name number address', function (result) {
+			db.findMany(Customers, {informationStatusID:"618a7830c8067bf46fbfd4e4"}, '', function (result) {
 				var customers = [];
 				for (var i=0; i<result.length; i++) {
 					var customer = {
 						customerID: result[i]._id,
+						contactPerson: result[i].contactPerson,
 						name: result[i].name,
 						number: result[i].number,
-						address: result[i].address
+						//address: result[i].address
 					};
 					customers.push(customer);
 				}
@@ -56,13 +60,30 @@ const customerController = {
 	postCustomerInformation: function(req, res) {
 		var customer = {
 			name: req.body.name,
+			contactPerson: req.body.contactPerson,
 			number: req.body.number,
-			address: req.body.address,
+			//address: req.body.address,
 			informationStatusID: "618a7830c8067bf46fbfd4e4"
 		};
 
-		db.insertOne (Customers, customer, function(flag) {
-			if (flag) { }
+		var addressTitle = JSON.parse(req.body.titleStr)
+		var address = JSON.parse(req.body.addressStr) 
+		
+		db.insertOneResult (Customers, customer, function(result) {
+
+			for (var i=0; i<address.length; i++) {
+				var customerAddress = {
+					customerID: result._id,
+					addressTitle: addressTitle[i],
+					address: address[i],
+					informationStatusID: "618a7830c8067bf46fbfd4e4"
+				}
+				db.insertOne(CustomerAddresses, customerAddress, function(flag) {
+
+				})
+			}
+
+			res.send(200) 
 		});
 	},
 
@@ -95,6 +116,9 @@ const customerController = {
 					};
 					customerInvoices.push(invoice);
 				}
+
+				var customerAddress = await getCustomerAddresses(req.params.customerID)
+				var paymentMethods = await getOnAccountPaymentMethods();
 
 
 				var temp_unpaidInvoices = await getUnpaidInvoices(req.params.customerID);
@@ -129,7 +153,7 @@ const customerController = {
 						var manager = req.session.position;
 						res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue, manager});
 					}*/
-					res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue})
+					res.render('customerInformation', {customerInfo, customerAddress, customerInvoices, totalAmountDue})
 				}
 				else {
 					/*if(req.session.position == "Cashier"){
@@ -141,7 +165,7 @@ const customerController = {
 						var manager = req.session.position;
 						res.render('customerInformation', {customerInfo, customerInvoices, unpaidInvoices, totalAmountDue, manager});
 					}*/
-					res.render('customerInformation', {customerInfo, customerInvoices, unpaidInvoices, totalAmountDue});
+					res.render('customerInformation', {customerInfo, customerAddress, customerInvoices, unpaidInvoices, paymentMethods, totalAmountDue});
 
 				}
 			}

@@ -49,6 +49,10 @@ const Shrinkages = require('../models/ShrinkagesModel.js');
 
 const ItemUnits = require('../models/ItemUnitsModel.js');
 
+const CustomerAddresses = require('../models/CustomerAddressModel.js')
+
+const OnAccountPaymentMethods = require('../models/OnAccountPaymentMethodModel.js')
+
 const bcrypt = require('bcrypt');
 
 
@@ -618,7 +622,7 @@ module.exports = function() {
 	this.getCustomerID = function(customerName) {
 		return new Promise((resolve, reject) => {
 			db.findOne(Customers, {name:customerName, informationStatusID:"618a7830c8067bf46fbfd4e4"}, '_id', function(result){
-				resolve(result);
+				resolve(result._id);
 			}) 
 		})
 	},
@@ -857,6 +861,46 @@ module.exports = function() {
 				for (var z=0; z<result.length; z++)
 					format.push(result[z]._id.toString())
 				resolve(format)
+			})
+		})
+	},
+
+	this.getCustomerAddresses = function(customerID) {
+		return new Promise((resolve, reject) => {
+			db.findMany(CustomerAddresses, {customerID:customerID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, '', function(result) {
+				resolve(result)
+			})
+		})
+	},
+
+	this.getCustomerAddress = function(addressID) {
+		return new Promise((resolve, reject) => {
+			db.findOne(CustomerAddresses, {_id:addressID}, '', function (result) {
+				resolve(result.address)
+			})
+		})
+	}
+
+	this.getSpecificCustomerAddress = function(customerID, addressTitle) {
+		return new Promise((resolve, reject) => {
+			db.findOne(CustomerAddresses, {customerID:customerID, addressTitle:addressTitle, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'address', function(result) {
+				resolve(result.address)
+			})
+		})
+	},
+
+	this.getCutomerAddressID = function(customerID, addressTitle) {
+		return new Promise((resolve, reject) => {
+			db.findOne(CustomerAddresses, {customerID:customerID, addressTitle:addressTitle, informationStatusID:"618a7830c8067bf46fbfd4e4"}, '', function(result) {
+				resolve(result._id)
+			})
+		})
+	},
+
+	this.getOnAccountPaymentMethods = function() {
+		return new Promise((resolve, reject) => {
+			db.findMany(OnAccountPaymentMethods, {}, '', function(result) {
+				resolve(result)
 			})
 		})
 	}

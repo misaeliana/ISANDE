@@ -85,6 +85,10 @@
                     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 }
 
+                $("#table-customer-sales-body").on('click', '.link', function() {
+                    window.location = $(this).data("href");
+                });
+
                 $('#customer-name').autocomplete({
                     source: function(request, response) {
                     $.ajax({
@@ -121,7 +125,7 @@
                                     date = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear()
                                     var amount = numberWithCommas(parseFloat(result[i].total).toFixed(2))
                                     $("#table-customer-sales-body").append(
-                                        `  <tr> 
+                                        `  <tr class="link" style="cursor: pointer" data-href="/invoices/${result[i]._id}"> 
                                                 <td>${date}</td>
                                                 <td>${result[i].invoiceID}</td>
                                                 <td style="text-align: right;">₱ ${amount}</td>

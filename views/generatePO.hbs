@@ -30,10 +30,19 @@
             <div class="fixed-div">
                 <h1 class="bold" style="padding-bottom: 10px;"> Generate Purchase Order </h1>
                 <div> 
-                    <h3 class ="bold">Low Stock</h3>
+                    <h3 class ="bold">Items that are Low in Stock / Out of Stock</h3>
                     <div style="height: 10px"></div>
                 </div>
             </div>
+
+             <label for="dropdown-category" style="margin-right: 10px">Item Category</label>
+            <select id="dropdown-category" class="dropdown">
+                <option value="no-selected">All</option>
+                {{#each itemCategories}}
+                    <option value="{{_id}}">{{category}}</option>
+                {{/each}}
+            </select>
+            <br><br>
 
                 <table class="table">
                     <thead class="table-head">
@@ -50,6 +59,7 @@
                         {{#each items}}
                             <tr>
                                 <td class="itemDescription">{{itemDescription}}</td>
+                                <td style="display:none" class="itemCategory">{{category}}</td>
                                 <td class="supplier">
                                     <select class="dropdown dropdown-supplier form-control" style="width: 300px" disabled>
                                         <option value="no-selected">Select Supplier</option>
@@ -86,6 +96,19 @@
 
             <script>
                 $(document).ready(function() {
+
+                    $('#dropdown-category').change(function () {
+                        $('#table-purchase-stocks-body tr').show();
+                        var categoryFilter = $('#dropdown-category option:selected').text()
+                        if (categoryFilter != "All") {
+                             $('#table-purchase-stocks-body > tr').each(function() {
+                                var itemCategory = $(this).find('.itemCategory').text()
+                                if (categoryFilter != itemCategory)
+                                    $(this).toggle()
+                            })     
+                        }      
+                    })
+
 
                     $('.purchase').change(function() {
                         if ($(this).is(':checked')) {

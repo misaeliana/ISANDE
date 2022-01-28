@@ -2,27 +2,22 @@
 var mongoose = require('mongoose');
 
 // defines the schema for collection `users`
-var CustomersSchema = new mongoose.Schema({
+var CustomerAddressesSchema = new mongoose.Schema({
 
-	name: {
+	customerID: {
 		type: String,
 		required: true
 	},
 
-	contactPerson: {
-		type:String, 
+	addressTitle: {
+		type:String,
 		required: true
 	},
 
-	number: {
+	address: {
 		type: String,
-		required: false
+		required: true
 	},
-
-	/*address: {
-		type: String,
-		required: false
-	},*/
 
 	informationStatusID: {
 		type: String,
@@ -30,4 +25,4 @@ var CustomersSchema = new mongoose.Schema({
 	}
 });
 
-module.exports = mongoose.model('Customers', CustomersSchema);
+module.exports = mongoose.model('CustomerAddresses', CustomerAddressesSchema);

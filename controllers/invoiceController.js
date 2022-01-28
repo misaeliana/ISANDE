@@ -15,6 +15,8 @@ const deliveries = require('../models/DeliveriesModel.js');
 
 const Customer = require('../models/CustomersModel.js');
 
+const CustomerAddresses = require('../models/CustomerAddressModel.js')
+
 const ReturnReasons = require('../models/ReturnReasonsModel.js');
 
 const Shrinkages = require('../models/ShrinkagesModel.js');
@@ -130,6 +132,7 @@ const invoiceController = {
 
                 if (invoiceInfo.type == "Delivery") {
                     delivery = await getDeliveryInformation(invoice_id);
+                    delivery.address = await getCustomerAddress(delivery.customerAddress)
 
                     employeeName = await getEmployeeInfo(delivery.deliveryPersonnel);
 
@@ -458,11 +461,14 @@ const invoiceController = {
                 employeeID: req.body.employeeID
             };
             var items = JSON.parse(req.body.itemString);
+
+            var addressID = await getCutomerAddressID(custID, req.body.addressTitle)
             db.insertOneResult (Invoices, invoice, function(result) {
                 var invoiceID = result._id;
                 if(req.body.typeID == '61a591c1233fa7f9abcd5726'){
                     var dpackage = {
                         invoice_id: invoiceID,
+                        customerAddress: addressID,
                         deliveryDate: req.body.ddate,
                         dateDelivered: null,
                         deliveryPersonnel: req.body.employeeID,
@@ -614,6 +620,7 @@ const invoiceController = {
                 var delivery = await getSpecificDelivery(deliveryID);
                 var uneditedInvoice = await getInvoice(delivery.invoice_id);
                 var customer = await getCustomerInfo(uneditedInvoice.customerID);
+                customer.address = await getCustomerAddress(delivery.customerAddress)
                 var date = new Date(delivery.deliveryDate);
                 var invocieDate = new Date(uneditedInvoice.date);
 
@@ -780,9 +787,30 @@ const invoiceController = {
     },
 
     getCustomerInformation: function(req, res) {
-        db.findOne(Customer, {name:req.query.customerName, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name number address', function(result) {
+        db.findOne(Customer, {name:req.query.customerName, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name number', function(result) {
             res.send(result)
         })
+    },
+
+    getCustomerAddressTitles: function(req, res) {
+        async function getInfo() {
+            var customerID = await getCustomerID(req.query.customerName)
+            var addresses = await getCustomerAddresses(customerID)
+            res.send(addresses)
+        }
+
+        getInfo()
+    },
+
+    getCustomerAddress: function(req, res) {
+        async function getInfo() {
+            var customerID = await getCustomerID(req.query.customerName)
+            var address = await getSpecificCustomerAddress(customerID, req.query.addressTitle)
+
+            res.send(address)
+        }
+
+        getInfo()
     },
 
     getItems: function(req, res) {

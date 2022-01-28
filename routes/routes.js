@@ -186,6 +186,10 @@ router.get('/getCustomerName', invoiceController.getCustomerName);
 
 router.get('/getCustomerInformation', invoiceController.getCustomerInformation);
 
+router.get('/getCustomerAddressTitles', invoiceController.getCustomerAddressTitles);
+
+router.get('/getCustomerAddress', invoiceController.getCustomerAddress)
+
 router.get('/getItemName', invoiceController.getItems);
 
 router.get('/getCustomerList', invoiceController.getCustom);

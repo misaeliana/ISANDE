@@ -60,6 +60,12 @@
                                 <input id="customer-name" type="text" class="modal-input form-control"><br>
                             </div>
                             <p class="error modal-error" id="error-new-customer-name"></p>
+
+                            <div class="flex-display">
+                                <label for="contact-person" class="modal-label">Contact Person</label> 
+                                <input id="contact-person" type="text" class="modal-input form-control"><br>
+                            </div>
+                            <p class="error modal-error" id="error-new-customer-name"></p>
                             
                             <div class="flex-display">
                                 <label for="contact-number" class="modal-label">Contact Number</label> 
@@ -68,10 +74,17 @@
                             <p class="error modal-error" id="error-contact-number"></p>
                             
                             <div class="flex-display">
+                                <label for="address-title" class="modal-label">Address Title</label> 
+                                <input class="address-title modal-input form-control" type="text"><br>
+                            </div>
+                             <p class="error modal-error" id="error-address-title"></p>
+                            <div class="flex-display">
                                 <label for="address" class="modal-label">Address</label> 
-                                <input id="address" class="modal-input form-control" type="text"><br>
+                                <input class="address modal-input form-control" type="text"><br>
                             </div>
                             <p class="error modal-error" id="error-address"></p>
+                            <div id="new-row"></div>
+                            <button id="more-address" type="button" class='btn-light-blue'>Add address</button>
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -86,16 +99,18 @@
                     <thead class="table-head">
                         <tr>
                             <th>Name</th>
+                            <th>Contact Person</th>
                             <th>Contact Number</th>
-                            <th>Address</th>
+                            <!--<th>Address</th>-->
                         </tr>
                     </thead>
                     <tbody> 
                         {{#each customers}}
                             <tr class="link" style="cursor: pointer" data-href="/customer/{{customerID}}">
                                 <td>{{name}}</td>
+                                <td>{{contactPerson}}</td>
                                 <td>{{number}}</td>
-                                <td>{{address}}</td>
+                                <!--<td>{{address}}</td>-->
                             </tr>
                         {{/each}}
                     </tbody>
@@ -110,6 +125,22 @@
                 $(".link").click(function() {
                     window.location = $(this).data("href");
                 });
+
+                $('#more-address').click(function() {
+                    $('#new-row').append(`
+                        <div class="flex-display" style="margin-bottom:3px;">
+                                <label for="address-title" class="modal-label">Address Title</label> 
+                                <input class="address-title modal-input form-control" type="text"><br>
+                            </div>
+                             <p class="error modal-error" id="error-address-title"></p>
+
+                        <div class="flex-display" style="margin-bottom:3px;">
+                            <label for="address" class="modal-label">Address</label> 
+                            <input class="address modal-input form-control" type="text"><br>
+                        </div>
+                        <p class="error modal-error" id="error-address"></p>
+                        `)
+                })
 
                 function capitalize(string){
                     var words = string.toLowerCase().split(' ');
@@ -182,8 +213,21 @@
 
                 $('#btn-add-new-customer').click(function() {
                     var name = capitalize($('#customer-name').val());
+                    var contactPerson = capitalize($('#contact-person').val())
                     var number = $('#contact-number').val();
-                    var address = $('#address').val();
+                    var address = []
+                    var addressTitle = []
+
+                    $('.address').each(function() {
+                        address.push($(this).val())
+                    })
+
+                    $('.address-title').each(function () {
+                        addressTitle.push($(this).val())
+                    })
+
+                    var titleStr = JSON.stringify(addressTitle)
+                    var addressStr = JSON.stringify(address)
 
                     if (!customerNameValidation(name) && !numberValidation(number) && !addressValidation(address)) {
 
@@ -195,11 +239,11 @@
                         $('#error-contact-number').text("");
                         $('#error-address').text("");
 
-                         $.post('/postCustomerInformation', {name, number,address})
-                                $('#modal-add-customer').modal('hide');
+                         $.post('/postCustomerInformation', {name, contactPerson, number, addressStr, titleStr}, function(result) {
+                            $('#modal-add-customer').modal('hide');
                                 $('#add-new-customer').trigger('reset');
                                 window.location.reload()
-
+                         })  
                    }
                 })
 

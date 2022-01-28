@@ -76,35 +76,37 @@
                         </div>
 
                         <div class="modal-body">
-                            <form id="edit-supplier">
-                                {{!-- <label for="Supplier-name">Supplier Name</label> <input id="supplier-name" type="text" value="{{name}}"><br>
+                            <form id="edit-supplier" style="align-items: center;">
+                                {{!-- <label for="Supplier-name">Supplier Name *</label> <input id="supplier-name" type="text" value="{{name}}"><br>
                                 <p class="error" id="error-new-supplier-name" style="margin-top: 3px; margin-bottom: 3px;"></p> --}}
 
-                                <div class="flex-display">
-                                    <label for="contact-person" class="modal-label">Contact Person</label> 
+                                <div class="flex-display" style="align-items: center;">
+                                    <label for="contact-person" class="modal-label">Contact Person *</label> 
                                     <input id="contact-person" class="modal-input form-control" type="text" value="{{supplierInfo.contactPerson}}"><br>
                                 </div>
                                 <p class="error modal-error" id="error-contact-person" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
-                                <div class="flex-display">
-                                    <label for="contact-number" class="modal-label">Contact Number</label> 
+                                <div class="flex-display" style="align-items: center;">
+                                    <label for="contact-number" class="modal-label">Contact Number *</label> 
                                     <input id="contact-number" class="modal-input form-control" type="number" value="{{supplierInfo.number}}" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;"><br>
                                 </div>
                                 <p class="error modal-error" id="error-contact-number" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                                 {{#if supplierInfo.number2}}
-                                    <div class="flex-display">
-                                        <label for="contact-number2" class="modal-label">Contact Number 2</label> 
-                                        <input id="contact-number2" class="modal-input form-control" type="number" value="{{supplierInfo.number2}}" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;"><br>
-                                    </div>
-                                 {{/if}}
-                                <div class="flex-display">
+
+                                <div class="flex-display" style="align-items: center;">
+                                    <label for="contact-number2" class="modal-label">Contact Number 2</label> 
+                                    <input id="contact-number2" class="modal-input form-control" type="number" value="{{supplierInfo.number2}}" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;"><br>
+                                </div>
+                                <p class="error modal-error" id="error-contact-number" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                                
+
+                                <div class="flex-display" style="align-items: center;">
                                     <label for="email" class="modal-label">Email</label> 
                                     <input id="email" class="modal-input form-control" type="text" value="{{supplierInfo.email}}"><br>
                                 </div>
                                 <p class="error modal-error" id="error-email" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
-                                <div class="flex-display">
-                                    <label for="address" class="modal-label">Address</label> 
+                                <div class="flex-display" style="align-items: center;">
+                                    <label for="address" class="modal-label">Address *</label> 
                                     <input id="address" class="modal-input form-control" type="text" value="{{supplierInfo.address}}"><br>
                                 </div>
                                 <p class="error modal-error" id="error-address" style="margin-top: 3px; margin-bottom: 3px;"></p>

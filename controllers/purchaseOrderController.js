@@ -341,7 +341,7 @@ const purchaseOrderController = {
 		//else{
 			function getLowItems() {
 				return new Promise((resolve, reject) => {
-					db.findMany(Items, {$and:[ {$or:[{statusID:"618b32205f628509c592daab"}, {statusID:"61b0d6751ca91f5969f166de"}]}, {informationStatusID:"618a7830c8067bf46fbfd4e4"} ]}, '_id itemDescription EOQ unitID', function(result) {
+					db.findMany(Items, {$and:[ {$or:[{statusID:"618b32205f628509c592daab"}, {statusID:"61b0d6751ca91f5969f166de"}]}, {informationStatusID:"618a7830c8067bf46fbfd4e4"} ]}, '', function(result) {
 						resolve (result);
 					});
 				});
@@ -373,11 +373,13 @@ const purchaseOrderController = {
 						}
 						suppliers.push(supplier)
 					}
-
+					items[i].category = await getSpecificItemCategory(items[i].categoryID)
 					items[i].suppliers = filterSuppliers(suppliers)
 					items[i].unit = await getSpecificUnit(items[i].unitID)
 				}
-				res.render('generatePO', {items})
+
+				var itemCategories = await getItemCategories()
+				res.render('generatePO', {items, itemCategories})
 
 				/*if(req.session.position == "Inventory and Purchasing"){
 					var inventoryAndPurchasing = req.session.position;

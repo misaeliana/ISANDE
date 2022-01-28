@@ -119,7 +119,12 @@
                         </div>
                     </div>
 
-                    <textarea class="form-control margin-bottom-10 delivery-info" id="address" name="address" placeholder="Address"></textarea> <!--style="display:none"-->
+                    <div style="display: flex;">
+                        <select class="dropdown delivery-info" id="dropdown-address-title" style="margin-right: 3px; width:200px">
+                            <option value="no-selected">Select Address</option>
+                        </select>
+                        <input type="text" class="form-control margin-bottom-10 delivery-info" id="address" name="address" placeholder="Address" readonly> <!--style="display:none"-->
+                    </div>
                     <!--<p class="error" id="error-address"></p>-->
                     <input type="text" class="form-control margin-bottom-10 delivery-info" id="contactNumber" name="contactNumber" placeholder="Contact Number"> <!--style="display:none"-->
                     <!--<p class="error" id="error-number"></p>-->
@@ -135,7 +140,7 @@
                 </div>
 
                 <form>
-                    <input style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px" type="text" class="form-control" id="itemDescription" name="itemDescription" placeholder="Item Description">
+                    <input style="margin-top: 5px; margin-bottom: 0px; width: 400px; float: left; margin-right: 10px" type="text" class="form-control" id="itemDescription" name="itemDescription" placeholder="Item Description">
                     <select class="form-control" id="dropdown-item-unit" style="margin-top: 5px; margin-bottom: 0px; width: 150px; float: left; margin-right: 10px">
                         <option value="no-selected">Unit</option>
                     </select>
@@ -490,15 +495,29 @@
                         var customerName = ui.item.label;
                         $.get('/getCustomerInformation', {customerName}, function(result) {
                             $('#contactNumber').val(result.number);
-                            $('#address').val(result.address);
+                            //$('#address').val(result.address);
                         });
+                        $.get('/getCustomerAddressTitles', {customerName}, function (result) {
+                            for (var i=0; i<result.length; i++)
+                                $('#dropdown-address-title').append(`
+                                    <option>${result[i].addressTitle}</option>`)
+                        })
+
                     }
                 });
+
+                $('#dropdown-address-title').change(function() {
+                    var customerName = $('#customer-Name').val()
+                    var addressTitle = $('#dropdown-address-title option:selected').text()
+
+                    $.get('/getCustomerAddress', {customerName, addressTitle}, function(result) {
+                        $('#address').val(result)
+                    })
+                })
 
                 function computeTotal() {
                     var discountTotal = 0;
                     var amount = 0;
-                    
 
                     $("#table-body-item-list > tr").each(function () {
                         amount += parseFloat($(this).children('.amount').text().slice(1))
@@ -506,12 +525,10 @@
                     }); 
 
                     var totalDiscount = $('#total-discount').val();
-
-
                     if (totalDiscount == "")
                         totalDiscount = 0
 
-                    discountTotal += parseFloat(totalDiscount)
+                    //discountTotal += parseFloat(totalDiscount)
                     amount -= parseFloat(totalDiscount)
                     var vat = (amount *.12);
                     var sub = (amount - vat);
@@ -523,7 +540,7 @@
                     $('#vatbox').text("₱ " + parseFloat(vat).toFixed(2));
 
                     //$('#disbox').val(discountTotal);
-                    $('#disbox').text("₱ " + parseFloat(discountTotal).toFixed(2));
+                    $('#disbox').text("₱ " + parseFloat(totalDiscount).toFixed(2));
 
                     //$('#totbox').val(amount);
                     $('#totbox').text("₱ " + parseFloat(amount).toFixed(2));
@@ -540,9 +557,9 @@
                    var quantity = $('#qty').val();
                    var discount = $('#discount').val();
                    if (discount == "")
-                        discount = parseFloat(0).toFixed(2);
+                        discount = parseFloat(0);
                     else 
-                        discount = parseFloat(discount).toFixed(2);                   
+                        discount = parseFloat(discount) * quantity;                   
                     
                     if(filled(itemDesc, qty) == 0) {
                         $.get('/getItemPrice', {itemDesc, quantity, unitID}, function (result) {
@@ -551,7 +568,6 @@
                             
                             else{
                                 var sellingPrice = result.sellingPrice;
-                                //var dis = discount/100;
                                 //var discountAmount = parseFloat(sellingPrice * dis).toFixed(2);
                                 var totalPrice = parseFloat((sellingPrice*quantity)- discount).toFixed(2);
                                 var element = $('#table-body-item-list tr').filter(function(){
@@ -651,7 +667,7 @@
                     if(invoicefilled() == 1){
                         var orderedItems = [];
                         var custName = $('#customer-Name').val();
-                        var address = '';
+                        var addressTitle = $('#dropdown-address-title option:selected').text();
                         var date =  $('#dateToday').text();
                         var ddate = $('#delivery-date').val();
                         var dnotes = '';
@@ -691,7 +707,7 @@
                         var total = $('#totbox').text().slice(1);
                         var itemString = JSON.stringify(orderedItems);  
 
-                        $.post('/createNewInvoice', {custName, date, typeID, statusID, paymentOption,subtotal, VAT, discount, total, employeeID, ddate, dnotes, itemString}, function(result) {
+                        $.post('/createNewInvoice', {custName, date, typeID, statusID, paymentOption,subtotal, VAT, discount, total, employeeID, addressTitle, ddate, dnotes, itemString}, function(result) {
                             alert("Transaction successfully processed");
                             window.location = "/invoices"
                         }) 
