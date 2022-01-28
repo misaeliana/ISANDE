@@ -180,14 +180,22 @@
                             <thead style="background-color: #2F5D62; color: white">
                                 <tr>
                                     <th>Date</th>
+                                    <th>Payment Method</th>
                                     <th>Amount</th>
+                                    <th>Payment Details</th>
                                 </tr>
                             </thead>
                             <tbody> 
                                 {{#each paymentHistory}}
                                     <tr>
                                         <td>{{date}}</td>
+                                        <td>{{paymentMethod}}</td>
                                         <td style="text-align: right;">₱ {{amountPaid}}</td> 
+                                        {{#if paymentDetails}}
+                                        <td>{{paymentDetails}}</td>
+                                        {{else}}
+                                        <td></td>
+                                        {{/if}}
                                     </tr>
                                 {{/each}}
                             </tbody>
@@ -217,14 +225,29 @@
                                 </button>-->
                             </div>
                             <div class="modal-body">
-                                <div class="flex-display">
-                                    <label for="input-new-payment" class="modal-label">Amount</label> 
-                                    <input type="number" class="modal-input form-control" style="text-align: right;" id="input-new-payment">
+                                <div class="flex-display" style="margin-bottom: 3px; align-items: center;">
+                                    <label for="dropdown-payment-method" class="modal-label">Payment Method</label> 
+                                    <select id="dropdown-payment-method" class="dropdown form-control">
+                                        {{#each paymentMethods}}
+                                            <option value="{{_id}}">{{paymentOption}}</option>
+                                        {{/each}}
+                                    </select>
                                 </div>
-                                <p id="error-amount modal-error" class ="error" style="display:none">Amount inputted is greater than total amount due</p>
+
+                                <div class="flex-display" style="margin-bottom:3px;">
+                                    <label for="input-new-payment" class="modal-label">Amount</label> 
+                                    <input type="number" id="input-new-payment" class="modal-input form-control" style="text-align: right;">
+                                </div>
+
+                                <div class="flex-display" id="payment-details" style="display:none">
+                                    <label for="input-new-payment" class="modal-label">Details (Bank Name, Cheque No.)</label> 
+                                    <input type="text" id="input-payment-detail" class="modal-input form-control" style="text-align: right;">
+                                </div>
+
+                                <p id="error-amount" class ="error" style="display:none">Amount inputted cannot be greater than total amount due.</p>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="modal-btn-grey" data-dismiss="modal">Close</button>
+                                 <button type="button" class="modal-btn-grey" data-dismiss="modal">Close</button>
                                 <button type="button" class="modal-btn-light-blue" id="btn-save-payment">Save</button>
                             </div>
                         </div>
@@ -261,20 +284,31 @@
                 })
 
                 function amountValid(amountPaid) {
-                    if (amountPaid > (parseInt($('#totalAmountDue').text().slice(1)))) 
+                    if (amountPaid > (parseInt($("#totalAmountDue").text().slice(1).split(",").join("")))) 
                         return false
                     else
                         return true
                 }
 
+                $('#dropdown-payment-method').change(function() {
+                    var method = $('#dropdown-payment-method option:selected').text();
+                    if (method == "Cash")
+                        $('#payment-details').css('display', 'none')
+                    else 
+                        $('#payment-details').css('display', 'flex')
+                })
+
                 $('#btn-save-payment').click(function () {
                     var address = window.location.pathname.split('/');
                     var invoiceID = address[address.length -1]
                     var amountPaid = $('#input-new-payment').val()
+                    var paymentMethod = $('#dropdown-payment-method').val();
+                    var paymentDetails = $('#input-payment-detail').val()
+
                     if (amountValid(amountPaid)) {
                         $('#error-amount').css('display', 'none')
-                        $.post('/payOneInvoice', {invoiceID, amountPaid}, function(result) {
-                            alert('Invoice has been successfully updated')
+                        $.post('/payOneInvoice', {invoiceID, paymentMethod, paymentDetails, amountPaid}, function(result) {
+                            alert('Payment has been saved')
                             window.location.reload()
                         })
                     }  

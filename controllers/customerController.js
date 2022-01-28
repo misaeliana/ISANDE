@@ -255,8 +255,13 @@ const customerController = {
 				var newPayment = {
 					invoiceID: unpaidInvoices[i]._id,
 					datePaid: new Date(),
+					paymentMethod: req.body.paymentMethod,
+					//paymentDetails: req.body.paymentDetails,
 					amountPaid: amountPaidForInvoice
 				};
+
+				if (req.body.paymentDetails!="")
+					newPayment.paymentDetails = req.body.paymentDetails
 
 				db.insertOne(AccountPayments, newPayment, function(flag) {
 				});

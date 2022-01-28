@@ -903,5 +903,13 @@ module.exports = function() {
 				resolve(result)
 			})
 		})
+	},
+
+	this.getSpecificPaymentMethod = function(paymentMethodID) {
+		return new Promise((resolve, reject) => {
+			db.findOne(OnAccountPaymentMethods, {_id:paymentMethodID}, 'paymentOption', function(result) {
+				resolve(result.paymentOption)
+			})
+		})
 	}
 };
