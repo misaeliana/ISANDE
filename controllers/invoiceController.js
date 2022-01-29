@@ -160,7 +160,7 @@ const invoiceController = {
                         unit: await getSpecificUnit(itemUnitInfo.unitID),
                         unitPrice: numberWithCommas(parseFloat(itemUnitInfo.sellingPrice).toFixed(2)),
                         discount: numberWithCommas(parseFloat(invoiceItems[i].discount).toFixed(2)),
-                        amount: numberWithCommas(((parseFloat(itemUnitInfo.sellingPrice) * parseFloat(invoiceItems[i].quantity)) - parseFloat(invoiceItems[i].discount)).toFixed(2))
+                        amount: numberWithCommas(((parseFloat(itemUnitInfo.sellingPrice) * parseFloat(invoiceItems[i].quantity)) - (parseFloat(invoiceItems[i].discount) * parseFloat(invoiceItems[i].quantity))).toFixed(2))
                     };
 
                     items.push(item);
@@ -395,9 +395,9 @@ const invoiceController = {
                 updatedQuantity = quantityAvailable - boughtQuantity;
                 updatedQuantity = await returnToStockUnit(item.itemID, updatedQuantity);
 
-                console.log("quantity available " + quantityAvailable);
+                /*console.log("quantity available " + quantityAvailable);
                 console.log("boughtQuantity "  + boughtQuantity);
-                console.log("updatedQuantity " + updatedQuantity);
+                console.log("updatedQuantity " + updatedQuantity);*/
             } 
             else 
                 updatedQuantity = parseInt(quantityAvailable) - parseInt(item.quantity);
@@ -868,7 +868,7 @@ const invoiceController = {
 
                     var quantity = temp_invoiceItems[i].quantity
                     var unitPrice = itemUnitInfo.sellingPrice
-                    var amount = quantity * parseFloat(unitPrice) - temp_invoiceItems[i].discount
+                    var amount = quantity * (parseFloat(unitPrice) - temp_invoiceItems[i].discount)
 
                     var invoiceItem = { 
                         itemDescription: await getItemDescription(itemUnitInfo.itemID), 
@@ -1154,7 +1154,7 @@ const invoiceController = {
                 invoiceItems[i].unitID = await getUnitID(invoiceItems[i].unit);
                 var itemUnit = await getItemUnitID(invoiceItems[i].itemID, invoiceItems[i].unitID);
 
-                if (invoiceItems.fromReturn != true)
+                if (invoiceItems?.fromReturn != true)
                     deductInventory (invoiceItems[i])
 
                 var item = {

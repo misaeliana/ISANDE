@@ -188,14 +188,33 @@ const customerController = {
 			if (flag) { }
 		});
 
+		db.updateMany(CustomerAddresses, {customerID:customerID}, {informationStatusID:"618a783cc8067bf46fbfd4e5"}, function(flag) {
+			if (flag) {}
+		});
+
+		var addressTitle = JSON.parse(req.body.titleStr)
+		var address = JSON.parse(req.body.addressStr) 
+
 		var customer = {
 			name:req.body.name,
+			contactPerson: req.body.contactPerson,
 			number:req.body.number, 
-			address:req.body.address,
+			//address:req.body.address,
 			informationStatusID: "618a7830c8067bf46fbfd4e4"
 		};
 
 		db.insertOneResult(Customers, customer, function(result) {
+			for (var i=0; i<address.length; i++) {
+				var customerAddress = {
+					customerID: result._id,
+					addressTitle: addressTitle[i],
+					address: address[i],
+					informationStatusID: "618a7830c8067bf46fbfd4e4"
+				}
+				db.insertOne(CustomerAddresses, customerAddress, function(flag) {
+
+				})
+			}
 			updateInvoices(customerID, result._id);
 			res.send(result._id);
 		});

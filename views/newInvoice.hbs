@@ -184,14 +184,18 @@
                         <div class="summary-text">VAT </div>
                         <div class="summary-info-container" ><div class="summary-info" id ="vatbox">₱ 0.00</div></div>
                     </div>
+
                     <div class="summary-container">    
                         <div class="summary-text">Discount </div>
                         <div class="summary-info-container"><div class="summary-info" id ="disbox">₱ 0.00</div></div>
                     </div>
-                    <div class="summary-container">
+
+                    <div class="summary-container">    
                         <div class="summary-text">Total </div>
                         <div class="summary-info-container" ><div class="summary-info" id ="totbox">₱ 0.00</div></div>
                     </div>
+
+
 
                     <div style="height: 10px"></div>
 
@@ -527,7 +531,7 @@
                     var totalDiscount = $('#total-discount').val();
                     if (totalDiscount == "")
                         totalDiscount = 0
-
+                    
                     //discountTotal += parseFloat(totalDiscount)
                     amount -= parseFloat(totalDiscount)
                     var vat = (amount *.12);
@@ -544,8 +548,8 @@
 
                     //$('#totbox').val(amount);
                     $('#totbox').text("₱ " + parseFloat(amount).toFixed(2));
-                }
-             
+                }             
+
                 $('#total-discount').keyup(function() {
                     computeTotal()
                 })

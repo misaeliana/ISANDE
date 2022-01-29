@@ -64,8 +64,10 @@
                         </div>
                         <div class="modal-body">
                             <form id="edit-customer">
-                                <!--<label for="Customer-name">Customer Name</label> <input id="customer-name" type="text" value="{{name}}"><br>
-                                <p class="error" id="error-new-customer-name" style="margin-top: 3px; margin-bottom: 3px;"></p>-->
+                                <div class="flex-display">
+                                    <label for="contact-person" class="modal-label">Contact Person</label> <input id="contact-person" class= "modal-input form-control" type="text" value="{{customerInfo.contactPerson}}" style="margin-bottom: 3px;"><br>
+                                </div>
+                                <p class="error" id="error-contact-person" style="margin-top: 3px; margin-bottom: 3px;"></p>
                                 <div class="flex-display">
                                     <label for="contact-number" class="modal-label">Contact Number</label> 
                                     <input id="contact-number" class="modal-input form-control" type="number" value="{{customerInfo.number}}" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;"><br>
@@ -73,9 +75,11 @@
                                 <p class="error modal-error" id="error-contact-number"></p>
                                 
                             {{#each customerAddress}}
+                            <div class="address-info">
                                 <div class="flex-display">
                                     <label for="address-title" class="modal-label">Address Title</label> 
                                     <input class="address-title modal-input form-control" type="text" value="{{addressTitle}}"><br>
+                                    <button class="delete-address-button"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button>
                                 </div>
                                  <p class="error modal-error" id="error-address-title"></p>
                                 <div class="flex-display">
@@ -83,6 +87,7 @@
                                     <input class="address modal-input form-control" type="text" value="{{address}}"><br>
                                 </div>
                                 <p class="error modal-error" id="error-address"></p>
+                            </div>
                             {{/each}}
                                 <div id="new-row"></div>
                                 <button id="more-address" type="button" class='btn-light-blue'>Add address</button>
@@ -231,19 +236,31 @@
 
                 $('#more-address').click(function() {
                     $('#new-row').append(`
-                        <div class="flex-display" style="margin-bottom:3px;">
+                        <div class="new-address-row">
+                            <div class="flex-display" style="margin-bottom:3px; align-items:center">
                                 <label for="address-title" class="modal-label">Address Title</label> 
-                                <input class="address-title modal-input form-control" type="text"><br>
+                                <input class="address-title modal-input form-control" type="text" style="margin-right:5px"><br>
+                                <button class="delete-new-address-button"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button>
                             </div>
-                             <p class="error modal-error" id="error-address-title"></p>
+                             <p class="error modal-error error-address-title"></p>
 
-                        <div class="flex-display" style="margin-bottom:3px;">
-                            <label for="address" class="modal-label">Address</label> 
-                            <input class="address modal-input form-control" type="text"><br>
+                            <div class="flex-display" style="margin-bottom:3px;">
+                                <label for="address" class="modal-label">Address</label> 
+                                <input class="address modal-input form-control" type="text"><br>
+                            </div>
+                            <p class="error modal-error error-address"></p>
                         </div>
-                        <p class="error modal-error" id="error-address"></p>
-                        `)
+                    `)
                 })
+
+                $(document).on('click', '.delete-new-address-button', function() {
+                    $(this).closest('.new-address-row').remove()
+                })
+
+                $(document).on('click', '.delete-address-button', function() {
+                    $(this).closest('.address-info').remove()
+                })
+
 
                 $('#dropdown-payment-method').change(function() {
                     var method = $('#dropdown-payment-method option:selected').text();
@@ -288,10 +305,10 @@
                         $('#contact-number').css("border", "1px solid #B00000");
                         $('#error-contact-number').text("Invalid conact number");
                     }
-                    else if (type == "noAddress") {
-                        $('#address').css("border", "1px solid #B00000");
-                        $('#error-address').text("Input address");
-                    }
+                    else if (type == "noContact") {
+                        $('#contact-person').css("border", "1px solid #B00000");
+                        $('#error-contact-person').text("Please input contact person");
+                    } 
                 }
 
                 /*function customerNameValidation(name) {
@@ -303,6 +320,15 @@
                         return 0;
                 } */  
 
+                function contactPersonValidation(name) {
+                    if (name == null || name == "") {
+                        errorMessage("noContact")
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }   
+
                 function numberValidation(number) {
                     if (number == 0 || number < 0) {
                         errorMessage("noNumber")
@@ -312,20 +338,42 @@
                         return 0;
                 }     
 
-                function addressValidation(address) {
-                    if (address == null || address == "") {
-                        errorMessage("noAddress")
-                        return 1;
-                    }
-                    else 
-                        return 0;
-                }
+                function addressValidation() {
+                    var notFilled = false
 
+                    $('.address-title').each(function () {
+                        if ($(this).val() == "") {
+                            $(this).css("border", "1px solid #B00000");
+                            $(this).parents('.flex-display').next('p').text("Input address title");
+                            notFilled = true
+                        }
+                        else {
+                            $(this).parents('.flex-display').next('p').text("");
+                            $(this).css("border", "1px solid #DDDDDD")
+                        }
+                    })
+
+                    $('.address').each(function() {
+                        if ($(this).val() == "") {
+                            $(this).css("border", "1px solid #B00000");
+                            $(this).parents('.flex-display').next('p').text("Input address");
+                            notFilled = true
+                        }
+                        else {
+                            $(this).parents('.flex-display').next('p').text("");
+                            $(this).css("border", "1px solid #DDDDDD")
+                        }
+                    })
+
+                    return notFilled;
+                }
                 $('#btn-update-customer').click(function() {
                     var address = window.location.pathname.split('/');
                     var customerID = address[address.length -1]
 
                     var name = $('#customer-name').text();
+                    var contactPerson = capitalize($('#contact-person').val())
+
                     var number = $('#contact-number').val();
                     var address = []
                     var addressTitle = []
@@ -338,17 +386,21 @@
                         addressTitle.push($(this).val())
                     })
 
-                    if (/*!customerNameValidation(name) && */!numberValidation(number) && !addressValidation(address)) {
+                    var titleStr = JSON.stringify(addressTitle)
+                    var addressStr = JSON.stringify(address)
 
+                    if (/*!customerNameValidation(name) && */!contactPersonValidation(contactPerson) && !numberValidation(number) && !addressValidation(address, addressTitle)) {
                             //$('#customer-name').css("border", "1px solid #DDDDDD");
+                            $('#contact-person').css("border", "1px solid #DDDDDD")
                             $('#contact-number').css("border", "1px solid #DDDDDD");
                             $('#address').css("border", "1px solid #DDDDDD");
 
                            // $('#error-new-customer-name').text("");
+                            $('#error-contact-person').text("")
                             $('#error-contact-number').text("");
                             $('#error-address').text("");
 
-                            $.post('/postUpdateCustomerInformation', {customerID, name, number, address}, function(result) {
+                            $.post('/postUpdateCustomerInformation', {customerID, name, contactPerson, number, titleStr, addressStr}, function(result) {
                                     $('#modal-edit-customer').modal('hide');
                                     $('#edit-customer').trigger('reset');
                                     alert("Succesfully updated customer information");

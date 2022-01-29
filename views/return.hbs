@@ -253,11 +253,6 @@
                         <div class="summary-info-container"><div class="summary-info" id="refund">₱ 0.00</div></div>
                     </div>
 
-                    <!--<div class="summary-container">
-                        <div class="summary-text">Balance</div>
-                        <div class="summary-info-container"><div class="summary-info" id="balance">₱ 0</div></div>
-                    </div>-->
-
 
                     <hr style="margin-top: 0px; margin-bottom: 10px;">
 
@@ -265,8 +260,8 @@
                         <div class="summary-text">Total</div>
                         <div class="summary-info-container"><div class="summary-info" id="total">₱ 0.00</div></div>
                     </div>
-
                     <div style="height: 10px"></div>
+
 
                     <div>
                         <div style="display: flex;">
@@ -504,6 +499,8 @@
 
 
                 function allFilled() {
+                    var allFilled = true
+
                     var invoiceType = $('#dropdown-return-type option:selected').text()
                     var noReason = false
 
@@ -519,24 +516,22 @@
                             }
                         }
                     })
-                    if (noReason)
+                    if (noReason) {
                         alert("Select return reason for items");
-
+                        allFilled = false
+                    }
 
                     if (invoiceType == "In-Store") {
-                        if (customerNameFilled()) 
-                            return true;
-                        else
-                            return false;
+                        if (!customerNameFilled()) 
+                            allFilled = false
                     }
 
                     else if (invoiceType == "Delivery") {
-                        if (customerNameFilled() && deliveryInfoFilled())
-                            return true;
-                        else
-                            return false;
+                        if (!customerNameFilled() && !deliveryInfoFilled())
+                            allFilled = false
                     }
 
+                    return allFilled
                 }
 
                 function computeTotal() {
@@ -553,14 +548,21 @@
                         if (quantity == "" || quantity == NaN)
                             quantity = 0;
 
-                        if ($(this).find('.return-check').is(":checked")) 
-                            refund += (quantity * parseFloat($(this).children('.return-unit-price').text().slice(1)) - $(this).children('.return-discount').text().slice(1));
-                        else 
-                            orderTotal += (quantity * parseFloat($(this).children('.return-unit-price').text().slice(1)));
+                        var unitPrice = parseFloat($(this).children('.return-unit-price').text().slice(1))
+                        var discount = parseFloat($(this).children('.return-discount').text().slice(1))
 
-                        if ((quantity*parseFloat($(this).children('.return-unit-price').text().slice(1)) - parseFloat($(this).children('.return-discount').text().slice(1))) != parseFloat($(this).children('.return-amount').text().slice(1))) {
-                            orderTotal += (parseFloat($(this).children('.return-amount').text().slice(1)) - (quantity * parseFloat($(this).children('.return-unit-price').text().slice(1))));
+                        var quantityPurchased = parseFloat($(this).find('.quantity-purchased').text())
+
+                        //all items were returned
+                        if ($(this).find('.return-check').is(":checked") && (quantity == quantityPurchased)) 
+                            refund += (quantity * (unitPrice- discount));
+
+                        else if ($(this).find('.return-check').is(":checked") && (quantity != quantityPurchased)) {
+                            refund += (quantity * (unitPrice - discount))
+                            orderTotal += ((quantityPurchased- quantity) * (unitPrice - discount));
                         }
+                        else 
+                            orderTotal += (quantity * (unitPrice - discount));
                     })
 
                     $('#table-return-new-item-body > tr').each(function() {
@@ -570,24 +572,25 @@
                     })
 
                     var discountTotal = $('#total-discount').val();
-                    //there is discount
-                    if (discountTotal != "")
-                        discount = orderTotal * (discountPercent/100);
+                    if (discountTotal == "")
+                        discountTotal = 0
 
-                    orderTotal -= discount;
                     var subtotal = orderTotal/1.12;
                     var vat = orderTotal - subtotal;
 
                     var total = orderTotal - paid;
+                    orderTotal -= discountTotal
+                    total -= discountTotal
+
                     
                     $('#subtotal').text("₱ " + parseFloat(subtotal).toFixed(2));
                     $('#vat').text("₱ " + parseFloat(vat).toFixed(2));
-                    $('#discount').text("₱ " + parseFloat(discount).toFixed(2));
                     $('#orderTotal').text("₱ " + parseFloat(orderTotal).toFixed(2));
 
                     $('#refund').text("₱ " + parseFloat(refund).toFixed(2));
-                    //$('#balance').text("₱ " + parseFloat(balance).toFixed(2))
+
                     $('#total').text("₱ " + parseFloat(total).toFixed(2));
+                    $('#disbox').text("₱ " + parseFloat(discountTotal).toFixed(2));
                 }
 
 
@@ -603,7 +606,7 @@
                     $.get('/getItemPrice', {itemDesc, quantity, unitID}, function (result) {
                         if(quantity < result.quantityAvailable) {
                             var sellingPrice = result.sellingPrice;
-                            var totalPrice = parseFloat((sellingPrice*quantity)- discount).toFixed(2);
+                            var totalPrice = parseFloat((sellingPrice*quantity)- (discount*quantity)).toFixed(2);
 
                             $('#table-return-new-item-body').append(
                                 `<tr>
@@ -640,25 +643,29 @@
 
                         $('#table-return-order-details > tbody > tr').each(function() {
                             //item to be returned, either added to shrinkage or added back to inventory
+
+                            //all quantity to be returned
                             if ($(this).find('.return-check').is(":checked") && (parseInt($(this).find('.quantity-purchased').text()) == parseInt($(this).find('.return-quantity').val()))) {
                                 var returnItem = {
                                     itemDesc: $(this).children('.return-item-desc').text(),
                                     unit:$(this).children('.unit').text(),
                                     quantity: $(this).find('.return-quantity').val(),
                                     reason: $(this).find('.return-reason').val(),
-                                    discount:0
                                     //discount: $(this).children('.return-discount').text().slice(1)
                                 }
                                 returns.push(returnItem)
                             } 
 
-                           else if ($(this).find('.return-check').is(":checked") && (parseInt($(this).find('.quantity-purchased').text()) != parseInt($(this).find('.return-quantity').val()))) {
+                            //some quantity to be returned
+                            else if ($(this).find('.return-check').is(":checked") && (parseInt($(this).find('.quantity-purchased').text()) != parseInt($(this).find('.return-quantity').val()))) {
+                                var discount = $(this).children('.return-discount').text().slice(1)
+
                                   var returnItem = {
                                     itemDesc: $(this).children('.return-item-desc').text(),
                                     unit:$(this).children('.unit').text(),
                                     quantity: $(this).find('.return-quantity').val(),
                                     reason: $(this).find('.return-reason').val(),
-                                    discount:0
+                                    discount: parseFloat($(this).find('.return-quantity').val()) * discount
                                     //discount: $(this).children('.return-discount').text().slice(1)
                                 }
                                 returns.push(returnItem)
@@ -666,13 +673,14 @@
                                 var invoiceItem = {
                                     itemDesc: $(this).children('.return-item-desc').text(),
                                     unit:$(this).children('.unit').text(),
-                                    quantity: parseInt($(this).children('.quantity-purchased').text()) - $(this).find('.return-quantity').val(),
-                                    discount: $(this).children('.return-discount').text().slice(1),
+                                    quantity: parseFloat($(this).children('.quantity-purchased').text()) - $(this).find('.return-quantity').val(),
+                                    discount: discount * (parseFloat($(this).children('.quantity-purchased').text()) - $(this).find('.return-quantity').val()),
                                     fromReturn: true
                                 }
                                 newInvoiceItems.push(invoiceItem);
                             }
 
+                            //item will not be returned, add to new invoice
                             else {
                                 var invoiceItem = {
                                     itemDesc: $(this).children('.return-item-desc').text(),
@@ -707,7 +715,7 @@
                                 paymentOptionID:$('#dropdown-payment-type').val(),
                                 subtotal: parseFloat($('#subtotal').text().slice(1)),
                                 vat: parseFloat($('#vat').text().slice(1)),
-                                discount: parseFloat($('#discount').text().slice(1)),
+                                discount: parseFloat($('#disbox').text().slice(1)),
                                 total: parseFloat($('#total').text().slice(1))
                             }
 
@@ -725,7 +733,7 @@
                                 paymentOptionID: $('#dropdown-payment-type').val(),
                                 subtotal: parseFloat($('#subtotal').text().slice(1)),
                                 vat: parseFloat($('#vat').text().slice(1)),
-                                discount: parseFloat($('#discount').text().slice(1)),
+                                discount: parseFloat($('#disbox').text().slice(1)),
                                 total: parseFloat($('#total').text().slice(1))
                             }
                             deliveryInfo= {};

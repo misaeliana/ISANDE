@@ -65,7 +65,7 @@
                                 <label for="contact-person" class="modal-label">Contact Person</label> 
                                 <input id="contact-person" type="text" class="modal-input form-control"><br>
                             </div>
-                            <p class="error modal-error" id="error-new-customer-name"></p>
+                            <p class="error modal-error" id="error-contact-person"></p>
                             
                             <div class="flex-display">
                                 <label for="contact-number" class="modal-label">Contact Number</label> 
@@ -128,20 +128,27 @@
 
                 $('#more-address').click(function() {
                     $('#new-row').append(`
-                        <div class="flex-display" style="margin-bottom:3px;">
+                        <div class="new-address-row">
+                            <div class="flex-display" style="margin-bottom:3px; align-items:center">
                                 <label for="address-title" class="modal-label">Address Title</label> 
-                                <input class="address-title modal-input form-control" type="text"><br>
+                                <input class="address-title modal-input form-control" type="text" style="margin-right:5px"><br>
+                                <button class="delete-address-button"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button>
                             </div>
-                             <p class="error modal-error" id="error-address-title"></p>
+                             <p class="error modal-error error-address-title"></p>
 
-                        <div class="flex-display" style="margin-bottom:3px;">
-                            <label for="address" class="modal-label">Address</label> 
-                            <input class="address modal-input form-control" type="text"><br>
+                            <div class="flex-display" style="margin-bottom:3px;">
+                                <label for="address" class="modal-label">Address</label> 
+                                <input class="address modal-input form-control" type="text"><br>
+                            </div>
+                            <p class="error modal-error error-address"></p>
                         </div>
-                        <p class="error modal-error" id="error-address"></p>
-                        `)
+                    `)
                 })
 
+                $(document).on('click', '.delete-address-button', function() {
+                    $(this).closest('.new-address-row').remove()
+                })
+                
                 function capitalize(string){
                     var words = string.toLowerCase().split(' ');
                     for (i=0; i<words.length; i++)
@@ -173,19 +180,29 @@
                         $('#customer-name').css("border", "1px solid #B00000");
                         $('#error-new-customer-name').text("Please input customer name");
                     } 
+                    else if (type == "noContact") {
+                        $('#contact-person').css("border", "1px solid #B00000");
+                        $('#error-contact-person').text("Please input contact person");
+                    } 
+
                     else if (type == "noNumber") {
                         $('#contact-number').css("border", "1px solid #B00000");
                         $('#error-contact-number').text("Invalid contact number");
-                    }
-                    else if (type == "noAddress") {
-                        $('#address').css("border", "1px solid #B00000");
-                        $('#error-address').text("Input address");
                     }
                 }
 
                 function customerNameValidation(name) {
                     if (name == null || name == "") {
                         errorMessage("noName")
+                        return 1;
+                    }
+                    else 
+                        return 0;
+                }
+
+                function contactPersonValidation(name) {
+                    if (name == null || name == "") {
+                        errorMessage("noContact")
                         return 1;
                     }
                     else 
@@ -201,13 +218,34 @@
                         return 0;
                 }     
 
-                function addressValidation(address) {
-                    if (address == null || address == "") {
-                        errorMessage("noAddress")
-                        return 1;
-                    }
-                    else 
-                        return 0;
+                function addressValidation() {
+                    var notFilled = false
+
+                    $('.address-title').each(function () {
+                        if ($(this).val() == "") {
+                            $(this).css("border", "1px solid #B00000");
+                            $(this).parents('.flex-display').next('p').text("Input address title");
+                            notFilled = true
+                        }
+                        else {
+                            $(this).parents('.flex-display').next('p').text("");
+                            $(this).css("border", "1px solid #DDDDDD")
+                        }
+                    })
+
+                    $('.address').each(function() {
+                        if ($(this).val() == "") {
+                            $(this).css("border", "1px solid #B00000");
+                            $(this).parents('.flex-display').next('p').text("Input address");
+                            notFilled = true
+                        }
+                        else {
+                            $(this).parents('.flex-display').next('p').text("");
+                            $(this).css("border", "1px solid #DDDDDD")
+                        }
+                    })
+
+                    return notFilled;
                 }
 
 
@@ -223,27 +261,29 @@
                     })
 
                     $('.address-title').each(function () {
-                        addressTitle.push($(this).val())
+                        addressTitle.push(capitalize($(this).val()))
                     })
 
                     var titleStr = JSON.stringify(addressTitle)
                     var addressStr = JSON.stringify(address)
 
-                    if (!customerNameValidation(name) && !numberValidation(number) && !addressValidation(address)) {
+                    if (!customerNameValidation(name) && !contactPersonValidation(contactPerson) && !numberValidation(number) && !addressValidation(addressTitle, address)) {
 
                         $('#customer-name').css("border", "1px solid #DDDDDD");
+                        $('#contact-person').css("border", "1px solid #DDDDDD")
                         $('#contact-number').css("border", "1px solid #DDDDDD");
                         $('#address').css("border", "1px solid #DDDDDD");
 
                         $('#error-new-customer-name').text("");
                         $('#error-contact-number').text("");
                         $('#error-address').text("");
+                        $('#error-contact-person').text("")
 
                          $.post('/postCustomerInformation', {name, contactPerson, number, addressStr, titleStr}, function(result) {
                             $('#modal-add-customer').modal('hide');
                                 $('#add-new-customer').trigger('reset');
                                 window.location.reload()
-                         })  
+                         }) 
                    }
                 })
 
