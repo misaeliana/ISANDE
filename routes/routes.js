@@ -210,6 +210,8 @@ router.get('/exportInvoice', invoiceController.exportInvoice);
 
 router.get('/getCheckCustomerNameInvoice', invoiceController.getCheckCustomerName);
 
+router.get('/getCheckItemExists', invoiceController.getCheckItemExists)
+
 
 //--DELIVERY--
 router.get('/deliveries', invoiceController.getDeliveryList);
@@ -241,7 +243,11 @@ router.get('/getDateToday', reportController.getDateToday);
 
 router.get('/inventoryPerformanceReport', reportController.getInventoryPerformanceReport);
 
+router.get('/getFilteredInventoryPerformanceReport', reportController.getFilteredInventoryPerformanceReport)
+
 router.get('/salesPerformanceReport', reportController.getSalesPerformanceReport);
+
+router.get('/getFilteredSalesPerformanceReport', reportController.getFilteredSalesPerformanceReport);
 
 router.get('/purchaseReport', reportController.getPurchaseReports);
 
@@ -253,7 +259,6 @@ router.get('/getCustomerInvoices', reportController.getCustomerInvoicesReport);
 
 router.get('/getFilteredCustomerInvoices', reportController.getFilteredCustomerInvoices);
 
-router.get('/getFilteredSalesPerformanceReport', reportController.getFilteredSalesPerformanceReport);
 
 
 

@@ -271,6 +271,7 @@
                     }, response: function (event, ui) {
                         if (ui.content.length === 0) {
                             $('#text-warning-new-PO').text('Item does not exist')
+                            $('#dropdown-item-unit option:not(:first)').remove();     
                             $('#addItem').prop('disabled', true)
                         }
 
@@ -297,11 +298,6 @@
                         
                 });
 
-                $('#dropdown-item-unit').change(function () {
-                    $("#qty").val("");
-                })
-
-
                 $("#table-poItem").on('click','.delete-item-btn',function() {
                     $(this).closest('tr').remove();
                 });
@@ -313,18 +309,27 @@
 
                     //all blanks are filled up
                     if (itemFilled()) {
-                        $('#table-poItem').append(
-                        `<tr>
-                            <td class="classItemDescription">${itemDesc}</td>
-                            <td><input class="classQty form-control" type="number" style="text-align:right; width: 200px;" value="${qty}"</td>
-                            <td class="classUnit">${unit}</td>
-                            <td style="text-align: right;"> <button class="delete-button delete-item-btn"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button> </td>
-                        </tr>`);
+                        var element = $('#table-poItem tr').filter(function(){
+                            return (this.innerHTML.indexOf(itemDesc) != -1 && this.innerHTML.indexOf(unit) != -1);
+                        })
+                        if (element.length){
+                            //alert("element at index already inside!")
+                            //console.log(element)
+                             $('#text-warning-new-PO').text("Item already exists");
+                         } else {
+                            $('#table-poItem').append(
+                                `<tr>
+                                    <td class="classItemDescription">${itemDesc}</td>
+                                    <td><input class="classQty form-control" type="number" style="text-align:right; width: 200px;" value="${qty}"</td>
+                                    <td class="classUnit">${unit}</td>
+                                    <td style="text-align: right;"> <button class="delete-button delete-item-btn"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button> </td>
+                                </tr>`);
 
-                        $('#itemDescription').val('');
-                        $('#qty').val('');
-                        $('#text-warning-new-PO').text("");
-                        $('#dropdown-item-unit option:not(:first)').remove();
+                                $('#itemDescription').val('');
+                                $('#qty').val('');
+                                $('#text-warning-new-PO').text("");
+                                $('#dropdown-item-unit option:not(:first)').remove();
+                         }
                     }
                 })
 
@@ -489,23 +494,26 @@
                     var allFilled = true 
                     
                     if ($('#itemDescription').val() == "") {
-                        $('#itemDescription').css("border", "2px solid #B00000");
-                        allFilled = false
+                        $('#itemDescription').css("border", "1px solid #B00000");
+                        $('#text-warning-new-PO').text("Input item description")
+                        return false
                     }
                      else
                         $('#itemDescription').css("border", "1px solid #DDDDDD");
 
 
                     if ($('#qty').val()== "") {
-                        $('#qty').css("border", "2px solid #B00000");
-                        allFilled = false
+                        $('#qty').css("border", "1px solid #B00000");
+                        $('#text-warning-new-PO').text("Input quantity")
+                        return false
                     }
                     else
                         $('#qty').css("border", "1px solid #DDDDDD");
 
                     if ($('#dropdown-item-unit').val() == "no-selected") {
-                        $('#dropdown-item-unit').css("border", "2px solid #B00000");
-                        allFilled = false
+                        $('#dropdown-item-unit').css("border", "1px solid #B00000");
+                        $('#text-warning-new-PO').text("Select unit")
+                        return false
                     }
                      else
                         $('#dropdown-item-unit').css("border", "1px solid #DDDDDD");

@@ -54,10 +54,10 @@
 
             {{#each formattedInventory}}
                 {{#if category}}
-                    </table>
-                    <h3 class="bold">{{category}}</h3>
+                    </table> 
+                    <h3 class="bold category">{{category}}</h3>
                 
-                    <table class="table"> 
+                    <table class="table" id="table-{{category}}"> 
                         <thead style="background-color: #2F5D62; color: white; width: inherit;">
                             <tr>
                                 <th>#</th>
@@ -85,5 +85,59 @@
                 </div> 
             </div>
         </div>
+
+        <script>
+            $(document).ready(function() {
+                $('#invoice-date-button').click(function() {
+                    var startDate = $("#start-date").val();
+                    var endDate = $("#end-date").val();
+
+                    if (startDate == null || startDate == "" || endDate == null || endDate == "") {
+                        if (startDate == null || startDate == "")
+                            $("#start-date").css("border", "1px solid #B00000")
+
+                        if (endDate == null || endDate == "")
+                            $("#end-date").css("border", "1px solid #B00000")
+                    } else {
+                        var convertedStartDate = new Date(startDate);
+                        var convertedEndDate = new Date(endDate);
+
+                        if(convertedStartDate > convertedEndDate) {
+                            // end date is before start date 
+                            $("#start-date").css("border", "1px solid #B00000");
+                            $("#end-date").css("border", "1px solid #B00000");
+                        }
+                        else {
+                            // valid dates
+                            $("#start-date").css("border", "1px solid #DDDDDD");
+                            $("#end-date").css("border", "1px solid #DDDDDD");
+
+                            var sortFilter = $('#dropdown-sort').val();
+                            var numberFilter = $('#dropdown-number').val();
+
+                            $('.category').each(function() {
+                                var category = $(this).text();
+
+                                $.get("/getFilteredInventoryPerformanceReport", {startDate: convertedStartDate, endDate: convertedEndDate, category:category, sortFilter: sortFilter, numberFilter: numberFilter}, function (result) {
+                                    
+                                    $(`#table-${category} > tbody`).empty();
+
+                                    for (var i=0; i<result.length; i++) {
+                                        $(`#table-${category} > tbody`).append(`
+                                            <tr>   
+                                                <td>${result[i].rank}</td>
+                                                <td>${result[i].description}</td>
+                                                <td>${result[i].unitsSold}</td>
+                                                <td>${result[i].UOM}</td>
+                                            </tr>
+                                        `)
+                                    }
+                                });
+                            })
+                        }
+                    }
+                })
+            })        
+        </script>
     </body>
 </html>

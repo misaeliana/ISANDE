@@ -1355,7 +1355,22 @@ const invoiceController = {
         db.findOne(Customers, {name:{$regex: req.query.customerName, $options:'i'}}, '', function (result) {
             res.send(result);
         });
-	}
+	},
+
+    getCheckItemExists: function (req, res) {
+        db.findMany (Items, {itemDescription:{$regex:req.query.itemDesc, $options:'i'}, informationStatusID: "618a7830c8067bf46fbfd4e4"}, 'itemDescription', function (result) {
+            var formattedResults = [];
+            //reason for the for loop: https://stackoverflow.com/questions/5077409/what-does-autocomplete-request-server-response-look-like
+            for (var i=0; i<result.length; i++) {
+                var formattedResult = {
+                    label: result[i].itemDescription,
+                    value: result[i].itemDescription
+                };
+                formattedResults.push(formattedResult);
+            }
+            res.send(formattedResults)
+        })
+    }
 };
 
 module.exports = invoiceController;

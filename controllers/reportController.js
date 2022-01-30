@@ -5,6 +5,8 @@ const Invoices = require('../models/InvoiceModel.js');
 
 const InvoiceItems = require('../models/InvoiceItemsModel.js');
 
+const ItemCategories = require('../models/ItemCategoriesModel.js');
+
 const Purchases = require('../models/PurchasesModel.js');
 
 const PurchasedItems = require('../models/PurchasedItemsModel.js');
@@ -118,6 +120,9 @@ const reportController = {
                 var formattedInventory = [];
                 var categories = await getItemCategories();
                 var invoiceItems = await getAllInvoiceItems();
+
+                var paidStatus = await getSpecificInvoiceStatusID("Paid");
+
                 //console.log(invoiceItems);
 
                 /*for (var i = 0; i < categories.length; i++) {
@@ -138,21 +143,21 @@ const reportController = {
                     for (var j = 0; j < inventory.length; j++) {
                         var unitsSold = 0;
 
-                        // get number of units sold
-                        for (var k = 0 ; k < invoiceItems.length; k++) {
-
-                            var itemUnitInfo = await getItemUnitInfo(invoiceItems[k].itemUnitID);
-
-                                if (await getItemDescription(itemUnitInfo.itemID) == inventory[j].itemDescription) {
-                                    //no need conversion
-                                    if (itemUnitInfo.unitID == inventory[j].unitID)
-                                        unitsSold += parseFloat(invoiceItems[k].quantity);
-                                    else
-                                        unitsSold += parseFloat(convert(itemUnitInfo.itemID, invoiceItems[k].quantity));
-                                }
-                        }
-
                         if (categories[a]._id == inventory[j].categoryID) {
+
+                            // get number of units sold
+                            for (var k = 0 ; k < invoiceItems.length; k++) {
+
+                                var itemUnitInfo = await getItemUnitInfo(invoiceItems[k].itemUnitID);
+
+                                    if (await getItemDescription(itemUnitInfo.itemID) == inventory[j].itemDescription && (await checkInvoicePaid(invoiceItems[k].invoice_id) == paidStatus)) {
+                                        //no need conversion
+                                        if (itemUnitInfo.unitID == inventory[j].unitID)
+                                            unitsSold += parseFloat(invoiceItems[k].quantity);
+                                        else
+                                            unitsSold += parseFloat(convert(itemUnitInfo.itemID, invoiceItems[k].quantity));
+                                    }
+                            }
 
                             var item = {
                                 rank: 1,
@@ -181,13 +186,97 @@ const reportController = {
 
                 }
 
-                console.log(formattedInventory);
+                //console.log(formattedInventory);
 
                 res.render('inventoryPerformanceReport', {formattedInventory, today});
             }
 
             getInformation();
         // }
+    },
+
+    getFilteredInventoryPerformanceReport: function(req, res) {
+        function getCategoryID(categoryName) {
+            return new Promise((resolve, reject) => {
+                db.findOne(ItemCategories, {category:categoryName}, '_id', function (result) {
+                    resolve(result._id)
+                })
+            })
+        }
+
+        async function convert(itemID, invoiceQuantity) {
+            var inventoryItem = await getSpecificInventoryItems(itemID);
+            var convertedQuantity = invoiceQuantity/inventoryItem.retailQuantity;
+            return convertedQuantity;
+        }
+
+        async function getInformation() {
+            var startDate = new Date(req.query.startDate);
+            var endDate = new Date(req.query.endDate);
+            startDate.setHours(0,0,0,0);
+            endDate.setHours(0,0,0,0);
+            var invoiceItems = await getAllInvoiceItems();
+            var formattedInventory = []
+            var paidStatus = await getSpecificInvoiceStatusID("Paid");
+
+
+            var sortFilter = req.query.sortFilter
+            var numberFilter = req.query.numberFilter
+
+            var allInventory = await getAllInventoryItems();
+            var inventory = await filterInventory(allInventory);    //inventory items with no duplicate
+            var categoryID  = await getCategoryID(req.query.category)
+
+            for (var j = 0; j < inventory.length; j++) {
+                var unitsSold = 0;
+
+                if (categoryID == inventory[j].categoryID) {
+
+                    // get number of units sold
+                    for (var k = 0 ; k < invoiceItems.length; k++) {
+
+                        var invoiceDate = new Date(await getInvoiceDate(invoiceItems[k].invoice_id));
+                        invoiceDate.setHours(0,0,0,0);
+
+                        var itemUnitInfo = await getItemUnitInfo(invoiceItems[k].itemUnitID);
+
+                        if ((!(startDate > invoiceDate || invoiceDate > endDate)) && (await getItemDescription(itemUnitInfo.itemID) == inventory[j].itemDescription) && (await checkInvoicePaid(invoiceItems[k].invoice_id) == paidStatus)) {
+
+                            if (await getItemDescription(itemUnitInfo.itemID) == inventory[j].itemDescription) {
+                                //no need conversion
+                                if (itemUnitInfo.unitID == inventory[j].unitID)
+                                    unitsSold += parseFloat(invoiceItems[k].quantity);
+                                else
+                                    unitsSold += parseFloat(convert(itemUnitInfo.itemID, invoiceItems[k].quantity));
+                            }
+                        }
+                    }
+
+                    var item = {
+                        rank: 1,
+                        description: inventory[j].itemDescription,
+                        unitsSold: unitsSold,
+                        UOM: await getSpecificUnit(inventory[j].unitID)
+                    };
+                    formattedInventory.push(item);
+                }
+            }
+
+
+            if (sortFilter == "best-selling")
+                formattedInventory.sort((a, b) => (a.unitsSold > b.unitsSold) ? -1 : 1);
+            else 
+                formattedInventory.sort((a, b) => (a.unitsSold > b.unitsSold) ? 1 : -1);
+
+            formattedInventory = formattedInventory.slice(0, numberFilter);
+
+            for (var k = 0; k < formattedInventory.length; k++)
+                formattedInventory[k].rank = k + 1;
+
+            res.send(formattedInventory);
+        }
+
+        getInformation();
     },
 
     getSalesPerformanceReport: function(req, res) {
@@ -217,8 +306,6 @@ const reportController = {
                         for (var k = 0 ; k < invoiceItems.length; k++) {
                             var itemUnitInfo = await getItemUnitInfo(invoiceItems[k].itemUnitID);
 
-                            console.log(invoiceItems[k].invoice_id);
-
                             if ((itemUnitInfo.itemID == inventory[i]._id) && (sellingUnits[j].unitID == itemUnitInfo.unitID) && (await checkInvoicePaid(invoiceItems[k].invoice_id) == paidStatus)) {
                                 unitsSold += parseFloat(invoiceItems[k].quantity);
                                 itemTotal += (invoiceItems[k].quantity * parseFloat(itemUnitInfo.sellingPrice)) - invoiceItems[k].discount;
@@ -230,7 +317,7 @@ const reportController = {
                             description: inventory[i].itemDescription,
                             unitsSold: unitsSold,
                             UOM: await getSpecificUnit(sellingUnits[j].unitID),
-                            total: itemTotal.toFixed(2)
+                            total: itemTotal
                         };
 
                         overallTotal += parseFloat(item.total);
@@ -245,7 +332,7 @@ const reportController = {
                 formattedInventory = formattedInventory.slice(0, 50);
 
                 for (var k = 0; k < formattedInventory.length; k++) {
-                    formattedInventory[k].total = numberWithCommas(formattedInventory[k].total)
+                    formattedInventory[k].total = numberWithCommas(parseFloat(formattedInventory[k].total).toFixed(2))
                     formattedInventory[k].rank = k + 1;
                 }
 
@@ -296,7 +383,7 @@ const reportController = {
                             if ((!(startDate > invoiceDate || invoiceDate > endDate)) && (await getItemDescription(itemUnitInfo.itemID) == inventory[i].itemDescription) && (sellingUnits[j].unitID == itemUnitInfo.unitID) && (await checkInvoicePaid(invoiceItems[k].invoice_id) == paidStatus)) {
                                 console.log("adding");
                                 unitsSold += parseFloat(invoiceItems[k].quantity);
-                                itemTotal += (invoiceItems[k].quantity * parseFloat(itemUnitInfo.sellingPrice)) - invoiceItems[k].discount;
+                                itemTotal += (invoiceItems[k].quantity * (parseFloat(itemUnitInfo.sellingPrice) - invoiceItems[k].discount));
                             }
                         }
 
@@ -305,7 +392,7 @@ const reportController = {
                             description: inventory[i].itemDescription,
                             unitsSold: unitsSold,
                             UOM: await getSpecificUnit(sellingUnits[j].unitID),
-                            total: itemTotal.toFixed(2)
+                            total: itemTotal
                         };
 
                         overallTotal += parseFloat(item.total);
@@ -320,8 +407,10 @@ const reportController = {
 
                 formattedInventory = formattedInventory.slice(0, numberFilter);
 
-                for (var k = 0; k < formattedInventory.length; k++)
+                for (var k = 0; k < formattedInventory.length; k++) {
+                    formattedInventory[i].total = parseFloat(formattedInventory[i].total).toFixed(2)
                     formattedInventory[k].rank = k + 1;
+                }
 
                 res.send(formattedInventory);
             }

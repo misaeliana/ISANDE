@@ -894,10 +894,8 @@ const purchaseOrderController = {
 	getItemUnitsPO: function(req, res) {
 		 async function getInfo() {
             var itemID = await getItemID(req.query.itemDesc)
-            var supplierID = req.query.supplierID;
-
-            var temp_itemUnits = await getSupplierItemsUnits(itemID.toString(), supplierID)
-
+            var supplierID = await getSupplierID(req.query.supplierName);
+            var temp_itemUnits = await getSupplierItemsUnits(itemID, supplierID)
             var itemUnits = [];
 
             var item = await getSpecificInventoryItems(itemID);
@@ -918,7 +916,7 @@ const purchaseOrderController = {
                 }
             }
 
-            console.log(itemUnits);
+            //console.log(itemUnits);
             res.send(itemUnits);
         }
         getInfo();

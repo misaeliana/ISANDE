@@ -149,10 +149,10 @@
                     <input style="margin-top: 5px; margin-bottom: 0px; float: left; height: 34px; width: 34px; background-color: #0F84D9; border: #0F84D9; border-radius: 7px; color: white;" type="button" id="addItem" name="addItem" value="+">
                 </form>
             
-                <div style="height: 50px"></div>
+                <div style="height: 45px"></div>
 
                 <div id="div-warning-new-invoice">
-                    <p id="text-warning-new-invoice" class="error"> </p>
+                    <p id="text-warning-new-invoice" class="error" style="margin-bottom: 5px;"> </p>
                 </div>
 
                     <table class="table">
@@ -225,16 +225,35 @@
                 $('#dateToday').text(today);
                 var value = "Delivery";
 
-                function filled(itemDesc, qty) {
-                    var itemDesc = $('#itemDescription').val();
-                    var qty = $('#qty').val();
+                function filled(itemDesc, unit, qty) {
+                    var filled =true
 
-                    if (itemDesc!="" && qty!="")
-                        return 0
-                    else if ((itemDesc == "" && qty != "") || (itemDesc == "" && qty == ""))
-                        return 1
-                    else if (qty == "" && itemDesc !="")
-                        return 2
+                    if (itemDesc == "") {
+                        $('#itemDescription').css("border", "1px solid #B00000")
+                        $('#text-warning-new-invoice').text("Input item description")
+                        return false;
+                    } else 
+                        $('#itemDescription').css("border", "1px solid #DDDDDD")
+
+                    if (unit == "no-selected") {
+                        $('#dropdown-item-unit').css("border", "1px solid #B00000")
+                        $('#text-warning-new-invoice').text("Select unit")
+                        return false;
+                    }
+                    else
+                        $('#dropdown-item-unit').css("border", "1px solid #DDDDDD")
+
+                    if (qty == "") {
+                        $('#qty').css("border", "1px solid #B00000")
+                        $('#text-warning-new-invoice').text("Input quantity")
+                        return false
+                    }
+                    else
+                        $('#qty').css("border", "1px solid #DDDDDD")
+
+                    if (filled)
+                        $('#text-warning-new-invoice').text("")
+                    return filled
                 }
 
                 $('#drop-down-new-invoice-type').on('change', function() {
@@ -435,17 +454,22 @@
                                     term: request.term,
                                 },
                                 success: function (data) {
-                                    $('#text-warning-new-PO').css('display', 'none')
+                                    $('#text-warning-new-invoice').text("")
                                     $("#itemDescription").css("border", "1px solid #DDDDDD");
                                     response(data);
                                 }
                          });
                     }, response: function (event, ui) {
-                        if (ui.content.length === 0) 
-                            $('#text-warning-new-PO').css('display', 'block')
-
-                        else 
-                            $('#text-warning-new-PO').css('display','none')
+                        var itemDesc = $('#itemDescription').val()
+                        if (ui.content.length === 0)  {
+                            //checks if item exists but is out of stock or if item doesn't exist at all
+                            $.get('/getCheckItemExists', {itemDesc}, function(result) {
+                                if (result.length == 0) 
+                                    $('#text-warning-new-invoice').text("Item does not exists")
+                                else
+                                    $('#text-warning-new-invoice').text("Item is out of stock")
+                            })
+                        }
                     }, select: function(event, ui) {
                         $('#dropdown-item-unit option:not(:first)').remove();
                         var itemDesc = ui.item.label;
@@ -565,7 +589,7 @@
                     else 
                         discount = parseFloat(discount) * quantity;                   
                     
-                    if(filled(itemDesc, qty) == 0) {
+                    if(filled(itemDesc,unitID, quantity)) {
                         $.get('/getItemPrice', {itemDesc, quantity, unitID}, function (result) {
                             if(quantity > result.quantityAvailable)
                                 $('#text-warning-new-invoice').text("Requested amount exceeds available!");
@@ -575,7 +599,7 @@
                                 //var discountAmount = parseFloat(sellingPrice * dis).toFixed(2);
                                 var totalPrice = parseFloat((sellingPrice*quantity)- discount).toFixed(2);
                                 var element = $('#table-body-item-list tr').filter(function(){
-                                        return this.innerHTML.indexOf(itemDesc) !== -1;
+                                        return (this.innerHTML.indexOf(itemDesc) != -1 && this.innerHTML.indexOf(unit) != -1);
                                 })
                                 if (element.length){
                                     //alert("element at index already inside!")
