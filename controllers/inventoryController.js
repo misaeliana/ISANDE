@@ -16,10 +16,14 @@ require('../controllers/helpers.js')();
 const inventoryController = {
 
 	getInventoryList: function(req, res) {
-		//if(req.session.position != "Inventory and Purchasing" || req.session.position != "Manager"){
-            //res.redirect('/dashboard');
-		//}
-		//else{
+		if (req.session.position == null)
+			res.redirect('/login')
+
+		else if(req.session.position != "Inventory and Purchasing" && req.session.position != "Manager"){
+            res.redirect('/dashboard');
+		}
+		
+		else{
 			async function getInformation() {
 				var itemCategories = await getItemCategories();
 				var units = await getUnits();
@@ -67,10 +71,10 @@ const inventoryController = {
 					return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
 				}); 
 
-					res.render('inventory', {itemCategories, units, inventory, itemStatuses});
+					//res.render('inventory', {itemCategories, units, inventory, itemStatuses});
 
 
-				/*if(req.session.position == "Inventory and Purchasing"){
+				if(req.session.position == "Inventory and Purchasing"){
 					var inventoryAndPurchasing = req.session.position;
 					res.render('inventory', {itemCategories, units, inventory, itemStatuses, inventoryAndPurchasing});	
 				}
@@ -78,11 +82,11 @@ const inventoryController = {
 				if(req.session.position == "Manager"){
 					var manager = req.session.position;
 					res.render('inventory', {itemCategories, units, inventory, itemStatuses, manager});
-				}*/
+				}
 			}
 
 			getInformation();
-		// }
+		}
 	},
 
 	getCheckItemDescription: function(req, res) {
@@ -140,10 +144,13 @@ const inventoryController = {
 	},
 
 	getViewItem: function(req, res) {
-		//if(req.session.position != "Inventory and Purchasing" || req.session.position != "Manager"){
-			//res.redirect('/dashboard');
-		//}
-		//else{
+		if (req.session.position == null)
+			res.redirect('/login')
+
+		else if(req.session.position != "Inventory and Purchasing" && req.session.position != "Manager"){
+			res.redirect('/dashboard');
+		}
+		else{
 			function getMatchItems(itemID) {
 				return new Promise((resolve, reject) => {
 					db.findMany(PurchaseItem, {itemID:itemID}, 'purchaseOrderID unitID quantity', function(result) {
@@ -236,32 +243,43 @@ const inventoryController = {
 					itemUnits.push(itemUnit);
 				}
 
-				getToBeReceived(itemInfo).then((result) =>{
-					itemInfo.toBeReceived = parseFloat(result).toFixed(2);
-					res.render('viewSpecificItem', {itemInfo, itemUnits, itemCategories, units, itemSuppliers});
+				itemUnits.sort(function(a, b) {
+					var textA = a.unitName.toUpperCase();
+					var textB = b.unitName.toUpperCase();
+					//syntax is "condition ? value if true : value if false"
+					return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
 				});
 
-				/*if(req.session.position == "Inventory and Purchasing"){
-					var inventoryAndPurchasing = req.session.position;
-					res.render('viewSpecificItem', {itemInfo, itemCategories, units, itemSuppliers, inventoryAndPurchasing});	
-				}
+				getToBeReceived(itemInfo).then((result) =>{
+					itemInfo.toBeReceived = parseFloat(result).toFixed(2);
+					//res.render('viewSpecificItem', {itemInfo, itemUnits, itemCategories, units, itemSuppliers});
 
-				if(req.session.position == "Manager"){
-					var manager = req.session.position;
-					res.render('viewSpecificItem', {itemInfo, itemCategories, units, itemSuppliers, manager});
-				}*/
+					if(req.session.position == "Inventory and Purchasing"){
+						var inventoryAndPurchasing = req.session.position;
+						res.render('viewSpecificItem', {itemInfo, itemUnits, itemCategories, units, itemSuppliers, inventoryAndPurchasing});	
+					}
+
+					if(req.session.position == "Manager"){
+						var manager = req.session.position;
+						res.render('viewSpecificItem', {itemInfo, itemUnits, itemCategories, units, itemSuppliers, manager});
+					}
+				});
+				
 			}
 
 			getInformation();
-		// }
+		}
 		
 	},
 
 	editItemSuppliers: function(req, res) {
-		//if(req.session.position != "Inventory and Purchasing" || req.session.position != "Manager"){
-			//res.redirect('/dashboard');
-		//}
-		//else{
+		if (req.session.position == null)
+			res.redirect('/login')
+
+		else if(req.session.position != "Inventory and Purchasing" && req.session.position != "Manager"){
+			res.redirect('/dashboard');
+		}
+		else{
 			async function getInformation() {
 				var itemID = req.params.itemID;
 				var suppliers = await getSuppliers();
@@ -278,8 +296,8 @@ const inventoryController = {
 
 				var itemName = await getItemDescription(itemID);
 
-				res.render('editItemSuppliers', {itemID, itemName, suppliers, itemSuppliers, units});
-				/*if(req.session.position == "Inventory and Purchasing"){
+				//res.render('editItemSuppliers', {itemID, itemName, suppliers, itemSuppliers, units});
+				if(req.session.position == "Inventory and Purchasing"){
 					var inventoryAndPurchasing = req.session.position;
 					res.render('editItemSuppliers', {itemID, suppliers, itemSuppliers, inventoryAndPurchasing});	
 				}
@@ -287,10 +305,10 @@ const inventoryController = {
 				if(req.session.position == "Manager"){
 					var manager = req.session.position;
 					res.render('editItemSuppliers', {itemID, suppliers, itemSuppliers, manager});
-				}*/
+				}
 			}
 			getInformation();
-		// }
+		}
 	},
 
 	checkForPendingPO:function (req, res) {

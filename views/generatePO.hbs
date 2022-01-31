@@ -126,14 +126,14 @@
 
 
                     $('.dropdown-supplier').change(function() {
-                        var supplierID = $(this).val()
+                        var supplierName = $(this).find('option:selected').text()
                         var itemDesc = $(this).parents('tr').find('.itemDescription').text()
                         var row = $(this).parents('tr')
                         row.find('.dropdown-unit option:not(:first)').remove();
 
 
-                        if (supplierID != "no-selected") {
-                            $.get('/getItemUnitsPO', {itemDesc, supplierID}, function(result) {
+                        if (supplierName != "Select Supplier") {
+                            $.get('/getItemUnitsPO', {itemDesc, supplierName}, function(result) {
 
                                 for (var i=0; i<result.length; i++) {
                                     row.find('.dropdown-unit').append(`
@@ -202,7 +202,7 @@
                                         var item= {
                                             itemDescription: $(this).children('.itemDescription').text(),
                                             quantity: $(this).find('.quantity').val(),
-                                            unit: $(this).find('.dropdown-unit').val(),
+                                            unit: $(this).find('.dropdown-unit option:selected').text(),
                                             supplier: $(this).find('.dropdown-supplier').val()
                                         }
                                         purchaseItems.push(item);

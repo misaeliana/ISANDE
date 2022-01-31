@@ -18,10 +18,13 @@ require('../controllers/helpers.js')();
 const reportController = {
 
 	getSalesReport: function(req, res) {
-        //if(req.session.position != "Manager"){
-			//res.redirect('/dashboard');
-		//}
-		//else{
+        if (req.session.position == null)
+            res.redirect('/login')
+
+        else if(req.session.position != "Manager"){
+			res.redirect('/dashboard');
+		}
+		else{
             async function getInformation() {
                 var paidStatusID = await getSpecificInvoiceStatusID("Paid");
                 var invoices = await getPaidInvoices(paidStatusID);
@@ -51,7 +54,7 @@ const reportController = {
             }
 
             getInformation();
-        // }
+        }
     },
     
     getFilteredSalesReport: function(req, res) {
@@ -95,10 +98,13 @@ const reportController = {
     },
     
     getInventoryPerformanceReport: function(req, res) {
-        //if(req.session.position != "Manager"){
-			//res.redirect('/dashboard');
-		//}
-		//else{
+        if (req.session.position == null)
+            res.redirect('/login')
+
+        else if(req.session.position != "Manager"){
+			res.redirect('/dashboard');
+		}
+		else{
             function getItemCategory(itemID) {
                 return new Promise((resolve, reject) => {
                     db.findOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'categoryID', function(result) {
@@ -192,7 +198,7 @@ const reportController = {
             }
 
             getInformation();
-        // }
+        }
     },
 
     getFilteredInventoryPerformanceReport: function(req, res) {
@@ -280,10 +286,13 @@ const reportController = {
     },
 
     getSalesPerformanceReport: function(req, res) {
-        //if(req.session.position != "Manager"){
-			//res.redirect('/dashboard');
-		//}
-		//else{
+        if (req.session.position == null)
+            res.redirect('/login')
+
+        else if(req.session.position != "Manager"){
+			res.redirect('/dashboard');
+		}
+		else{
             async function getInformation() {
                 var today = new Date().toLocaleString('en-US');
                 var allInventory = await getAllInventoryItems();
@@ -342,14 +351,17 @@ const reportController = {
             }
 
             getInformation();
-        // }
+        }
     },
 
     getFilteredSalesPerformanceReport: function(req, res) {
-        //if(req.session.position != "Manager"){
-			//res.redirect('/dashboard');
-		//}
-		//else{
+        if (req.session.position == null)
+            res.redirect('/login')
+
+        else if(req.session.position != "Manager"){
+			res.redirect('/dashboard');
+		}
+		else{
             var startDate = new Date(req.query.startDate);
             var endDate = new Date(req.query.endDate);
             startDate.setHours(0,0,0,0);
@@ -416,14 +428,17 @@ const reportController = {
             }
 
             getInformation();
-        // }
+        }
     },
 
     getPurchaseReports: function(req, res) {
-        //if(req.session.position != "Manager"){
-			//res.redirect('/dashboard');
-		//}
-		//else{
+        if (req.session.position == null)
+            res.redirect('/login')
+
+        else if(req.session.position != "Manager"){
+			res.redirect('/dashboard');
+		}
+		else{
             async function getInfo() {
 
                 var today = new Date().toLocaleString('en-US');
@@ -450,7 +465,7 @@ const reportController = {
             }
 
             getInfo();
-        //}
+        }
     },
 
     getFilteredPurchaseReport: function(req, res) {
@@ -483,15 +498,18 @@ const reportController = {
     },
 
     getSalesPerCustomer: function(req, res) {
-        //if(req.session.position != "Manager"){
-			//res.redirect('/dashboard');
-		//}
-		//else{
+        if (req.session.position == null)
+            res.redirect('/login')
+
+        else if(req.session.position != "Manager"){
+			res.redirect('/dashboard');
+		}
+		else{
             var today = new Date().toLocaleString('en-US');
             var total = 0;
 
             res.render('salesPerCustomerReport', {today, total});
-        //}
+        }
     },
 
     getCustomerInvoicesReport: function(req, res) {

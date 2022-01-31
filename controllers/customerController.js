@@ -15,10 +15,13 @@ require('../controllers/helpers.js')();
 const customerController = {
 
 	getCustomerList: function(req, res) {
-		//if(req.session.position != "Cashier" || req.session.position != "Manager"){
-            //res.redirect('/dashboard');
-        //}
-        //else{
+		if (req.session.position == null)
+			res.redirect('/login')
+
+		else if(req.session.position != "Cashier" && req.session.position != "Manager"){
+            res.redirect('/dashboard');
+        }
+        else{
 			db.findMany(Customers, {informationStatusID:"618a7830c8067bf46fbfd4e4"}, '', function (result) {
 				var customers = [];
 				for (var i=0; i<result.length; i++) {
@@ -41,10 +44,10 @@ const customerController = {
 					return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
 				});
 
-					res.render('customerList', {customers});	
+					//res.render('customerList', {customers});	
 
 
-				/*if(req.session.position == "Cashier"){
+				if(req.session.position == "Cashier"){
 					var cashier = req.session.position;
 					res.render('customerList', {customers, cashier});	
 				}
@@ -52,9 +55,9 @@ const customerController = {
 				if(req.session.position == "Manager"){
 					var manager = req.session.position;
 					res.render('customerList', {customers, manager});
-				}*/
+				}
 			});
-		//}
+		}
 	},
 
 	postCustomerInformation: function(req, res) {
@@ -96,10 +99,13 @@ const customerController = {
 	},
 
 	getViewCustomer: function(req, res) {
-		//if(req.session.position != "Cashier" || req.session.position != "Manager"){
-            //res.redirect('/dashboard');
-        //}
-        //else{
+		if (req.session.position == null)
+			res.redirect('/login')
+
+		else if(req.session.position != "Cashier" && req.session.position != "Manager"){
+            res.redirect('/dashboard');
+        }
+        else{
 			async function getCustomerInformation() {
 				var customerInfo = await getCustomerInfo(req.params.customerID);
 				var temp_customerInvoices = await getCustomerInvoices(req.params.customerID);
@@ -144,34 +150,34 @@ const customerController = {
 				totalAmountDue = numberWithCommas(parseFloat(totalAmountDue).toFixed(2));
 
 				if (unpaidInvoices.length==0) {
-					/*if(req.session.position == "Cashier"){
+					if(req.session.position == "Cashier"){
 						var cashier = req.session.position;
-						res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue, cashier});
+						res.render('customerInformation', {customerInfo, customerAddress, customerInvoices, totalAmountDue, cashier});
 					}
 		
 					if(req.session.position == "Manager"){
 						var manager = req.session.position;
-						res.render('customerInformation', {customerInfo, customerInvoices, totalAmountDue, manager});
-					}*/
-					res.render('customerInformation', {customerInfo, customerAddress, customerInvoices, totalAmountDue})
+						res.render('customerInformation', {customerInfo, customerAddress, customerInvoices, totalAmountDue, manager});
+					}
+					//res.render('customerInformation', {customerInfo, customerAddress, customerInvoices, totalAmountDue})
 				}
 				else {
-					/*if(req.session.position == "Cashier"){
+					if(req.session.position == "Cashier"){
 						var cashier = req.session.position;
-						res.render('customerInformation', {customerInfo, customerInvoices, unpaidInvoices, totalAmountDue, cashier});
+						res.render('customerInformation', {customerInfo, customerAddress, customerInvoices, unpaidInvoices, totalAmountDue, cashier});
 					}
 		
 					if(req.session.position == "Manager"){
 						var manager = req.session.position;
-						res.render('customerInformation', {customerInfo, customerInvoices, unpaidInvoices, totalAmountDue, manager});
-					}*/
-					res.render('customerInformation', {customerInfo, customerAddress, customerInvoices, unpaidInvoices, paymentMethods, totalAmountDue});
+						res.render('customerInformation', {customerInfo, customerAddress, customerInvoices, unpaidInvoices, totalAmountDue, manager});
+					}
+					//res.render('customerInformation', {customerInfo, customerAddress, customerInvoices, unpaidInvoices, paymentMethods, totalAmountDue});
 
 				}
 			}
 
 			getCustomerInformation();
-		//}
+		}
 	},
 
 	postUpdateInformation: function (req, res) {

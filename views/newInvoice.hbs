@@ -702,7 +702,7 @@
 
                         var typeID = $('#drop-down-new-invoice-type').val();   
                         var paymentOption = $('#dropdown-payment-type').val();
-                        var employeeID = $('#dropdown-delivery-personnel').val();
+                        var deliveryPersonnel = $('#dropdown-delivery-personnel').val();
 
                         $("#table-body-item-list > tr").each(function () {
                             var item = {
@@ -735,7 +735,7 @@
                         var total = $('#totbox').text().slice(1);
                         var itemString = JSON.stringify(orderedItems);  
 
-                        $.post('/createNewInvoice', {custName, date, typeID, statusID, paymentOption,subtotal, VAT, discount, total, employeeID, addressTitle, ddate, dnotes, itemString}, function(result) {
+                        $.post('/createNewInvoice', {custName, date, typeID, statusID, paymentOption,subtotal, VAT, discount, total, deliveryPersonnel, addressTitle, ddate, dnotes, itemString}, function(result) {
                             alert("Transaction successfully processed");
                             window.location = "/invoices"
                         }) 

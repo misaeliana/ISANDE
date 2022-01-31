@@ -16,10 +16,13 @@ require('../controllers/helpers.js')();
 const supplierController = {
 
 	getSupplierList: function(req, res) {
-		//if(req.session.position != "Inventory and Purchasing" || req.session.position != "Manager"){
-			//res.redirect('/dashboard');
-		//}
-		//else{
+		if (req.session.position == null)
+			res.redirect('/login')
+
+		else if(req.session.position != "Inventory and Purchasing" && req.session.position != "Manager"){
+			res.redirect('/dashboard');
+		}
+		else{
 			db.findMany(Suppliers, {informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'name contactPerson number email address', function (result) {
 				var suppliers = [];
 				for (var i=0; i<result.length; i++) {
@@ -44,10 +47,10 @@ const supplierController = {
 					return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
 				});
 
-				res.render('supplierList', {suppliers});	
+				//res.render('supplierList', {suppliers});	
 
 
-				/*if(req.session.position == "Inventory and Purchasing"){
+				if(req.session.position == "Inventory and Purchasing"){
 					var inventoryAndPurchasing = req.session.position;
 					res.render('supplierList', {suppliers, inventoryAndPurchasing});	
 				}
@@ -55,9 +58,9 @@ const supplierController = {
 				if(req.session.position == "Manager"){
 					var manager = req.session.position;
 					res.render('supplierList', {suppliers, manager});
-				}*/
+				}
 			});
-		//}
+		}
 	},
 
 	postSupplierInformation: function(req, res) {
@@ -120,10 +123,13 @@ const supplierController = {
 	},
 
 	getViewSupplier: function(req, res) {
-		//if(req.session.position != "Inventory and Purchasing" || req.session.position != "Manager"){
-			//res.redirect('/dashboard');
-		//}
-		//else{
+		if (req.session.position == null)
+			res.redirect('/login')
+
+		else if(req.session.position != "Inventory and Purchasing" && req.session.position != "Manager"){
+			res.redirect('/dashboard');
+		}
+		else{
 			function getSupplierItem(supplierID) {
 				return new Promise((resolve, reject) => {
 					db.findMany(ItemSuppliers, {supplierID:supplierID}, '' ,function(result) {
@@ -157,22 +163,22 @@ const supplierController = {
 				var itemCategories = await getItemCategories();
 				var units = await getUnits();
 
-				res.render('supplierInformation', {supplierInfo, inventory, itemCategories, units});	
+				//res.render('supplierInformation', {supplierInfo, inventory, itemCategories, units});	
 
 
-				/*if(req.session.position == "Inventory and Purchasing"){
+				if(req.session.position == "Inventory and Purchasing"){
 					var inventoryAndPurchasing = req.session.position;
-					res.render('supplierList', {supplierInfo, inventory, itemCategories, units, inventoryAndPurchasing});	
+					res.render('supplierInformation', {supplierInfo, inventory, itemCategories, units, inventoryAndPurchasing});	
 				}
 
 				if(req.session.position == "Manager"){
 					var manager = req.session.position;
-					res.render('supplierList', {supplierInfo, inventory, itemCategories, units, manager});
-				}*/
+					res.render('supplierInformation', {supplierInfo, inventory, itemCategories, units, manager});
+				}
 			}
 
 			getInfo();
-		//}
+		}
 	},
 
 	postUpdateInformation: function (req, res) {
@@ -301,10 +307,13 @@ const supplierController = {
 	},
 
 	editSupplierItems: function(req, res) {
-		//if(req.session.position != "Inventory and Purchasing" || req.session.position != "Manager"){
-			//res.redirect('/dashboard');
-		//}
-		//else{
+		if (req.session.position == null)
+			res.redirect('/login')
+
+		else if(req.session.position != "Inventory and Purchasing" && req.session.position != "Manager"){
+			res.redirect('/dashboard');
+		}
+		else{
 			async function getInfo() {
 				var temp_supplierItems = await getSupplierItems(req.params.supplierID);
 				var units = await getUnits();
@@ -319,11 +328,20 @@ const supplierController = {
 				}
 				var supplierName = await getSupplierName(req.params.supplierID);
 				var supplierID = req.params.supplierID;
-				res.render('editSupplierItems', {supplierItems, units, supplierID, supplierName});
+
+				if(req.session.position == "Inventory and Purchasing"){
+					var inventoryAndPurchasing = req.session.position;
+					res.render('editSupplierItems', {supplierItems, units, supplierID, supplierName, inventoryAndPurchasing});
+				}
+
+				if(req.session.position == "Manager"){
+					var manager = req.session.position;
+					res.render('editSupplierItems', {supplierItems, units, supplierID, supplierName, manager});
+				}
 			}
 
 			getInfo();
-		//}
+		}
 	},
 
 	checkForPendingPOSuppliers: function(req, res) {

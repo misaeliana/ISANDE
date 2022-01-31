@@ -12,10 +12,27 @@ require('../controllers/helpers.js')();
 const loginController = {
 
 	getLogin: function (req, res) {
-		var saltRounds = 10;
+		/*var saltRounds = 10;
+		var password= "password"
+
+		bcrypt.hash(password, saltRounds, (err, hash) => {
+			var employee = {
+				name: "Annie Smith",
+				username: "Smith",
+				password: hash,
+				number: "0923453423453",
+				positionID:"6187b8cc680957078c8b52e9",
+				informationStatusID:"618a7830c8067bf46fbfd4e4"
+			}
+			db.insertOne(Employees, employee, function(flag) {
+			
+			})
+		})*/
+
+		/*var saltRounds = 10;
 		var password = "password";
 
-		/*bcrypt.hash(password, saltRounds, (err, hash) => {
+		bcrypt.hash(password, saltRounds, (err, hash) => {
 			// Now we can store the password hash in db.
 			console.log(hash);
 			
@@ -59,8 +76,8 @@ const loginController = {
 					else if ("Inventory and Purchasing" == req.session.position)
 						res.send({redirect: '/inventory'});
 					else if ("Delivery" == req.session.position)
-						res.send({redirect: '/deliveries'});
-					*/
+						res.send({redirect: '/deliveries'});*/
+					
 
 					res.send({redirect: '/dashboard'});
 				}
@@ -77,23 +94,26 @@ const loginController = {
 
 	getDashboard: function (req, res) {
 		var employeeName = req.session.name;
+
+		if(req.session.position == null)
+			res.redirect('/login')
 		
-		if(req.session.position == "Cashier"){
+		else if(req.session.position == "Cashier"){
             var cashier = req.session.position;
             res.render('dashboard', {employeeName, cashier});   
         }
 
-    	if(req.session.position == "Manager"){
+    	else if(req.session.position == "Manager"){
             var manager = req.session.position;
             res.render('dashboard', {employeeName, manager});
 		}
 
-		if(req.session.position == "Inventory and Purchasing"){
+		else if(req.session.position == "Inventory and Purchasing"){
 			var inventoryAndPurchasing = req.session.position;
 			res.render('dashboard', {employeeName, inventoryAndPurchasing});	
 		}
 
-		if(req.session.position == "Delivery"){
+		else if(req.session.position == "Delivery"){
 			var delivery = req.session.position;
 			res.render('dashboard', {employeeName, delivery});	
 		}

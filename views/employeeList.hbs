@@ -63,13 +63,13 @@
 
                             <div class="flex-display">  
                                 <label for="employee-password" class="modal-label">Password</label> 
-                                <input id="employee-password" type="text" class="modal-input form-control"><br>                            
+                                <input id="employee-password" type="password"  class="modal-input form-control"><br>                            
                             </div>
                             <p class="error modal-error" id="error-employee-password"></p>
                             
                             <div class="flex-display"> 
                                 <label for="Contact-number" class="modal-label">Contact Number</label> 
-                                <input id="contact-number" type="number" class="modal-input form-control"><br>
+                                <input id="contact-number" type="number" class="modal-input form-control" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;"><br>
                             </div>                            
                             <p class="error modal-error" id="error-contact-number"></p>
 

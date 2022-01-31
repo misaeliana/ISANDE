@@ -105,16 +105,16 @@
                     <thead class="table-head">
                         <tr>
                             <th>Name</th>
+                            <th>Contact Person</th>
                             <th>Contact Number</th>
-                            <th>Email</th>
                         </tr>
                     </thead>
                     <tbody> 
                         {{#each suppliers}}
                             <tr class="link" style="cursor: pointer" data-href="/supplier/{{supplierID}}">
                                 <td>{{name}}</td>
+                                <td>{{contactPerson}}</td>
                                 <td>{{number}}</td>
-                                <td>{{email}}</td>
                             </tr>
                         {{/each}}
                       </tbody>

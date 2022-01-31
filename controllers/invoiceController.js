@@ -44,10 +44,13 @@ const Docxtemplater = require("docxtemplater");
 const invoiceController = {
  
     getInvoiceList: function(req, res) {
-        //if(req.session.position != "Cashier" || req.session.position != "Manager"){
-			//res.redirect('/dashboard');
-		//}
-		//else{
+        if (req.session.position == null)
+            res.redirect('/login')
+
+        else if(req.session.position != "Cashier" && req.session.position != "Manager"){
+			res.redirect('/dashboard');
+		}
+		else{
             async function getInformation() {
                 var invoices = await getInvoices();
                 var invoicesInfo = [];
@@ -72,11 +75,11 @@ const invoiceController = {
                 }
 
                 //res.render('invoiceList', {invoicesInfo});    
-                res.render('invoiceList', {invoicesInfo}); 
+                //res.render('invoiceList', {invoicesInfo}); 
 
                 //console.log(req.session.position);
 
-                /*if(req.session.position == "Cashier"){
+                if(req.session.position == "Cashier"){
                     var cashier = req.session.position;
                     res.render('invoiceList', {invoicesInfo, cashier}); 
                 }
@@ -84,17 +87,20 @@ const invoiceController = {
                 if(req.session.position == "Manager"){
                     var manager = req.session.position;
                     res.render('invoiceList', {invoicesInfo, manager});
-                }*/
+                }
             }
             getInformation();
-        // }
+        }
     },
 
     getViewSpecificInvoice: function(req, res) {
-        //if(req.session.position != "Cashier" || req.session.position != "Manager"){
-			//res.redirect('/dashboard');
-		//}
-		//else{
+        if (req.session.position == null)
+            res.redirect('/login')
+
+        else if(req.session.position != "Cashier" && req.session.position != "Manager"){
+			res.redirect('/dashboard');
+		}
+		else{
             function getPaymentHistory(invoiceID) {
                 return new Promise((resolve, reject) => {
                     db.findMany(AccountPayments, {invoiceID:invoiceID}, '', function(result) {
@@ -195,35 +201,35 @@ const invoiceController = {
                 if (customer == false) {
                     var customerName = invoice.customerID;
 
-                    res.render('viewInvoice', {invoiceInfo, items, delivery, customerName, paymentMethods, paymentHistory, paymentTotal, amountDue});
-                }
-                else 
-                    res.render('viewInvoice', {invoiceInfo, items, delivery, customer, paymentMethods, paymentHistory, paymentTotal, amountDue});
-                    
-                /*if(req.session.position == "Cashier"){
-                    console.log("cashier")
-                    var cashier = req.session.position;
-                    res.render('viewInvoice', {invoiceInfo, items, delivery, paymentHistory, paymentTotal, amountDue, cashier});    
-                }
+                    //res.render('viewInvoice', {invoiceInfo, items, delivery, customerName, paymentMethods, paymentHistory, paymentTotal, amountDue});
+                    if(req.session.position == "Cashier"){
+                        console.log("cashier")
+                        var cashier = req.session.position;
+                        res.render('viewInvoice', {invoiceInfo, items, delivery, customerName, paymentMethods, paymentHistory, paymentTotal, amountDue, cashier});    
+                    }
 
-                if(req.session.position == "Manager"){
-                    console.log("manager")
-                    var manager = req.session.position;
-                    res.render('viewInvoice', {invoiceInfo, items, delivery, paymentHistory, paymentTotal, amountDue, manager});
+                    if(req.session.position == "Manager"){
+                        console.log("manager")
+                        var manager = req.session.position;
+                        res.render('viewInvoice', {invoiceInfo, items, delivery, customerName, paymentMethods, paymentHistory, paymentTotal, amountDue, manager});
+                    }
                 }
-                
-                if(req.session.position == "Cashier"){
-                    var cashier = req.session.position;
-                    res.render('viewInvoice', {invoiceInfo, items, cashier});   
-                }
+                else {
+                    //res.render('viewInvoice', {invoiceInfo, items, delivery, customer, paymentMethods, paymentHistory, paymentTotal, amountDue});
 
-                if(req.session.position == "Manager"){
-                    var manager = req.session.position;
-                    res.render('viewInvoice', {invoiceInfo, items, manager});
-                }*/        
+                    if(req.session.position == "Cashier"){
+                        var cashier = req.session.position;
+                        res.render('viewInvoice', {invoiceInfo, items, delivery, customer, paymentMethods, paymentHistory, paymentTotal, amountDue, cashier});   
+                    }
+
+                    if(req.session.position == "Manager"){
+                        var manager = req.session.position;
+                        res.render('viewInvoice', {invoiceInfo, items, delivery, customer, paymentMethods, paymentHistory, paymentTotal, amountDue, manager});
+                    }
+                }
             }
             getInformation();
-        // }
+        }
     },
     
     getFilteredRowsInvoice: function(req, res) {
@@ -314,17 +320,20 @@ const invoiceController = {
     },
 
     getNewInvoice: function(req, res) {
-        //if(req.session.position != "Cashier" || req.session.position != "Manager"){
-			//res.redirect('/dashboard');
-		//}
-		//else{
+        if (req.session.position == null)
+            res.redirect('/login')
+
+        else if(req.session.position != "Cashier" && req.session.position != "Manager"){
+			res.redirect('/dashboard');
+		}
+		else{
             async function getInvoiceTypes () {
                 var itype = await getAllInvoiceTypes();
                 var delperson = await getDeliveryPersonnel();
                 var paymentTypes = await getPaymentOptions();
-                res.render('newInvoice', {itype,delperson, paymentTypes});
+                //res.render('newInvoice', {itype,delperson, paymentTypes});
 
-                /*if(req.session.position == "Cashier"){
+                if(req.session.position == "Cashier"){
                     var cashier = req.session.position;
                     res.render('newInvoice', {itype, delperson, paymentTypes, cashier});    
                 }
@@ -332,11 +341,11 @@ const invoiceController = {
                 if(req.session.position == "Manager"){
                     var manager = req.session.position;
                     res.render('newInvoice', {itype, delperson, paymentTypes, manager});
-                }*/
+                }
 
             }   //res.sendFile( dir+"/newInvoice.html");
             getInvoiceTypes();
-        //}
+        }
     },
     
     addNewInvoice: function(req,res){
@@ -462,7 +471,7 @@ const invoiceController = {
                 VAT: parseFloat(req.body.VAT),
                 discount: parseFloat(req.body.discount),
                 total:parseFloat(req.body.total),
-                employeeID: req.body.employeeID
+                employeeID: req.session._id
             };
             var items = JSON.parse(req.body.itemString);
 
@@ -475,7 +484,7 @@ const invoiceController = {
                         customerAddress: addressID,
                         deliveryDate: req.body.ddate,
                         dateDelivered: null,
-                        deliveryPersonnel: req.body.employeeID,
+                        deliveryPersonnel: req.body.deliveryPersonnel,
                         deliveryNotes: req.body.dnotes
                     };
                     db.insertOne(deliveries, dpackage, function(flag) {if (flag) {}});
@@ -555,18 +564,21 @@ const invoiceController = {
     },
 
     getDeliveryList: function(req, res) {
-        //if(req.session.position != "Delivery" || req.session.position != "Manager"){
-			//res.redirect('/dashboard');
-		//}
-		//else{
+        if (req.session.position == null)
+            res.redirect('/login')
+
+        else if(req.session.position != "Delivery" && req.session.position != "Manager"){
+			res.redirect('/dashboard');
+		}
+		else{
             async function getInformation() {
-                /*if(req.session.position == "Delivery"){
+                if(req.session.position == "Delivery"){
                     var deliveries = await getDeliveryPersonnelDeliveries(req.session._id);
                 }
 
                 if(req.session.position == "Manager"){
                     var deliveries = await getDeliveries();
-                }*/
+                }
                 
                 var deliveries = await getDeliveries();
                 var deliveryInfo = [];
@@ -598,7 +610,7 @@ const invoiceController = {
                 res.render('deliveryList', {deliveryInfo});   
 
 
-                /*if(req.session.position == "Delivery"){
+                if(req.session.position == "Delivery"){
                     var delivery = req.session.position;
                     res.render('deliveryList', {deliveryInfo, delivery});   
                 }
@@ -606,17 +618,20 @@ const invoiceController = {
                 if(req.session.position == "Manager"){
                     var manager = req.session.position;
                     res.render('deliveryList', {deliveryInfo, manager});
-                }*/
+                }
             }
             getInformation();
-        // }
+        }
     },
 
     getDeliveryInfo: function(req, res) {
-        //if(req.session.position != "Delivery" || req.session.position != "Manager"){
-			//res.redirect('/dashboard');
-		//}
-		//else{
+        if (req.session.position == null)
+            res.redirect('/login')
+
+        else if(req.session.position != "Delivery" && req.session.position != "Manager"){
+			res.redirect('/dashboard');
+		}
+		else{
             var deliveryID = req.params.deliveryID;
             var items = [];
 
@@ -666,9 +681,9 @@ const invoiceController = {
                     items.push(item);
                 }
 
-                res.render('viewDeliveryInformation', {customer, deliveryInfo, invoice, items});  
+                //res.render('viewDeliveryInformation', {customer, deliveryInfo, invoice, items});  
 
-                /*if(req.session.position == "Delivery"){
+                if(req.session.position == "Delivery"){
                     var delivery = req.session.position;
                     res.render('viewDeliveryInformation', {customer, deliveryInfo, invoice, items, delivery});  
                 }
@@ -676,11 +691,11 @@ const invoiceController = {
                 if(req.session.position == "Manager"){
                     var manager = req.session.position;
                     res.render('viewDeliveryInformation', {customer, deliveryInfo, invoice, items, manager});
-                }*/
+                }
             }
 
             getInformation();
-        // }
+        }
     },
 
     getCustomerName: function(req, res) {
@@ -849,10 +864,13 @@ const invoiceController = {
     },
 
     returns: function(req, res) {
-        //if(req.session.position != "Cashier" || req.session.position != "Manager"){
-			//res.redirect('/dashboard');
-		//}
-		//else{
+        if (req.session.position == null)
+            res.redirect('/login')
+
+        else if(req.session.position != "Cashier" && req.session.position != "Manager"){
+			res.redirect('/dashboard');
+		}
+		else{
             async function getInfo() {
                 var types = await getAllInvoiceTypes()
 
@@ -894,24 +912,35 @@ const invoiceController = {
 
                 if (customerInfo == false) {
                     var customerName = temp_invoiceInfo.customerID; 
-                    res.render('return', {types, invoiceInfo, customerName, paymentTypes, deliveryPersonnel, invoiceItems});
-                }
-                else 
-                    res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems});
-                
-                /*if(req.session.position == "Cashier"){
-                    var cashier = req.session.position;
-                    res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems, cashier});   
-                }
+                    //res.render('return', {types, invoiceInfo, customerName, paymentTypes, deliveryPersonnel, invoiceItems});
 
-                if(req.session.position == "Manager"){
-                    var manager = req.session.position;
-                    res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems, manager});
-                }*/
+                    if(req.session.position == "Cashier"){
+                        var cashier = req.session.position;
+                        res.render('return', {types, invoiceInfo, customerName, paymentTypes, deliveryPersonnel, invoiceItems, cashier});   
+                    }
+
+                    if(req.session.position == "Manager"){
+                        var manager = req.session.position;
+                        res.render('return', {types, invoiceInfo, customerName, paymentTypes, deliveryPersonnel, invoiceItems, manager});
+                    }
+                }
+                else  {
+                   // res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems});
+
+                   if(req.session.position == "Cashier"){
+                        var cashier = req.session.position;
+                        res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems, cashier});   
+                    }
+
+                    if(req.session.position == "Manager"){
+                        var manager = req.session.position;
+                        res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems, manager});
+                    }
+                }
             }
-
+        
             getInfo();
-        //}
+        }
     },
 
     checkQuantity: function(req, res) {
@@ -972,7 +1001,7 @@ const invoiceController = {
                 quantityLost: returnItem.quantity,
                 reasonID: await getShrinkageReasonID(),
                 date: new Date(),
-                employeeID: "61bc3ecb39b4c1027aaac14d"
+                employeeID: req.session._id
             }
 
             db.insertOne(Shrinkages, shrinkage, function(flag) {
@@ -1030,7 +1059,7 @@ const invoiceController = {
                     VAT: invoiceInfo.vat,
                     discount: invoiceInfo.discount,
                     total: invoiceInfo.total,
-                    employeeID: "61bc3ecb39b4c1027aaac14d"
+                    employeeID: req.session._id
                 }
 
                 db.insertOneResult(Invoices, invoice, function(result) {

@@ -245,6 +245,10 @@
         <script>
              $(document).ready(function(){
 
+                function numberWithCommas(x) {
+                    return x?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                }
+
                 $('#itemDescription').focus(function() {
                     if ($("#supplierName").val() == ""){
                         alert("Please select a supplier first")
@@ -552,7 +556,7 @@
                 function computeTotal() {
                     var overallTotal =0
                     $("#table-poItem-body > tr").each(function () {
-                        overallTotal += parseFloat($(this).children('.classAmount').text().slice(1));
+                        overallTotal += parseFloat($(this).children('.classAmount').text().slice(1).split(",").join(""));
                     });
 
                     var discount = $('#total-discount').val() 
@@ -562,10 +566,10 @@
 
                     var subtotal = overallTotal/1.12
                     var vat = overallTotal - subtotal
-                    $('#subtotal').text("₱ " + parseFloat(subtotal).toFixed(2))
-                    $('#vat').text("₱ " + parseFloat(vat).toFixed(2))
-                    $('#discount').text("₱ " +  parseFloat(discount).toFixed(2))
-                    $('#total').text("₱ " + parseFloat(overallTotal).toFixed(2))
+                    $('#subtotal').text("₱ " + numberWithCommas(parseFloat(subtotal).toFixed(2)))
+                    $('#vat').text("₱ " + numberWithCommas(parseFloat(vat).toFixed(2)))
+                    $('#discount').text("₱ " +  numberWithCommas(parseFloat(discount).toFixed(2)))
+                    $('#total').text("₱ " + numberWithCommas(parseFloat(overallTotal).toFixed(2)))
                 }
 
                 $('#total-discount').keyup(function() {
@@ -584,7 +588,7 @@
                         quantityReceived = 0
 
                     var amount = parseFloat(quantityReceived) * parseFloat(unitPrice)
-                    row.find('.classAmount').html("₱ " + amount)
+                    row.find('.classAmount').html("₱ " + numberWithCommas(amount))
 
                     computeTotal();
                 })
@@ -609,7 +613,7 @@
                             quantityReceived = 0
 
                         var amount = parseInt(quantityReceived) * parseFloat(unitPrice)
-                        row.find('.classAmount').html("₱ " + amount)
+                        row.find('.classAmount').html("₱ " + numberWithCommas(amount))
 
                         computeTotal()
                         row.find('.quantityReceived').css("border", "1px solid #DDDDDD");
@@ -657,7 +661,7 @@
 
                     if(proceed) {
                          $("#table-poItem-body > tr").each(function () {
-                            var amount = $(this).children('.classAmount').text().slice(1);
+                            var amount = $(this).children('.classAmount').text().slice(1).split(",").join("");
                             var unitPrice = $(this).find('.unitPrice').val()
                             if (unitPrice == "") {
                                 unitPrice = 0
@@ -679,9 +683,9 @@
                             poItems.push(poItem);
                         });
                         var itemsString = JSON.stringify(poItems);  
-                        var subtotal = parseFloat($('#subtotal').text().slice(1));
-                        var vat = parseFloat($('#vat').text().slice(1));
-                        var total = parseFloat($('#total').text().slice(1));
+                        var subtotal = parseFloat($('#subtotal').text().slice(1).split(",").join(""));
+                        var vat = parseFloat($('#vat').text().slice(1).split(",").join(""));
+                        var total = parseFloat($('#total').text().slice(1).split(",").join(""));
                         var discount = parseFloat($('#discount').text().slice(1))
                         $.post('/updatePOWithPrice', {poID, itemsString, discount, subtotal, vat, total, needNewPo}, function(result) {
                             alert("PO updated");

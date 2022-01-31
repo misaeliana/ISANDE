@@ -35,7 +35,7 @@
             <hr style="margin-top: 0px;">
 
             <form id="new-item">
-                <input class="form-control" type="text" id="itemDesc" style="margin-top: 5px; margin-bottom: 0px; width: 200px; float: left; margin-right: 10px; border-radius: 5px;   border-width: 1px;" placeholder="Item Description">
+                <input class="form-control" type="text" id="itemDesc" style="margin-top: 5px; margin-bottom: 0px; width: 400px; float: left; margin-right: 10px; border-radius: 5px;   border-width: 1px;" placeholder="Item Description">
                 <select class="form-control" id="dropdown-unit" style="margin-top: 5px; margin-bottom: 0px; width: 200px; float: left; margin-right: 10px">
                     <option value="no-selected">Select Unit</option>
                     {{#each units}}
@@ -47,8 +47,7 @@
             
             <div style="height: 45px"></div>
 
-            <p class="error" id="error-item" style="margin-bottom: 5px;"></p>
-            <p class="error" id="error-unit" style="margin-bottom: 5px;"></p>
+            <p class="error" id="error-text" style="margin-bottom: 5px;"></p>
 
 
             <table class="table" id="table-items">
@@ -162,21 +161,21 @@
 
                 function resetErrorMessage () {
                     $("#itemDesc").css("border", "1px solid #DDDDDD");
-                    $("#error-item").text("");
+                    $("#error-text").text("");
                     $("#dropdown-unit").css("border", "1px solid #DDDDDD");
-                    $("#error-unit").text("");
+                    $("#error-text").text("");
                 }
 
                 function errorMessage(type) {
                     if (type == "no-description") {
                         $("#itemDesc").css("border", "1px solid #B00000");
-                        $("#error-item").text("Please enter Item Description.");
+                        $("#error-text").text("Please enter Item Description.");
                     } else if (type == "no-unit") {
                         $("#dropdown-unit").css("border", "1px solid #B00000");
-                        $("#error-unit").text("Please select a Unit.");
+                        $("#error-text").text("Please select a Unit.");
                     }else if (type == "in-list") {
                         $("#itemDesc").css("border", "1px solid #B00000");
-                        $("#error-item").text("Item already exists.");
+                        $("#error-text").text("Item already exists.");
                     }
                 }
 
@@ -187,16 +186,22 @@
 
                     if (!itemValidation(itemDescription,unit) && !unitValidation(unitID)) {
                         //resetErrorMessage();
+                        var element = $('#table-items-body tr').filter(function(){
+                            return (this.innerHTML.indexOf(itemDescription) != -1 && this.innerHTML.indexOf(unit) != -1);
+                        })
+                        if (element.length) {
+                            $('#error-text').text("Item already in list")
+                        } else {
+                             $('#table-items').find('tbody').append(
+                                `  <tr> 
+                                        <td class="itemDesc">${itemDescription}</td>
+                                        <td class="unit">${unit}</td>
+                                        <td style="text-align: right;"><button class="delete-button"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
+                                    </tr>`
+                            );
 
-                        $('#table-items').find('tbody').append(
-                            `  <tr> 
-                                    <td class="itemDesc">${itemDescription}</td>
-                                    <td class="unit">${unit}</td>
-                                    <td style="text-align: right;"><button class="delete-button"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
-                                </tr>`
-                        );
-
-                        $('#new-item').trigger('reset');
+                            $('#new-item').trigger('reset');
+                        }
                     }
                 });
 

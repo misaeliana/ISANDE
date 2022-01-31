@@ -12,10 +12,13 @@ require('../controllers/helpers.js');
 const manualCountController = {
 
 	getManualCount: function(req, res) {
-        //if(req.session.position != "Inventory and Purchasing" || req.session.position != "Manager"){
-			//res.redirect('/dashboard');
-		//}
-		//else{
+        if (req.session.position == null)
+            res.redirect('/login')
+
+        else if(req.session.position != "Inventory and Purchasing" && req.session.position != "Manager"){
+			res.redirect('/dashboard');
+		}
+		else{
             async function getOtherUnit(inventoryItem) {
                 return new Promise((resolve, reject) => {
                     db.findOne(ItemUnits, {$and: [ {itemID:inventoryItem._id}, {unitID: {$ne:inventoryItem.unitID}}, {informationStatusID:"618a7830c8067bf46fbfd4e4"}]}, 'unitID', function(result) {
@@ -59,21 +62,20 @@ const manualCountController = {
                     }
                 }
 
-                res.render('updateManualCount', {itemCategories, items});
-                //res.render('updateManualCount', {inventoryTypes, items});
+                //res.render('updateManualCount', {itemCategories, items});
                 
-                /*if(req.session.position == "Inventory and Purchasing"){
+                if(req.session.position == "Inventory and Purchasing"){
                     var inventoryAndPurchasing = req.session.position;
-                    res.render('updateManualCount', {inventoryTypes, items, inventoryAndPurchasing});	
+                    res.render('updateManualCount', {itemCategories, items, inventoryAndPurchasing});	
                 }
 
                 if(req.session.position == "Manager"){
                     var manager = req.session.position;
-                    res.render('updateManualCount', {inventoryTypes, items, manager});
-                }*/
+                    res.render('updateManualCount', {itemCategories, items, manager});
+                }
             }
             getInformation();
-        //}
+        }
     },
     
     updateManualCount: function(req, res) {
@@ -90,6 +92,8 @@ const manualCountController = {
 
             // subtract from inventory 
             for (var i = 0; i < shrinkages.length; i++) {
+                shrinkages[i].employeeID = req.session._id
+
                 var shrinkageUnitID = await getUnitID(shrinkages[i].unit);
 
                 var item = await getItemInfo(shrinkages[i].itemID);
@@ -120,10 +124,13 @@ const manualCountController = {
     },
     
     getShrinkages: function(req, res) {
-        //if(req.session.position != "Inventory and Purchasing" || req.session.position != "Manager"){
-			//res.redirect('/dashboard');
-		//}
-		//else{
+        if (req.session.position == null)
+            res.redirect('/login')
+
+        else if(req.session.position != "Inventory and Purchasing" && req.session.position != "Manager"){
+			res.redirect('/dashboard');
+		}
+		else{
             async function getInformation() {
                 var shrinkagesInfo = [];
                 var shrinkages = await getShrinkages();
@@ -145,7 +152,7 @@ const manualCountController = {
                 }
                 res.render('shrinkagesList', {shrinkagesInfo});
                 
-                /*if(req.session.position == "Inventory and Purchasing"){
+                if(req.session.position == "Inventory and Purchasing"){
                     var inventoryAndPurchasing = req.session.position;
                     res.render('shrinkagesList', {shrinkagesInfo, inventoryAndPurchasing});	
                 }
@@ -153,11 +160,11 @@ const manualCountController = {
                 if(req.session.position == "Manager"){
                     var manager = req.session.position;
                     res.render('shrinkagesList', {shrinkagesInfo, manager});
-                }*/
+                }
             }
 
             getInformation();
-        // }
+        }
     },
 
     getSearchShrinkages: function(req, res) {

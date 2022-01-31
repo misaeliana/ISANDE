@@ -11,10 +11,13 @@ require('../controllers/helpers.js');
 
 const employeeController = {
 	getEmployeeList: function(req, res) {
-		//if(req.session.position != "Manager"){
-				//res.redirect('/dashboard');
-		//}
-		//else{
+		if (req.session.position == null)
+			res.redirect('/login')
+
+		else if(req.session.position != "Manager"){
+			res.redirect('/dashboard');
+		}
+		else{
 			async function getInformation() {
 				var employees_temp = await getEmployees();
 				var employees = [];
@@ -37,10 +40,17 @@ const employeeController = {
 				});
 
 				var positions = await getAllPositions();
+
+				positions.sort(function(a, b) {
+					var textA = a.position.toUpperCase();
+					var textB = b.position.toUpperCase();
+					//syntax is "condition ? value if true : value if false"
+					return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+				});
 				res.render('employeeList', {positions, employees});
 			}
 			getInformation();
-		// }
+		}
 	},
 
 	postEmployeeInformation: function(req, res) {
@@ -84,10 +94,13 @@ const employeeController = {
 	},
 
 	getViewEmployee: function(req, res) {
-		//if(req.session.position != "Manager"){
-			//res.redirect('/dashboard');
-		//}
-		//else{
+		if (req.session.position == null)
+			res.redirect('/login')
+
+		else if(req.session.position != "Manager"){
+			res.redirect('/dashboard');
+		}
+		else{
 			async function getInformation() {
 				var employeeInfo = await getEmployeeInfo(req.params.employeeID);
 				var positions = await getAllPositions();
@@ -97,7 +110,7 @@ const employeeController = {
 			}
 
 			getInformation();
-		//}
+		}
 	},
 
 	postUpdateInformation: function(req, res) {
