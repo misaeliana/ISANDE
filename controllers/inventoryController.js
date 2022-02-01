@@ -19,7 +19,7 @@ const inventoryController = {
 		if (req.session.position == null)
 			res.redirect('/login')
 
-		else if(req.session.position != "Inventory and Purchasing" && req.session.position != "Manager"){
+		else if(req.session.position != "Inventory and Purchasing" && req.session.position != "Manager" && req.session.position != "Cashier"){
             res.redirect('/dashboard');
 		}
 		
@@ -73,8 +73,12 @@ const inventoryController = {
 
 					//res.render('inventory', {itemCategories, units, inventory, itemStatuses});
 
+				var position = req.session.position
+				res.render('inventory', {itemCategories, units, inventory, itemStatuses, position});	
 
-				if(req.session.position == "Inventory and Purchasing"){
+
+
+				/*if(req.session.position == "Inventory and Purchasing"){
 					var inventoryAndPurchasing = req.session.position;
 					res.render('inventory', {itemCategories, units, inventory, itemStatuses, inventoryAndPurchasing});	
 				}
@@ -83,6 +87,11 @@ const inventoryController = {
 					var manager = req.session.position;
 					res.render('inventory', {itemCategories, units, inventory, itemStatuses, manager});
 				}
+
+				if(req.session.position == "Cashier"){
+					var cashier = req.session.position;
+					res.render('inventory', {itemCategories, units, inventory, itemStatuses, cashier});
+				}*/
 			}
 
 			getInformation();
@@ -147,7 +156,7 @@ const inventoryController = {
 		if (req.session.position == null)
 			res.redirect('/login')
 
-		else if(req.session.position != "Inventory and Purchasing" && req.session.position != "Manager"){
+		else if(req.session.position != "Inventory and Purchasing" && req.session.position != "Manager" && req.session.position != "Cashier"){
 			res.redirect('/dashboard');
 		}
 		else{
@@ -254,7 +263,11 @@ const inventoryController = {
 					itemInfo.toBeReceived = parseFloat(result).toFixed(2);
 					//res.render('viewSpecificItem', {itemInfo, itemUnits, itemCategories, units, itemSuppliers});
 
-					if(req.session.position == "Inventory and Purchasing"){
+					var position = req.session.position
+					res.render('viewSpecificItem', {itemInfo, itemUnits, itemCategories, units, itemSuppliers, position});	
+
+
+					/*if(req.session.position == "Inventory and Purchasing"){
 						var inventoryAndPurchasing = req.session.position;
 						res.render('viewSpecificItem', {itemInfo, itemUnits, itemCategories, units, itemSuppliers, inventoryAndPurchasing});	
 					}
@@ -263,6 +276,11 @@ const inventoryController = {
 						var manager = req.session.position;
 						res.render('viewSpecificItem', {itemInfo, itemUnits, itemCategories, units, itemSuppliers, manager});
 					}
+
+					if(req.session.position == "Cashier"){
+						var cashier = req.session.position;
+						res.render('viewSpecificItem', {itemInfo, itemUnits, itemCategories, units, itemSuppliers, cashier});
+					}*/
 				});
 				
 			}

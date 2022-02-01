@@ -198,8 +198,11 @@
                         errorMessage("noName")
                         return 1;
                     }
-                    else 
+                    else {
+                        $('#customer-name').css("border", "1px solid #DDDDDD");
+                        $('#new-customer-name').text("");
                         return 0;
+                    }
                 }
 
                 function contactPersonValidation(name) {
@@ -207,8 +210,11 @@
                         errorMessage("noContact")
                         return 1;
                     }
-                    else 
+                    else {
+                        $('#contact-person').css("border", "1px solid #DDDDDD");
+                        $('#error-contact-person').text("")
                         return 0;
+                    }
                 }   
 
                 function numberValidation(number) {
@@ -216,8 +222,11 @@
                         errorMessage("noNumber")
                         return 1;
                     }
-                    else 
+                   else {
+                        $('#new-contact-number').css("border", "1px solid #DDDDDD");
+                        $('#error-contact-number').text("");
                         return 0;
+                    }
                 }     
 
                 function addressValidation() {
@@ -282,6 +291,7 @@
                         $('#error-contact-person').text("")
 
                          $.post('/postCustomerInformation', {name, contactPerson, number, addressStr, titleStr}, function(result) {
+                            alert('Customer has been added')
                             $('#modal-add-customer').modal('hide');
                                 $('#add-new-customer').trigger('reset');
                                 window.location.reload()

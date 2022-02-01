@@ -37,6 +37,8 @@
                     </div>
                 </div>
             </div> 
+            <p id="invoice-type" style="display: none;">{{invoiceInfo.type}}</p>
+            <p id="payment-type" style="display: none;">{{invoiceInfo.paymentOption}}</p>
             <hr style="margin-top: 0px;">
 
             <div style="display: flex; align-content: center; align-items: center;">
@@ -52,8 +54,9 @@
                         {{#each paymentTypes}}
                             <option value="{{_id}}">{{paymentOption}}</option>
                         {{/each}}
-                    </select>
-                
+                </select>
+                <p id="payment-type-error" class="error"></p>
+
                 <div class="delivery-info" style="display: none;">
                      <div style="display: flex; align-items: center;">
                         <label class="date-label" style="margin-right: 10px" for="delivery-date">Delivery Date</label>
@@ -79,22 +82,26 @@
                     <input style="margin-top: 15px;" type="text" class="form-control margin-bottom-10" id="customerName" name="customerName" placeholder="Customer Name" value="{{customerName}}" readonly>
                     <p class="error" id="error-customer-name" style="margin-bottom: 5px;"></p>
                     <button class="btn-light-blue" id="add-new-customer" style="display:none; margin-bottom: 10px;" data-toggle="modal" data-target="#customerModal">Add New Customer</button>
-                    <div class="delivery-info" style="display: none;">
-                        <textarea class="form-control margin-bottom-10" id="address" name="address" placeholder="Address"></textarea> <!--style="display:none"-->
-                        <input type="text" class="form-control margin-bottom-10" id="contactNumber" name="contactNumber" placeholder="Contact Number" value=""> <!--style="display:none"-->
-                        <textarea class="form-control" id="delivery-notes" name="notes" placeholder="Delivery Notes"></textarea>
-                    </div>
                 {{/if}}
                 
                 {{#if customerInfo}}
                     <input style="margin-top: 15px;" type="text" class="form-control margin-bottom-10" id="customerName" name="customerName" placeholder="Customer Name" value="{{customerInfo.name}}" readonly>
                     <p class="error" id="error-customer-name" style="margin-bottom: 5px;"></p>
-                    <div class="delivery-info" style="display: none;">
-                        <textarea class="form-control margin-bottom-10" id="address" name="address" placeholder="Address">{{customerInfo.address}}</textarea> <!--style="display:none"-->
-                        <input type="text" class="form-control margin-bottom-10" id="contactNumber" name="contactNumber" placeholder="Contact Number" value="{{customerInfo.number}}"> <!--style="display:none"-->
-                        <textarea class="form-control" id="delivery-notes" name="notes" placeholder="Delivery Notes"></textarea>
-                    </div>
                 {{/if}}
+
+                <div class="delivery-info" style="display:none">
+                     <div style="display: flex;">
+                        <select class="dropdown delivery-info" id="dropdown-address-title" style="margin-right: 3px; width:200px">
+                            <option value="no-selected">Select Address</option>
+                            {{#each customerAddress}}
+                            <option>{{addressTitle}}</option>
+                            {{/each}}
+                        </select>
+                        <input type="text" class="form-control margin-bottom-10 delivery-info" id="address" name="address" placeholder="Address" readonly> <!--style="display:none"-->
+                    </div>
+                    <input type="text" class="form-control margin-bottom-10" id="contactNumber" name="contactNumber" placeholder="Contact Number" value="{{customerInfo.number}}"  pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;"> <!--style="display:none"-->
+                        <textarea class="form-control" id="delivery-notes" name="notes" placeholder="Delivery Notes"></textarea>
+                </div>
             </div>
 
             <!--MODAL-->
@@ -106,24 +113,37 @@
                     </div>
                     <div class="modal-body">
                         <form id="add-new-customer">
-                            <div class="flex-display">
-                                <label for="new-customer-name" class="modal-label">Customer Name</label> 
-                                <input id="new-customer-name" class="modal-input form-control" value="{{customerName}}" type="text" readonly><br>
-                            </div>
-                            <p class="error modal-error" id="error-new-customer-name"></p>
+                                        <div class="flex-display">
+                                            <label for="new-customer-name" class="modal-label">Customer Name</label> 
+                                            <input id="new-customer-name"class="modal-input form-control" type="text" value="{{customerName}}"readonly><br>
+                                        </div>
+                                        <p class="error modal-error" id="error-new-customer-name"></p>
+
+                                         <div class="flex-display">
+                                            <label for="contact-person" class="modal-label">Contact Person</label> 
+                                            <input id="contact-person" type="text" class="modal-input form-control"><br>
+                                        </div>
+                                        <p class="error modal-error" id="error-contact-person"></p>
                                         
-                            <div class="flex-display">
-                                <label for="new-contact-number" class="modal-label">Contact Number</label> 
-                                <input id="new-contact-number" class="modal-input form-control" type="number"><br>
-                            </div>
-                            <p class="error modal-error" id="error-contact-number"></p>
+                                        <div class="flex-display">
+                                            <label for="new-contact-number" class="modal-label">Contact Number</label> 
+                                            <input id="new-contact-number" class="modal-input form-control" type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==11) return false;"><br>
+                                        </div>
+                                        <p class="error modal-error" id="error-contact-number"></p>
                                         
-                            <div class="flex-display">
-                                <label for="new-address" class="modal-label">Address</label> 
-                                <input id="new-address" class="modal-input form-control" type="text"><br>
-                            </div>
-                            <p class="error modal-error" id="error-address"></p>
-                        </form>
+                                        <div class="flex-display">
+                                            <label for="address-title" class="modal-label">Address Title</label> 
+                                            <input class="address-title modal-input form-control" type="text"><br>
+                                        </div>
+                                         <p class="error modal-error" id="error-address-title"></p>
+                                        <div class="flex-display">
+                                            <label for="address" class="modal-label">Address</label> 
+                                            <input class="address modal-input form-control" type="text"><br>
+                                        </div>
+                                        <p class="error modal-error" id="error-address"></p>
+                                        <div id="new-row"></div>
+                                        <button id="more-address" type="button" class='btn-light-blue' style="style=float: right;">Add Address</button>
+                                    </form>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="modal-btn-grey" data-dismiss="modal">Close</button>
@@ -278,22 +298,69 @@
         <script>
             $(document).ready(function(){
 
+                $('#dropdown-return-type').val($('#invoice-type').text())
+                $('#dropdown-payment-type').val($('#payment-type').text())
+
+
+                function getCheckCustomerNameInvoice () {
+                    // Get value 
+                    var customerName = $("#customerName").val();
+
+                    if (customerName != "") {
+                        $.get("/getCheckCustomerNameInvoice", {customerName: customerName}, function (result) {
+                            if (result.name != customerName) {
+                                $('#add-new-customer').css('display', 'block')
+                                $('#error-customer-name').text("Create new customer record.");
+                                $('#customer-Name').css("border", "2px solid #B00000");
+                            } else {
+                                $('#add-new-customer').css('display', 'none')
+                                $('#error-customer').text("");
+                                $('#customer-Name').css("border", "1px solid #DDDDDD");
+                            }
+                        });
+                    } else {
+                        $('#add-new-customer').css('display', 'none')
+                        $('#error-customer-name').text("");
+                        $('#customer-Name').css("border", "1px solid #DDDDDD");
+                    }
+                }
+
+
                 $('#dropdown-return-type').change(function() {
                     var val = $('#dropdown-return-type option:selected').text();
 
                     $('#add-new-customer').css('display', 'none');
                     $('#error-customer-name').text("");
+                    $('#customerName').css("border", "1px solid #DDDDDD");
 
-                    if (val == "In-Store") 
+                    if (val == "In-Store") {
                         $('.delivery-info').css('display', 'none')
-                    else 
+
+                        var payment = $('#dropdown-payment-type option:selected').text();
+
+                        if (payment == "COD") {
+                            $('#btn-save-return').prop('disabled', true)
+                            $('#btn-save-return').css("background-color", "#b3b3b3");
+                            $('#dropdown-payment-type').css("border", "2px solid #B00000");
+                            $('#payment-type-error').text('Payment method cannot be COD for in-store transactions');
+
+                        }
+                        else {
+                            $('#btn-save-return').prop('disabled', false)
+                            $('#btn-save-return').css("background-color", "#0F84D9") 
+                            $('#dropdown-payment-type').css("border", "1px solid #DDDDDD")
+                            $('#payment-type-error').text('');
+                        }
+
+                        if (payment == "On Account") 
+                            getCheckCustomerNameInvoice();
+                    }
+                    else {
+                        getCheckCustomerNameInvoice();
                         $('.delivery-info').css('display', 'block');
-
-
-                    if (($('#address').val() == "") && type == "In-Store" && payment == "On Account" || ($('#address').val() == "") && type == "Delivery"){
-                        $('#add-new-customer').css('display', 'block')
-                        $('#error-customer-name').text("Create new customer record.");
-                    } 
+                        $('#dropdown-payment-type').css("border", "1px solid #DDDDDD")
+                        $('#payment-type-error').text('');
+                    }
                 });
 
                 $('#dropdown-payment-type').change(function() {
@@ -304,18 +371,25 @@
                     $('#error-customer-name').text("");
 
                     if (type == "In-Store" && payment == "COD") {
+                        $('#btn-save-return').prop('disabled', true)
+                        $('#btn-save-return').css("background-color", "#b3b3b3");
                         $('#dropdown-payment-type').css("border", "2px solid #B00000")
                         $('#payment-type-error').text('Payment method cannot be COD for in-store transactions')
                     } 
                     else {
+                        $('#btn-save-return').prop('disabled', false)
+                        $('#btn-save-return').css("background-color", "#0F84D9");
                         $('#dropdown-payment-type').css("border", "1px solid #DDDDDD");
                         $('#payment-type-error').text('');
                     }
 
-                    if (($('#address').val() == "") && type == "In-Store" && payment == "On Account" || ($('#address').val() == "") && type == "Delivery"){
-                        $('#add-new-customer').css('display', 'block')
-                        $('#error-customer-name').text("Create new customer record.");
-                    } 
+                    if (type == "In-Store" && payment == "On Account"){
+                        getCheckCustomerNameInvoice();
+                    }
+
+                     if (type == "Delivery"){
+                        getCheckCustomerNameInvoice();
+                    }
                 });
 
                 //should be for delivery only
@@ -349,7 +423,6 @@
                         var customerName = ui.item.label;
                         $.get('/getCustomerInformation', {customerName}, function(result) {
                             $('#contactNumber').val(result.number);
-                            $('#address').val(result.address)
                             $("#customerName").css("border", "1px solid #DDDDDD");
                             $('#error-customer-name').text("")
                             $("#error-customer-name").css("display", "none");
@@ -358,6 +431,15 @@
                         })
                     }
                 });
+
+                $('#dropdown-address-title').change(function() {
+                    var customerName = $('#customerName').val()
+                    var addressTitle = $('#dropdown-address-title option:selected').text()
+
+                    $.get('/getCustomerAddress', {customerName, addressTitle}, function(result) {
+                        $('#address').val(result)
+                    })
+                })
 
                 $("#return-add-item-description").autocomplete({
                     source: function(request, response) {
@@ -809,15 +891,15 @@
                  function errorMessage(type) {
                     if (type == "noName") {
                         $('#new-customer-name').css("border", "1px solid #B00000");
-                        $('#error-new-customer-name').text("Input customer name");
+                        $('#error-new-customer-name').text("Input customer name.");
+                    } 
+                    else if (type == "noContact") {
+                        $('#contact-person').css("border", "1px solid #B00000");
+                        $('#error-contact-person').text("Please input contact person");
                     } 
                     else if (type == "noNumber") {
                         $('#new-contact-number').css("border", "1px solid #B00000");
-                        $('#error-contact-number').text("Invalid contact number");
-                    }
-                    else if (type == "noAddress") {
-                        $('#new-address').css("border", "1px solid #B00000");
-                        $('#error-address').text("Input address");
+                        $('#error-contact-number').text("Invalid contact number.");
                     }
                 }
 
@@ -825,10 +907,22 @@
                     if (name == null || name == "") {
                         errorMessage("noName")
                         return 1;
+                    } 
+                    else {
+                        $('#new-customer-name').css("border", "1px solid #DDDDDD");
+                        $('#error-new-customer-name').text("");
+                        return 0;
+                    }
+                }
+
+                function contactPersonValidation(name) {
+                    if (name == null || name == "") {
+                        errorMessage("noContact")
+                        return 1;
                     }
                     else {
-                        $('#customer-name').css("border", "1px solid #DDDDDD");
-                        $('#error-new-customer-name').text("");
+                        $('#contact-person').css("border", "1px solid #DDDDDD");
+                        $('#error-contact-person').text("")
                         return 0;
                     }
                 }   
@@ -839,51 +933,100 @@
                         return 1;
                     }
                     else {
-                        $('#contact-number').css("border", "1px solid #DDDDDD");
-                        $('#error-contact-number').text("")
+                        $('#new-contact-number').css("border", "1px solid #DDDDDD");
+                        $('#error-contact-number').text("");
                         return 0;
                     }
                 }     
 
-                function addressValidation(address) {
-                    if (address == null || address == "") {
-                        errorMessage("noAddress")
-                        return 1;
-                    }
-                    else {
-                        $('#address').css("border", "1px solid #DDDDDD");
-                        $('#error-address').text("");
-                        return 0;
-                    }
+                function addressValidation() {
+                    var notFilled = false
+
+                    $('.address-title').each(function () {
+                        if ($(this).val() == "") {
+                            $(this).css("border", "1px solid #B00000");
+                            $(this).parents('.flex-display').next('p').text("Input address title");
+                            notFilled = true
+                        }
+                        else {
+                            $(this).parents('.flex-display').next('p').text("");
+                            $(this).css("border", "1px solid #DDDDDD")
+                        }
+                    })
+
+                    $('.address').each(function() {
+                        if ($(this).val() == "") {
+                            $(this).css("border", "1px solid #B00000");
+                            $(this).parents('.flex-display').next('p').text("Input address");
+                            notFilled = true
+                        }
+                        else {
+                            $(this).parents('.flex-display').next('p').text("");
+                            $(this).css("border", "1px solid #DDDDDD")
+                        }
+                    })
+
+                    return notFilled;
                 }
 
-                /*Modal functions*/
-                $('#save-cust').click(function() {
-                    var custname = capitalize($('#new-customer-name').val());
-                    var custphone = $('#new-contact-number').val();
-                    var custaddress = $('#new-address').val();
-                    if (!customerNameValidation(custname) && !numberValidation(custphone) && !addressValidation(custaddress)) {
+                $(document).on('click', '.delete-address-button', function() {
+                    $(this).closest('.new-address-row').remove()
+                })
+                
 
-                        $('#customer-name').css("border", "1px solid #DDDDDD");
-                        $('#contact-number').css("border", "1px solid #DDDDDD");
+                $('#more-address').click(function() {
+                    $('#new-row').append(`
+                        <div class="new-address-row">
+                            <div class="flex-display" style="margin-bottom:3px; align-items:center">
+                                <label for="address-title" class="modal-label">Address Title</label> 
+                                <input class="address-title modal-input form-control" type="text" style="margin-right:5px; width: 92%"><br>
+                                <button class="delete-address-button" style="height: 30px"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button>
+                            </div>
+                             <p class="error modal-error error-address-title"></p>
+
+                            <div class="flex-display" style="margin-bottom:3px;">
+                                <label for="address" class="modal-label">Address</label> 
+                                <input class="address modal-input form-control" type="text"><br>
+                            </div>
+                            <p class="error modal-error error-address"></p>
+                        </div>
+                    `)
+                })
+
+                 $('#save-cust').click(function() {
+                    var name = capitalize($('#new-customer-name').val());
+                    var contactPerson = capitalize($('#contact-person').val())
+                    var number = $('#new-contact-number').val();
+                    var address = []
+                    var addressTitle = []
+
+                    $('.address').each(function() {
+                        address.push($(this).val())
+                    })
+
+                    $('.address-title').each(function () {
+                        addressTitle.push(capitalize($(this).val()))
+                    })
+
+                    var titleStr = JSON.stringify(addressTitle)
+                    var addressStr = JSON.stringify(address)
+                    if (!customerNameValidation(name) && !contactPersonValidation(contactPerson) && !numberValidation(number) && !addressValidation(addressTitle, address)) {
+
+                        $('#new-customer-name').css("border", "1px solid #DDDDDD");
+                        $('#contact-person').css("border", "1px solid #DDDDDD")
+                        $('#new-contact-number').css("border", "1px solid #DDDDDD");
                         $('#address').css("border", "1px solid #DDDDDD");
 
                         $('#error-new-customer-name').text("");
                         $('#error-contact-number').text("");
                         $('#error-address').text("");
+                        $('#error-contact-person').text("")
 
-                        $.post('/createNewCustomer', {custname,custphone,custaddress}, function(result) {                 
-                        })
-
-                        $('#customerModal').modal('hide');
-
-                        $('#add-new-customer').css('display', 'none')
-                        $('#error-customer-name').text("");
-                        
-                        $('.delivery-info').css('display', 'block');
-                        $('#contactNumber').val(custphone);
-                        $('#address').val(custaddress);
-                    }
+                         $.post('/postCustomerInformation', {name, contactPerson, number, addressStr, titleStr}, function(result) {
+                            $('#modal-add-customer').modal('hide');
+                            $('#add-new-customer').trigger('reset');
+                         }) 
+                   }
                 })
 
                 function capitalize(string){

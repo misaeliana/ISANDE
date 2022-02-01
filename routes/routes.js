@@ -196,8 +196,6 @@ router.get('/getCustomerList', invoiceController.getCustom);
 
 router.get('/return/:invoiceID', invoiceController.returns);
 
-router.post('/createNewCustomer', invoiceController.addNewCustomer);
-
 router.get('/checkQuantity', invoiceController.checkQuantity);
 
 router.get('/getItemInfo', invoiceController.getItemInfo);

@@ -54,16 +54,16 @@
                             <div class="override-label"> Name </div> 
                             <div class="label-content">{{invoiceInfo.customerName}}</div>
                         </div>
-                    {{#if delivery}}
+                    {{#compare invoiceInfo.type "==" "Delivery"}}
                         <div class="label-container" id="address-div">
-                            <div class="override-label"> Address </div> 
+                            <div class="override-label"> Delivery Address </div> 
                             <div class="label-content ">{{delivery.address}}</div>
                         </div>
-                        <div class="label-container" id="contantNum-div"> 
-                            <div class="override-label"> Contact Number </div> 
-                            <div class="label-content">{{customer.number}}</div>
-                        </div>
-                    {{/if}}
+                    {{/compare}}
+                    <div class="label-container" id="contantNum-div"> 
+                        <div class="override-label"> Contact Number </div> 
+                        <div class="label-content">{{customer.number}}</div>
+                    </div>
                 {{/if}}
             
                 <div style="height: 20px"></div>
@@ -201,7 +201,7 @@
                             </tbody>
                         </table>
 
-
+                        {{#compare invoiceInfo.status "==" "Paid"}}
                         <div class="summary-container">
                             <div class="summary-text">Amount Paid</div>
                             <div class="summary-info-container"><div class="summary-info">₱ {{paymentTotal}}</div></div>
@@ -210,6 +210,7 @@
                             <div class="summary-text">Amount Due</div>
                             <div class="summary-info-container"><div class="summary-info" id="totalAmountDue">₱ {{amountDue}}</div></div>
                         </div>
+                        {{/compare}}
                     {{/compare}}
 
                     <div style="height: 10px"></div>

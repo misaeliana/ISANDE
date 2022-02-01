@@ -16,13 +16,17 @@
 
         {{> logoutPartial }}
 
-        {{#if inventoryAndPurchasing}}
+       {{#compare position "==" "Inventory and Purchasing"}} 
             {{> inventoryAndPurchasingPartial }}
-        {{/if}}
+        {{/compare}}
 
-        {{#if manager}}
+       {{#compare position "==" "Manager"}} 
             {{> managerPartial }}
-        {{/if}}
+        {{/compare}}
+
+        {{#compare position "==" "Cashier"}} 
+            {{> cashierPartial }}
+        {{/compare}}
 
         <div class="content">
             <div>
@@ -82,7 +86,9 @@
             </div> 
             <div style="height: 10px"></div>
 
+            {{#compare position "!=" "Cashier"}}
             <div><button class="btn-light-blue" id="btn-edit-details" style="float: right; margin-bottom: 10px;" data-toggle="modal" data-target="#modal-edit-item">Edit Details</button></div>
+            {{/compare}}
 
             <hr style="margin-top: 50px;">
 
@@ -156,7 +162,9 @@
             <div style="margin-top: 30px;">
                 <div style="display: flex;">
                     <div style="width: 50%"><h3 class ="bold h3-left">Selling Units</h3></div>
-                    <div class="btn-status"><button class="btn-light-blue" id="btn-selling-unit" data-toggle="modal" data-target="#modal-add-selling-unit">Add Selling Unit</button></div>
+                   {{#compare position "!=" "Cashier"}}
+                        <div class="btn-status"><button class="btn-light-blue" id="btn-selling-unit" data-toggle="modal" data-target="#modal-add-selling-unit">Add Selling Unit</button></div>
+                    {{/compare}}
                 </div>
             </div>
 
@@ -237,36 +245,55 @@
                         <td>Quantity</td>
                         <td>Selling Price</td>
                         <td>Available Stock</td>
+                        {{#compare position "!=" "Cashier"}} 
                         <td></td>
+                        {{/compare}}
                     </tr>
                 </thead>
                 <tbody>
-                    {{#each itemUnits}}
-                        <tr>
-                            <td class="item-unit-name">{{unitName}}</td>
-                            <td style="text-align: right;">{{ratio}}</td>
-                            <td class="item-unit-selling-price" style="text-align: right;">₱ {{sellingPrice}}</td>
-                            <td style="text-align: right;">{{availableStock}}</td>
-                            <td style="text-align: right;"><button class="edit-button"><img src="../images/edit-icon.png" height="20px" width="15x" alt="Edit"></button></td>
-                        </tr>
-                    {{/each}}
+                    {{#compare position "!=" "Cashier"}} 
+                        {{#each itemUnits}}
+                            <tr>
+                                <td class="item-unit-name">{{unitName}}</td>
+                                <td style="text-align: right;">{{ratio}}</td>
+                                <td class="item-unit-selling-price" style="text-align: right;">₱ {{sellingPrice}}</td>
+                                <td style="text-align: right;">{{availableStock}}</td>
+                                <td style="text-align: right;"><button class="edit-button"><img src="../images/edit-icon.png" height="20px" width="15x" alt="Edit"></button></td>
+                            </tr>
+                        {{/each}}
+                    {{/compare}}
+
+                    {{#compare position "==" "Cashier"}} 
+                        {{#each itemUnits}}
+                            <tr>
+                                <td class="item-unit-name">{{unitName}}</td>
+                                <td style="text-align: right;">{{ratio}}</td>
+                                <td class="item-unit-selling-price" style="text-align: right;">₱ {{sellingPrice}}</td>
+                                <td style="text-align: right;">{{availableStock}}</td>
+                            </tr>
+                        {{/each}}
+                    {{/compare}}
+
+
+
                 </tbody>
             </table>
 
             <br>
 
-            <hr>
+           {{#compare position "!=" "Cashier"}} 
 
+            <hr>
             <div style="margin-top: 50px;">
                 <div style="display: flex;">
                     <div style="width: 50%"><h3 class ="bold h3-left">Suppliers</h3></div>
                     <div class="btn-status">
                         <form action="/editItemSuppliers/{{itemInfo._id}}" class="btn-status">
-                            <button class="btn-light-blue" id="btn-edit-supplier" data-toggle="modal">Edit Item Suppliers</button>
+                                <button class="btn-light-blue" id="btn-edit-supplier" data-toggle="modal">Edit Item Suppliers</button>
                         </form>
                     </div>
             </div>
-          
+           
             <table class="table">
                 <thead class="table-regular-head" >
                     <tr>
@@ -310,6 +337,7 @@
                 </div>
                 </div>
             </div>
+            {{/compare}}
 
         </div>
 

@@ -686,7 +686,7 @@
                         var subtotal = parseFloat($('#subtotal').text().slice(1).split(",").join(""));
                         var vat = parseFloat($('#vat').text().slice(1).split(",").join(""));
                         var total = parseFloat($('#total').text().slice(1).split(",").join(""));
-                        var discount = parseFloat($('#discount').text().slice(1))
+                        var discount = parseFloat($('#discount').text().slice(1).split(",").join(""))
                         $.post('/updatePOWithPrice', {poID, itemsString, discount, subtotal, vat, total, needNewPo}, function(result) {
                             alert("PO updated");
                             window.location = "/purchaseOrders";

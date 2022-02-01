@@ -415,10 +415,12 @@ const invoiceController = {
                 
                 db.findOne(Items, {itemDescription:item.itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'quantityAvailable reorderLevel', function(result1) {
 
+                    //update item status to low stock
                     if (result1.quantityAvailable <= result1.reorderLevel && result1.quantityAvailable!=0) {
                         db.updateOne(Items, {itemDescription:item.itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {statusID:"618b32205f628509c592daab"}, function(result2) {
                         });
                     }
+                    //update item status to out of stock
                     else if (result1.quantityAvailable == 0) {
                         db.updateOne(Items, {itemDescription:item.itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {statusID:"61b0d6751ca91f5969f166de"}, function(result3) {
                         });
@@ -452,6 +454,21 @@ const invoiceController = {
             });
         }
 
+        async function saveDelivery(custID, invoiceID) {
+            var addressID = await getCutomerAddressID(custID, req.body.addressTitle)
+
+            var dpackage = {
+                invoice_id: invoiceID,
+                customerAddress: addressID,
+                deliveryDate: req.body.ddate,
+                dateDelivered: null,
+                deliveryPersonnel: req.body.deliveryPersonnel,
+                deliveryNotes: req.body.dnotes
+            };
+            db.insertOne(deliveries, dpackage, function(flag) {if (flag) {}});
+            console.log("delivery invoice added:");
+        }
+
 
         async function saveInvoice() {
             var invoiceNo = await getInvoiceNumber();
@@ -475,21 +492,11 @@ const invoiceController = {
             };
             var items = JSON.parse(req.body.itemString);
 
-            var addressID = await getCutomerAddressID(custID, req.body.addressTitle)
             db.insertOneResult (Invoices, invoice, function(result) {
                 var invoiceID = result._id;
-                if(req.body.typeID == '61a591c1233fa7f9abcd5726'){
-                    var dpackage = {
-                        invoice_id: invoiceID,
-                        customerAddress: addressID,
-                        deliveryDate: req.body.ddate,
-                        dateDelivered: null,
-                        deliveryPersonnel: req.body.deliveryPersonnel,
-                        deliveryNotes: req.body.dnotes
-                    };
-                    db.insertOne(deliveries, dpackage, function(flag) {if (flag) {}});
-                    console.log("delivery invoice added:");
-                }
+                if(req.body.typeID == '61a591c1233fa7f9abcd5726')
+                    saveDelivery(custID, invoiceID)
+    
                 saveItems(invoiceID,items);
                 //console.log("invoice added:")
                 //console.log('invoiceID: ' +invoiceID);
@@ -549,18 +556,6 @@ const invoiceController = {
         }
 
         getPrice();
-    },
-
-    addNewCustomer: function(req,res){
-        var newCustomer = {
-            name: req.body.custname,
-            number: req.body.custphone,
-            address: req.body.custaddress,
-            informationStatusID: '618a7830c8067bf46fbfd4e4'
-        };
-        db.insertOne(Customer, newCustomer, function(flag) {
-            
-        });
     },
 
     getDeliveryList: function(req, res) {
@@ -903,6 +898,8 @@ const invoiceController = {
                 var customerInfo = await getCustomerInfo(temp_invoiceInfo.customerID);
 
                 var invoiceInfo = { 
+                    type:temp_invoiceInfo.typeID,
+                    paymentOption: temp_invoiceInfo.paymentOptionID,
                     invoiceID: temp_invoiceInfo.invoiceID,
                     subtotal: parseFloat(temp_invoiceInfo.subtotal).toFixed(2),
                     VAT: parseFloat(temp_invoiceInfo.VAT).toFixed(2),
@@ -925,16 +922,17 @@ const invoiceController = {
                     }
                 }
                 else  {
+                    var customerAddress = await getCustomerAddresses(temp_invoiceInfo.customerID)
                    // res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems});
 
                    if(req.session.position == "Cashier"){
                         var cashier = req.session.position;
-                        res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems, cashier});   
+                        res.render('return', {types, invoiceInfo, customerInfo, customerAddress, paymentTypes, deliveryPersonnel, invoiceItems, cashier});   
                     }
 
                     if(req.session.position == "Manager"){
                         var manager = req.session.position;
-                        res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems, manager});
+                        res.render('return', {types, invoiceInfo, customerInfo, customerAddress, paymentTypes, deliveryPersonnel, invoiceItems, manager});
                     }
                 }
             }

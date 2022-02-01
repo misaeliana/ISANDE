@@ -16,13 +16,17 @@
 
         {{> logoutPartial }}
 
-        {{#if inventoryAndPurchasing}}
+        {{#compare position "==" "Inventory and Purchasing"}} 
             {{> inventoryAndPurchasingPartial }}
-        {{/if}}
+        {{/compare}}
 
-        {{#if manager}}
+       {{#compare position "==" "Manager"}} 
             {{> managerPartial }}
-        {{/if}}
+        {{/compare}}
+
+        {{#compare position "==" "Cashier"}} 
+            {{> cashierPartial }}
+        {{/compare}}
 
         <div class="content">        
             <div class="fixed-div">
@@ -32,7 +36,9 @@
                         <input type="text" placeholder="Search" name="search" id="search-field">
                         <button type="submit" id="search-button"><i class="fa fa-search" ></i></button>
                     </div>
-                    <div><button class="btn-light-blue" id="btn-new-item" style="float: right;" data-toggle="modal" data-target="#modal-new-item">+ New Item</button></div>
+                    {{#compare position "!=" "Cashier"}} 
+                        <div><button class="btn-light-blue" id="btn-new-item" style="float: right;" data-toggle="modal" data-target="#modal-new-item">+ New Item</button></div>
+                    {{/compare}}
                 </div>
 
             <div style="margin-top: 60px;">
@@ -489,7 +495,7 @@
                         resetErrorMessage();
 
                         $.post('/postNewItem', {description, category, categoryText, unit, unitText, retailQuantity, sellingPrice, reorderLevel, EOQ}, function (updatedItem) {
-
+                            alert('Item has been added')
                             $('#modal-new-item').modal('hide');
                             $('#add-new-item').trigger('reset');
 

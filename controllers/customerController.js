@@ -86,7 +86,7 @@ const customerController = {
 				})
 			}
 
-			res.send(200) 
+			res.sendStatus(200) 
 		});
 	},
 
@@ -149,6 +149,8 @@ const customerController = {
 				}
 				totalAmountDue = numberWithCommas(parseFloat(totalAmountDue).toFixed(2));
 
+				var paymentMethods = await getOnAccountPaymentMethods();
+
 				if (unpaidInvoices.length==0) {
 					if(req.session.position == "Cashier"){
 						var cashier = req.session.position;
@@ -164,12 +166,12 @@ const customerController = {
 				else {
 					if(req.session.position == "Cashier"){
 						var cashier = req.session.position;
-						res.render('customerInformation', {customerInfo, customerAddress, customerInvoices, unpaidInvoices, totalAmountDue, cashier});
+						res.render('customerInformation', {customerInfo, customerAddress, customerInvoices, unpaidInvoices, paymentMethods, totalAmountDue, cashier});
 					}
 		
 					if(req.session.position == "Manager"){
 						var manager = req.session.position;
-						res.render('customerInformation', {customerInfo, customerAddress, customerInvoices, unpaidInvoices, totalAmountDue, manager});
+						res.render('customerInformation', {customerInfo, customerAddress, customerInvoices, unpaidInvoices, paymentMethods, totalAmountDue, manager});
 					}
 					//res.render('customerInformation', {customerInfo, customerAddress, customerInvoices, unpaidInvoices, paymentMethods, totalAmountDue});
 
