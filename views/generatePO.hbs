@@ -87,7 +87,7 @@
                     </div>
                            
                     <div class="btn-export-invoice">
-                        <button class="btn-light-blue" id="btn-generate-PO" style="margin-bottom: 10px; position:absolute; right:5% ">Generate</button>
+                        <button class="btn-light-blue" id="btn-generate-PO" style="margin-bottom: 10px; position:absolute; right:5%; background-color:#b3b3b3" disabled>Generate</button>
                     </div> 
                 </div>
 
@@ -121,6 +121,20 @@
                             $(this).parents('tr').find('.quantity').prop('disabled', true)
                             $(this).parents('tr').find(".dropdown-unit").prop('disabled', true);
 
+                        }
+
+                        var noChecked = true
+                        $('.purchase').each(function() {
+                            if ($(this).is(':checked'))
+                                noChecked = false
+                        })
+                        if (noChecked) {
+                            $('#btn-generate-PO').css('background-color', '#b3b3b3')
+                            $('#btn-generate-PO').prop('disabled', true)
+                        }
+                        else {
+                            $('#btn-generate-PO').css("background-color", "#0F84D9");
+                            $('#btn-generate-PO').prop('disabled', false)
                         }
                     })
 

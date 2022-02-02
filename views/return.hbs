@@ -254,6 +254,8 @@
                     </div>
                     <div class="summary-container">    
                         <div class="summary-text">Discount</div>
+                        <div class="summary-info-container" style="display: none;"><div class="summary-info" id="prev-invoice-discount">{{invoiceInfo.discount}}</div></div>
+
                         <div class="summary-info-container"><div class="summary-info" id="discount">₱ {{invoiceInfo.discount}}</div></div>
                     </div>
                     <div class="summary-container">
@@ -286,7 +288,7 @@
                     <div>
                         <div style="display: flex;">
                             <div style="width: 50%"><div class="btn-cancel-invoice"><button class="btn-light-grey" id="btn-save-invoice" style="margin-bottom: 10px;">Cancel</button></div></div>
-                            <div class="btn-save-return btn-status"><button class="btn-light-blue" id="btn-save-return" style="margin-bottom: 10px;" >Save</button></div>
+                            <div class="btn-save-return btn-status"><button class="btn-light-blue" id="btn-save-return" style="margin-bottom: 10px; background-color:#b3b3b3" disabled >Save</button></div>
                         </div>
                     </div>
 
@@ -301,6 +303,14 @@
                 $('#dropdown-return-type').val($('#invoice-type').text())
                 $('#dropdown-payment-type').val($('#payment-type').text())
 
+                if($('#dropdown-return-type option:selected').text()) {
+                    $('.delivery-info').css('display', 'block');
+
+                }
+
+                function numberWithCommas(x) {
+                    return x?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                }
 
                 function getCheckCustomerNameInvoice () {
                     // Get value 
@@ -486,6 +496,9 @@
                 });
 
                 $('.return-check').change(function() {
+                    $('#btn-save-return').prop('disabled', false)
+                    $('#btn-save-return').css("background-color", "#0F84D9")
+
                     if ($(this).is(":checked")) {
                         $(this).parents('tr').find(".return-quantity").prop('disabled', false)
                         $(this).parents('tr').find(".return-reason").prop('disabled', false)
@@ -539,18 +552,17 @@
 
                 function deliveryInfoFilled() {
                     var deliveryDate = $('#delivery-date').val();
-                    var paymentType = $('#dropdown-payment-type').val();
                     var deliveryPersonnel = $('#dropdown-delivery-personnel').val();
 
-                    var address = $('#address').val();
+                    var address = $('#dropdown-address-title option:selected').text();
                     var contactNumber = $('#contactNumber').val();
 
                     //inputs are complete
-                    if (deliveryDate && paymentType!="no-selected" && deliveryPersonnel!="no-selected" && address!="" && contactNumber!="") {
+                    if (deliveryDate && deliveryPersonnel!="no-selected" && address!="" && contactNumber!="") {
                         $('#delivery-date').css("border", "1px solid #DDDDDD");
                         $('#dropdown-payment-type').css("border", "1px solid #DDDDDD");
                         $('#dropdown-delivery-personnel').css("border", "1px solid #DDDDDD");
-                        $('#address').css("border", "1px solid #DDDDDD");
+                        $('#dropdown-address-title').css("border", "1px solid #DDDDDD");
                         $('#contactNumber').css("border", "1px solid #DDDDDD");
                         return true;
                     }
@@ -560,20 +572,15 @@
                         else
                             $('#delivery-date').css("border", "1px solid #DDDDDD");
 
-                        if (paymentType == "no-selected")
-                            $('#dropdown-payment-type').css("border", "2px solid #B00000");
-                        else
-                            $('#dropdown-payment-type').css("border", "1px solid #DDDDDD");
-
                         if (deliveryPersonnel == "no-selected")
                             $('#dropdown-delivery-personnel').css("border", "2px solid #B00000")
                         else
                             $('#dropdown-delivery-personnel').css("border", "1px solid #DDDDDD");
 
-                        if (address == "")
-                            $('#address').css("border", "2px solid #B00000");
+                        if (address == "Select Address")
+                            $('#dropdown-address-title').css("border", "2px solid #B00000");
                         else
-                            $('#address').css("border", "1px solid #DDDDDD");
+                            $('#dropdown-address-title').css("border", "1px solid #DDDDDD");
 
                         if (contactNumber == "")
                             $('#contactNumber').css("border", "2px solid #B00000");
@@ -586,7 +593,7 @@
 
 
                 function allFilled() {
-                    var allFilled = true
+                    var boolAllFilled = true
 
                     var invoiceType = $('#dropdown-return-type option:selected').text()
                     var noReason = false
@@ -605,20 +612,20 @@
                     })
                     if (noReason) {
                         alert("Select return reason for items");
-                        allFilled = false
+                        boolAllFilled = false
                     }
 
                     if (invoiceType == "In-Store") {
                         if (!customerNameFilled()) 
-                            allFilled = false
+                            boolAllFilled = false
                     }
 
                     else if (invoiceType == "Delivery") {
-                        if (!customerNameFilled() && !deliveryInfoFilled())
-                            allFilled = false
+                        if (!customerNameFilled() || !deliveryInfoFilled())
+                            boolAllFilled = false
                     }
-
-                    return allFilled
+                    console.log(boolAllFilled)
+                    return boolAllFilled
                 }
 
                 function computeTotal() {
@@ -627,7 +634,7 @@
                     var refund = 0;
                     var newItemsTotal = 0;
 
-                    var paid = $('#paid').text().slice(1);
+                    var paid = parseFloat($('#paid').text().slice(1).split(',').join(''));
 
                     $('#table-return-order-details > tbody > tr').each(function() {
                         //item to be returned, either added to shrinkage or added back to inventory
@@ -635,17 +642,17 @@
                         if (quantity == "" || quantity == NaN)
                             quantity = 0;
 
-                        var unitPrice = parseFloat($(this).children('.return-unit-price').text().slice(1))
-                        var discount = parseFloat($(this).children('.return-discount').text().slice(1))
+                        var unitPrice = parseFloat($(this).children('.return-unit-price').text().slice(1).split(",").join(""))
+                        var discount = parseFloat($(this).children('.return-discount').text().slice(1).split(",").join(""))
 
                         var quantityPurchased = parseFloat($(this).find('.quantity-purchased').text())
 
                         //all items were returned
                         if ($(this).find('.return-check').is(":checked") && (quantity == quantityPurchased)) 
-                            refund += (quantity * (unitPrice- discount));
+                            refund = parseFloat(parseFloat(refund) + parseFloat(quantity * (unitPrice- discount))).toFixed(2);
 
                         else if ($(this).find('.return-check').is(":checked") && (quantity != quantityPurchased)) {
-                            refund += (quantity * (unitPrice - discount))
+                            refund = parseFloat(parseFloat(refund) + parseFloat(quantity * (unitPrice - discount))).toFixed(2)
                             orderTotal += ((quantityPurchased- quantity) * (unitPrice - discount));
                         }
                         else 
@@ -653,37 +660,38 @@
                     })
 
                     $('#table-return-new-item-body > tr').each(function() {
-                        var amount = parseFloat($(this).find('.amount').text().slice(1));
+                        var amount = parseFloat($(this).find('.amount').text().slice(1).split(",").join(""));
                         orderTotal += parseFloat(amount);
                         //newItemsTotal += parseFloat(amount)
                     })
+
+                    var previousDiscount = parseFloat($('#prev-invoice-discount').text())
 
                     var discountTotal = $('#total-discount').val();
                     if (discountTotal == "")
                         discountTotal = 0
 
-                    var subtotal = orderTotal/1.12;
-                    var vat = orderTotal - subtotal;
+                    discountTotal = parseFloat(discountTotal) + previousDiscount
 
-                    var total = orderTotal - paid;
-                    orderTotal -= discountTotal
-                    total -= discountTotal
+                    orderTotal =parseFloat(parseFloat(orderTotal) -  parseFloat(discountTotal)).toFixed(2)
+                    var subtotal = parseFloat(orderTotal)/1.12;
+                    var vat = parseFloat(orderTotal) - parseFloat(subtotal);
+
+                    var total = parseFloat(parseFloat(orderTotal) - parseFloat(paid)).toFixed(2);   
+                    //total = parseFloat(parseFloat(total) - parseFloat(discountTotal)).toFixed(2)
 
                     
-                    $('#subtotal').text("₱ " + parseFloat(subtotal).toFixed(2));
-                    $('#vat').text("₱ " + parseFloat(vat).toFixed(2));
-                    $('#orderTotal').text("₱ " + parseFloat(orderTotal).toFixed(2));
+                    $('#subtotal').text("₱ " + numberWithCommas(parseFloat(subtotal).toFixed(2)));
+                    $('#vat').text("₱ " + numberWithCommas(parseFloat(vat).toFixed(2)));
+                    $('#orderTotal').text("₱ " + numberWithCommas(parseFloat(orderTotal).toFixed(2)));
 
-                    $('#refund').text("₱ " + parseFloat(refund).toFixed(2));
+                    $('#refund').text("₱ " + numberWithCommas(parseFloat(refund).toFixed(2)));
 
-                    $('#total').text("₱ " + parseFloat(total).toFixed(2));
-                    $('#disbox').text("₱ " + parseFloat(discountTotal).toFixed(2));
+                    $('#total').text("₱ " + numberWithCommas(parseFloat(total).toFixed(2)));
+                    $('#discount').text("₱ " + numberWithCommas(parseFloat(discountTotal).toFixed(2)));
                 }
 
                 function filled(itemDesc, unit, qty) {
-                    console.log(itemDesc)
-                    console.log(unit)
-                    console.log(qty)
                     var filled =true
 
                     if (itemDesc == "") {
@@ -747,9 +755,9 @@
                                             <td class="itemDesc">${itemDesc}</td>
                                             <td class="quantity" style="text-align: right;">${quantity}</td>
                                             <td class="unit">${unit}</td>
-                                            <td class="unitPrice" style="text-align: right;">₱ ${sellingPrice}</td>
-                                            <td class="discount" style="text-align: right;">₱ ${discount}</td>
-                                            <td class = "amount" style="text-align: right;">₱ ${totalPrice}</td>
+                                            <td class="unitPrice" style="text-align: right;">₱ ${numberWithCommas(sellingPrice)}</td>
+                                            <td class="discount" style="text-align: right;">₱ ${numberWithCommas(discount)}</td>
+                                            <td class = "amount" style="text-align: right;">₱ ${numberWithCommas(totalPrice)}</td>
                                             <td style="text-align: right;" <button class="delete-button delete-item-btn"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button> </td>
                                         </tr>`)
 
@@ -838,21 +846,29 @@
                         })
 
                         var invoiceType = $('#dropdown-return-type').val();
+
+                        var paymentOptionText = $('#dropdown-payment-type option:selected').text()
+                        if (paymentOptionText == "On Account" || paymentOptionText == "COD")
+                            statusID = "619785d78094faf8c10d1484"
+                        else 
+                            statusID = "619785b0d9a967328c1e8fa6"
+
                         var deliveryInfo;
                         //order is a delivery
                         if (invoiceType == "61a591c1233fa7f9abcd5726") {
                             var invoiceInfo = {
                                 customerName: $('#customerName').val(),
                                 invoiceType: invoiceType,
-                                statusID: "619785d78094faf8c10d1484",
+                                statusID: statusID,
                                 paymentOptionID:$('#dropdown-payment-type').val(),
-                                subtotal: parseFloat($('#subtotal').text().slice(1)),
-                                vat: parseFloat($('#vat').text().slice(1)),
-                                discount: parseFloat($('#disbox').text().slice(1)),
-                                total: parseFloat($('#total').text().slice(1))
+                                subtotal: parseFloat($('#subtotal').text().slice(1).split(",").join("")),
+                                vat: parseFloat($('#vat').text().slice(1).split(",").join("")),
+                                discount: parseFloat($('#discount').text().slice(1).split(",").join("")),
+                                total: parseFloat($('#total').text().slice(1).split(",").join(""))
                             }
 
                             deliveryInfo = {
+                                customerAddressTitle: $('#dropdown-address-title option:selected').text(),
                                 deliveryDate: new Date($('#delivery-date').val()),
                                 deliveryPersonnel: $('#dropdown-delivery-personnel').val(),
                                 deliveryNotes: $('#delivery-notes').val()
@@ -862,12 +878,12 @@
                             var invoiceInfo = {
                                 customerName: $('#customerName').val(),
                                 invoiceType: invoiceType,
-                                statusID: "619785b0d9a967328c1e8fa6",
+                                statusID: statusID,
                                 paymentOptionID: $('#dropdown-payment-type').val(),
-                                subtotal: parseFloat($('#subtotal').text().slice(1)),
-                                vat: parseFloat($('#vat').text().slice(1)),
-                                discount: parseFloat($('#disbox').text().slice(1)),
-                                total: parseFloat($('#total').text().slice(1))
+                                subtotal: parseFloat($('#subtotal').text().slice(1).split(",").join("")),
+                                vat: parseFloat($('#vat').text().slice(1).split(",").join("")),
+                                discount: parseFloat($('#discount').text().slice(1).split(",").join("")),
+                                total: parseFloat($('#total').text().slice(1).split(",").join(""))
                             }
                             deliveryInfo= {};
                         }

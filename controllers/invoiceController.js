@@ -413,19 +413,20 @@ const invoiceController = {
             
             db.updateOne(Items, {itemDescription:item.itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {quantityAvailable: updatedQuantity}, function(result) {
                 
-                db.findOne(Items, {itemDescription:item.itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'quantityAvailable reorderLevel', function(result1) {
+            });
 
-                    //update item status to low stock
-                    if (result1.quantityAvailable <= result1.reorderLevel && result1.quantityAvailable!=0) {
-                        db.updateOne(Items, {itemDescription:item.itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {statusID:"618b32205f628509c592daab"}, function(result2) {
-                        });
-                    }
-                    //update item status to out of stock
-                    else if (result1.quantityAvailable == 0) {
-                        db.updateOne(Items, {itemDescription:item.itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {statusID:"61b0d6751ca91f5969f166de"}, function(result3) {
-                        });
-                    }
-                });
+            db.findOne(Items, {itemDescription:item.itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'quantityAvailable reorderLevel', function(result1) {
+
+                //update item status to low stock
+                if (result1.quantityAvailable <= result1.reorderLevel && result1.quantityAvailable!=0) {
+                    db.updateOne(Items, {itemDescription:item.itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {statusID:"618b32205f628509c592daab"}, function(result2) {
+                    });
+                }
+                //update item status to out of stock
+                else if (result1.quantityAvailable == 0) {
+                    db.updateOne(Items, {itemDescription:item.itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {statusID:"61b0d6751ca91f5969f166de"}, function(result3) {
+                    });
+                }
             });
         }
 
@@ -670,7 +671,7 @@ const invoiceController = {
                         unit: await getSpecificUnit(itemUnitInfo.unitID),
                         unitPrice: numberWithCommas(parseFloat(itemUnitInfo.sellingPrice).toFixed(2)),
                         discount: numberWithCommas(parseFloat(invoiceItems[i].discount).toFixed(2)),
-                        amount: numberWithCommas(((parseFloat(itemUnitInfo.sellingPrice) * parseFloat(invoiceItems[i].quantity)) - parseFloat(invoiceItems[i].discount)).toFixed(2))
+                        amount: numberWithCommas(parseFloat(parseFloat(invoiceItems[i].quantity) * (parseFloat(itemUnitInfo.sellingPrice) - parseFloat(invoiceItems[i].discount))).toFixed(2))
                     };
 
                     items.push(item);
@@ -887,9 +888,9 @@ const invoiceController = {
                         itemDescription: await getItemDescription(itemUnitInfo.itemID), 
                         quantity: quantity, 
                         unit: await getSpecificUnit(itemUnitInfo.unitID), 
-                        unitPrice: parseFloat(itemUnitInfo.sellingPrice).toFixed(2), 
-                        discount: temp_invoiceItems[i].discount, 
-                        amount: parseFloat(amount).toFixed(2), 
+                        unitPrice: numberWithCommas(parseFloat(itemUnitInfo.sellingPrice).toFixed(2)), 
+                        discount: numberWithCommas(temp_invoiceItems[i].discount), 
+                        amount: numberWithCommas(parseFloat(amount).toFixed(2)), 
                         returnReasons: returnReasons 
                     } 
                     invoiceItems.push(invoiceItem) 
@@ -901,10 +902,10 @@ const invoiceController = {
                     type:temp_invoiceInfo.typeID,
                     paymentOption: temp_invoiceInfo.paymentOptionID,
                     invoiceID: temp_invoiceInfo.invoiceID,
-                    subtotal: parseFloat(temp_invoiceInfo.subtotal).toFixed(2),
-                    VAT: parseFloat(temp_invoiceInfo.VAT).toFixed(2),
-                    discount: parseFloat(temp_invoiceInfo.discount).toFixed(2),
-                    total: parseFloat(temp_invoiceInfo.total).toFixed(2)
+                    subtotal: numberWithCommas(parseFloat(temp_invoiceInfo.subtotal).toFixed(2)),
+                    VAT: numberWithCommas(parseFloat(temp_invoiceInfo.VAT).toFixed(2)),
+                    discount: numberWithCommas(parseFloat(temp_invoiceInfo.discount).toFixed(2)),
+                    total: numberWithCommas(parseFloat(temp_invoiceInfo.total).toFixed(2))
                 }
 
                 if (customerInfo == false) {
@@ -1038,8 +1039,13 @@ const invoiceController = {
             db.updateOne(Items, {_id:itemID}, {quantityAvailable: updatedQuantity}, function(result) {
                 
             })
-
-            
+            db.findOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'quantityAvailable reorderLevel', function(result1) {
+                //update item status to in stock
+                if (result1.quantityAvailable > result1.reorderLevel && result1.quantityAvailable!=0) {
+                    db.updateOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {statusID:"618b6c82a07cb824ce7bfca2"}, function(result2) {
+                    });
+                }     
+            })  
         }
 
         //--------FUNCTIONS FOR NEW INVOICE---------//
@@ -1131,19 +1137,23 @@ const invoiceController = {
 
 
             
-            db.updateOne(Items, {_id:item.itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {quantityAvailable: updatedQuantity}, function(result) {
+            db.updateOne(Items, {itemDescription:item.itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {quantityAvailable: updatedQuantity}, function(result) {
                 
-                db.findOne(Items, {_id:item.itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'quantityAvailable reorderLevel', function(result1) {
-                    if (result1.quantityAvailable <= result1.reorderLevel && result1.quantityAvailable!=0) {
-                        db.updateOne(Items, {itemDescription:item.itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {statusID:"618b32205f628509c592daab"}, function(result2) {
-                        })
-                    }
-                    else if (result1.quantityAvailable == 0) {
-                        db.updateOne(Items, {itemDescription:item.itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {statusID:"61b0d6751ca91f5969f166de"}, function(result3) {
-                        })
-                    }
-                })
-            })
+            });
+
+            db.findOne(Items, {itemDescription:item.itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'quantityAvailable reorderLevel', function(result1) {
+
+                //update item status to low stock
+                if (result1.quantityAvailable <= result1.reorderLevel && result1.quantityAvailable!=0) {
+                    db.updateOne(Items, {itemDescription:item.itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {statusID:"618b32205f628509c592daab"}, function(result2) {
+                    });
+                }
+                //update item status to out of stock
+                else if (result1.quantityAvailable == 0) {
+                    db.updateOne(Items, {itemDescription:item.itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {statusID:"61b0d6751ca91f5969f166de"}, function(result3) {
+                    });
+                }
+            });
         }
 
         //------------END OF FUNCTIONS TO UPDATING INVENTORY QUANTITY-------------
@@ -1200,15 +1210,16 @@ const invoiceController = {
 
             //order is delivery
             if (invoiceInfo.invoiceType == "61a591c1233fa7f9abcd5726") 
-                newDelivery(invoiceID, deliveryInfo);
+                newDelivery(invoiceID, customerID, deliveryInfo);
             else
                 res.send(invoiceID);
         }
 
         //------------FUNCTION FOR DELIVERY-------------- 
 
-        function newDelivery(invoiceID, deliveryInfo) {
-            deliveryInfo.invoice_id = invoiceID;          
+        async function newDelivery(invoiceID, customerID, deliveryInfo) {
+            deliveryInfo.invoice_id = invoiceID;        
+            deliveryInfo.customerAddress = await  getCutomerAddressID(customerID, deliveryInfo.customerAddressTitle) 
             db.insertOne(deliveries, deliveryInfo, function(flag) {
                 if (flag)
                     res.send(invoiceID);

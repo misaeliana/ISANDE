@@ -215,7 +215,7 @@
                     <div>
                         <div style="display: flex;">
                             <div style="width: 50%"><div class="btn-cancel-invoice"><button class="btn-light-grey" id="btn-cancel-invoice" style="margin-bottom: 10px;">Cancel</button></div></div>
-                            <div class="btn-save-invoice btn-status"><button class="btn-light-blue" id="btn-save-invoice" style="margin-bottom: 10px;" >Save</button></div>
+                            <div class="btn-save-invoice btn-status"><button class="btn-light-blue" id="btn-save-invoice" style="margin-bottom: 10px; background-color:#b3b3b3" disabled>Save</button></div>
                         </div>
                     </div>
 
@@ -232,7 +232,6 @@
                 }
 
                 $('.delivery-info').css('display', 'none');
-                //$('').css('display', 'none')
 
                 var today = new Date();
                 var dd = String(today.getDate()).padStart(2, '0');
@@ -586,6 +585,11 @@
                 .appendTo(ul);
                 };*/
 
+                $('#customer-Name').keyup(function() {
+                    $("#btn-save-invoice").prop("disabled", false);
+                    $("#btn-save-invoice").css("background-color", "#0F84D9");
+                })
+
                  $("#customer-Name").autocomplete({
                     source: function(request, response) {
                     $.ajax({
@@ -683,6 +687,9 @@
                         discount = parseFloat(0);                
                     
                     if(filled(itemDesc,unitID, quantity)) {
+                        $('#btn-save-invoice').prop('disabled', false)
+                        $("#btn-save-invoice").css("background-color", "#0F84D9");
+
                         $.get('/getItemPrice', {itemDesc, quantity, unitID}, function (result) {
                             if(quantity > result.quantityAvailable)
                                 $('#text-warning-new-invoice').text("Requested amount exceeds available!");
@@ -736,56 +743,87 @@
                 }); 
 
 
-                function invoicefilled(){
-                    switch($('#drop-down-new-invoice-type').val()){
-                        //delivery
-                        case '61a591c1233fa7f9abcd5726':
-                        var errmsg = 'There is no input data in the hightlighted fields!';
-                        var err = 0;
-                        if ($('#customer-Name').val()==''){
-                            $('#customer-Name').css("border","1px solid red")
-                            err +=1;
+                function customerNameFilled() {
+                    var customerName = $('#customer-Name').val();
+                    if (customerName == '') {
+                            $("#customer-Name").css("border", "1px solid #B00000");
+                            $("#error-customer").text("Customer name cannot be empty");
+                            $("#btn-save-invoice").prop("disabled", true);
+                            $("#btn-save-invoice").css("background-color", "#b3b3b3");
+                            $('#contactNumber').val('');
+                            $('#address').val('');
+                            return false;
                         }
-                        if ($('#address').val()==''){
-                            $('#address').css("border","1px solid red")
-                            err +=1;
+                        else {
+                            $("#customer-Name").css("border", "1px solid #DDDDDD");
+                            $('#error-customer').text('')
+                            $("#btn-save-invoice").prop("disabled", false);
+                            $("#btn-save-invoice").css("background-color", "#0F84D9");
+                            return true;
                         }
-                        if($('#contactNumber').val()==''){
-                            $('#contactNumber').css("border","1px solid red")
-                            err +=1;
-                        }
-                        if($('#delivery-date').val()==''){
-                        $('#delivery-date').css("border","1px solid red")
-                        err +=1;
-                        }
-                        if($('#dropdown-delivery-personnel').val()=='no-selected'){
-                            $('#dropdown-delivery-personnel').css("border","1px solid red")
-                            err +=1;
-                        }
-                        if(err >= 1){
-                             $('#text-warning-customerdetails').text(errmsg);
-                             return 0;
-                        }
-                        else{
-                            $('#text-warning-customerdetails').text('');
-                            return 1;
-                        }
-                        break;
-                        //in-store
-                        case '6197863ac4f0088e95c9bf84':
-                         if ($('#customer-Name').val()==''){
-                         $('#text-warning-customerdetails').text("Input Customer Name");
-                         return 0;
-                        }
-                        else{
-                            return 1;
-                        }
-                        
+                }
+
+                function deliveryInfoFilled() {
+                    var deliveryDate = $('#delivery-date').val();
+                    var deliveryPersonnel = $('#dropdown-delivery-personnel').val();
+
+                    var address = $('#dropdown-address-title option:selected').text();
+                    var contactNumber = $('#contactNumber').val();
+
+                    //inputs are complete
+                    if (deliveryDate && deliveryPersonnel!="no-selected" && address!="Select Address" && contactNumber!="") {
+                        $('#delivery-date').css("border", "1px solid #DDDDDD");
+                        $('#dropdown-payment-type').css("border", "1px solid #DDDDDD");
+                        $('#dropdown-delivery-personnel').css("border", "1px solid #DDDDDD");
+                        $('#dropdown-address-title').css("border", "1px solid #DDDDDD");
+                        $('#contactNumber').css("border", "1px solid #DDDDDD");
+                        return true;
+                    }
+                    else {
+                        if (!deliveryDate) //delivery date is blank
+                            $('#delivery-date').css("border", "2px solid #B00000");
+                        else
+                            $('#delivery-date').css("border", "1px solid #DDDDDD");
+
+
+                        if (deliveryPersonnel == "no-selected") //delivery personnel is blank
+                            $('#dropdown-delivery-personnel').css("border", "2px solid #B00000")
+                        else
+                            $('#dropdown-delivery-personnel').css("border", "1px solid #DDDDDD");
+
+                        if (address == "Select Address") //no address is selected
+                            $('#dropdown-address-title').css("border", "2px solid #B00000");
+                        else
+                            $('#dropdown-address-title').css("border", "1px solid #DDDDDD");
+
+                        if (contactNumber == "")    //contact number is blank
+                            $('#contactNumber').css("border", "2px solid #B00000");
+                        else
+                            $('#contactNumber').css("border", "1px solid #DDDDDD");
+
+                        return false;
                     }
                 }
 
+                function allFilled() {
+                    var boolAllFilled = true
+
+                    var invoiceType = $('#drop-down-new-invoice-type option:selected').text()
+
+                    if (invoiceType == "In-Store") {
+                        if (!customerNameFilled()) 
+                            boolAllFilled = false
+                    }
+
+                    else if (invoiceType == "Delivery") {
+                        if (!customerNameFilled() || !deliveryInfoFilled())
+                            boolAllFilled = false
+                    }
+                    return boolAllFilled
+                }
+
                 $('#btn-save-invoice').click(function() {
-                    if(invoicefilled() == 1){
+                    if(allFilled()){
                         var orderedItems = [];
                         var custName = capitalize($('#customer-Name').val());
                         var addressTitle = $('#dropdown-address-title option:selected').text();
@@ -831,10 +869,10 @@
                         $.post('/createNewInvoice', {custName, date, typeID, statusID, paymentOption,subtotal, VAT, discount, total, deliveryPersonnel, addressTitle, ddate, dnotes, itemString}, function(result) {
                             alert("Transaction successfully processed");
                             window.location = "/invoices"
-                        }) 
+                        })
                     }
                     else{
-                    
+                        alert("Please fill out the necessary information")   
                     }
                 })
 
