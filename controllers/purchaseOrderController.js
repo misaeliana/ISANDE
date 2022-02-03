@@ -30,7 +30,7 @@ const purchaseOrderController = {
 
 	getPurchaseOrderList: function(req, res) {
 		if (req.session.position == null)
-			res.redirect('/login')
+			res.redirect('/login');
 
 		else if(req.session.position != "Inventory and Purchasing" && req.session.position != "Manager"){
 			res.redirect('/dashboard');
@@ -72,7 +72,7 @@ const purchaseOrderController = {
 
 	getCreateNewPurchaseOrder: function(req, res) {
 		if (req.session.position == null)
-			res.redirect('/login')
+			res.redirect('/login');
 
 		else if(req.session.position != "Inventory and Purchasing" && req.session.position != "Manager"){
 			res.redirect('/dashboard');
@@ -405,7 +405,7 @@ const purchaseOrderController = {
 				});
 
 				var itemCategories = await getItemCategories()
-				res.render('generatePO', {items, itemCategories})
+				//res.render('generatePO', {items, itemCategories})
 
 				if(req.session.position == "Inventory and Purchasing"){
 					var inventoryAndPurchasing = req.session.position;

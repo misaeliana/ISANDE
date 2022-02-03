@@ -3,7 +3,7 @@ const db = require('../models/db.js');
 
 const Customers = require('../models/CustomersModel.js');
 
-const CustomerAddresses = require('../models/CustomerAddressModel.js')
+const CustomerAddresses = require('../models/CustomerAddressModel.js');
 
 const Invoices = require('../models/InvoiceModel.js');
 

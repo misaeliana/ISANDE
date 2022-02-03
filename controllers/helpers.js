@@ -489,9 +489,9 @@ module.exports = function() {
 		});
 	},
 
-	this.getDeliveryPersonnelDeliveries = function(personnel_id) {
+	this.getDeliveryPersonnelDeliveries = function(_id) {
 		return new Promise((resolve, reject) => {
-			db.findMany(Deliveries, {dateDelivered: null, deliveryPersonnel: personnel_id}, '', function(result) {
+			db.findMany(Deliveries, {dateDelivered: null, deliveryPersonnel: _id}, '', function(result) {
 				resolve (result);
 			});
 		});

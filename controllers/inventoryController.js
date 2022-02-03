@@ -17,7 +17,7 @@ const inventoryController = {
 
 	getInventoryList: function(req, res) {
 		if (req.session.position == null)
-			res.redirect('/login')
+			res.redirect('/login');
 
 		else if(req.session.position != "Inventory and Purchasing" && req.session.position != "Manager" && req.session.position != "Cashier"){
             res.redirect('/dashboard');
@@ -73,7 +73,7 @@ const inventoryController = {
 
 					//res.render('inventory', {itemCategories, units, inventory, itemStatuses});
 
-				var position = req.session.position
+				var position = req.session.position;
 				res.render('inventory', {itemCategories, units, inventory, itemStatuses, position});	
 
 
@@ -154,7 +154,7 @@ const inventoryController = {
 
 	getViewItem: function(req, res) {
 		if (req.session.position == null)
-			res.redirect('/login')
+			res.redirect('/login');
 
 		else if(req.session.position != "Inventory and Purchasing" && req.session.position != "Manager" && req.session.position != "Cashier"){
 			res.redirect('/dashboard');
@@ -292,7 +292,7 @@ const inventoryController = {
 
 	editItemSuppliers: function(req, res) {
 		if (req.session.position == null)
-			res.redirect('/login')
+			res.redirect('/login');
 
 		else if(req.session.position != "Inventory and Purchasing" && req.session.position != "Manager"){
 			res.redirect('/dashboard');
@@ -317,12 +317,12 @@ const inventoryController = {
 				//res.render('editItemSuppliers', {itemID, itemName, suppliers, itemSuppliers, units});
 				if(req.session.position == "Inventory and Purchasing"){
 					var inventoryAndPurchasing = req.session.position;
-					res.render('editItemSuppliers', {itemID, suppliers, itemSuppliers, inventoryAndPurchasing});	
+					res.render('editItemSuppliers', {itemName, itemID, suppliers, itemSuppliers, inventoryAndPurchasing});	
 				}
 
 				if(req.session.position == "Manager"){
 					var manager = req.session.position;
-					res.render('editItemSuppliers', {itemID, suppliers, itemSuppliers, manager});
+					res.render('editItemSuppliers', {itemName, itemID, suppliers, itemSuppliers, manager});
 				}
 			}
 			getInformation();
@@ -460,6 +460,8 @@ const inventoryController = {
 						btnStatus = "low";
 					else if (textStatus == "In Stock")
 						btnStatus = "in";
+					else if (textStatus == "Out of Stock")
+						btnStatus = "out";
 	
 					var item = {
 						_id: invoice[i]._id,
@@ -536,7 +538,7 @@ const inventoryController = {
 				inventory.push(item);
 			}
 
-			console.log(inventory);
+			//console.log(inventory);
 
 			if (inventory.length > 0) {
 				res.send(inventory);

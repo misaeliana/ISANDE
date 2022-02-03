@@ -95,7 +95,7 @@ const invoiceController = {
 
     getViewSpecificInvoice: function(req, res) {
         if (req.session.position == null)
-            res.redirect('/login')
+            res.redirect('/login');
 
         else if(req.session.position != "Cashier" && req.session.position != "Manager"){
 			res.redirect('/dashboard');
@@ -114,7 +114,7 @@ const invoiceController = {
                 var invoice = await getInvoice(invoice_id);
                 var date = new Date(invoice.date);
                 var employee = await getEmployeeInfo(invoice.employeeID);
-                var paymentMethods = await getOnAccountPaymentMethods()
+                var paymentMethods = await getOnAccountPaymentMethods();
                 var items = [];
                 var invoiceInfo = {
                     invoice_id: invoice_id,
@@ -139,7 +139,7 @@ const invoiceController = {
 
                 if (invoiceInfo.type == "Delivery") {
                     delivery = await getDeliveryInformation(invoice_id);
-                    delivery.address = await getCustomerAddress(delivery.customerAddress)
+                    delivery.address = await getCustomerAddress(delivery.customerAddress);
 
                     employeeName = await getEmployeeInfo(delivery.deliveryPersonnel);
 
@@ -576,12 +576,11 @@ const invoiceController = {
                     var deliveries = await getDeliveries();
                 }
                 
-                var deliveries = await getDeliveries();
+                //var deliveries = await getDeliveries();
                 var deliveryInfo = [];
                 var invoiceStatusVoid = await getSpecificInvoiceStatusName("Void");
 
                 for (var i = 0; i < deliveries.length; i++) {
-                    console.log(deliveries[i]);
                     var date = new Date(deliveries[i].deliveryDate);
                     var invoice = await getInvoice(deliveries[i].invoice_id);
 
@@ -603,7 +602,9 @@ const invoiceController = {
                     }
                 }
 
-                res.render('deliveryList', {deliveryInfo});   
+                console.log(deliveryInfo);
+
+                //res.render('deliveryList', {deliveryInfo});   
 
 
                 if(req.session.position == "Delivery"){
@@ -713,6 +714,7 @@ const invoiceController = {
         var searchItem = req.query.searchItem;
         
         async function getInformation() {
+
             var invoiceStatusVoid = await getSpecificInvoiceStatusName("Void");
             var deliveryInfo = [];
             var delivery;
@@ -731,19 +733,21 @@ const invoiceController = {
                 if (specificDelivery.dateDelivered == null) {
                         date = new Date(specificDelivery.deliveryDate);
 
-                        delivery = {
-                            _id: specificDelivery._id,
-                            invoice_id: specificDelivery.invoice_id,
-                            invoiceNum: invoice.invoiceID,
-                            customerName: await getSpecificCustomer(invoice.customerID),
-                            paymentStatus: await getSpecificInvoiceStatus(invoice.statusID),
-                            amount: numberWithCommas(parseFloat(invoice.total).toFixed(2)), 
-                            deliveryDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
-                            deliveryPersonnel: await getEmployeeInfo(specificDelivery.deliveryPersonnel)
-                        };
-
-                        deliveryInfo.push(delivery);
-                }   
+                        if ((req.session.position == "Delivery" && req.session._id == specificDelivery.deliveryPersonnel) || req.session.position == "Manager") {
+                            delivery = {
+                                _id: specificDelivery._id,
+                                invoice_id: specificDelivery.invoice_id,
+                                invoiceNum: invoice.invoiceID,
+                                customerName: await getSpecificCustomer(invoice.customerID),
+                                paymentStatus: await getSpecificInvoiceStatus(invoice.statusID),
+                                amount: numberWithCommas(parseFloat(invoice.total).toFixed(2)), 
+                                deliveryDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
+                                deliveryPersonnel: await getEmployeeInfo(specificDelivery.deliveryPersonnel)
+                            };
+    
+                            deliveryInfo.push(delivery);
+                        }   
+                    }
                 }            
             }
             
@@ -754,20 +758,23 @@ const invoiceController = {
                     var deliveryInvoice = await getDeliveryInvoice(typeID, customerInfo[i]._id);
 
                     for (var j = 0; j < deliveryInvoice.length; j++) {
-                        specificDelivery = await getNotDelivered(deliveryInvoice[j]._id);
-                        date = new Date(specificDelivery.deliveryDate);
+                        
+                        if ((req.session.position == "Delivery" && req.session._id == specificDelivery.deliveryPersonnel) || req.session.position == "Manager") {
+                            specificDelivery = await getNotDelivered(deliveryInvoice[j]._id);
+                            date = new Date(specificDelivery.deliveryDate);
 
-                        delivery = {
-                            _id: specificDelivery._id,
-                            invoice_id: specificDelivery.invoice_id,
-                            invoiceNum: deliveryInvoice[j].invoiceID,
-                            customerName: await getSpecificCustomer(deliveryInvoice[j].customerID),
-                            paymentStatus: await getSpecificInvoiceStatus(deliveryInvoice[j].statusID),
-                            amount: numberWithCommas(parseFloat(deliveryInvoice[j].total).toFixed(2)), 
-                            deliveryDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
-                            deliveryPersonnel: await getEmployeeInfo(specificDelivery.deliveryPersonnel)
-                        };
-                        deliveryInfo.push(delivery);
+                            delivery = {
+                                _id: specificDelivery._id,
+                                invoice_id: specificDelivery.invoice_id,
+                                invoiceNum: deliveryInvoice[j].invoiceID,
+                                customerName: await getSpecificCustomer(deliveryInvoice[j].customerID),
+                                paymentStatus: await getSpecificInvoiceStatus(deliveryInvoice[j].statusID),
+                                amount: numberWithCommas(parseFloat(deliveryInvoice[j].total).toFixed(2)), 
+                                deliveryDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
+                                deliveryPersonnel: await getEmployeeInfo(specificDelivery.deliveryPersonnel)
+                            };
+                            deliveryInfo.push(delivery);
+                        }
                     }
                     
                 }

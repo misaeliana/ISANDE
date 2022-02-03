@@ -6,6 +6,7 @@
         <meta name="keyword" content="Moderna, Purchase Order List">
         <link rel="stylesheet" type="text/css" href="../css/general.css">
         <link rel="stylesheet" type="text/css" href="../css/list.css">
+        <link rel="stylesheet" type="text/css" href="../css/information.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -30,22 +31,21 @@
             <div class="fixed-div">
                 <h1 class="bold" style="padding-bottom: 10px;"> Generate Purchase Order </h1>
                 <div> 
-                    <h3 class ="bold">Items that are Low in Stock / Out of Stock</h3>
+                    <h3 class ="bold">Low in Stock & Out of Stock Items</h3>
                     <div style="height: 10px"></div>
                 </div>
+                 <label for="dropdown-category" style="margin-right: 10px">Item Category</label>
+                <select id="dropdown-category" class="dropdown">
+                    <option value="no-selected">All</option>
+                    {{#each itemCategories}}
+                        <option value="{{_id}}">{{category}}</option>
+                    {{/each}}
+                </select>
+                 <div style="height: 20px"></div>
             </div>
 
-             <label for="dropdown-category" style="margin-right: 10px">Item Category</label>
-            <select id="dropdown-category" class="dropdown">
-                <option value="no-selected">All</option>
-                {{#each itemCategories}}
-                    <option value="{{_id}}">{{category}}</option>
-                {{/each}}
-            </select>
-            <br><br>
-
                 <table class="table">
-                    <thead class="table-head">
+                    <thead class="table-head" style="top: 290px;">
                         <tr>
                             <th>Item Description</th>
                             <th style="width: 100px;">Supplier</th>
@@ -61,7 +61,7 @@
                                 <td class="itemDescription">{{itemDescription}}</td>
                                 <td style="display:none" class="itemCategory">{{category}}</td>
                                 <td class="supplier">
-                                    <select class="dropdown dropdown-supplier form-control" style="width: 300px" disabled>
+                                    <select class="dropdown-supplier form-control" style="width: 300px" disabled>
                                         <option value="no-selected">Select Supplier</option>
                                         {{#each suppliers}}
                                             <option value="{{_id}}">{{name}}</option>
@@ -70,7 +70,7 @@
                                 </td>
                                 <td><input type="number" value="{{EOQ}}" class="quantity form-control" style="text-align: right;" disabled></td>
                                 <td class="unit">
-                                    <select class="dropdown dropdown-unit form-control" style="width: 200px;"disabled>
+                                    <select class="dropdown-unit form-control" style="width: 200px;"disabled>
                                         <option value="no-selected">Select Unit</option>
                                     </select>
                                 </td>
@@ -82,13 +82,9 @@
                     </tbody>
                 </table>
 
-                <div style="display: flex"> 
-                        <div class="btn-cancel-invoice"><div class="btn-cancel-invoice"><button class="btn-light-grey" id="btn-cancel-PO" style="margin-bottom: 10px;">Cancel</button></div>
-                    </div>
-                           
-                    <div class="btn-export-invoice">
-                        <button class="btn-light-blue" id="btn-generate-PO" style="margin-bottom: 10px; position:absolute; right:5%; background-color:#b3b3b3" disabled>Generate</button>
-                    </div> 
+                <div style="display: flex;">
+                    <div style="width: 50%"><div class="btn-cancel-invoice"><button class="btn-light-grey"  id="btn-cancel-PO"  style="margin-bottom: 10px;">Cancel</button></div></div>
+                    <div class="btn-save-invoice btn-status"><button class="btn-light-blue" id="btn-generate-PO" style="margin-bottom: 10px; background-color:#b3b3b3" disabled>Generate</button></div>
                 </div>
 
                 <div style="height: 20px"></div>
