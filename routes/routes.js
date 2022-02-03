@@ -3,6 +3,8 @@ const express = require('express');
 
 const router = express.Router();
 
+const controller = require('../controllers/controller.js');
+
 const customerController = require('../controllers/customerController.js');
 
 const employeeController = require('../controllers/employeeController.js');
@@ -20,6 +22,10 @@ const manualCountController = require('../controllers/manualCountController.js')
 const reportController = require('../controllers/reportController.js');
 
 const loginController = require('../controllers/loginController.js');
+
+router.get('/favicon.ico', controller.getFavicon);
+
+router.get('/', controller.getIndex);
 
 //--ACCOUNT--
 router.get('/login', loginController.getLogin);
