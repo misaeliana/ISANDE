@@ -21,6 +21,10 @@ const reportController = require('../controllers/reportController.js');
 
 const loginController = require('../controllers/loginController.js');
 
+router.get('/favicon.ico', controller.getFavicon);
+
+router.get('/', controller.getIndex);
+
 //--ACCOUNT--
 router.get('/login', loginController.getLogin);
 

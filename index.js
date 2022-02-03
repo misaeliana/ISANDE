@@ -99,7 +99,7 @@ app.use(express.urlencoded({extended: true}));
 app.use(express.static('public'));
 
 // define the paths contained in `./routes/routes.js`
-app.use('/login', routes);
+app.use('/', routes);
 
 
 

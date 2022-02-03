@@ -17,7 +17,7 @@ const controller = {
         as defined in `../routes/routes.js`
     */
     getIndex: function (req, res) {
-        res.redirect('/customerList');
+        res.redirect('/login');
     },
 
 
