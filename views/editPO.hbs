@@ -121,7 +121,7 @@
 
             <!--MODAL FOR CHANGING SUPPLIERS--->
             <div class="modal fade" id="modal-change-item-supplier" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-dialog modal-dialog-centered" role="document" style="width:50%">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h3 class="modal-title" id="exampleModalLongTitle">Change Item Suppliers</h3>
@@ -135,7 +135,7 @@
                                 <tr>
                                     <th>Item Description</th>
                                     <th>Quantity</th>
-                                    <th>Unit</th>
+                                    <th style="width: 90px;">Unit</th>
                                     <th>Supplier</th>
                                 </tr>
                             </thead>
@@ -322,7 +322,7 @@
                              $('#text-warning-new-PO').text("Item already exists");
                          } else {
                             $('#table-poItem').append(
-                                `<tr>
+                                `<tr class="itemRow">
                                     <td class="classItemDescription">${itemDesc}</td>
                                     <td><input class="classQty form-control" type="number" style="text-align:right; width: 200px;" value="${qty}"</td>
                                     <td class="classUnit">${unit}</td>
@@ -702,18 +702,15 @@
                 })
 
                 $('#btn-change-supplier-close').click(function(result) {
-                    $('#table-change-item-supplier-body').each(function() {
+                    $('#table-change-item-supplier-body > tr').each(function() {
                         var itemDesc = $(this).find('.change-supplier-itemDesc').text()
                         var qty = $(this).find('.change-supplier-qty').val()
                         var unit = $(this).find('.change-supplier-unit').text();
-                        $('#table-poItem').append(`
-                            <tr>
+                        $('#table-poItem-body').append(`
+                            <tr class="itemRow">
                                 <td class="classItemDescription">${itemDesc}</td>
                                 <td><input class="classQty form-control" style="text-align: right; width: 200px" type="number" value="${qty}"</td>
                                 <td class="classUnit">${unit}</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
                                 <td style="text-align: right;"> <button class="delete-button delete-item-btn"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button> </td>
                             </tr>`)
                         $(this).remove();

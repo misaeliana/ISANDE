@@ -186,7 +186,11 @@
                                     <button class="btn-light-blue" id="btn-edit-po" onclick="document.location.href='/editPO/{{poInfo._id}}'">Edit</button><br>
                                 </div>
                             </div>
-                                <div class="btn-export-invoice"><button class="btn-dark-blue" id="btn-export-invoice">Export</button></div>
+                                <div class="btn-export-invoice" id="div-export">
+                                    <a id="download-link" href="" download></a>
+                                    <button class="btn-dark-blue" id="btn-export-invoice">Export</button>
+                                    
+                                </div>
                         {{else if released}}
                              <div class="btn-export-invoice"><button class="btn-light-blue" id="btn-save-invoice" onclick="document.location.href='/editPO/{{poInfo._id}}'" style="margin-bottom: 10px;">Receive Items</button></div>
                         {{else}}
@@ -231,6 +235,8 @@
    
                         $.post('/updatePOStatus', {poID}, function (result) {
                             $.get('/exportPO', {supplierString, poItemsString, poNumber, date}, function(result) {
+                                $('#download-link').attr('href', '/documents/'+result)
+                                $('#download-link')[0].click()
                                 window.location.reload()
                             })
                         });

@@ -27,6 +27,8 @@ router.get('/favicon.ico', controller.getFavicon);
 
 router.get('/', controller.getIndex);
 
+router.get('/documents/:fileName', controller.download)
+
 //--ACCOUNT--
 router.get('/login', loginController.getLogin);
 

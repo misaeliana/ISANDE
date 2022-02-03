@@ -883,16 +883,12 @@ const purchaseOrderController = {
 
 		var temp_fDate0 = req.query.date.split(",");;
 		var temp_fDate = temp_fDate0[0].split("/")
-		var temp_fTime = temp_fDate0[1].split(":")
 		var fDate = "";	
-		var fTime = "";
 		for (var i=0; i<temp_fDate.length; i++)
 			fDate += temp_fDate[i] + "_";
-		for (var i=0; i<temp_fTime.length-1	; i++)
-			fTime += temp_fTime[i] + "_";
 
 
-		var fileName = fDate + fTime + fsupplierName;
+		var fileName = fDate + fsupplierName + '.docx';
 
 		//for creating purchase order in docx
 		// Load the docx file as binary content
@@ -920,9 +916,13 @@ const purchaseOrderController = {
 
 		const buf = doc.getZip().generate({ type: "nodebuffer" });
 
-		fs.writeFileSync(path.resolve("documents", fileName+".docx"), buf);
+		if (!fs.existsSync(path.resolve('documents')))
+			fs.mkdirSync('documents');
 
-		res.sendStatus(200)
+		fs.writeFileSync(path.resolve("documents", fileName), buf);
+
+		res.send(fileName)
+
 	},
 
 	getItemUnitsPO: function(req, res) {
