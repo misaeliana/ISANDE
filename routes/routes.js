@@ -3,6 +3,8 @@ const express = require('express');
 
 const router = express.Router();
 
+const controller = require('../controllers/controller.js');
+
 const customerController = require('../controllers/customerController.js');
 
 const employeeController = require('../controllers/employeeController.js');
