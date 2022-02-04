@@ -265,9 +265,13 @@ router.get('/getCustomerInvoices', reportController.getCustomerInvoicesReport);
 
 router.get('/getFilteredCustomerInvoices', reportController.getFilteredCustomerInvoices);
 
+router.get('/exportSalesPerCustomer', reportController.exportSalesPerCustomer);
 
+router.get('/exportSales', reportController.exportSales)
 
+router.get('/exportSalesPerformance', reportController.exportSalesPerformance)
 
+router.get('/exportPurchases', reportController.exportPurchases)
 
 //NEW STUFF
 

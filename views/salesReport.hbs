@@ -41,7 +41,7 @@
                         <tr>
                             <th>Date</th>
                             <th>Invoice #</th>
-                            <th>Subtotal</th>
+                            <th>Gross Total</th>
                             <th>Discount</th>
                             <th>Total</th>
                         </tr>
@@ -51,7 +51,7 @@
                             <tr>
                                 <td>{{date}}</td>
                                 <td>{{invoiceID}}</td> <!--right align??--> 
-                                <td style="text-align: right;">₱ {{subtotal}}</td>
+                                <td style="text-align: right;">₱ {{gross}}</td>
                                 <td style="text-align: right;">₱ {{discount}}</td>
                                 <td style="text-align: right;">₱ {{total}}</td>
                             </tr>
@@ -63,6 +63,7 @@
                     <div class="summary-info-container"><div id="sales-total" class="summary-total-info">₱ {{total}}</div></div>
                 </div>
                 <div class="btn-new-PO">
+                    <a id="download-link" href="" download></a>
                     <button class="btn-dark-blue" id="btn-export" style="margin-top: 10px; margin-bottom: 10px;">Export</button>
                 </div> 
             </div>
@@ -121,6 +122,16 @@
                         }
                     }
                 });
+
+                $('#btn-export').click(function() {
+                    var startDate = $("#start-date").val();
+                    var endDate = $("#end-date").val();
+
+                    $.get('/exportSales', {startDate, endDate}, function(result) {
+                        $('#download-link').attr('href', '/documents/'+result)
+                        $('#download-link')[0].click()
+                    })
+                })
             })
         </script>
     </body>

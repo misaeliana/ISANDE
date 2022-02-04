@@ -262,7 +262,10 @@
 
                     {{#compare invoiceInfo.status "!=" "Void"}}
                         <div class="btn-export-invoice" style="margin-bottom: 10px"><button class="btn-light-blue" id="return">Return</button></div>
-                        <div class="btn-export-invoice"><button class="btn-dark-blue" id="btn-export-invoice">Export</button></div>
+                        <div class="btn-export-invoice">
+                            <a id="download-link" href="" download></a>
+                            <button class="btn-dark-blue" id="btn-export-invoice">Export</button>
+                        </div>
                     {{/compare}}
 
                     <div style="height: 20px"></div>
@@ -322,7 +325,8 @@
                     var invoiceID = address[address.length -1]
 
                     $.get('/exportInvoice', {invoiceID}, function(result) {
-
+                        $('#download-link').attr('href', '/documents/'+result)
+                        $('#download-link')[0].click()
                     })
                 })
                 

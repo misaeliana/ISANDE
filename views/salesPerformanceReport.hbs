@@ -83,12 +83,17 @@
                     <div class="summary-info-container"><div id="sales-performance-total" class="summary-total-info">₱ {{overallTotal}}</div></div>
                 </div>
                 <div class="btn-new-PO">
+                    <a id="download-link" href="" download></a>
                     <button class="btn-dark-blue" id="btn-export" style="margin-top: 10px; margin-bottom: 10px;">Export</button>
                 </div> 
             </div>
         </div>
         <script>
             $(document).ready(function() {
+                function numberWithCommas (x) {
+                    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                }
+
                 function filter(result) {
                     $("#table-sales-performance tbody tr").remove();
 
@@ -102,13 +107,13 @@
                                         <td>${result[i].description}</td>
                                         <td style="text-align: right;">${result[i].unitsSold}</td>
                                         <td>${result[i].UOM}</td>
-                                        <td style="text-align: right;">₱ ${result[i].total}</td>
+                                        <td style="text-align: right;">₱ ${numberWithCommas(result[i].total)}</td>
                                     </tr>`
                             );
 
                             total +=  parseFloat(result[i].total);
                         }
-                        $("#sales-performance-total").text("₱ " + total.toFixed(2));
+                        $("#sales-performance-total").text("₱ " + numberWithCommas(parseFloat(total).toFixed(2));
                     }
                 }
 
@@ -150,6 +155,16 @@
                         }
                     }
                 });
+
+                 $('#btn-export').click(function() {
+                    var startDate = $("#start-date").val();
+                    var endDate = $("#end-date").val();
+
+                    $.get('/exportSalesPerformance', {startDate, endDate}, function(result) {
+                        $('#download-link').attr('href', '/documents/'+result)
+                        $('#download-link')[0].click()
+                    })
+                })
             })
         </script>
     </body>

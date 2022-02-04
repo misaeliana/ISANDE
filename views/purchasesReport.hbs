@@ -63,6 +63,7 @@
                     <div class="summary-info-container"><div id="purchases-total" class="summary-total-info">₱ {{total}}</div></div>
                 </div>
                 <div class="btn-new-PO">
+                    <a id="download-link" href="" download></a>
                     <button class="btn-dark-blue" id="btn-export" style="margin-top: 10px; margin-bottom: 10px;">Export</button>
                 </div> 
             </div>
@@ -71,6 +72,11 @@
         <script>
             
             $(document).ready(function() {
+
+                function numberWithCommas (x) {
+                    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                }
+
                  $("#purchase-report-button").click(function() {
                     var startDate = $("#start-date").val();
                     var endDate = $("#end-date").val();
@@ -101,20 +107,19 @@
                                 var total = 0;
 
                                 for (var i = 0; i < result.length; i++) {
-                                    var amountPaid = result[i].amountPaid.toLocaleString('en-US')
                                     $("#table-purchase-report-body").append(
                                         `  <tr> 
                                             <td>${result[i].dateMade}</td>
                                             <td style="text-align: right;">${result[i].poNumber}</td>
                                             <td>${result[i].supplier}</td>
                                             <td>${result[i].dateReceived}</td>
-                                            <td style="text-align: right;">₱ ${amountPaid}</td>
+                                            <td style="text-align: right;">₱ ${numberWithCommas(parseFloat(result[i].amountPaid).toFixed(2))}</td>
                                         </tr>`
                                     );
                                     total += parseFloat(result[i].amountPaid);
                                 }
 
-                                $("#purchases-total").text("₱ " + total.toLocaleString('en-US'));
+                                $("#purchases-total").text("₱ " + numberWithCommas(parseFloat(total).toFixed(2)));
 
                                     $.get("/getDateToday", {}, function (result2) {
                                         $("#date-today").text(result2);
@@ -123,6 +128,16 @@
                         }
                     }
                 });
+
+                 $('#btn-export').click(function() {
+                    var startDate = $("#start-date").val();
+                    var endDate = $("#end-date").val();
+
+                    $.get('/exportPurchases', {startDate, endDate}, function(result) {
+                        $('#download-link').attr('href', '/documents/'+result)
+                        $('#download-link')[0].click()
+                    })
+                })
             })
         </script>
     </body>

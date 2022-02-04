@@ -1291,6 +1291,8 @@ const invoiceController = {
             var invoiceID = req.query.invoiceID;
             var invoiceInfo = await getInvoice(invoiceID);
             var temp_invoiceItems = await getInvoiceItems(invoiceID);
+            var delivery = await getDeliveryInformation(invoiceID)
+            var address = await getCustomerAddress(delivery.customerAddress)
             var items = [];
             for (var i=0; i<temp_invoiceItems.length; i++) {
                 var itemUnitInfo = await getItemUnitInfo(temp_invoiceItems[i].itemUnitID)
@@ -1321,7 +1323,7 @@ const invoiceController = {
             //for (var i=0; i<customerName.length; i++)
                 customerName += temp_customerName.replace(" ", "_");
 
-            var fileName = fDate + customerName;
+            var fileName = fDate + customerName +".docx";
 
             //for creating purchase order in docx
             // Load the docx file as binary content
@@ -1339,8 +1341,8 @@ const invoiceController = {
             if (await getSpecificCustomer(invoiceInfo.customerID) == undefined) {
                 // render the document
                 doc.render({
-                    //invoiceNumber: req.query.poNumber,
                     date: temp_fDate0[0],
+                    invoiceNumber: invoiceInfo.invoiceID,
                     customer_name: invoiceInfo.customerID,
                     address: "",
                     contact_number: "",
@@ -1351,10 +1353,10 @@ const invoiceController = {
                 var customerInfo = await getCustomerInfo(invoiceInfo.customerID)
                 // render the document
                 doc.render({
-                    //invoiceNumber: req.query.poNumber,
                     date: temp_fDate0[0],
+                    invoiceNumber: invoiceInfo.invoiceID,
                     customer_name: customerInfo.name,
-                    address: customerInfo.address,
+                    address: address,
                     contact_number: customerInfo.number,
                     items:items
                 });
@@ -1363,10 +1365,12 @@ const invoiceController = {
 
             const buf = doc.getZip().generate({ type: "nodebuffer" });
 
-            fs.writeFileSync(path.resolve("documents", fileName+".docx"), buf);
-            var dlFileName = '/documents/' + fileName + '.docx';
+            if (!fs.existsSync(path.resolve('documents')))
+            fs.mkdirSync('documents');
+
+            fs.writeFileSync(path.resolve("documents", fileName), buf);
             
-            res.sendStatus(200);
+            res.send(fileName);
 
         }
 
