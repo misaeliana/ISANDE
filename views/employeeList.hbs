@@ -88,7 +88,7 @@
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="modal-btn-grey" data-dismiss="modal">Close</button>
+                        <button type="button" class="modal-btn-grey" id="btn-add-new-employee-close"  data-dismiss="modal">Close</button>
                         <button type="button" class="modal-btn-light-blue" id="btn-add-new-employee">Save</button>
                     </div>
                 </div>
@@ -119,6 +119,7 @@
         <script>
 
             $(document).ready(function() {
+                resetAll();
 
                 $(".link").click(function() {
                     window.location = $(this).data("href");
@@ -224,6 +225,36 @@
                     else 
                         return 0;
                 }
+
+                function resetAll () {
+                    $('#employee-name').css("border", "1px solid #DDDDDD");
+                    $('#employee-username').css("border", "1px solid #DDDDDD");
+                    $('#password').css("border", "1px solid #DDDDDD");
+                    $('#contact-number').css("border", "1px solid #DDDDDD");
+                    $('#position').css("border", "1px solid #DDDDDD");
+
+                    $('#error-new-employee-name').text("");
+                    $('#error-new-employee-username').text("");
+                    $('#error-employee-password').text("");
+                    $('#error-contact-number').text("");
+                    $('#error-employee-position').text("");
+
+                    var name = $('#employee-name').val("");
+                    var username = $('#employee-username').val("");
+                    var password = $('#employee-password').val("");
+                    var number = $('#contact-number').val("");
+
+                    var position = "no-selected";
+                    $("#dropdown-employee-position option:contains(" + position + ") ").attr('selected', 'selected');
+                }
+
+                $('#btn-new-employee').click(function() {
+                    resetAll();
+                })
+
+                $('#btn-add-new-employee').click(function() {
+                    resetAll();
+                })
 
 
                 $('#btn-add-new-employee').click(function() {

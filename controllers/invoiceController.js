@@ -656,6 +656,7 @@ const invoiceController = {
                     invoice_id: uneditedInvoice._id,
                     invoiceNum: uneditedInvoice.invoiceID,
                     deliveryDate: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
+                    deliveryPersonnel: await getEmployeeName(delivery.deliveryPersonnel),
                     deliveryNotes: delivery.deliveryNotes,
                     paymentStatus: await getSpecificInvoiceStatus(uneditedInvoice.statusID)
                 };
