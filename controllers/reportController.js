@@ -645,10 +645,11 @@ const reportController = {
             //no date filter, base start and end date on invoices
             if ((startDate == null || startDate == "") || (endDate == null || endDate == "")) {
                 var fstartDate = invoices[0].invoiceDate
-                var fendDate = invoices[invoices.length-1].invoiceDate
+                var today= new Date()
+                var fendDate = today.getMonth() + 1 + "/" + today.getDate() + "/" + today.getFullYear()
             }
 
-            var fileName = "sales_" + req.query.customerName + ".docx"
+            var fileName = "Sales_" + req.query.customerName + ".docx"
 
             const content = fs.readFileSync(
                 path.resolve("files", "salesPerCustomer_template.docx"), "binary"
@@ -739,10 +740,11 @@ const reportController = {
              //no date filter, base start and end date on invoices
             if ((startDate == null || startDate == "") || (endDate == null || endDate == "")) {
                 var fstartDate = formattedInvoices[0].ddate
-                var fendDate = formattedInvoices[invoices.length-1].ddate
+                var today= new Date()
+                var fendDate = today.getMonth() + 1 + "/" + today.getDate() + "/" + today.getFullYear()
             }
 
-            var fileName = "sales_report_" + fileNameDate + ".docx"
+            var fileName = "Sales_Report_" + fileNameDate + ".docx"
 
             const content = fs.readFileSync(
                 path.resolve("files", "salesReports_template.docx"), "binary"
@@ -826,8 +828,10 @@ const reportController = {
                             }
                         }
                         else {
-                            unitsSold += parseFloat(invoiceItems[k].quantity);
-                            itemTotal += (invoiceItems[k].quantity * (parseFloat(itemUnitInfo.sellingPrice) - invoiceItems[k].discount));
+                            if ((itemUnitInfo.itemID == inventory[i]._id) && (sellingUnits[j].unitID == itemUnitInfo.unitID) && (await checkInvoicePaid(invoiceItems[k].invoice_id) == paidStatus)) {
+                                unitsSold += parseFloat(invoiceItems[k].quantity);
+                                itemTotal += (invoiceItems[k].quantity * (parseFloat(itemUnitInfo.sellingPrice) - invoiceItems[k].discount));
+                            }
                         }
                     }
 
@@ -839,7 +843,7 @@ const reportController = {
                         total: itemTotal
                     }; 
 
-                    overallTotal += parseFloat(item.total);
+                    overallTotal += parseFloat(itemTotal);
                     formattedInventory.push(item);
                 }
             }      
@@ -859,8 +863,8 @@ const reportController = {
             if ((startDate == null || startDate == "") || (endDate == null || endDate == "")) {
                 var invoiceDate = new Date(await getInvoiceDate(invoiceItems[0].invoice_id))
                 var fstartDate = invoiceDate.getMonth() + 1 + "/" + invoiceDate.getDate() + "/" + invoiceDate.getFullYear()
-                var invoiceDate = new Date(await getInvoiceDate(invoiceItems[invoiceItems.length-1].invoice_id))
-                var fendDate = invoiceDate.getMonth() + 1 + "/" + invoiceDate.getDate() + "/" + invoiceDate.getFullYear()
+                var today= new Date()
+                var fendDate = today.getMonth() + 1 + "/" + today.getDate() + "/" + today.getFullYear()
             }
 
             var date = new Date()
@@ -868,7 +872,7 @@ const reportController = {
             fileNameDate = date.getMonth() + 1 + "_" + date.getDate() + "_" + date.getFullYear()
 
 
-            var fileName = "sales_performance_" + fileNameDate + ".docx"
+            var fileName = "Sales_Performance_" + fileNameDate + ".docx"
 
             const content = fs.readFileSync(
                 path.resolve("files", "salesPerformance_template.docx"), "binary"
@@ -960,10 +964,11 @@ const reportController = {
             //no date filter, base start and end date on invoices
             if ((startDate == null || startDate == "") || (endDate == null || endDate == "")) {
                 var fstartDate = purchases[0].dateMade
-                var fendDate = purchases[purchases.length-1].dateMade
+                var today= new Date()
+                var fendDate = today.getMonth() + 1 + "/" + today.getDate() + "/" + today.getFullYear()
             }
             
-            var fileName = "purchases_" + fileNameDate + ".docx"
+            var fileName = "Purchases_" + fileNameDate + ".docx"
 
             const content = fs.readFileSync(
                 path.resolve("files", "purchaseReport_template.docx"), "binary"

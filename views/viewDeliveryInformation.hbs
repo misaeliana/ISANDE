@@ -134,6 +134,7 @@
 
                     <div style="height: 10px"></div>
 
+                {{#if delivery}}
                     <div class="btn-export-invoice"><button class="btn-light-blue" id="btn-confirm-delivery" data-toggle="modal" data-target="#modal-confirm-delivery">Confirm Delivery</button></div>
 
                     <div style="height: 20px"></div>
@@ -155,6 +156,7 @@
                     </div>
                     </div>
                 </div>
+                {{/if}}
         </div>
          <script>
            $(document).ready(function() {
