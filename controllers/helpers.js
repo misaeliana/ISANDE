@@ -722,6 +722,12 @@ module.exports = function() {
 	this.getItemCategories = function() {
 		return new Promise((resolve, reject) => {
 			db.findMany(ItemCategories, {}, '', function(result){
+				result.sort(function(a, b) {
+					var textA = a.category.toUpperCase();
+					var textB = b.category.toUpperCase();
+					//syntax is "condition ? value if true : value if false"
+					return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+				});
 				resolve(result)
 			})
 		})

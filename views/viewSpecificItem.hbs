@@ -24,7 +24,7 @@
             {{> managerPartial }}
         {{/compare}}
 
-        {{#compare position "==" "Cashier"}} 
+        {{#compare position "==" "Sales"}} 
             {{> cashierPartial }}
         {{/compare}}
 
@@ -86,7 +86,7 @@
             </div> 
             <div style="height: 10px"></div>
 
-            {{#compare position "!=" "Cashier"}}
+            {{#compare position "!=" "Sales"}}
             <div><button class="btn-light-blue" id="btn-edit-details" style="float: right; margin-bottom: 10px;" data-toggle="modal" data-target="#modal-edit-item">Edit Details</button></div>
             {{/compare}}
 
@@ -162,7 +162,7 @@
             <div style="margin-top: 30px;">
                 <div style="display: flex;">
                     <div style="width: 50%"><h3 class ="bold h3-left">Selling Units</h3></div>
-                   {{#compare position "!=" "Cashier"}}
+                   {{#compare position "!=" "Sales"}}
                         <div class="btn-status"><button class="btn-light-blue" id="btn-selling-unit" data-toggle="modal" data-target="#modal-add-selling-unit">Add Selling Unit</button></div>
                     {{/compare}}
                 </div>
@@ -245,13 +245,13 @@
                         <td>Quantity</td>
                         <td>Selling Price</td>
                         <td>Available Stock</td>
-                        {{#compare position "!=" "Cashier"}} 
+                        {{#compare position "!=" "Sales"}} 
                         <td></td>
                         {{/compare}}
                     </tr>
                 </thead>
                 <tbody>
-                    {{#compare position "!=" "Cashier"}} 
+                    {{#compare position "!=" "Sales"}} 
                         {{#each itemUnits}}
                             <tr>
                                 <td class="item-unit-name">{{unitName}}</td>
@@ -263,7 +263,7 @@
                         {{/each}}
                     {{/compare}}
 
-                    {{#compare position "==" "Cashier"}} 
+                    {{#compare position "==" "Sales"}} 
                         {{#each itemUnits}}
                             <tr>
                                 <td class="item-unit-name">{{unitName}}</td>
@@ -281,7 +281,7 @@
 
             <br>
 
-           {{#compare position "!=" "Cashier"}} 
+           {{#compare position "!=" "Sales"}} 
 
             <hr>
             <div style="margin-top: 50px;">

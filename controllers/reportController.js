@@ -209,6 +209,8 @@ const reportController = {
 
                 }
 
+                
+
                 //console.log(formattedInventory);
 
                 res.render('inventoryPerformanceReport', {formattedInventory, today});
@@ -300,11 +302,10 @@ const reportController = {
             else 
                 formattedInventory.sort((a, b) => (a.unitsSold > b.unitsSold) ? 1 : -1);
 
-            formattedInventory = formattedInventory.slice(0, numberFilter);
-
             for (var k = 0; k < formattedInventory.length; k++)
                 formattedInventory[k].rank = k + 1;
 
+            
             res.send(formattedInventory);
         }
 
@@ -1002,6 +1003,156 @@ const reportController = {
         }
 
         getInfo();
+    },
+
+    exportInventoryPerformance: function(req, res) {
+        function getItemCategory(itemID) {
+            return new Promise((resolve, reject) => {
+                db.findOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'categoryID', function(result) {
+                    resolve(result);
+                });
+            });
+        }
+
+        function getRetailQuantity(itemID) {
+            return new Promise((resolve, reject) => {
+                db.findOne(Items, {_id:itemID, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'retailQuantity', function (result) {
+                    resolve(result.retailQuantity)
+                })
+            })
+        }
+
+        async function convert(itemID, invoiceQuantity) {
+            var retailQuantity = await getRetailQuantity(itemID);
+            console.log(retailQuantity)
+            var convertedQuantity = invoiceQuantity/retailQuantity;
+            return parseFloat(convertedQuantity);
+        }
+        
+        async function getInformation() {
+            var startDate = req.query.startDate
+            var endDate = req.query.endDate
+
+            var today = new Date().toLocaleString('en-US');
+            var allInventory = await getAllInventoryItems();
+            var inventory = await filterInventory(allInventory);    //inventory items with no duplicate
+            var formattedInventory = [];
+            var categories = await getItemCategories();
+            var invoiceItems = await getAllInvoiceItems();
+
+            var paidStatus = await getSpecificInvoiceStatusID("Paid");
+
+            //there is date filter
+            if ((startDate != null && startDate!="") || (endDate != null && endDate!="")) {
+                startDate = new Date(req.query.startDate)
+                endDate = new Date(req.query.endDate)
+                startDate.setHours(0,0,0,0);
+                endDate.setHours(0,0,0,0);
+
+                var fstartDate = startDate.getMonth() + 1 + "/" + startDate.getDate() + "/" + startDate.getFullYear()
+                var fendDate = endDate.getMonth() + 1 + "/" + endDate.getDate() + "/" + endDate.getFullYear()
+            }    
+
+
+            for (var a=0; a<categories.length; a++) {
+                console.log(categories[a])
+                var categoryItems = [];
+
+                var itemCount = 0;
+
+                for (var j = 0; j < inventory.length; j++) {
+                    var unitsSold = 0;
+
+                    if (categories[a]._id == inventory[j].categoryID) {
+
+                        // get number of units sold
+                        for (var k = 0 ; k < invoiceItems.length; k++) {
+
+                            var itemUnitInfo = await getItemUnitInfo(invoiceItems[k].itemUnitID);
+
+                                if (await getItemDescription(itemUnitInfo.itemID) == inventory[j].itemDescription && (await checkInvoicePaid(invoiceItems[k].invoice_id) == paidStatus)) {
+                                    //no need conversion
+                                    if (itemUnitInfo.unitID == inventory[j].unitID)
+                                        unitsSold += parseFloat(invoiceItems[k].quantity);
+                                    else
+                                        unitsSold += await convert(itemUnitInfo.itemID, invoiceItems[k].quantity);
+                                }
+                        }
+
+                        var item = {
+                            rank: 1,
+                            description: inventory[j].itemDescription,
+                            unitsSold: parseFloat(unitsSold).toFixed(2),
+                            UOM: await getSpecificUnit(inventory[j].unitID)
+                        };
+                        categoryItems.push(item);
+                    }
+                }
+
+                categoryItems.sort((a, b) => (a.unitsSold > b.unitsSold) ? -1 : 1);
+
+                for (var y=0; y<categoryItems.length; y++) {
+                    categoryItems[y].rank = y + 1;
+                    //console.log(toBeArranged[y]);
+                }   
+
+
+                var category = {
+                    categoryName: categories[a].category,
+                    items: categoryItems
+                }
+                formattedInventory.push(category)
+            }
+
+            var date = new Date()
+            dateGenerated = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear()
+            fileNameDate = date.getMonth() + 1 + "_" + date.getDate() + "_" + date.getFullYear()
+
+            //no date filter, base start and end date on invoices
+            if ((startDate == null || startDate == "") || (endDate == null || endDate == "")) {
+                var invoiceDate = new Date(await getInvoiceDate(invoiceItems[0].invoice_id))
+                var fstartDate = invoiceDate.getMonth() + 1 + "/" + invoiceDate.getDate() + "/" + invoiceDate.getFullYear()
+                var today= new Date()
+                var fendDate = today.getMonth() + 1 + "/" + today.getDate() + "/" + today.getFullYear()
+            }
+
+        
+            var fileName = "Inventory_Performance" + fileNameDate + ".docx"
+
+            const content = fs.readFileSync(
+                path.resolve("files", "inventoryPerformance_template.docx"), "binary"
+            );
+
+            const zip = new PizZip(content);
+            
+            const doc = new Docxtemplater(zip, {
+                paragraphLoop: true,
+                linebreaks: true,
+            });
+
+
+            console.log(formattedInventory)
+            // render the document
+            doc.render({
+                dateGenerated: dateGenerated,
+                startDate: fstartDate,
+                endDate: fendDate,
+                categories: formattedInventory
+            });
+
+            const buf = doc.getZip().generate({ type: "nodebuffer" });
+
+            if (!fs.existsSync(path.resolve('documents')))
+                fs.mkdirSync('documents');
+
+            fs.writeFileSync(path.resolve("documents", fileName), buf);
+
+            console.log(fileName)
+
+            res.send(fileName)
+        }
+
+        getInformation();
     }
 };
 

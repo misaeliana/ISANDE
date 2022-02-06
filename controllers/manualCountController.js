@@ -150,7 +150,7 @@ const manualCountController = {
 
                     shrinkagesInfo.push(shrinkage);
                 }
-                res.render('shrinkagesList', {shrinkagesInfo});
+                //res.render('shrinkagesList', {shrinkagesInfo});
                 
                 if(req.session.position == "Inventory and Purchasing"){
                     var inventoryAndPurchasing = req.session.position;

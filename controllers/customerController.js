@@ -18,7 +18,7 @@ const customerController = {
 		if (req.session.position == null)
 			res.redirect('/login')
 
-		else if(req.session.position != "Cashier" && req.session.position != "Manager"){
+		else if(req.session.position != "Sales" && req.session.position != "Manager"){
             res.redirect('/dashboard');
         }
         else{
@@ -47,7 +47,7 @@ const customerController = {
 					//res.render('customerList', {customers});	
 
 
-				if(req.session.position == "Cashier"){
+				if(req.session.position == "Sales"){
 					var cashier = req.session.position;
 					res.render('customerList', {customers, cashier});	
 				}
@@ -102,7 +102,7 @@ const customerController = {
 		if (req.session.position == null)
 			res.redirect('/login')
 
-		else if(req.session.position != "Cashier" && req.session.position != "Manager"){
+		else if(req.session.position != "Sales" && req.session.position != "Manager"){
             res.redirect('/dashboard');
         }
         else{
@@ -131,7 +131,7 @@ const customerController = {
 				var unpaidInvoices = [];
 				var totalAmountDue = 0;
 				for (var i=0; i<temp_unpaidInvoices.length; i++) {
-					var temp_date = new Date(temp_customerInvoices[i].date);
+					var temp_date = new Date(temp_unpaidInvoices[i].date);
 					var total = temp_unpaidInvoices[i].total;
 					var amountPaid = await getAmountPaid(temp_unpaidInvoices[i]._id);
 					var due = total - amountPaid
@@ -144,7 +144,7 @@ const customerController = {
 						due: numberWithCommas(parseFloat(due).toFixed(2)),
 					};
 
-					totalAmountDue += parseFloat(due).toFixed(2);
+					totalAmountDue += parseFloat(due);
 					unpaidInvoices.push(invoice);
 				}
 				totalAmountDue = numberWithCommas(parseFloat(totalAmountDue).toFixed(2));
@@ -152,7 +152,7 @@ const customerController = {
 				var paymentMethods = await getOnAccountPaymentMethods();
 
 				if (unpaidInvoices.length==0) {
-					if(req.session.position == "Cashier"){
+					if(req.session.position == "Sales"){
 						var cashier = req.session.position;
 						res.render('customerInformation', {customerInfo, customerAddress, customerInvoices, totalAmountDue, cashier});
 					}
@@ -164,7 +164,7 @@ const customerController = {
 					//res.render('customerInformation', {customerInfo, customerAddress, customerInvoices, totalAmountDue})
 				}
 				else {
-					if(req.session.position == "Cashier"){
+					if(req.session.position == "Sales"){
 						var cashier = req.session.position;
 						res.render('customerInformation', {customerInfo, customerAddress, customerInvoices, unpaidInvoices, paymentMethods, totalAmountDue, cashier});
 					}

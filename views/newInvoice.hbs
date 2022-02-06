@@ -679,6 +679,15 @@
                     computeTotal()
                 })
 
+                function itemFound (itemDescription, unit) {
+                    var found = true
+                    $("#table-body-item-list > tr").each(function() {
+                        if ($(this).find('.itemDescription').text() == itemDescription && $(this).find('.unit').text() == unit)
+                            found = false
+                    })
+                    return found
+                }
+
                 $('#addItem').click(function() {
                    var itemDesc = $('#itemDescription').val();
                    var unit = $("#dropdown-item-unit option:selected").text(    )
@@ -700,10 +709,8 @@
                                 var sellingPrice = result.sellingPrice;
                                 //var discountAmount = parseFloat(sellingPrice * dis).toFixed(2);
                                 var totalPrice = parseFloat(quantity * (sellingPrice- discount)).toFixed(2);
-                                var element = $('#table-body-item-list tr').filter(function(){
-                                        return (this.innerHTML.indexOf(itemDesc) != -1 && this.innerHTML.indexOf(unit) != -1);
-                                })
-                                if (element.length){
+
+                                if (!itemFound(itemDesc, unit)){
                                     //alert("element at index already inside!")
                                     //console.log(element)
                                      $('#text-warning-new-invoice').text("Item already exists in cart!");

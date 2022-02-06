@@ -22,7 +22,7 @@
         {{> logoutPartial }}
 
         {{#if inventoryAndPurchasing}}
-            {{> inventoryAndPurchasingPartial }}
+            {{> inventoryAndPurchasingPartial}}
         {{/if}}
 
         {{#if manager}}
@@ -239,6 +239,15 @@
                 return allFilled
             }
 
+            function itemFound (itemDescription, unit) {
+                var found = true
+                $("#table-poItem-body > tr").each(function() {
+                    if ($(this).find('.classItemDescription').text() == itemDescription && $(this).find('.unit').text() == unit)
+                        found = false
+                })
+                return found
+            }
+
 
             $('#addItem').click(function(){
                 var itemDesc = $('#itemDescription').val();
@@ -247,10 +256,7 @@
 
                 //all blanks are filled up
                 if (itemFilled()) {
-                    var element = $('#table-poItem tr').filter(function(){
-                            return (this.innerHTML.indexOf(itemDesc) != -1 && this.innerHTML.indexOf(unit) != -1);
-                    })
-                    if (element.length){
+                    if (!itemFound(itemDesc, unit)){
                         //alert("element at index already inside!")
                         //console.log(element)
                          $('#text-warning-new-PO').text("Item already exists");

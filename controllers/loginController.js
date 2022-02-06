@@ -93,12 +93,14 @@ const loginController = {
 	},
 
 	getDashboard: function (req, res) {
+
+		console.log(req.session.position)
 		var employeeName = req.session.name;
 
 		if(req.session.position == null)
 			res.redirect('/login')
 		
-		else if(req.session.position == "Cashier"){
+		else if(req.session.position == "Sales"){
             var cashier = req.session.position;
             res.render('dashboard', {employeeName, cashier});   
         }

@@ -47,7 +47,7 @@ const invoiceController = {
         if (req.session.position == null)
             res.redirect('/login')
 
-        else if(req.session.position != "Cashier" && req.session.position != "Manager"){
+        else if(req.session.position != "Sales" && req.session.position != "Manager"){
 			res.redirect('/dashboard');
 		}
 		else{
@@ -79,7 +79,7 @@ const invoiceController = {
 
                 //console.log(req.session.position);
 
-                if(req.session.position == "Cashier"){
+                if(req.session.position == "Sales"){
                     var cashier = req.session.position;
                     res.render('invoiceList', {invoicesInfo, cashier}); 
                 }
@@ -97,7 +97,7 @@ const invoiceController = {
         if (req.session.position == null)
             res.redirect('/login');
 
-        else if(req.session.position != "Cashier" && req.session.position != "Manager"){
+        else if(req.session.position != "Sales" && req.session.position != "Manager"){
 			res.redirect('/dashboard');
 		}
 		else{
@@ -202,8 +202,8 @@ const invoiceController = {
                     var customerName = invoice.customerID;
 
                     //res.render('viewInvoice', {invoiceInfo, items, delivery, customerName, paymentMethods, paymentHistory, paymentTotal, amountDue});
-                    if(req.session.position == "Cashier"){
-                        console.log("cashier")
+                    if(req.session.position == "Sales"){
+                        console.log("Sales")
                         var cashier = req.session.position;
                         res.render('viewInvoice', {invoiceInfo, items, delivery, customerName, paymentMethods, paymentHistory, paymentTotal, amountDue, cashier});    
                     }
@@ -217,7 +217,7 @@ const invoiceController = {
                 else {
                     //res.render('viewInvoice', {invoiceInfo, items, delivery, customer, paymentMethods, paymentHistory, paymentTotal, amountDue});
 
-                    if(req.session.position == "Cashier"){
+                    if(req.session.position == "Sales"){
                         var cashier = req.session.position;
                         res.render('viewInvoice', {invoiceInfo, items, delivery, customer, paymentMethods, paymentHistory, paymentTotal, amountDue, cashier});   
                     }
@@ -323,7 +323,7 @@ const invoiceController = {
         if (req.session.position == null)
             res.redirect('/login')
 
-        else if(req.session.position != "Cashier" && req.session.position != "Manager"){
+        else if(req.session.position != "Sales" && req.session.position != "Manager"){
 			res.redirect('/dashboard');
 		}
 		else{
@@ -333,7 +333,7 @@ const invoiceController = {
                 var paymentTypes = await getPaymentOptions();
                 //res.render('newInvoice', {itype,delperson, paymentTypes});
 
-                if(req.session.position == "Cashier"){
+                if(req.session.position == "Sales"){
                     var cashier = req.session.position;
                     res.render('newInvoice', {itype, delperson, paymentTypes, cashier});    
                 }
@@ -871,7 +871,7 @@ const invoiceController = {
         if (req.session.position == null)
             res.redirect('/login')
 
-        else if(req.session.position != "Cashier" && req.session.position != "Manager"){
+        else if(req.session.position != "Sales" && req.session.position != "Manager"){
 			res.redirect('/dashboard');
 		}
 		else{
@@ -920,7 +920,7 @@ const invoiceController = {
                     var customerName = temp_invoiceInfo.customerID; 
                     //res.render('return', {types, invoiceInfo, customerName, paymentTypes, deliveryPersonnel, invoiceItems});
 
-                    if(req.session.position == "Cashier"){
+                    if(req.session.position == "Sales"){
                         var cashier = req.session.position;
                         res.render('return', {types, invoiceInfo, customerName, paymentTypes, deliveryPersonnel, invoiceItems, cashier});   
                     }

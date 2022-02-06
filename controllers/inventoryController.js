@@ -19,7 +19,7 @@ const inventoryController = {
 		if (req.session.position == null)
 			res.redirect('/login');
 
-		else if(req.session.position != "Inventory and Purchasing" && req.session.position != "Manager" && req.session.position != "Cashier"){
+		else if(req.session.position != "Inventory and Purchasing" && req.session.position != "Manager" && req.session.position != "Sales"){
             res.redirect('/dashboard');
 		}
 		
@@ -156,7 +156,7 @@ const inventoryController = {
 		if (req.session.position == null)
 			res.redirect('/login');
 
-		else if(req.session.position != "Inventory and Purchasing" && req.session.position != "Manager" && req.session.position != "Cashier"){
+		else if(req.session.position != "Inventory and Purchasing" && req.session.position != "Manager" && req.session.position != "Sales"){
 			res.redirect('/dashboard');
 		}
 		else{
@@ -530,13 +530,20 @@ const inventoryController = {
 					categoryID: inventoryItems[i].categoryID,
 					category: await getSpecificItemCategory(inventoryItems[i].categoryID),
 					unit: await getSpecificUnit(inventoryItems[i].unitID),
-					quantityAvailable: numberWithCommas(inventoryItems[i].quantityAvailable),
+					quantityAvailable: numberWithCommas(parseFloat(inventoryItems[i].quantityAvailable).toFixed(2)),
 					statusID: inventoryItems[i].statusID,
 					status: textStatus,
 					btn_status: btnStatus
 				};
 				inventory.push(item);
 			}
+
+			inventory.sort(function(a, b) {
+				var textA = a.itemDescription.toUpperCase();
+				var textB = b.itemDescription.toUpperCase();
+				//syntax is "condition ? value if true : value if false"
+				return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+			});
 
 			//console.log(inventory);
 

@@ -715,7 +715,7 @@ const purchaseOrderController = {
 			console.log("new quantity " + newQuantity)
 			
 			//item is still low in stock
-			if (inventoryItem.reorderLevel > newQuantity)
+			if (inventoryItem.reorderLevel >= newQuantity)
 				updateQuantity (poItem.itemID, newQuantity)
 			else
 				updateQuantityInStock(poItem.itemID, newQuantity)

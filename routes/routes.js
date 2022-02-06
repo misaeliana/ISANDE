@@ -273,6 +273,8 @@ router.get('/exportSalesPerformance', reportController.exportSalesPerformance)
 
 router.get('/exportPurchases', reportController.exportPurchases)
 
+router.get('/exportInventoryPerformance', reportController.exportInventoryPerformance)
+
 //NEW STUFF
 
 router.get('/checkSellingUnit', inventoryController.checkSellingUnit)

@@ -639,6 +639,7 @@
                     var needNewPo = false
 
                     $("#table-poItem-body > tr").each(function () {
+                        //quantity received is less than quantity ordered
                         //unit price and qty left blank
                         if (($(this).find('.unitPrice').val() == "" || $(this).find('.quantityReceived').val() == "") && proceed && !asked) {
                             if (confirm("Some items do not have a price or quantity received. A new PO will be created for these items. Do you wish to proceed.")) {
@@ -654,7 +655,7 @@
                                     $(this).find('.quantityReceived').css("border", "2px solid #B00000");
                             }
                         }
-                        //quantity received is less than quantity ordered
+
                         else if (parseInt($(this).find('.classQty').text()) > parseInt($('.quantityReceived').val()) && !asked) {
                              if (confirm("The received quantity for some items is less than the quantity ordered. Do you want a new PO to be created for these items?")) {
                                 asked = true

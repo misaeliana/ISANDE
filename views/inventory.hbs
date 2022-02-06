@@ -24,7 +24,7 @@
             {{> managerPartial }}
         {{/compare}}
 
-        {{#compare position "==" "Cashier"}} 
+        {{#compare position "==" "Sales"}} 
             {{> cashierPartial }}
         {{/compare}}
 
@@ -36,7 +36,7 @@
                         <input type="text" placeholder="Search" name="search" id="search-field">
                         <button type="submit" id="search-button"><i class="fa fa-search" ></i></button>
                     </div>
-                    {{#compare position "!=" "Cashier"}} 
+                    {{#compare position "!=" "Sales"}} 
                         <div><button class="btn-light-blue" id="btn-new-item" style="float: right;" data-toggle="modal" data-target="#modal-new-item">+ New Item</button></div>
                     {{/compare}}
                 </div>

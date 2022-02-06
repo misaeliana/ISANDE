@@ -116,27 +116,45 @@
                             var sortFilter = $('#dropdown-sort').val();
                             var numberFilter = $('#dropdown-number').val();
 
+                            var categoryText= []
                             $('.category').each(function() {
-                                var category = $(this).text();
+                                categoryText.push($(this).text())
+                            })
 
-                                $.get("/getFilteredInventoryPerformanceReport", {startDate: convertedStartDate, endDate: convertedEndDate, category:category, sortFilter: sortFilter, numberFilter: numberFilter}, function (result) {
-                                    
-                                    $(`#table-${category} > tbody`).empty();
+                            for (var i=0; i<categoryText.length; i++){         
 
-                                    for (var i=0; i<result.length; i++) {
-                                        $(`#table-${category} > tbody`).append(`
-                                            <tr>   
-                                                <td>${result[i].rank}</td>
-                                                <td>${result[i].description}</td>
-                                                <td>${result[i].unitsSold}</td>
-                                                <td>${result[i].UOM}</td>
-                                            </tr>
+                             $(`#table-${categoryText[i]} tbody`).remove();                     
+
+                                $.get("/getFilteredInventoryPerformanceReport", {startDate: convertedStartDate, endDate: convertedEndDate, category:categoryText[i], sortFilter: sortFilter, numberFilter: numberFilter}, function (result) {
+                                   console.log(categoryText[i])
+                                   console.log(result)
+
+                                    for (var j=0; j<result.length; j++) {
+                                        $(`#table-${categoryText[i]}`).append(`
+                                            <tbody>
+                                                <tr>   
+                                                    <td>${result[j].rank}</td>
+                                                    <td>${result[j].description}</td>
+                                                    <td>${result[j].unitsSold}</td>
+                                                    <td>${result[j].UOM}</td>
+                                                </tr>
+                                            </tbody>
                                         `)
                                     }
                                 });
-                            })
+                            }
                         }
                     }
+                })
+
+                $('#btn-export').click(function() {
+                    var startDate = $("#start-date").val();
+                    var endDate = $("#end-date").val();
+
+                    $.get('/exportInventoryPerformance', {startDate, endDate}, function(result) {
+                        $('#download-link').attr('href', '/documents/'+result)
+                        $('#download-link')[0].click()
+                    })
                 })
             })        
         </script>

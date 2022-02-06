@@ -179,6 +179,15 @@
                     }
                 }
 
+                function itemFound (itemDescription, unit) {
+                    var found = true
+                    $("#table-items-body > tr").each(function() {
+                        if ($(this).find('.itemDesc').text() == itemDescription && $(this).find('.unit').text() == unit)
+                            found = false
+                    })
+                    return found
+                }
+
                 $('#add-item').click(function() {
                     var itemDescription = $('#itemDesc').val();
                     var unitID = $('#dropdown-unit').val()
@@ -186,10 +195,7 @@
 
                     if (!itemValidation(itemDescription,unit) && !unitValidation(unitID)) {
                         //resetErrorMessage();
-                        var element = $('#table-items-body tr').filter(function(){
-                            return (this.innerHTML.indexOf(itemDescription) != -1 && this.innerHTML.indexOf(unit) != -1);
-                        })
-                        if (element.length) {
+                        if (!itemFound(itemDescription, unit)) {
                             $('#error-text').text("Item already in list")
                         } else {
                              $('#table-items').find('tbody').append(
