@@ -201,11 +201,12 @@
                             </tbody>
                         </table>
 
-                        {{#compare invoiceInfo.status "==" "Paid"}}
+                        
                         <div class="summary-container">
                             <div class="summary-text">Amount Paid</div>
                             <div class="summary-info-container"><div class="summary-info">₱ {{paymentTotal}}</div></div>
                         </div>
+                        {{#compare invoiceInfo.status "!=" "Paid"}}
                         <div class="summary-container">    
                             <div class="summary-text">Amount Due</div>
                             <div class="summary-info-container"><div class="summary-info" id="totalAmountDue">₱ {{amountDue}}</div></div>

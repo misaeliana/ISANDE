@@ -86,32 +86,44 @@ const manualCountController = {
                 });
             });
         }
-        var shrinkages = JSON.parse(req.body.JSONShrinkages);
+        var temp_shrinkages = JSON.parse(req.body.JSONShrinkages);
+        var shrinkages = []
 
         async function updateItem() {
 
             // subtract from inventory 
-            for (var i = 0; i < shrinkages.length; i++) {
-                shrinkages[i].employeeID = req.session._id
+            for (var i = 0; i < temp_shrinkages.length; i++) {
 
-                var shrinkageUnitID = await getUnitID(shrinkages[i].unit);
+                var shrinkageUnitID = await getUnitID(temp_shrinkages[i].unit);
 
-                var item = await getItemInfo(shrinkages[i].itemID);
+                var item = await getItemInfo(temp_shrinkages[i].itemID);
 
                 console.log(item);
 
                 //needs conversion
                 if (item.unitID!= shrinkageUnitID) {
-                    var newQuantity = parseFloat(shrinkages[i].quantityLost / item.retailQuantity);
+                    var newQuantity = parseFloat(temp_shrinkages[i].quantityLost / item.retailQuantity);
                     newQuantity = parseFloat(parseFloat(item.quantityAvailable) - parseFloat(newQuantity)).toFixed(2);
 
                 }
                 
                 else
-                    var newQuantity = parseFloat(item.quantityAvailable) - parseFloat(shrinkages[i].quantityLost);
+                    var newQuantity = parseFloat(item.quantityAvailable) - parseFloat(temp_shrinkages[i].quantityLost);
 
-                updateItemQuantity(shrinkages[i].itemID, newQuantity);
+                updateItemQuantity(temp_shrinkages[i].itemID, newQuantity);
+                var itemUnitID = await getItemUnitID(temp_shrinkages[i].itemID ,shrinkageUnitID)
+
+                var shrinkage = {
+                    itemUnitID: itemUnitID._id ,
+                    quantityLost: temp_shrinkages[i].quantityLost,
+                    reasonID: temp_shrinkages[i].reasonID,
+                    date: temp_shrinkages[i].date,
+                    employeeID: req.session._id
+                }
+                shrinkages.push(shrinkage)
             }
+
+            console.log(shrinkages)
 
             db.insertMany (Shrinkages, shrinkages, function(flag) {
                 if (flag) {

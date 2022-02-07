@@ -68,7 +68,7 @@
                 <tbody id="table-suppliers-body"> 
                     {{#each itemSuppliers}}
                         <tr>
-                            <td class="supplierName">{{supplierID}}</td>
+                            <td class="supplierName">{{supplierName}}</td>
                             <td class="unit">{{unit}}</td>
                             <td style="text-align: right;"><button class="delete-button"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
                         </tr>
@@ -174,7 +174,7 @@
                             `  <tr> 
                                     <td class="supplierName">${supplierName}</td>
                                     <td class="unit">${unit}</td>
-                                    <td><button class="delete-button"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
+                                    <td style="text-align: right;"><button class="delete-button"><img src="../images/delete-icon.png" height="20px" width="15x" alt="Delete"></button></td>
                                 </tr>`
                         );
 

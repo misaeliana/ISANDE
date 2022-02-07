@@ -88,7 +88,7 @@ const purchaseOrderController = {
 				else
 					newPONumber = result[length].purchaseOrderNumber+1;
 
-				res.render('newPO', {newPONumber});
+				//res.render('newPO', {newPONumber});
 				
 				if(req.session.position == "Inventory and Purchasing"){
 					var inventoryAndPurchasing = req.session.position;

@@ -308,21 +308,22 @@ const inventoryController = {
 				for (var i = 0; i < itemSuppliers.length; i++) {
 					//console.log(itemSuppliers[i])
 					var supplierDetails = await getSpecificSupplier(itemSuppliers[i].supplierID);
-					itemSuppliers[i].supplierID = supplierDetails.name;
+					itemSuppliers[i].supplierName = supplierDetails.name;
 					itemSuppliers[i].unit = await getSpecificUnit(itemSuppliers[i].unitID);
 				}
 
 				var itemName = await getItemDescription(itemID);
+				var units = await getUnits();
 
 				//res.render('editItemSuppliers', {itemID, itemName, suppliers, itemSuppliers, units});
 				if(req.session.position == "Inventory and Purchasing"){
 					var inventoryAndPurchasing = req.session.position;
-					res.render('editItemSuppliers', {itemName, itemID, suppliers, itemSuppliers, inventoryAndPurchasing});	
+					res.render('editItemSuppliers', {itemName, itemID, suppliers, itemSuppliers, units, inventoryAndPurchasing});	
 				}
 
 				if(req.session.position == "Manager"){
 					var manager = req.session.position;
-					res.render('editItemSuppliers', {itemName, itemID, suppliers, itemSuppliers, manager});
+					res.render('editItemSuppliers', {itemName, itemID, suppliers, itemSuppliers, units, manager});
 				}
 			}
 			getInformation();

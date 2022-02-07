@@ -279,7 +279,7 @@
                     <hr style="margin-top: 0px; margin-bottom: 10px;">
 
                     <div class="summary-container">
-                        <div class="summary-text">Total</div>
+                        <div class="summary-text">To be Paid</div>
                         <div class="summary-info-container"><div class="summary-info" id="total">₱ 0.00</div></div>
                     </div>
                     <div style="height: 10px"></div>
@@ -673,13 +673,15 @@
 
                     discountTotal = parseFloat(discountTotal) + previousDiscount
 
-                    orderTotal =parseFloat(parseFloat(orderTotal) -  parseFloat(discountTotal)).toFixed(2)
+                    orderTotal = parseFloat(parseFloat(orderTotal) -  parseFloat(discountTotal))
                     var subtotal = parseFloat(orderTotal)/1.12;
                     var vat = parseFloat(orderTotal) - parseFloat(subtotal);
 
-                    var total = parseFloat(parseFloat(orderTotal) - parseFloat(paid)).toFixed(2);   
-                    //total = parseFloat(parseFloat(total) - parseFloat(discountTotal)).toFixed(2)
 
+                    if ((paid - orderTotal) > 0)
+                        var total = 0
+                    else
+                        var total = orderTotal - paid
                     
                     $('#subtotal').text("₱ " + numberWithCommas(parseFloat(subtotal).toFixed(2)));
                     $('#vat').text("₱ " + numberWithCommas(parseFloat(vat).toFixed(2)));
@@ -864,7 +866,7 @@
                                 subtotal: parseFloat($('#subtotal').text().slice(1).split(",").join("")),
                                 vat: parseFloat($('#vat').text().slice(1).split(",").join("")),
                                 discount: parseFloat($('#discount').text().slice(1).split(",").join("")),
-                                total: parseFloat($('#total').text().slice(1).split(",").join(""))
+                                total: parseFloat($('#orderTotal').text().slice(1).split(",").join(""))
                             }
 
                             deliveryInfo = {
@@ -883,7 +885,7 @@
                                 subtotal: parseFloat($('#subtotal').text().slice(1).split(",").join("")),
                                 vat: parseFloat($('#vat').text().slice(1).split(",").join("")),
                                 discount: parseFloat($('#discount').text().slice(1).split(",").join("")),
-                                total: parseFloat($('#total').text().slice(1).split(",").join(""))
+                                total: parseFloat($('#orderTotal').text().slice(1).split(",").join(""))
                             }
                             deliveryInfo= {};
                         }

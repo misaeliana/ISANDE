@@ -109,6 +109,16 @@
                         $(this).parent().parent().children('.reason').children(".dropdown-shrinkage-reasons option[value=" + noSelected + "]").attr('selected', 'selected');
                         $(this).parent().parent().children('.reason').children('.dropdown-shrinkage-reasons').prop("disabled", true);
                    }
+
+                   if(manualCount > quantityAvailable) {
+                        $(this).css("border", "1px solid #B00000")
+                        $('#btn-save').prop('disabled', true)
+                        $('#btn-save').css("background-color", "#b3b3b3");
+                   } else {
+                        $(this).css("border", "1px solid #DDDDDDD")
+                        $('#btn-save').prop('disabled', false)
+                        $('#btn-save').css("background-color", "#0F84D9")
+                    }
                 });
 
                 $('#dropdown-manual-count').change(function () { 

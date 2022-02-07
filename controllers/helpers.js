@@ -378,6 +378,14 @@ module.exports = function() {
 
 	this.getCustomerInvoices = function(customerID) {
 		return new Promise((resolve, reject) => {
+			db.findMany (Invoices, {customerID: customerID}, '', function (result) {
+				resolve(result);
+			});
+		});
+	},
+
+	this.getCustomerInvoicesForReports = function(customerID) {
+		return new Promise((resolve, reject) => {
 			db.findMany (Invoices, {customerID: customerID, statusID:"619785b0d9a967328c1e8fa6"}, '', function (result) {
 				resolve(result);
 			});

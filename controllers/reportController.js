@@ -44,6 +44,7 @@ const reportController = {
                     var date = new Date(invoices[i].date);
                     
                     var formattedInvoice = {
+                        invoice_id: invoices[i]._id,
                         date: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear(),
                         invoiceID: invoices[i].invoiceID,
                         gross: numberWithCommas(parseFloat(parseFloat(invoices[i].total) +  parseFloat(invoices[i].discount)).toFixed(2)),
@@ -140,6 +141,8 @@ const reportController = {
                 var today = new Date().toLocaleString('en-US');
                 var allInventory = await getAllInventoryItems();
                 var inventory = await filterInventory(allInventory);    //inventory items with no duplicate
+                inventory.sort((a, b) => (a.itemDescription < b.itemDescription) ? -1 : 1);
+                
                 var formattedInventory = [];
                 var categories = await getItemCategories();
                 var invoiceItems = await getAllInvoiceItems();
@@ -259,6 +262,7 @@ const reportController = {
 
             var allInventory = await getAllInventoryItems();
             var inventory = await filterInventory(allInventory);    //inventory items with no duplicate
+            inventory.sort((a, b) => (a.itemDescription < b.itemDescription) ? -1 : 1);    
             var categoryID  = await getCategoryID(req.query.category)
 
             for (var j = 0; j < inventory.length; j++) {
@@ -324,6 +328,7 @@ const reportController = {
                 var today = new Date().toLocaleString('en-US');
                 var allInventory = await getAllInventoryItems();
                 var inventory = await filterInventory(allInventory);
+                inventory.sort((a, b) => (a.itemDescription < b.itemDescription) ? -1 : 1);
                 var formattedInventory = [];
                 var invoiceItems = await getAllInvoiceItems();
                 var overallTotal = 0;
@@ -399,6 +404,7 @@ const reportController = {
             async function getInformation() {
                 var allInventory = await getAllInventoryItems();
                 var inventory = await filterInventory(allInventory);
+                inventory.sort((a, b) => (a.itemDescription < b.itemDescription) ? -1 : 1);
                 var invoiceItems = await getAllInvoiceItems();
                 var formattedInventory = [];
                 var overallTotal = 0;
@@ -551,7 +557,7 @@ const reportController = {
             var invoices = [];
 
             for (var i=0; i<customer.length; i++) {
-                var invoice = await getCustomerInvoices(customer[i]._id);
+                var invoice = await getCustomerInvoicesForReports(customer[i]._id);
 
                 for (var j=0; j<invoice.length; j++)
                     invoices.push(invoice[j]);
@@ -572,7 +578,7 @@ const reportController = {
             var temp_invoices = [];
 
             for (var i=0; i<customer.length; i++) {
-                var invoice = await getCustomerInvoices(customer[i]._id);
+                var invoice = await getCustomerInvoicesForReports(customer[i]._id);
                 for (var j=0; j<invoice.length; j++)
                     temp_invoices.push(invoice[j])
             }
@@ -616,7 +622,7 @@ const reportController = {
             }    
 
             for (var i=0; i<customer.length; i++) {
-                var invoice = await getCustomerInvoices(customer[i]._id);
+                var invoice = await getCustomerInvoicesForReports(customer[i]._id);
 
                 for (var j=0; j<invoice.length; j++)  {
                     //no date filters

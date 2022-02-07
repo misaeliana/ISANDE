@@ -48,7 +48,7 @@
                     </thead>
                     <tbody> 
                         {{#each formattedInvoices}}
-                            <tr>
+                            <tr class="link" style="cursor: pointer" data-href="/invoices/{{invoice_id}}">
                                 <td>{{date}}</td>
                                 <td>{{invoiceID}}</td> <!--right align??--> 
                                 <td style="text-align: right;">₱ {{gross}}</td>
@@ -70,6 +70,12 @@
         </div>
          <script>
             $(document).ready(function() {
+
+                $(".link").click(function() {
+                    window.location = $(this).data("href");
+                });
+
+                
                 $("#sales-report-button").click(function() {
                     var startDate = $("#start-date").val();
                     var endDate = $("#end-date").val();

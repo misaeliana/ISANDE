@@ -934,7 +934,7 @@ const invoiceController = {
                     var customerAddress = await getCustomerAddresses(temp_invoiceInfo.customerID)
                    // res.render('return', {types, invoiceInfo, customerInfo, paymentTypes, deliveryPersonnel, invoiceItems});
 
-                   if(req.session.position == "Cashier"){
+                   if(req.session.position == "Sales"){
                         var cashier = req.session.position;
                         res.render('return', {types, invoiceInfo, customerInfo, customerAddress, paymentTypes, deliveryPersonnel, invoiceItems, cashier});   
                     }
@@ -1145,20 +1145,20 @@ const invoiceController = {
 
 
             
-            db.updateOne(Items, {itemDescription:item.itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {quantityAvailable: updatedQuantity}, function(result) {
+            db.updateOne(Items, {itemDescription:item.itemDesc, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {quantityAvailable: updatedQuantity}, function(result) {
                 
             });
 
-            db.findOne(Items, {itemDescription:item.itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'quantityAvailable reorderLevel', function(result1) {
+            db.findOne(Items, {itemDescription:item.itemDesc, informationStatusID:"618a7830c8067bf46fbfd4e4"}, 'quantityAvailable reorderLevel', function(result1) {
 
                 //update item status to low stock
                 if (result1.quantityAvailable <= result1.reorderLevel && result1.quantityAvailable!=0) {
-                    db.updateOne(Items, {itemDescription:item.itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {statusID:"618b32205f628509c592daab"}, function(result2) {
+                    db.updateOne(Items, {itemDescription:item.itemDesc, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {statusID:"618b32205f628509c592daab"}, function(result2) {
                     });
                 }
                 //update item status to out of stock
                 else if (result1.quantityAvailable == 0) {
-                    db.updateOne(Items, {itemDescription:item.itemDescription, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {statusID:"61b0d6751ca91f5969f166de"}, function(result3) {
+                    db.updateOne(Items, {itemDescription:item.itemDesc, informationStatusID:"618a7830c8067bf46fbfd4e4"}, {statusID:"61b0d6751ca91f5969f166de"}, function(result3) {
                     });
                 }
             });
@@ -1199,7 +1199,7 @@ const invoiceController = {
                 invoiceItems[i].unitID = await getUnitID(invoiceItems[i].unit);
                 var itemUnit = await getItemUnitID(invoiceItems[i].itemID, invoiceItems[i].unitID);
 
-                if (invoiceItems?.fromReturn != true)
+                if (invoiceItems[i]?.fromReturn != true)
                     deductInventory (invoiceItems[i])
 
                 var item = {
