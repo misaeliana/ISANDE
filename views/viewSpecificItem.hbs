@@ -75,9 +75,16 @@
                         <div class="override-label">Quantity</div> 
                         <div class="label-content" id="item-quantity">{{itemInfo.quantityAvailable}}</div>
                     </div>-->
-                    <div class="label-container">
-                        <div class="override-label">Retail Quantity</div> 
-                        <div class="label-content">{{itemInfo.retailQuantity}}</div>
+                    <div style="display: flex;">
+                        <div class="label-container" style="margin-right:10px">
+                            <div class="override-label">Retail Quantity</div> 
+                            <div class="label-content">{{itemInfo.retailQuantity}}</div>
+                        </div>
+
+                        <div class="label-container" style="margin-left:10px">
+                            <div class="override-label">Retail Unit</div> 
+                            <div class="label-content">{{itemInfo.retailUnit}}</div>
+                        </div>
                     </div>
                     <!--<div class="label-container">
                         <div class="override-label">Selling Price</div> 

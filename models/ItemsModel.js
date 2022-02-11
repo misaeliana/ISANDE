@@ -41,6 +41,11 @@ var ItemsSchema = new mongoose.Schema({
 		required: true
 	},
 
+	retailUnit: {
+		type: String, 
+		required: true
+	},
+
 	statusID: {
 		type: String,
 		required: true

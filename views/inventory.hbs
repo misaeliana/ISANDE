@@ -92,6 +92,18 @@
                             <p class="error" id="error-category" style="margin-top: 3px; margin-bottom: 3px;"></p>
 
                             <div class="flex-display">
+                                <label for="reorder-level" class="modal-label">Reorder Level</label> 
+                                <input id="reorder-level" type="number" style="text-align:right" class="modal-input form-control"><br>
+                            </div>
+                            <p class="error" id="error-reorder-level" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                           
+
+                            <div class="flex-display">
+                                <label for="EOQ" class="modal-label">EOQ</label> 
+                                <input id="EOQ" type="number" style="text-align:right" class="modal-input form-control"><br>
+                            </div>
+                            <p class="error" id="error-EOQ" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            <div class="flex-display">
                                 <label for="dropdown-unit" class="modal-label">Unit</label>
                                 <select class="form-control" style="width: 73%;" id="dropdown-unit">
                                     <option value="no-selected" selected>Select Unit</option>
@@ -115,23 +127,18 @@
                             <div id="div-quantity-in-retail">
                                 <div class="flex-display">
                                     <label for="quantity-in-retail" class="modal-label">Retail Quantity</label>
-                                    <input type="number" id="quantity-in-retail" style="text-align:right" class="modal-input form-control"><br>
+                                    <input type="number" id="quantity-in-retail" style="text-align:right; margin-right: 5px; width:72%" class="modal-input form-control"><br>
+                                    <select class="dropdown" id="retail-unit">
+                                        <option value="no-selected" selected>Select Unit</option>
+                                        {{#each units}}
+                                            <option value={{_id}}>{{unit}}</option>
+                                        {{/each}}
+                                    </select>
                                 </div>
                                 <p class="error" id="error-retail-quantity" style="margin-top: 3px; margin-bottom: 3px;"></p>
                             </div>
 
-                            <div class="flex-display">
-                                <label for="reorder-level" class="modal-label">Reorder Level</label> 
-                                <input id="reorder-level" type="number" style="text-align:right" class="modal-input form-control"><br>
-                            </div>
-                            <p class="error" id="error-reorder-level" style="margin-top: 3px; margin-bottom: 3px;"></p>
-                           
-
-                            <div class="flex-display">
-                                <label for="EOQ" class="modal-label">EOQ</label> 
-                                <input id="EOQ" type="number" style="text-align:right" class="modal-input form-control"><br>
-                            </div>
-                            <p class="error" id="error-EOQ" style="margin-top: 3px; margin-bottom: 3px;"></p>
+                            
 
                             <!--<label for="selling-price">Selling Price</label> <input id="selling-price" type="number"><br>
                             <p class="error" id="error-selling-price" style="margin-top: 3px; margin-bottom: 3px;"></p>-->
@@ -257,6 +264,27 @@
                     }
                 }
 
+                function retailUnitValidation(retailUnit) {
+                    //if checked, should be left blank because it's hidden
+                    if ($('#same-selling-unit').is(":checked")) {
+                        if (retailUnit == "no-selected") {
+                            return 0;
+                        }
+                        else {
+                            errorMessage("retailUnit")
+                            return 1;
+                        }
+                    }
+                    else {
+                         if (retailUnit == "no-selected") {
+                             errorMessage("retailUnit")
+                            return 1
+                        }
+                        else 
+                            return 0
+                    } 
+                }
+
                 function EOQValidation(EOQ) { 
                     if (EOQ == null || EOQ == "") {
                         errorMessage("EOQ");
@@ -312,7 +340,11 @@
                     } else if (type == "invalidRetailQuantity") {
                         $("#quantity-in-retail").css("border", "1px solid #B00000");
                         $("#error-retail-quantity").text("Invalid Retail Quantity");
-                    } 
+                    } else if (type == "retailUnit") {
+                        $("#retail-unit").css("border", "1px solid #B00000");
+                        $("#error-retail-quantity").text("Select retail unit.");
+                    }
+
                     else if (type == "reorderLevel") {
                         $("#reorder-level").css("border", "1px solid #B00000");
                         $("#error-reorder-level").text("Please enter a Reorder Level.");
@@ -338,6 +370,7 @@
                     $("#dropdown-unit").css("border", "1px solid #DDDDDD");
                     $("#error-unit").text("");
                     $("#quantity-in-retail").css("border", "1px solid #DDDDDD");
+                    $('#dropdown-unit').css("border", "1px solid #DDDDDD");
                     $("#error-retail-quantity").text("");
                     $("#selling-price").css("border", "1px solid #DDDDDD");
                     $("#error-selling-price").text("");
@@ -450,6 +483,10 @@
                     resetErrorMessage();
                 })
 
+                $('#retail-unit').change(function() {
+                    resetErrorMessage();
+                })
+
                 $('#same-selling-unit').change(function() {
                     if ($(this).is(":checked")) {
                         $('#quantity-in-retail').val('');
@@ -466,14 +503,15 @@
                 })
 
 
-                function checkAll(description, category, unit, reorderLevel, EOQ, sellingPrice, retailQuantity) {
+                function checkAll(description, category, unit, reorderLevel, EOQ, sellingPrice, retailQuantity, retailUnit) {
                     descriptionValidation(description);
                     typeValidation(category);
                     unitValidation(unit);
                     reorderLevelValidation(reorderLevel);
                     EOQValidation(EOQ);
                     sellingPriceValidation(sellingPrice);
-                    quantityInRetail(retailQuantity)
+                    retailUnitValidation(retailUnit)
+                    quantityInRetail(retailQuantity);
                 }
 
                 $('#btn-add-new-item').click(function() {
@@ -483,18 +521,22 @@
                     var unit = $('#dropdown-unit').val();
                     var unitText = $('#dropdown-unit option:selected').text();
                     var retailQuantity = $('#quantity-in-retail').val();
+                    var retailUnit = $('#retail-unit').val()
                     var reorderLevel = $('#reorder-level').val();
                     var EOQ = $('#EOQ').val();
 
                     var sellingPrice = $('#selling-price').val();
 
-                    checkAll(description, category, unit, reorderLevel, EOQ, sellingPrice, retailQuantity);
+                    checkAll(description, category, unit, reorderLevel, EOQ, sellingPrice, retailQuantity, retailUnit);
 
-                    if (!descriptionValidation(description) && !typeValidation(category) && !unitValidation(unit) && !quantityInRetail(retailQuantity) && !sellingPriceValidation(sellingPrice) && !reorderLevelValidation(reorderLevel) && !EOQValidation(EOQ)) {
+                    if (!descriptionValidation(description) && !typeValidation(category) && !unitValidation(unit) && !quantityInRetail(retailQuantity) && !retailUnitValidation(retailUnit) && !sellingPriceValidation(sellingPrice) && !reorderLevelValidation(reorderLevel) && !EOQValidation(EOQ)) {
                         // remove texts and red borders
                         resetErrorMessage();
 
-                        $.post('/postNewItem', {description, category, categoryText, unit, unitText, retailQuantity, sellingPrice, reorderLevel, EOQ}, function (updatedItem) {
+                        if ($('#same-selling-unit').is(":checked")) 
+                            retailUnit = unit
+
+                        $.post('/postNewItem', {description, category, categoryText, unit, unitText, retailQuantity, retailUnit, sellingPrice, reorderLevel, EOQ}, function (updatedItem) {
                             alert('Item has been added')
                             $('#modal-new-item').modal('hide');
                             $('#add-new-item').trigger('reset');

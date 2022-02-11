@@ -128,6 +128,7 @@ const inventoryController = {
 			EOQ: parseFloat(req.body.EOQ),
 			reorderLevel: parseFloat(req.body.reorderLevel),
 			retailQuantity: parseFloat(retailQuantity),
+			retailUnit: req.body.retailUnit,
 			statusID: "61b0d6751ca91f5969f166de",
 			informationStatusID: "618a7830c8067bf46fbfd4e4"
 		};
@@ -236,6 +237,7 @@ const inventoryController = {
 					statusID: item.statusID,
 					status: textStatus,
 					retailQuantity: item.retailQuantity,
+					retailUnit: await getSpecificUnit(item.retailUnit),
 					btn_status: btnStatus
 				};
 

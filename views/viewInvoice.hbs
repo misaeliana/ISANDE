@@ -206,7 +206,7 @@
                             <div class="summary-text">Amount Paid</div>
                             <div class="summary-info-container"><div class="summary-info">₱ {{paymentTotal}}</div></div>
                         </div>
-                        {{#compare invoiceInfo.status "!=" "Paid"}}
+                        {{#compare invoiceInfo.status "==" "Pending"}}
                         <div class="summary-container">    
                             <div class="summary-text">Amount Due</div>
                             <div class="summary-info-container"><div class="summary-info" id="totalAmountDue">₱ {{amountDue}}</div></div>
@@ -289,7 +289,7 @@
                 })
 
                 function amountValid(amountPaid) {
-                    if (amountPaid > (parseInt($("#totalAmountDue").text().slice(1).split(",").join("")))) 
+                    if (amountPaid > (parseFloat($("#totalAmountDue").text().slice(1).split(",").join("")))) 
                         return false
                     else
                         return true
@@ -301,6 +301,20 @@
                         $('#payment-details').css('display', 'none')
                     else 
                         $('#payment-details').css('display', 'flex')
+                })
+
+                $('#input-new-payment').keyup(function() {
+                    var amountPaid = parseFloat($(this).val())
+                    if (amountValid(amountPaid)) {
+                        $("#btn-save-payment").prop("disabled", false);
+                        $("#btn-save-payment").css("background-color", "#0F84D9");
+                        $('#error-amount').css('display', 'none')
+                    }
+                    else {
+                        $("#btn-save-payment").prop("disabled", true);
+                        $("#btn-save-payment").css("background-color", "#b3b3b3");
+                        $('#error-amount').css('display', 'block')
+                    }
                 })
 
                 $('#btn-save-payment').click(function () {
